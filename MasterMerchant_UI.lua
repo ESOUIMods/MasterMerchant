@@ -13,6 +13,8 @@ local ITEMS = 'full'
 local GUILDS = 'half'
 local LISTINGS = 'listings'
 
+local LMP = LibMediaProvider
+
 function MasterMerchant:SortByPrice(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
   
@@ -204,7 +206,6 @@ function MMScrollList:SetupSalesRow(control, data)
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
 
-  local LMP = LibStub('LibMediaProvider-1.0')
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
@@ -319,7 +320,6 @@ function MMScrollList:SetupGuildSalesRow(control, data)
     return
   end
   
-  local LMP = LibStub('LibMediaProvider-1.0')
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
@@ -425,7 +425,6 @@ function MMScrollList:SetupListingsRow(control, data)
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
 
-  local LMP = LibStub('LibMediaProvider-1.0')
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
@@ -1004,7 +1003,6 @@ end
 
 -- Handle the changing of window font settings
 function MasterMerchant:UpdateFonts()
-  local LMP = LibStub('LibMediaProvider-1.0')
   if LMP then
     local font = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont)
     local fontString = font .. '|%d'
@@ -1827,7 +1825,6 @@ function MasterMerchant:SetupMasterMerchantWindow()
   if settingsToUse.rankIndex == 9 then timeDropdown:SetSelectedItem(settingsToUse.customTimeframeText) end
 
   -- Set sort column headers and search label from translation
-  local LMP = LibStub('LibMediaProvider-1.0')
   local fontString = 'ZoFontGameLargeBold'
   local guildFontString = 'ZoFontGameLargeBold'
   if LMP then

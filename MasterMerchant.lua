@@ -12,6 +12,9 @@ local OriginalIsShowing
 local Original_ZO_InventorySlot_OnSlotClicked
 g_slotActions = nil
 
+local LAM = LibAddonMenu2
+local LMP = LibMediaProvider
+
 local ITEMS = 'full'
 local GUILDS = 'half'
 local LISTINGS = 'listings'
@@ -977,9 +980,7 @@ end
 
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
-  local LAM = LibStub('LibAddonMenu-2.0')
   if LAM then
-    local LMP = LibStub('LibMediaProvider-1.0')
     if LMP then
       local panelData = {
         type = 'panel',
@@ -4098,8 +4099,6 @@ local function OnAddOnLoaded(eventCode, addOnName)
      MasterMerchant:initAGSIntegration()
    end
    
-   local LMP = LibStub('LibMediaProvider-1.0')
-
    --if the first loaded version of LibMediaProvider was r6 and older, fonts are
    --already registered, but with invalid paths.
    if LMP.MediaTable.font['Arial Narrow']     then LMP.MediaTable.font['Arial Narrow']     = 'MasterMerchant/Fonts/arialn.ttf'               end

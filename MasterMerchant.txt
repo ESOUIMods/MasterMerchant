@@ -5,34 +5,18 @@
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
 
-## Title: Master Merchant 2.2.0 by Philgo
+## Title: Master Merchant 2.2.1 by Philgo
 ## APIVersion: 100028
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Khaibit & (dOpiate & Garkin) & Philgo
-## Version: 2.2.0
+## AddOnVersion: 221
+## Version: 2.2.1
 ## License: See license - distribution without license is prohibited!
 ## LastUpdated: Aug 2019
 ## SavedVariables: ShopkeeperSavedVars
 ## DependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data LibExecutionQueue
 ## OptionalDependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0 GuildSalesAssistant AwesomeGuildStore
 
-Libs\LibStub\LibStub.lua
-Libs\LibMediaProvider-1.0\LibMediaProvider-1.0.lua
-Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
-Libs\LibAddonMenu-2.0\controls\button.lua
-Libs\LibAddonMenu-2.0\controls\checkbox.lua
-Libs\LibAddonMenu-2.0\controls\colorpicker.lua
-Libs\LibAddonMenu-2.0\controls\custom.lua
-Libs\LibAddonMenu-2.0\controls\description.lua
-Libs\LibAddonMenu-2.0\controls\divider.lua
-Libs\LibAddonMenu-2.0\controls\dropdown.lua
-Libs\LibAddonMenu-2.0\controls\editbox.lua
-Libs\LibAddonMenu-2.0\controls\header.lua
-Libs\LibAddonMenu-2.0\controls\iconpicker.lua
-Libs\LibAddonMenu-2.0\controls\panel.lua
-Libs\LibAddonMenu-2.0\controls\slider.lua
-Libs\LibAddonMenu-2.0\controls\submenu.lua
-Libs\LibAddonMenu-2.0\controls\texture.lua
 MasterMerchantMisc.xml
 MasterMerchantSales.xml
 MasterMerchantGuilds.xml
