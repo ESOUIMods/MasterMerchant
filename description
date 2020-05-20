@@ -1,0 +1,93 @@
+Master Merchant is an upgraded version of Shopkeeper that offers additional features for the Traders and Trading Guilds. Finally, you can see who your Guild’s top sellers are and what they are selling!  Your total Guild Sales and Sales Tax income are at your fingertips – any time you’d like to see them!  And that’s just the start.  Master Merchant also helps you find GREAT DEALS and provides many other trade-related enhancements! Join the 100's already using Master Merchant.
+ 
+
+Early feedback:
+tttosbt999: "This add-on has totally changed the market for me. What use(d) to take me forever now is a breeze. I actually have time to play the game instead of being consumed by trading. Thanks so much Philgo!"
+
+Karraxx: "nice work on this addon, makes selling things a thousand times easier"
+
+
+
+Introducing DealFinder:
+ 
+-          When you are browsing a Guild Store (including Kiosks), Master Merchant will identify and flag “great deals” and specify how much gold you could potentially make if you buy the items and re-sell it at the average list price in your guild(s).  The system uses color coding to rate how good the deal is.   White, Green, Blue, Purple Gold.  Gold=the BEST deal.  Buy it right now!
+The same flag existing on your listings page so you can easily see if you've offered the deal you want to.
+How to use:  Just visit any Guild Store (Bank NPC or Kiosks) and you’ll see a new column in the item listings that will highlight Deals and potential profit!
+
+
+
+Trade Guild Tools:
+ 
+-          See your Total Guild Sales, Taxes Collected and Number of transactions based on selectable timeframes!
+(Today, Last 3 Days, This Week (starting Monday at Kiosk turnover), Last Week, Prior Week)
+How to use:  Open Master Merchant and toggle the “Seller Info/Item Info icon to “Seller Info”
+You’ll see total sales info for each of your guilds + all of their members.  
+You can sort on any column by clicking the column header (click to change between high to low and low to high)
+
+-          Find out who the top sellers are (and aren't).  You can generate a ranked report that lists each guild member, sorted by Sales, Tax, number of transactions, or percentage of overall guild sales, based on selectable Timeframes.
+How to use:  Type a guild name into the search box and you’ll see Guild Total plus a ranked list of every member.  
+You can sort on any column by clicking the column header (click to change between high to low and low to high)
+
+-          View all guild Transactions, with toggle to view by Buyer Name or Seller Name.  See what the best sellers are making their money on!
+
+
+More enhancements:
+ 
+-          Price Check:  With “Stats to Chat”, you can right-click on any item posted in chat and Master Merchant will post sales data into your chat box for you to provide a Price Check to someone!
+How to Use:  Right click any item posted in chat and select “Stats to Chat”.  The stats will be posted in your chat box, you just need to hit <Enter>.
+
+-          Automatic Pricing.  Master Merchant will remember the price you've listed an item at and automatically insert when you place an item up for sale.  (If you haven’t listed the item previously, the average sale price will be inserted instead)  It also creates a system message for every listing so you can easily review what you've just put up for sale.
+
+-          Enhanced Filtering:  When searching for items on the Item info screen, you can narrow items by quality, type and level.  For instance “RR45 Blue” would return all blue items for Level 45.  “VR12 Blue Ring” would show you sales history for all VR12 Blue quality rings.
+How to Use:  <Level> <Color> <part of item name>  Regular levels=RR, VR Levels=VR.  Must add zero for single digit levels.
+Syntax:  VR01, VR12, RR04, RR45.  Colors=White, Green, Blue, Purple, Gold.
+Examples:  “RR45 Blue”, “VR02 Blue Sword”, “Gold Motif”
+
+-          Multi buff potions now price correctly instead of mixing sales numbers.
+
+-          Sales Notification Audio:  Choose from over 30 sounds for your “Item Sold” notification!
+
+How to Use:  Open Settings->Addons->Master Merchant and select the sound from the drop down list.  While you're there you can see the other configurable option available.
+
+-          Completely reworked data storage to avoid corruption with large volumes / long histories.
+
+
+
+
+[COLOR="Yellow"]Install Instructions:[/COLOR]
+
+Disable all versions of the Shopkeeper (and GSA for now) add-on.  (GSA support is almost complete.)
+Remove Old Shopkeeper code.
+This installs like any other add-on, but it will actually install Master Merchant plus 16 other mule add-ons (MM##Data) to carry the data.  Master Merchant depends on these additional add-ons, so they mus be enabled along with Master Merchant.  This should hopefully allow you to store just about all the sales history you would like, even in the in busiest of trading guilds.
+
+In the Addon directory, you should end up with a MasterMerchant directory and at that same level MM##Data (00-15) directories for the mules.
+
+If you have one, you can try renaming your SavedVariables/Shopkeeper.lua file to MasterMerchant.lua to start with your old Shopkeeper data.  I’d give this about a 75% chance of working.  If you run into problems just delete the Shopkeeper.lua,  MasterMerchant.lua and the 16 MM##Data.lua files from the SavedVariables directory to start over.
+
+
+Special thanks for their code, help and support:
+
+This is based on the original Shopkeeper code.  Original by Khaibit, kept alive by dOpiate  & Garkin and continued here.
+Those developers deserve many thanks for their previous work on this code, and it’s my privilege to stand on their shoulders.
+
+Khaibit, dOpiate  & Garkin
+@Anslay
+@bigT0ne
+@Calia1120
+@Captain_Easycord
+@freakyfreak
+@Hiyde
+@jaanpw
+@Maiden_Sithis
+@Sneak-Thief
+@Sweetroll-Thief
+@uch9911
+
+Ethereal Traders Union
+Iron Bank of Bravos
+
+
+Thanks for downloading and trying out my work.  I hope you enjoy it.  A little gold in my inbox is always nice...  :banana:
+
+Take Luck,
+@Philgo68

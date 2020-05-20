@@ -1,0 +1,55 @@
+Done:
+Tax - Calc and Sort
+Special Char Search (ex. Bal-Mart)
+Proper Potion separation for 1/2/3 buff potions
+Default Last List Price or Ave Price
+Fix Sound selection save
+----
+Rebrand to "Master Merchant"
+Translate languages
+Switch toon timing bug
+Make Sales time a little wider "11 minutes ag"
+rename SK... stuff
+
+TODO:
+Add feedback dialog
+
+------
+Code refactor
+Adjustments for 1.6 (D:\Program Files (x86)\Zenimax Online\The Elder Scrolls Online\game\client\game0000.dat, game.mnf)
+- Reindex
+
+
+Future considerations:
+Line number in the grids
+Auto Filter by a right click menu on a name
+
+Add to Tax and make it Gold for the Guild (G.G.) to include credit for purchases from the guild and bank deposits
+
+Guild specific versions/functionality
+
+A Buyer view like the seller view
+A Item View like the seller View
+Sort by Guild Name
+Offline method to send history to excel
+Integration with Awesome guild store
+
+
+Even more future possibilities:
+Store Guild store listings for various display and analysis purposes
+Stock Items - To keep track of items you want to stock and where you need to restock them
+WTB - Way to mark items you are looking for and auto filter the guild stores for those items
+Guild raffle management
+Other Guild management
+
+
+https://www.dropbox.com/s/4aogkugt1lbvul5/MasterMerchant.zip?dl=0
+
+
+http://tinyurl.com/oftmldq
+
+
+
+
+
+

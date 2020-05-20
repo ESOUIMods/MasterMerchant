@@ -1,0 +1,21 @@
+<!--  
+      MasterMerchant Key Bindings File
+      Last Updated August 4, 2014
+      Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
+      Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
+      Released under terms in license accompanying this file.
+      Distribution without license is prohibited!
+-->
+
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="MasterMerchant">
+      <Action name="MasterMerchant_TOGGLE">
+		    <Down>MasterMerchant.ToggleMasterMerchantWindow()</Down>
+      </Action>
+      <Action name="MasterMerchant_STATS_TOGGLE">
+        <Down>MasterMerchant.ToggleMasterMerchantStatsWindow()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>
