@@ -224,3 +224,9 @@ ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "レベル/品質を調整するボタ
 
 ZO_CreateStringId("MM_VERBOSE_NAME", "詳細メッセージ")
 ZO_CreateStringId("MM_VERBOSE_TIP", "操作中にチャットウィンドウにより多くのステータスメッセージを表示します。")
+
+ZO_CreateStringId("MM_SIMPLE_SCAN_NAME", "シンプルなギルド履歴スキャン")
+ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "ギルドスキャンは、データをより速く取得するためにそれほど集中的ではありませんが、履歴にギャップを残す可能性があります。")
+
+ZO_CreateStringId("MM_SKIP_INDEX_NAME", "最小限のインデックス")
+ZO_CreateStringId("MM_SKIP_INDEX_TIP", "メモリを節約するために販売履歴インデックスはスキップされますが、MM画面からの検索ははるかに遅くなります。")

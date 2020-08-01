@@ -234,3 +234,9 @@ ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Display buttons on item popup to adju
 
 ZO_CreateStringId("MM_VERBOSE_NAME", "Messages verbeux")
 ZO_CreateStringId("MM_VERBOSE_TIP", "Affiche plus de messages d'état dans votre fenêtre de discussion pendant les opérations MM.")
+
+ZO_CreateStringId("MM_SIMPLE_SCAN_NAME", "Numérisation simple de l'historique de guilde")
+ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "L'analyse de guilde est moins intensive pour obtenir des données plus rapidement, mais peut laisser des lacunes dans votre historique.")
+
+ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Indexation minimale")
+ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Les index de l'historique des ventes sont ignorés pour économiser de la mémoire, mais la recherche dans l'écran MM est beaucoup plus lente.")

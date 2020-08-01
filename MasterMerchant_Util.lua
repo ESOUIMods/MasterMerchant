@@ -258,11 +258,12 @@ end
 -- index of search terms - here we build the indexes from the existing table
 function MasterMerchant:indexHistoryTables()
 
-  -- DEBUG  Stop Indexing
-  --do return end
-
   local prefunc = function(extraData) 
-    MasterMerchant.v(3, 'Indexing...')
+    if MasterMerchant:ActiveSettings().minimalIndexing then 
+      MasterMerchant.v(3, 'Minimal Indexing...')
+    else
+      MasterMerchant.v(3, 'Full Indexing...')
+    end
     extraData.start = GetTimeStamp()
     extraData.checkMilliseconds = 60
     extraData.indexCount = 0
@@ -281,29 +282,39 @@ function MasterMerchant:indexHistoryTables()
 
     extraData.indexCount = extraData.indexCount + 1
 
-    versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(soldItem['itemLink'])
-    versiondata.itemDesc = versiondata.itemDesc or GetItemLinkName(soldItem['itemLink'])
-    versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(soldItem['itemLink'])
-
-    temp[2] = soldItem['buyer'] or ''
-    temp[4] = soldItem['seller'] or ''
-    temp[6] = soldItem['guild'] or ''
-    temp[8] = versiondata.itemDesc or ''
-    temp[10] = versiondata.itemAdderText or ''
-    if playerName == tolower(soldItem['seller']) then
-      temp[12] = MasterMerchant.PlayerSpecialText
+    local searchText
+    if MasterMerchant:ActiveSettings().minimalIndexing then 
+      if playerName == tolower(soldItem['seller']) then
+        searchText = MasterMerchant.PlayerSpecialText
+      else
+        searchText = ''
+      end
     else
-      temp[12] = ''
-    end
-    local searchText = tolower(tconcat(temp, ''))
-    local searchByWords = string.gmatch(searchText, '%S+')
+      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(soldItem['itemLink'])
+      versiondata.itemDesc = versiondata.itemDesc or GetItemLinkName(soldItem['itemLink'])
+      versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(soldItem['itemLink'])
 
-    local wordData = {numberID, itemData, itemIndex}
+      temp[2] = soldItem['buyer'] or ''
+      temp[4] = soldItem['seller'] or ''
+      temp[6] = soldItem['guild'] or ''
+      temp[8] = versiondata.itemDesc or ''
+      temp[10] = versiondata.itemAdderText or ''
+      if playerName == tolower(soldItem['seller']) then
+        temp[12] = MasterMerchant.PlayerSpecialText
+      else
+        temp[12] = ''
+      end
+      searchText = tolower(tconcat(temp, ''))
+    end
 
     -- Index each word
+    local searchByWords = string.gmatch(searchText, '%S+')
+    local wordData = {numberID, itemData, itemIndex}
     for i in searchByWords do
-      extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-      self.SRIndex[i] = self.SRIndex[i] or {}
+      if self.SRIndex[i] == nil then
+        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
+        self.SRIndex[i] = {}
+      end
       tinsert(self.SRIndex[i], wordData) 
     end
   
@@ -313,7 +324,9 @@ function MasterMerchant:indexHistoryTables()
     self:setScanning(false)
     MasterMerchant.v(3, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
     MasterMerchant.v(3, '  ' .. extraData.indexCount .. ' sales records')
-    MasterMerchant.v(3, '  ' .. extraData.wordsIndexCount .. ' words')
+    if extraData.wordsIndexCount > 1 then 
+      MasterMerchant.v(3, '  ' .. extraData.wordsIndexCount .. ' unique words')
+    end
   end    
 
   if not self.isScanning then
@@ -324,9 +337,6 @@ end
 
 -- And here we add a new item
 function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
-
-  -- DEBUG  Stop Adding
-  --do return end
 
   local theIID = string.match(theEvent.itemName, '|H.-:item:(.-):')
   if theIID == nil then return end
@@ -413,52 +423,52 @@ function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
   guild = MasterMerchant.guildItems[newSalesItem.guild] or MMGuild:new(newSalesItem.guild)
   MasterMerchant.guildItems[newSalesItem.guild] = guild;
   guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, newSalesItem.timestamp, newSalesItem.price, newSalesItem.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
-
-  local searchBuyer = 'b' .. string.lower(theEvent.buyer)
-  local searchSeller = 's' .. string.lower(theEvent.seller)
-  local searchGuild = string.lower(theEvent.guild)
-  local searchName = MasterMerchant.concat(string.lower(GetItemLinkName(theEvent.itemName)), self.addedSearchToItem(theEvent.itemName))
-  local guildByWords = string.gmatch(searchGuild, '%S+')
-  local nameByWords = string.gmatch(searchName, '%S+')
-  local playerName = string.lower(GetDisplayName())
+  
   local isSelfSale = playerName == string.lower(theEvent.seller)
-
   if isSelfSale then
     guild = MasterMerchant.myItems[newSalesItem.guild] or MMGuild:new(newSalesItem.guild)
     MasterMerchant.myItems[newSalesItem.guild] = guild;
     guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, newSalesItem.timestamp, newSalesItem.price, newSalesItem.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
   end
 
+  local tconcat = table.concat
+  local tinsert = table.insert
+  local tolower = string.lower
+  local temp = {'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', ''}
+  local playerName = tolower(GetDisplayName())
+
+
+  local searchText
+  if MasterMerchant:ActiveSettings().minimalIndexing then 
+    if isSelfSale then
+      searchText = MasterMerchant.PlayerSpecialText
+    else
+      searchText = ''
+    end
+  else
+    temp[2] = tolower(theEvent.buyer) or ''
+    temp[4] = tolower(theEvent.seller) or ''
+    temp[6] = tolower(theEvent.guild) or ''
+    temp[8] = tolower(GetItemLinkName(theEvent.itemName)) or ''
+    temp[10] = self.addedSearchToItem(theEvent.itemName) or ''
+    if isSelfSale then
+      temp[12] = MasterMerchant.PlayerSpecialText
+    else
+      temp[12] = ''
+    end
+    searchText = tolower(tconcat(temp, ''))
+  end
+
+  -- Index each word
+  local searchByWords = string.gmatch(searchText, '%S+')
   local wordData = {theIID, itemIndex, insertedIndex}
-
-  -- Index buyer
-  if self.SRIndex[searchBuyer] == nil then self.SRIndex[searchBuyer] = {wordData}
-  else table.insert(self.SRIndex[searchBuyer], wordData) end
-  
-  -- Index seller
-  if self.SRIndex[searchSeller] == nil then self.SRIndex[searchSeller] = {wordData}
-  else table.insert(self.SRIndex[searchSeller], wordData) end
-
-  -- Index each word in the guild name
-  for i in guildByWords do
-    if self.SRIndex[i] == nil then self.SRIndex[i] = {wordData}
-    else table.insert(self.SRIndex[i], wordData) end
-  end
-
-  -- Index each word in the item name
-  for i in nameByWords do
-    if self.SRIndex[i] == nil then self.SRIndex[i] = {wordData}
-    else table.insert(self.SRIndex[i], wordData) end
-  end
-
-  -- Add index marker for Self Sales
-  if isSelfSale then
-    if self.SRIndex[MasterMerchant.PlayerSpecialText] == nil then self.SRIndex[MasterMerchant.PlayerSpecialText] = {wordData}
-    else table.insert(self.SRIndex[MasterMerchant.PlayerSpecialText], wordData) end
+  for i in searchByWords do
+    extraData.wordsIndexCount = extraData.wordsIndexCount + 1
+    self.SRIndex[i] = self.SRIndex[i] or {}
+    tinsert(self.SRIndex[i], wordData) 
   end
 
   return true
-
 end
 
 -- Inserts a comma or period as appropriate every 3 numbers and returns

@@ -13,8 +13,6 @@ local ITEMS = 'full'
 local GUILDS = 'half'
 local LISTINGS = 'listings'
 
-local LMP = LibMediaProvider
-
 function MasterMerchant:SortByPrice(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
   
@@ -206,6 +204,7 @@ function MMScrollList:SetupSalesRow(control, data)
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
 
+  local LMP = LibMediaProvider
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
@@ -320,6 +319,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
     return
   end
   
+  local LMP = LibMediaProvider
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
@@ -425,6 +425,7 @@ function MMScrollList:SetupListingsRow(control, data)
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
 
+  local LMP = LibMediaProvider
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
@@ -595,11 +596,9 @@ function MMScrollList:FilterScrollList()
   if searchText then searchText = string.gsub(string.lower(searchText), '^%s*(.-)%s*$', '%1') end
   
   if settingsToUse.viewSize == ITEMS then
-    if MasterMerchant.viewMode == 'self' then
-      searchText = MasterMerchant.concat(searchText, MasterMerchant.PlayerSpecialText)
-    end
     -- return item sales
-    if searchText == nil or searchText == '' then
+    if MasterMerchant.viewMode ~= 'self' and (searchText == nil or searchText == '') then
+      -- everything unfiltered (filter to the default time range)
       local timeCheck = MasterMerchant:TimeCheck()
       for k, v in pairs(MasterMerchant.salesData) do
         for j, dataList in pairs(v) do
@@ -616,8 +615,87 @@ function MMScrollList:FilterScrollList()
           end
         end 
       end
+    elseif NonContiguousCount(MasterMerchant.SRIndex) == 1 and (searchText ~= nil and searchText ~= '') then 
+      -- We just have player indexed and we have something to filter with 
+      if MasterMerchant.viewMode == 'self' then 
+        -- Search all data in the last 180 days
+        local timeCheck = GetTimeStamp() - (86400 * 90)
+        local tconcat = table.concat
+        local tinsert = table.insert
+        local tolower = string.lower
+        local temp = {'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', ''}
+
+        for k, v in pairs(MasterMerchant.SRIndex[MasterMerchant.PlayerSpecialText]) do
+          local k = v[1]
+          local j = v[2]
+          local i = v[3]
+          local dataList = MasterMerchant.salesData[k][j]
+          local item = dataList['sales'][i]
+          if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
+            --d('Bad Item:')
+            --d(item)
+          else 
+            if (item.timestamp > timeCheck) then
+              local matchesAll = true
+              temp[2] = item['buyer'] or ''
+              temp[4] = item['seller'] or ''
+              temp[6] = item['guild'] or ''
+              temp[8] = dataList['itemDesc'] or ''
+              temp[10] = dataList['itemAdderText'] or ''
+              local gn = tolower(tconcat(temp, ''))
+              local searchByWords = string.gmatch(searchText, '%S+')
+              for searchWord in searchByWords do
+                searchWord = MasterMerchant.CleanupSearch(searchWord)
+                matchesAll = (matchesAll and string.find(gn, searchWord))
+              end
+              if matchesAll then
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {k, j, i, item.timestamp, item.price, item.quant}))
+              end
+            end
+          end
+        end
+      else
+        -- Search all data in the last 90 days
+        local timeCheck = GetTimeStamp() - (86400 * 90)
+        local tconcat = table.concat
+        local tinsert = table.insert
+        local tolower = string.lower
+        local temp = {'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', ''}
+        for k, v in pairs(MasterMerchant.salesData) do
+          for j, dataList in pairs(v) do
+            for i, item in pairs(dataList['sales']) do
+              if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
+                --d('Bad Item:')
+                --d(item)
+              else 
+                if (item.timestamp > timeCheck) then
+                  local matchesAll = true
+                  temp[2] = item['buyer'] or ''
+                  temp[4] = item['seller'] or ''
+                  temp[6] = item['guild'] or ''
+                  temp[8] = dataList['itemDesc'] or ''
+                  temp[10] = dataList['itemAdderText'] or ''
+                  local gn = tolower(tconcat(temp, ''))
+                  local searchByWords = string.gmatch(searchText, '%S+')
+                  for searchWord in searchByWords do
+                    searchWord = MasterMerchant.CleanupSearch(searchWord)
+                    matchesAll = (matchesAll and string.find(gn, searchWord))
+                  end
+                  if matchesAll then
+                    table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {k, j, i, item.timestamp, item.price, item.quant}))
+                  end
+                end
+              end
+            end
+          end 
+        end
+      end
     else
+      -- We have the indexes to search
       -- Break up search term into words
+      if MasterMerchant.viewMode == 'self' then
+        searchText = MasterMerchant.concat(searchText, MasterMerchant.PlayerSpecialText)
+      end
       local searchByWords = string.gmatch(searchText, '%S+')
       local indexToUse = MasterMerchant.SRIndex
       local intersectionIndexes = {}
@@ -741,7 +819,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = matchesAll and string.find(string.lower(gn), searchWord)
+            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
           if matchesAll then 
             local sellerData = g.sellers[GetDisplayName()] or nil
@@ -765,7 +843,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = matchesAll and string.find(string.lower(gn), searchWord)
+            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
           if matchesAll and settingsToUse.viewGuildBuyerSeller ~= 'item' then   
             if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
@@ -785,7 +863,7 @@ function MMScrollList:FilterScrollList()
               else
                 txt = string.lower(MasterMerchant.concat(gn, sellerData.sellerName))
               end
-              matchesAll = matchesAll and string.find(txt, searchWord)
+              matchesAll = (matchesAll and string.find(txt, searchWord))
             end
             if matchesAll then   
               if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then 
@@ -867,7 +945,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = matchesAll and string.find(string.lower(gn), searchWord)
+            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
           if matchesAll then 
             local sellerData = g.sellers[GetDisplayName()] or nil
@@ -891,7 +969,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = matchesAll and string.find(string.lower(gn), searchWord)
+            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
           if matchesAll and settingsToUse.viewGuildBuyerSeller ~= 'item' then   
             if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
@@ -911,7 +989,7 @@ function MMScrollList:FilterScrollList()
               else
                 txt = string.lower(MasterMerchant.concat(gn, sellerData.sellerName))
               end
-              matchesAll = matchesAll and string.find(txt, searchWord)
+              matchesAll = (matchesAll and string.find(txt, searchWord))
             end
             if matchesAll then   
               if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then 
@@ -1003,6 +1081,7 @@ end
 
 -- Handle the changing of window font settings
 function MasterMerchant:UpdateFonts()
+  local LMP = LibMediaProvider
   if LMP then
     local font = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont)
     local fontString = font .. '|%d'
@@ -1825,6 +1904,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   if settingsToUse.rankIndex == 9 then timeDropdown:SetSelectedItem(settingsToUse.customTimeframeText) end
 
   -- Set sort column headers and search label from translation
+  local LMP = LibMediaProvider
   local fontString = 'ZoFontGameLargeBold'
   local guildFontString = 'ZoFontGameLargeBold'
   if LMP then

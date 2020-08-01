@@ -120,26 +120,26 @@ MMGuild = {
       o.sales = {}
       o.tax = {}
 
-      local weekCutoff = 1460980800 - (11 * 3600) -- 8am EST Monday April 18th - 11 hours = 9pm Sunday / 2am Monday BST
+      -- Calc Guild Week Cutoff
+      local weekCutoff = 1595811600 -- 21:00 Sunday ET / 01:00 UTC Monday 
+      if GetTimeStamp() > 1596416400 then
+        weekCutoff = weekCutoff + (42 * 3600)  -- + 42 hours = 15:00 Tuesday ET / 19:00 Tuesday UTC
+      end
+
       if GetWorldName() == 'EU Megaserver' then
-        weekCutoff = weekCutoff - (6 * 3600) -- move back a little more to 20:00 BST Sunday
+        if GetTimeStamp() > 1596416400 then
+          weekCutoff = weekCutoff - (6 * 3600) -- move to 19:00 UTC Sunday
+        else
+          weekCutoff = weekCutoff - (5 * 3600) -- move to 14:00 UTC Tuesday
+        end
       end
 
 	    while weekCutoff + (7 * 86400) < GetTimeStamp() do 
         weekCutoff = weekCutoff + (7 * 86400) 
       end
 
-      local dayCutoff = weekCutoff - (8 * 3600) -- Move back to Midnight EST Monday Morning
-      if GetWorldName() == 'EU Megaserver' then
-        dayCutoff = weekCutoff - (3 * 3600) -- Move back to Midnight CEST Tuesday Morning
-      end
-
-
-      while dayCutoff + 86400 < GetTimeStamp() do 
-        dayCutoff = dayCutoff + 86400
-      end
-      -- let's do local time
-      dayCutoff = GetTimeStamp() - GetSecondsSinceMidnight()
+      -- Calc Day Cutoff in Local Time
+      local dayCutoff = GetTimeStamp() - GetSecondsSinceMidnight()
 
       o.oneStart = dayCutoff -- Today
     

@@ -1,0 +1,18 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+## Title: Lib Execution Queue
+## APIVersion: 100031 100032
+## Description: Allows you to queue up functions for execution and breakup long running operations fairly easily (See MasterMerchant for examples)
+## Author: Philgo
+## IsLibrary: true
+## Version: 2.0.0
+## AddOnVersion: 100
+## License: Do whatever you want with this code.
+## LastUpdated: Jan 2019
+
+LibExecutionQueue.lua

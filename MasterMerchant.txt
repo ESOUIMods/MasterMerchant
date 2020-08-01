@@ -5,17 +5,16 @@
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
 
-## Title: Master Merchant 2.2.1 by Philgo
-## APIVersion: 100028
+## Title: Master Merchant 2.3.1 by Philgo
+## APIVersion: 100031 100032
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Khaibit & (dOpiate & Garkin) & Philgo
-## AddOnVersion: 221
-## Version: 2.2.1
+## Version: 2.3.1
 ## License: See license - distribution without license is prohibited!
-## LastUpdated: Aug 2019
+## LastUpdated: Aug 2020
 ## SavedVariables: ShopkeeperSavedVars
-## DependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data LibExecutionQueue
-## OptionalDependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0 GuildSalesAssistant AwesomeGuildStore
+## DependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data LibExecutionQueue LibAddonMenu-2.0 LibMediaProvider-1.0
+## OptionalDependsOn: GuildSalesAssistant AwesomeGuildStore
 
 MasterMerchantMisc.xml
 MasterMerchantSales.xml

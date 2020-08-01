@@ -233,3 +233,9 @@ ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Display buttons on item popup to adju
 
 ZO_CreateStringId("MM_VERBOSE_NAME", "Verbose Messages")
 ZO_CreateStringId("MM_VERBOSE_TIP", "Displays more status messages in your chat window during MM operations.")
+
+ZO_CreateStringId("MM_SIMPLE_SCAN_NAME", "Simple Guild History Scanning")
+ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "Guild scanning is less intensive to get data faster, but may leaves gaps in your history.")
+
+ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Minimal Indexing")
+ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Sales History indexes are skipped to save memory, but searching om the MM screen is much slower.")
