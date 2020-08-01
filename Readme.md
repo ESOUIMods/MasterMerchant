@@ -7,6 +7,11 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 2.3.2
+
+- Fix for MasterMerchant_Util.lua:466
+- More refactoring for how Libraries load
+
 ## ChangeLog for 2.3.1
 
 - Switched Guild cut-over time.
@@ -38,13 +43,13 @@ Change guild history call to try to avoid getting kicked on slow machines.  Shou
 
 ## ChangeLog for 2.1.0
 Update for Scalebreaker / 100028
-Adjusted sales history API calls. 
+Adjusted sales history API calls.
 
 ## ChangeLog for 2.0.8b
-Adjusted Chat and Center screen announcements timing. 
+Adjusted Chat and Center screen announcements timing.
 
 ## ChangeLog for 2.0.8a
-Eliminated error when /mm missing tries to scan a guild with no sales. 
+Eliminated error when /mm missing tries to scan a guild with no sales.
 
 ## ChangeLog for 2.0.8
 Changed guild history scanning to happen in parallel.
@@ -83,7 +88,7 @@ Fix typo in the item right click menu
 Update for Wrathstone / 100026
 Adjusted for new Guild Store layout/features
 Adjusted Scan Frequency setting to wait up to 1 hour
-Adjusted right click menus for AssemblerManiac 
+Adjusted right click menus for AssemblerManiac
 Paused guild store scanning/processing while in combat (thanks mubcrabs)
 Updated recipe/glyph list for Crafting Cost calculations
 Added depends on LibExecutionQueue
@@ -94,7 +99,7 @@ Fixed GuildSalesAssistant call.
 
 ## ChangeLog for 2.0.3a
 Made explicit dependency on LibExecutionQueue
-Added protection to avoid "operator * is not supported for nil * number" error in AddRosterStats 
+Added protection to avoid "operator * is not supported for nil * number" error in AddRosterStats
 Updated the APIVersion in the LibExecutionQueue library
 
 ## ChangeLog for 2.0.3
@@ -200,7 +205,7 @@ Fix for searching in MM windows.
 Adjusted method for adding description to saved data hoping to help resolve startup issue some are having.
 
 ## ChangeLog for 1.8.2
-Updated for Thieves Guild  
+Updated for Thieves Guild
 Adjusted item description in saved data
 Handle some more Items when changing Level/Quality
 Beginnings of listings features.   Coming Soon (tm)
@@ -308,7 +313,7 @@ Added "/mm help"
 Added "/mm missing" feature to scan for sales that may have been missed.
 Added "/mm clearprices" to remove your listings price history.
 Made adjustments to the timeframes on the MM guild page.
-Show Purchases/Sales on the guild tab also. 
+Show Purchases/Sales on the guild tab also.
 Upgrades to the latest LibMediaProvider library.
 
 
@@ -404,7 +409,7 @@ Added "Stats to Chat" to the right click menu in a number of places.
 
 ## ChangeLog for 0.9.6
   Big re-write of how data is stored, searched, and sorted to improve memory usage
-    (for the morbidly curious: implemented an inverted index for searching, replaced Lua's default quicksort implementation for 
+    (for the morbidly curious: implemented an inverted index for searching, replaced Lua's default quicksort implementation for
      tables with Shellshort, and reduced redundant copies of sale event info in tables.)
   Added new option to disable on-screen alerts while in Cyrodiil.  (Chat alerts still show, if enabled.)
   Moved the item quantities in the sales history window to more closely match the default UI presentation.
@@ -435,7 +440,7 @@ Added "Stats to Chat" to the right click menu in a number of places.
   Fix to alerts to (hopefully!) stop the stuck on screen alerts people would see when alt-tabbing
   French localization is now live!  Merci bien to jupiter126/Otxics on the EU Server for the translation work!
   New option in the addon settings to make all your settings account-wide, rather than character-specific.
-  Statistics window resized slightly to accomodate...per-guild filters!  
+  Statistics window resized slightly to accomodate...per-guild filters!
   The day range slider is also smarter and will hide entirely if you have less than 2 days' worth of your sales to work with.
   Some UI tweaks to make all languages fit better
 
@@ -467,7 +472,7 @@ Nothing major here, but either I or esoui.com may have borked 0.9b's files so up
   Better support for multiple accounts that use the same computer
   Further improvements to store scanning
   UI improvements - Shopkeeper closes along with most other UI scenes now (bank, crafting station, etc.)
-   
+
 ## ChangeLog for 0.2a:
   German localization updated/fixed (Credit to Urbs of the EU Server for his hard work on this!)
 
