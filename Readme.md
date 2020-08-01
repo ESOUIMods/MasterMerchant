@@ -7,22 +7,13 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
-## ChangeLog for 2.2.2
+## ChangeLog for 2.3.1
 
-- Removed LibStub
-- [LibExecutionQueue](https://github.com/ESOUIMods/LibExecutionQueue) is a seperate library
-- Changed cutoff from 4/18/2016 12:00 UTC to 4/20/2016 12:00 UTC per [ESO Post](https://forums.elderscrollsonline.com/en/discussion/540142/updates-to-guild-trader-swap-times/p1)
-
-## Install instructions for 2.2.2
-
-- Make sure the game is closed
-- Download Master Merchant with Minion like normal
-- Delete the MasterMerchant folder in your Addons folder. Leave the other folders from the ESOUI version alone like `MM00Data` and such.
-- Install my version of MasterMerchant <https://github.com/ESOUIMods/MasterMerchant/archive/master.zip>
-Note: Remember to rename the folder to `MasterMerchant`
-- Dowload LibExecutionQueue and manually install that <https://github.com/ESOUIMods/LibExecutionQueue/archive/master.zip> 
-Note: Remember to rename the folder to `LibExecutionQueue`
-- Install other Master Merchant dependencies: LibAddonMenu 2.0, LibMediaProvider-1.0
+- Switched Guild cut-over time.
+- Added new recipes for Craft Cost calculations.
+- Added 'Simple Guild History Scanning' setting which makes guild scanning much simpler, but may leave gaps in your historical data.
+- Added 'Minimal Indexing' setting option to conserve memory at the expense of search flexibility and speed in the MM window.
+- Reworked Libraries
 
 ## ChangeLog for 2.2.1
 
