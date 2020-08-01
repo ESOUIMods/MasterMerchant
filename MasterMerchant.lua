@@ -1213,11 +1213,13 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return self:ActiveSettings().scanFreq end,
       setFunc = function(value)
         self:ActiveSettings().scanFreq = value
+        self.savedVariables.scanFreq = value
 
-        EVENT_MANAGER:UnregisterForUpdate(self.name)
         local scanInterval = value * 1000
+        EVENT_MANAGER:UnregisterForUpdate(self.name)
         EVENT_MANAGER:RegisterForUpdate(self.name, scanInterval, function() self:ScanStoresParallel(true) end)
       end,
+      default = 600, -- per defaults
     },
     -- Size of sales history
     [7] = {
