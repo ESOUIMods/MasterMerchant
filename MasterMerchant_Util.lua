@@ -462,8 +462,17 @@ function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
   -- Index each word
   local searchByWords = string.gmatch(searchText, '%S+')
   local wordData = {theIID, itemIndex, insertedIndex}
+  --[[
+  extraData.wordsIndexCount isn't used the same here as
+  it is in indexHistoryTables() so it is not available.
+
+  Was the intention to print out about report? If not then
+  couldn't extraData.wordsIndexCount be removed?
+
+  searchByWords is a function at this point
+  ]]--
   for i in searchByWords do
-    extraData.wordsIndexCount = extraData.wordsIndexCount + 1
+    -- extraData.wordsIndexCount = extraData.wordsIndexCount + 1
     self.SRIndex[i] = self.SRIndex[i] or {}
     tinsert(self.SRIndex[i], wordData) 
   end
