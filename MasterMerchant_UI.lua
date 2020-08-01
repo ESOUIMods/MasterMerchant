@@ -15,7 +15,7 @@ local LISTINGS = 'listings'
 
 function MasterMerchant:SortByPrice(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
-  
+
   if not ordering then
     -- If they're viewing prices per-unit, then we need to sort on price / quantity.
     if self:ActiveSettings().showUnitPrice then
@@ -65,7 +65,7 @@ end
 
 function MasterMerchant:SortBySales(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
-  
+
   if not ordering then
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       return (sortA.data[3] or 0) > (sortB.data[3] or 0)
@@ -79,7 +79,7 @@ end
 
 function MasterMerchant:SortByRank(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
-  
+
   if not ordering then
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       return (sortA.data[4] or 9999) > (sortB.data[4] or 9999)
@@ -93,7 +93,7 @@ end
 
 function MasterMerchant:SortByCount(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
-  
+
   if not ordering then
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       return (sortA.data[5] or 0) > (sortB.data[5] or 0)
@@ -107,7 +107,7 @@ end
 
 function MasterMerchant:SortByTax(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
-  
+
   if not ordering then
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       return (sortA.data[8] or 0) > (sortB.data[8] or 0)
@@ -168,13 +168,13 @@ function MMScrollList:SetupSalesRow(control, data)
   control.itemName = GetControl(control, 'ItemName')
   control.sellTime = GetControl(control, 'SellTime')
   control.price = GetControl(control, 'Price')
-  
-  if (MasterMerchant.salesData[data[1]] == nil) then 
+
+  if (MasterMerchant.salesData[data[1]] == nil) then
     -- just starting up so just bail out
     return
   end
 
-  if (MasterMerchant.salesData[data[1]][data[2]] == nil) then 
+  if (MasterMerchant.salesData[data[1]][data[2]] == nil) then
     --d('MM Data Error:')
     --d(data[1])
     --d(data[2])
@@ -182,7 +182,7 @@ function MMScrollList:SetupSalesRow(control, data)
     return
   end
 
-  if (MasterMerchant.salesData[data[1]][data[2]]['sales'] == nil) then 
+  if (MasterMerchant.salesData[data[1]][data[2]]['sales'] == nil) then
     --d('MM Data Error:')
     --d(data[1])
     --d(data[2])
@@ -191,7 +191,7 @@ function MMScrollList:SetupSalesRow(control, data)
     return
   end
 
-  if (MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]] == nil) then 
+  if (MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]] == nil) then
     --d('MM Data Error:')
     --d(data[1])
     --d(data[2])
@@ -199,7 +199,7 @@ function MMScrollList:SetupSalesRow(control, data)
     --d('--------')
     return
   end
-  
+
   local actualItem = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
@@ -208,8 +208,8 @@ function MMScrollList:SetupSalesRow(control, data)
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
-    control.rowId:SetFont(string.format(fontString, 12))   
-    control.buyer:SetFont(string.format(fontString, 15)) 
+    control.rowId:SetFont(string.format(fontString, 12))
+    control.buyer:SetFont(string.format(fontString, 15))
     control.guild:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
     control.itemName:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
     control.quant:SetFont(string.format(fontString, ((isFullSize and 15) or 10)) .. '|soft-shadow-thin')
@@ -218,10 +218,10 @@ function MMScrollList:SetupSalesRow(control, data)
   end
 
   control.rowId:SetText(data.sortIndex)
-  
+
   -- Some extra stuff for the Buyer cell to handle double-click and color changes
   -- Plus add a marker if buyer is not in-guild (kiosk sale)
-  
+
   local buyerString
   if MasterMerchant:ActiveSettings().viewBuyerSeller == 'buyer' then
     buyerString = actualItem.buyer
@@ -242,14 +242,14 @@ function MMScrollList:SetupSalesRow(control, data)
     control.buyer:SetPressedFontColor(0.21, 0.54, 0.94, 1)
     control.buyer:SetMouseOverFontColor(0.34, 0.67, 1, 1)
   end
-  
+
   control.buyer:SetHandler('OnMouseUp', function(self, upInside)
     MasterMerchant:my_NameHandler_OnLinkMouseUp(buyerString, upInside, self)
   end)
-  
+
   -- Guild cell
   local guildString = actualItem.guild
-  if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end  
+  if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
 
@@ -309,30 +309,30 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   control.itemName = GetControl(control, 'ItemName')
   control.guild = GetControl(control, 'Guild')
   control.rank = GetControl(control, 'Rank')
-  control.sales = GetControl(control, 'Sales') 
-  control.tax = GetControl(control, 'Tax')  
-  control.count = GetControl(control, 'Count')  
+  control.sales = GetControl(control, 'Sales')
+  control.tax = GetControl(control, 'Tax')
+  control.count = GetControl(control, 'Count')
   control.percent = GetControl(control, 'Percent')
-  
-  if (data[1] == nil) then 
+
+  if (data[1] == nil) then
     -- just starting up so just bail out
     return
   end
-  
+
   local LMP = LibMediaProvider
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
-    control.rowId:SetFont(string.format(fontString, 12))     
-    control.seller:SetFont(string.format(fontString, 15)) 
-    control.itemName:SetFont(string.format(fontString, 15)) 
+    control.rowId:SetFont(string.format(fontString, 12))
+    control.seller:SetFont(string.format(fontString, 15))
+    control.itemName:SetFont(string.format(fontString, 15))
     control.guild:SetFont(string.format(fontString, 15))
     control.rank:SetFont(string.format(fontString, 15))
     control.sales:SetFont(string.format(fontString, 15))
     control.tax:SetFont(string.format(fontString, 15))
     control.count:SetFont(string.format(fontString, 15))
     control.percent:SetFont(string.format(fontString, 15))
-    
+
   end
 
   control.rowId:SetText(data.sortIndex)
@@ -371,13 +371,13 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   end
 
   -- Guild cell
-  if data[9] then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. data[1] else guildString = '     ' .. data[1] end  
+  if data[9] then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. data[1] else guildString = '     ' .. data[1] end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
 
   -- Rank Cell
   control.rank:SetText(data[4])
-  
+
   -- Sales Cell
   local sales = data[3] or 0
   local stringSales = MasterMerchant.LocalizedNumber(sales)
@@ -390,7 +390,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   control.tax:SetText(stringTax .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   -- Count Cell
-  
+
   control.count:SetText((data[5] or '-') .. '/' .. (data[6] or '-'))
 
   -- Percent Cell
@@ -401,7 +401,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
     control.percent:SetText('--' .. GetString(MM_PERCENT_CHAR))
   end
 
-    
+
   ZO_SortFilterList.SetupRow(self, control, data)
 end
 
@@ -415,12 +415,12 @@ function MMScrollList:SetupListingsRow(control, data)
   control.itemName = GetControl(control, 'ItemName')
   control.sellTime = GetControl(control, 'SellTime')
   control.price = GetControl(control, 'Price')
-  
-  if (MasterMerchant.salesData[data[1]] == nil) then 
+
+  if (MasterMerchant.salesData[data[1]] == nil) then
     -- just starting up so just bail out
     return
   end
-  
+
   local actualItem = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
@@ -429,8 +429,8 @@ function MMScrollList:SetupListingsRow(control, data)
   if LMP then
     local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
-    control.rowId:SetFont(string.format(fontString, 12))   
-    control.buyer:SetFont(string.format(fontString, 15)) 
+    control.rowId:SetFont(string.format(fontString, 12))
+    control.buyer:SetFont(string.format(fontString, 15))
     control.guild:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
     control.itemName:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
     control.quant:SetFont(string.format(fontString, ((isFullSize and 15) or 10)) .. '|soft-shadow-thin')
@@ -439,10 +439,10 @@ function MMScrollList:SetupListingsRow(control, data)
   end
 
   control.rowId:SetText(data.sortIndex)
-  
+
   -- Some extra stuff for the Buyer cell to handle double-click and color changes
   -- Plus add a marker if buyer is not in-guild (kiosk sale)
-  
+
   local buyerString
   if MasterMerchant:ActiveSettings().viewBuyerSeller == 'buyer' then
     buyerString = actualItem.buyer
@@ -463,14 +463,14 @@ function MMScrollList:SetupListingsRow(control, data)
     control.buyer:SetPressedFontColor(0.21, 0.54, 0.94, 1)
     control.buyer:SetMouseOverFontColor(0.34, 0.67, 1, 1)
   end
-  
+
   control.buyer:SetHandler('OnMouseUp', function(self, upInside)
     MasterMerchant:my_NameHandler_OnLinkMouseUp(buyerString, upInside, self)
   end)
-  
+
   -- Guild cell
   local guildString = actualItem.guild
-  if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end  
+  if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
 
@@ -552,11 +552,11 @@ function MMScrollList:New(control)
   if control:GetName() == 'MasterMerchantWindow' then
     skList.sortHeaderGroup:SelectHeaderByKey('time')
     ZO_SortHeader_OnMouseExit(MasterMerchantWindowHeadersSellTime)
-  else 
+  else
     skList.sortHeaderGroup:SelectHeaderByKey('guildRank')
     ZO_SortHeader_OnMouseExit(MasterMerchantGuildWindowHeadersRank)
   end
-  
+
   MasterMerchant.functionPostHook(skList, 'RefreshData', function()
     local texCon = skList.list.scrollbar:GetThumbTextureControl()
     if texCon:GetHeight() < 10 then skList.list.scrollbar:SetThumbTextureHeight(10) end
@@ -566,17 +566,17 @@ function MMScrollList:New(control)
 end
 
 function MasterMerchant.CleanupSearch(term)
-  -- ( ) . % + - * ? [ ^ $ 
+  -- ( ) . % + - * ? [ ^ $
   term = string.gsub(term, '%(', '%%%(')
   term = string.gsub(term, '%)', '%%%)')
   term = string.gsub(term, '%.', '%%%.')
   term = string.gsub(term, '%+', '%%%+')
   term = string.gsub(term, '%-', '%%%-')
-  term = string.gsub(term, '%*', '%%%*')  
+  term = string.gsub(term, '%*', '%%%*')
   term = string.gsub(term, '%?', '%%%?')
   term = string.gsub(term, '%[', '%%%[')
   term = string.gsub(term, '%^', '%%%^')
-  term = string.gsub(term, '%$', '%%%$')  
+  term = string.gsub(term, '%$', '%%%$')
   return term
 end
 
@@ -586,15 +586,15 @@ function MMScrollList:FilterScrollList()
   local listData = ZO_ScrollList_GetDataList(self.list)
   ZO_ClearNumericallyIndexedTable(listData)
   local searchText = nil
-  if settingsToUse.viewSize == ITEMS then 
+  if settingsToUse.viewSize == ITEMS then
     searchText = MasterMerchantWindowSearchBox:GetText()
   elseif settingsToUse.viewSize == GUILDS then
-   searchText = MasterMerchantGuildWindowSearchBox:GetText() 
+   searchText = MasterMerchantGuildWindowSearchBox:GetText()
   else
-   searchText = MasterMerchantListingWindowSearchBox:GetText() 
+   searchText = MasterMerchantListingWindowSearchBox:GetText()
   end
   if searchText then searchText = string.gsub(string.lower(searchText), '^%s*(.-)%s*$', '%1') end
-  
+
   if settingsToUse.viewSize == ITEMS then
     -- return item sales
     if MasterMerchant.viewMode ~= 'self' and (searchText == nil or searchText == '') then
@@ -602,22 +602,22 @@ function MMScrollList:FilterScrollList()
       local timeCheck = MasterMerchant:TimeCheck()
       for k, v in pairs(MasterMerchant.salesData) do
         for j, dataList in pairs(v) do
-          -- IPAIRS         
+          -- IPAIRS
           for i, item in pairs(dataList['sales']) do
             if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
               --d('Bad Item:')
               --d(item)
-            else 
+            else
               if (item.timestamp > timeCheck) then
                 table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {k, j, i, item.timestamp, item.price, item.quant}))
               end
             end
           end
-        end 
+        end
       end
-    elseif NonContiguousCount(MasterMerchant.SRIndex) == 1 and (searchText ~= nil and searchText ~= '') then 
-      -- We just have player indexed and we have something to filter with 
-      if MasterMerchant.viewMode == 'self' then 
+    elseif NonContiguousCount(MasterMerchant.SRIndex) == 1 and (searchText ~= nil and searchText ~= '') then
+      -- We just have player indexed and we have something to filter with
+      if MasterMerchant.viewMode == 'self' then
         -- Search all data in the last 180 days
         local timeCheck = GetTimeStamp() - (86400 * 90)
         local tconcat = table.concat
@@ -634,7 +634,7 @@ function MMScrollList:FilterScrollList()
           if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
             --d('Bad Item:')
             --d(item)
-          else 
+          else
             if (item.timestamp > timeCheck) then
               local matchesAll = true
               temp[2] = item['buyer'] or ''
@@ -667,7 +667,7 @@ function MMScrollList:FilterScrollList()
               if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
                 --d('Bad Item:')
                 --d(item)
-              else 
+              else
                 if (item.timestamp > timeCheck) then
                   local matchesAll = true
                   temp[2] = item['buyer'] or ''
@@ -687,7 +687,7 @@ function MMScrollList:FilterScrollList()
                 end
               end
             end
-          end 
+          end
         end
       end
     else
@@ -731,7 +731,7 @@ function MMScrollList:FilterScrollList()
                   for i in pairs(subval) do
                     if not newIntersection[k] then newIntersection[k] = {} end
                     if not newIntersection[k][j] then newIntersection[k][j] = {} end
-                    newIntersection[k][j][i] = addedIndexes[k][j][i] 
+                    newIntersection[k][j][i] = addedIndexes[k][j][i]
                   end
                 end
               end
@@ -754,7 +754,7 @@ function MMScrollList:FilterScrollList()
 
   elseif settingsToUse.viewSize == GUILDS then
     local dataSet = nil
-    if settingsToUse.viewGuildBuyerSeller == 'buyer' then 
+    if settingsToUse.viewGuildBuyerSeller == 'buyer' then
       dataSet = MasterMerchant.guildPurchases
     elseif settingsToUse.viewGuildBuyerSeller == 'seller' then
       dataSet = MasterMerchant.guildSales
@@ -777,20 +777,20 @@ function MMScrollList:FilterScrollList()
     local rankIndex = settingsToUse.rankIndex or 1
     if searchText == nil or searchText == '' then
       if MasterMerchant.viewMode == 'self' and settingsToUse.viewGuildBuyerSeller ~= 'item' then
-        -- my guild sales  
+        -- my guild sales
         for gn, g in pairs(dataSet) do
           local sellerData = g.sellers[GetDisplayName()] or nil
-          if (sellerData and sellerData.sales[rankIndex]) then 
+          if (sellerData and sellerData.sales[rankIndex]) then
             if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
             end
           else
             if zo_plainstrfind(guildList, gn) then
-              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
             end
           end
-        end 
-      else  
+        end
+      else
         -- all guild sales
         for gn, g in pairs(dataSet) do
           if (settingsToUse.viewGuildBuyerSeller ~= 'item') then
@@ -799,19 +799,19 @@ function MMScrollList:FilterScrollList()
             end
           end
           for sn, sellerData in pairs(g.sellers) do
-            if (sellerData and sellerData.sales[rankIndex]) then 
+            if (sellerData and sellerData.sales[rankIndex]) then
               if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
               end
             else
-              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
-            end          
-          end 
+              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
+            end
+          end
         end
       end
     else
       if MasterMerchant.viewMode == 'self' and settingsToUse.viewGuildBuyerSeller ~= 'item'  then
-        -- my guild sales - filtered      
+        -- my guild sales - filtered
         for gn, g in pairs(dataSet) do
           -- Search the guild name for all words
           local matchesAll = true
@@ -821,18 +821,18 @@ function MMScrollList:FilterScrollList()
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
-          if matchesAll then 
+          if matchesAll then
             local sellerData = g.sellers[GetDisplayName()] or nil
-            if (sellerData and sellerData.sales[rankIndex]) then 
+            if (sellerData and sellerData.sales[rankIndex]) then
               if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
               end
             else
-              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
+              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
             end
           end
-        end 
-      else  
+        end
+      else
         -- all guild sales - filtered
         local startTimer = GetTimeStamp()
 
@@ -845,7 +845,7 @@ function MMScrollList:FilterScrollList()
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
-          if matchesAll and settingsToUse.viewGuildBuyerSeller ~= 'item' then   
+          if matchesAll and settingsToUse.viewGuildBuyerSeller ~= 'item' then
             if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
               table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetString(MM_ENTIRE_GUILD), g.sales[rankIndex], 0, g.count[rankIndex], g.stack[rankIndex], g.sales[rankIndex], g.tax[rankIndex], false}))
             end
@@ -865,22 +865,22 @@ function MMScrollList:FilterScrollList()
               end
               matchesAll = (matchesAll and string.find(txt, searchWord))
             end
-            if matchesAll then   
-              if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then 
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+            if matchesAll then
+              if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
               else
-                --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
-              end    
+                --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
+              end
             end
           end
         end
         MasterMerchant.v(5, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
 
-      end      
+      end
     end
   elseif settingsToUse.viewSize == LISTINGS then
     local dataSet = nil
-    if settingsToUse.viewGuildBuyerSeller == 'buyer' then 
+    if settingsToUse.viewGuildBuyerSeller == 'buyer' then
       dataSet = MasterMerchant.guildPurchases
     elseif settingsToUse.viewGuildBuyerSeller == 'seller' then
       dataSet = MasterMerchant.guildSales
@@ -903,20 +903,20 @@ function MMScrollList:FilterScrollList()
     local rankIndex = settingsToUse.rankIndex or 1
     if searchText == nil or searchText == '' then
       if MasterMerchant.viewMode == 'self' and settingsToUse.viewGuildBuyerSeller ~= 'item' then
-        -- my guild sales  
+        -- my guild sales
         for gn, g in pairs(dataSet) do
           local sellerData = g.sellers[GetDisplayName()] or nil
-          if (sellerData and sellerData.sales[rankIndex]) then 
+          if (sellerData and sellerData.sales[rankIndex]) then
             if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
             end
           else
             if zo_plainstrfind(guildList, gn) then
-              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
             end
           end
-        end 
-      else  
+        end
+      else
         -- all guild sales
         for gn, g in pairs(dataSet) do
           if (settingsToUse.viewGuildBuyerSeller ~= 'item') then
@@ -925,19 +925,19 @@ function MMScrollList:FilterScrollList()
             end
           end
           for sn, sellerData in pairs(g.sellers) do
-            if (sellerData and sellerData.sales[rankIndex]) then 
+            if (sellerData and sellerData.sales[rankIndex]) then
               if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
               end
             else
-              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
-            end          
-          end 
+              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
+            end
+          end
         end
       end
     else
       if MasterMerchant.viewMode == 'self' and settingsToUse.viewGuildBuyerSeller ~= 'item'  then
-        -- my guild sales - filtered      
+        -- my guild sales - filtered
         for gn, g in pairs(dataSet) do
           -- Search the guild name for all words
           local matchesAll = true
@@ -947,18 +947,18 @@ function MMScrollList:FilterScrollList()
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
-          if matchesAll then 
+          if matchesAll then
             local sellerData = g.sellers[GetDisplayName()] or nil
-            if (sellerData and sellerData.sales[rankIndex]) then 
+            if (sellerData and sellerData.sales[rankIndex]) then
               if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
               end
             else
-              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
+              --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
             end
           end
-        end 
-      else  
+        end
+      else
         -- all guild sales - filtered
         local startTimer = GetTimeStamp()
 
@@ -971,7 +971,7 @@ function MMScrollList:FilterScrollList()
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
           end
-          if matchesAll and settingsToUse.viewGuildBuyerSeller ~= 'item' then   
+          if matchesAll and settingsToUse.viewGuildBuyerSeller ~= 'item' then
             if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
               table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetString(MM_ENTIRE_GUILD), g.sales[rankIndex], 0, g.count[rankIndex], g.stack[rankIndex], g.sales[rankIndex], g.tax[rankIndex], false}))
             end
@@ -991,30 +991,30 @@ function MMScrollList:FilterScrollList()
               end
               matchesAll = (matchesAll and string.find(txt, searchWord))
             end
-            if matchesAll then   
-              if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then 
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))       
+            if matchesAll then
+              if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer}))
               else
-                --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))           
-              end    
+                --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
+              end
             end
           end
         end
         MasterMerchant.v(5, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
 
-      end      
+      end
     end
   end
 
   local texCon = self.list.scrollbar:GetThumbTextureControl()
-  zo_callLater(function() 
+  zo_callLater(function()
     if texCon:GetHeight() < 10 then self.list.scrollbar:SetThumbTextureHeight(10) end
-  end, 100) 
-  
+  end, 100)
+
 end
 
 function MMScrollList:SortScrollList()
-  if self.currentSortKey == 'price' then 
+  if self.currentSortKey == 'price' then
     MasterMerchant:SortByPrice(self.currentSortOrder, self)
   elseif self.currentSortKey == 'time' then
     MasterMerchant:SortByTime(self.currentSortOrder, self)
@@ -1023,15 +1023,15 @@ function MMScrollList:SortScrollList()
   elseif self.currentSortKey == 'sales' then
     MasterMerchant:SortBySales(self.currentSortOrder, self)
   elseif self.currentSortKey == 'count' then
-    MasterMerchant:SortByCount(self.currentSortOrder, self)    
+    MasterMerchant:SortByCount(self.currentSortOrder, self)
   elseif self.currentSortKey == 'tax' then
-    MasterMerchant:SortByTax(self.currentSortOrder, self)   
+    MasterMerchant:SortByTax(self.currentSortOrder, self)
   elseif self.currentSortKey == 'name' then
-    MasterMerchant:SortByName(self.currentSortOrder, self)   
+    MasterMerchant:SortByName(self.currentSortOrder, self)
   elseif self.currentSortKey == 'itemGuildName' then
-    MasterMerchant:SortByItemGuildName(self.currentSortOrder, self)   
+    MasterMerchant:SortByItemGuildName(self.currentSortOrder, self)
   elseif self.currentSortKey == 'guildName' then
-    MasterMerchant:SortByGuildName(self.currentSortOrder, self)   
+    MasterMerchant:SortByGuildName(self.currentSortOrder, self)
   end
 end
 
@@ -1058,7 +1058,7 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
   elseif windowMoved == MasterMerchantStatsWindow then
     settingsToUse.statsWinLeft = MasterMerchantStatsWindow:GetLeft()
     settingsToUse.statsWinTop = MasterMerchantStatsWindow:GetTop()
-  else 
+  else
     settingsToUse.feedbackWinLeft = MasterMerchantFeedback:GetLeft()
     settingsToUse.feedbackWinTop = MasterMerchantFeedback:GetTop()
   end
@@ -1112,8 +1112,8 @@ function MasterMerchant:UpdateFonts()
     MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
     MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
     MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))    
-    MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))    
+    MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+    MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
     MasterMerchantGuildWindowSearchBox:SetFont(string.format(fontString, guildButtonLabel))
     MasterMerchantGuildWindowTitle:SetFont(string.format(fontString, guildTitle))
     MasterMerchantGuildSwitchViewButton:SetFont(string.format(fontString, guildButtonLabel))
@@ -1144,8 +1144,8 @@ function MasterMerchant:updateCalc()
 end
 
 
-function MasterMerchant:remStatsItemTooltip() 
-  self.tippingControl = nil 
+function MasterMerchant:remStatsItemTooltip()
+  self.tippingControl = nil
   if ItemTooltip.graphPool then
     ItemTooltip.graphPool:ReleaseAllObjects()
   end
@@ -1160,7 +1160,7 @@ function MasterMerchant:remStatsItemTooltip()
  end
 
 function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
-  
+
   if not (self:ActiveSettings().showPricing or self:ActiveSettings().showGraph or self:ActiveSettings().showCraftCost) then return end
 
   local tipLine, avePrice, graphInfo = self:itemPriceTip(itemLink, false, clickable)
@@ -1173,8 +1173,8 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   if self:ActiveSettings().displayItemAnalysisButtons and not tooltip.mmQualityDown then
     tooltip.mmQualityDown = tooltip.textPool:AcquireObject()
     tooltip:AddControl(tooltip.mmQualityDown, 1, true)
-    tooltip.mmQualityDown:SetAnchor(LEFT)   
-    tooltip.mmQualityDown:SetText('<<')    
+    tooltip.mmQualityDown:SetAnchor(LEFT)
+    tooltip.mmQualityDown:SetText('<<')
     tooltip.mmQualityDown:SetMouseEnabled(true)
   	tooltip.mmQualityDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
     tooltip.mmQualityDown.mmData = {}
@@ -1182,7 +1182,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     tooltip.mmQualityUp = tooltip.textPool:AcquireObject()
     tooltip:AddControl(tooltip.mmQualityUp, 1, true)
-    tooltip.mmQualityUp:SetAnchor(RIGHT)   
+    tooltip.mmQualityUp:SetAnchor(RIGHT)
     tooltip.mmQualityUp:SetText('>>')
     tooltip.mmQualityUp:SetMouseEnabled(true)
   	tooltip.mmQualityUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
@@ -1236,14 +1236,14 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
   local itemType = GetItemLinkItemType(itemLink)
   if (clickable) and self:ActiveSettings().displayItemAnalysisButtons and (itemType == 1 or itemType == 2 or itemType == 20 or itemType == 21 or itemType == 26) then
-    
-    local itemQuality = GetItemLinkQuality(itemLink)  
+
+    local itemQuality = GetItemLinkQuality(itemLink)
     tooltip.mmQualityDown.mmData.nextItem = MasterMerchant.QualityDown(itemLink)
     --d(tooltip.mmQualityDown.mmData.nextItem)
     if tooltip.mmQualityDown.mmData.nextItem then
       local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, itemQuality - 1)
       tooltip.mmQualityDown:SetColor(r,g,b,1)
-      tooltip.mmQualityDown:SetHidden(false)    
+      tooltip.mmQualityDown:SetHidden(false)
     else
       tooltip.mmQualityDown:SetHidden(true)
     end
@@ -1261,7 +1261,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
     tooltip.mmLevelDown.mmData.nextItem = MasterMerchant.LevelDown(itemLink)
     --d(tooltip.mmLevelDown.mmData.nextItem)
     if tooltip.mmLevelDown.mmData.nextItem then
-      tooltip.mmLevelDown:SetHidden(false)    
+      tooltip.mmLevelDown:SetHidden(false)
     else
       tooltip.mmLevelDown:SetHidden(true)
     end
@@ -1269,7 +1269,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
     tooltip.mmLevelUp.mmData.nextItem = MasterMerchant.LevelUp(itemLink)
     --d(tooltip.mmLevelUp.mmData.nextItem)
     if tooltip.mmLevelUp.mmData.nextItem then
-      tooltip.mmLevelUp:SetHidden(false)    
+      tooltip.mmLevelUp:SetHidden(false)
     else
       tooltip.mmLevelUp:SetHidden(true)
     end
@@ -1280,7 +1280,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
     end
     --d(tooltip.mmSalesDataDown.mmData.nextItem)
     if tooltip.mmSalesDataDown.mmData.nextItem then
-      tooltip.mmSalesDataDown:SetHidden(false)    
+      tooltip.mmSalesDataDown:SetHidden(false)
     else
       tooltip.mmSalesDataDown:SetHidden(true)
     end
@@ -1291,13 +1291,13 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
     end
     --d(tooltip.mmSalesDataUp.mmData.nextItem)
     if tooltip.mmSalesDataUp.mmData.nextItem then
-      tooltip.mmSalesDataUp:SetHidden(false)    
+      tooltip.mmSalesDataUp:SetHidden(false)
     else
       tooltip.mmSalesDataUp:SetHidden(true)
     end
 
   end
-  
+
   if tipLine then
 
     if self:ActiveSettings().showPricing then
@@ -1305,10 +1305,10 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
       if not tooltip.mmText then
         tooltip:AddVerticalPadding(5)
         ZO_Tooltip_AddDivider(tooltip)
-        tooltip:AddVerticalPadding(5)   
+        tooltip:AddVerticalPadding(5)
         tooltip.mmText = tooltip.textPool:AcquireObject()
         tooltip:AddControl(tooltip.mmText)
-        tooltip.mmText:SetAnchor(CENTER)   
+        tooltip.mmText:SetAnchor(CENTER)
       end
 
       if tooltip.mmText then
@@ -1320,12 +1320,12 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     if self:ActiveSettings().showCraftCost then
 
-	  if craftCostLine then	
+	  if craftCostLine then
 		  if not tooltip.mmCraftText then
-			tooltip:AddVerticalPadding(5)   
+			tooltip:AddVerticalPadding(5)
 			tooltip.mmCraftText = tooltip.textPool:AcquireObject()
 			tooltip:AddControl(tooltip.mmCraftText)
-			tooltip.mmCraftText:SetAnchor(CENTER)   
+			tooltip.mmCraftText:SetAnchor(CENTER)
 		  end
 
 		  if tooltip.mmCraftText then
@@ -1344,7 +1344,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
       if not tooltip.mmGraph then
         tooltip.mmGraph = tooltip.graphPool:AcquireObject()
-        if not tooltip.mmText then 
+        if not tooltip.mmText then
           tooltip:AddVerticalPadding(5)
           ZO_Tooltip_AddDivider(tooltip)
         end
@@ -1388,10 +1388,10 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
       if not tooltip.mmCraftText then
         tooltip:AddVerticalPadding(5)
         ZO_Tooltip_AddDivider(tooltip)
-        tooltip:AddVerticalPadding(5)   
+        tooltip:AddVerticalPadding(5)
         tooltip.mmCraftText = tooltip.textPool:AcquireObject()
         tooltip:AddControl(tooltip.mmCraftText)
-        tooltip.mmCraftText:SetAnchor(CENTER)   
+        tooltip.mmCraftText:SetAnchor(CENTER)
       end
 
       if tooltip.mmCraftText then
@@ -1401,11 +1401,11 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 	end
   end
 
-  if MasterMerchant.v(5) then 
+  if MasterMerchant.v(5) then
     if not tooltip.mmTextDebug then
       tooltip.mmTextDebug = tooltip.textPool:AcquireObject()
       tooltip:AddControl(tooltip.mmTextDebug)
-      tooltip.mmTextDebug:SetAnchor(CENTER)   
+      tooltip.mmTextDebug:SetAnchor(CENTER)
     end
 
     local itemInfo = MasterMerchant.ItemCodeText(itemLink)
@@ -1413,7 +1413,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
     itemInfo = itemInfo .. ' - ' .. MasterMerchant.makeIndexFromLink(itemLink)
     itemInfo = itemInfo .. ' - ' .. MasterMerchant.addedSearchToItem(itemLink)
     --local itemType = GetItemLinkItemType(itemLink)
-    --itemInfo = '(' .. itemType .. ')' .. itemInfo 
+    --itemInfo = '(' .. itemType .. ')' .. itemInfo
     if itemInfo then
       tooltip.mmTextDebug:SetText(string.format('%s', itemInfo))
       tooltip.mmTextDebug:SetColor(1,1,1,1)
@@ -1438,7 +1438,7 @@ function MasterMerchant.ThisItem(control, button)
 end
 
 
--- |H<style>:<type>[:<data>...]|h<text>|h 
+-- |H<style>:<type>[:<data>...]|h<text>|h
 function MasterMerchant:addStatsPopupTooltip(Popup)
 
   if Popup == ZO_ProvisionerTopLevelTooltip then
@@ -1454,12 +1454,12 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
   -- Make sure we don't double-add stats (or double-calculate them if they bring
   -- up the same link twice) since we have to call this on Update rather than Show
   if (not (self:ActiveSettings().showPricing or self:ActiveSettings().showGraph or self:ActiveSettings().showCraftCost))
-   or Popup.lastLink == nil 
-   or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then -- thanks Garkin  
-    return 
-  end 
+   or Popup.lastLink == nil
+   or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then -- thanks Garkin
+    return
+  end
 
-  if Popup.mmActiveTip ~= Popup.lastLink then  
+  if Popup.mmActiveTip ~= Popup.lastLink then
     if Popup.graphPool then
       Popup.graphPool:ReleaseAllObjects()
     end
@@ -1479,7 +1479,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
   self:addStatsAndGraph(Popup, Popup.mmActiveTip, true)
 end
 
-function MasterMerchant:remStatsPopupTooltip(Popup) 
+function MasterMerchant:remStatsPopupTooltip(Popup)
   if Popup.graphPool then
     Popup.graphPool:ReleaseAllObjects()
   end
@@ -1487,7 +1487,7 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
   if Popup.textPool then
     Popup.textPool:ReleaseAllObjects()
   end
-  Popup.mmText = nil  
+  Popup.mmText = nil
   Popup.mmCraftText = nil
   Popup.mmTextDebug = nil
   Popup.mmQualityDown = nil
@@ -1503,9 +1503,9 @@ function MasterMerchant:addStatsItemTooltip()
   -- Since we call this on Update rather than Show it gets called a lot
   -- even after the tip appears
   if (not (self:ActiveSettings().showPricing or self:ActiveSettings().showGraph or self:ActiveSettings().showCraftCost))
-     or (not skMoc or not skMoc:GetParent()) 
-     or (skMoc == self.tippingControl and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then 
-    return 
+     or (not skMoc or not skMoc:GetParent())
+     or (skMoc == self.tippingControl and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
+    return
   end
 
   local itemLink = nil
@@ -1553,12 +1553,12 @@ function MasterMerchant:addStatsItemTooltip()
   elseif mocParent == 'ZO_MailInboxMessageAttachments' then itemLink = GetAttachedItemLink(MAIL_INBOX:GetOpenMailId(), skMoc.id, LINK_STYLE_DEFAULT)
   elseif mocParent == 'ZO_MailSendAttachments' then itemLink = GetMailQueuedAttachmentLink(skMoc.id, LINK_STYLE_DEFAULT)
   elseif mocParent == 'IIFA_GUI_ListHolder' then itemLink = moc().itemLink
-  elseif mocParent == 'ZO_TradingHouseBrowseItemsRightPaneSearchResultsContents' then 
+  elseif mocParent == 'ZO_TradingHouseBrowseItemsRightPaneSearchResultsContents' then
     local rData = skMoc.dataEntry and skMoc.dataEntry.data or nil
     -- The only thing with 0 time remaining should be guild tabards, no
     -- stats on those!
     if not rData or rData.timeRemaining == 0 then return end
-    itemLink = GetTradingHouseSearchResultItemLink(rData.slotIndex)  
+    itemLink = GetTradingHouseSearchResultItemLink(rData.slotIndex)
   --elseif mocParent == 'ZO_SmithingTopLevelImprovementPanelSlotContainer' then itemLink
   --d(skMoc)
 
@@ -1567,10 +1567,10 @@ function MasterMerchant:addStatsItemTooltip()
     local mocGP = skMoc:GetParent():GetParent()
     if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or  mocGP:GetName() == 'MasterMerchantGuildWindowListContents') then
       local itemLabel = skMoc --:GetLabelControl()
-      if itemLabel and itemLabel.GetText then 
-        itemLink = itemLabel:GetText() 
+      if itemLabel and itemLabel.GetText then
+        itemLink = itemLabel:GetText()
       end
-    else 
+    else
       --DEBUG
       MasterMerchant.v(5, mocParent)
       MasterMerchant.v(5, skMoc)
@@ -1635,32 +1635,32 @@ end
 -- Switch Sales window to display buyer or seller
 function MasterMerchant:ToggleBuyerSeller()
   local settingsToUse = MasterMerchant:ActiveSettings()
-  if settingsToUse.viewSize == 'full' then 
-    if settingsToUse.viewBuyerSeller == 'buyer' then 
-      settingsToUse.viewBuyerSeller = 'seller' 
+  if settingsToUse.viewSize == 'full' then
+    if settingsToUse.viewBuyerSeller == 'buyer' then
+      settingsToUse.viewBuyerSeller = 'seller'
       MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
     else
-      settingsToUse.viewBuyerSeller = 'buyer' 
+      settingsToUse.viewBuyerSeller = 'buyer'
       MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
     end
 
     MasterMerchant.scrollList:RefreshFilters()
-  else 
-    if settingsToUse.viewGuildBuyerSeller == 'buyer' then 
-      settingsToUse.viewGuildBuyerSeller = 'seller' 
+  else
+    if settingsToUse.viewGuildBuyerSeller == 'buyer' then
+      settingsToUse.viewGuildBuyerSeller = 'seller'
       MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
       MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_SALES_COLUMN))
     elseif settingsToUse.viewGuildBuyerSeller == 'seller' then
-      settingsToUse.viewGuildBuyerSeller = 'item' 
+      settingsToUse.viewGuildBuyerSeller = 'item'
       MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_ITEM_COLUMN))
       MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_SALES_COLUMN))
     else
-      settingsToUse.viewGuildBuyerSeller = 'buyer' 
+      settingsToUse.viewGuildBuyerSeller = 'buyer'
       MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
       MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_PURCHASES_COLUMN))
     end
 
-    MasterMerchant.guildScrollList:RefreshFilters() 
+    MasterMerchant.guildScrollList:RefreshFilters()
   end
 end
 
@@ -1675,7 +1675,7 @@ function MasterMerchant:UpdateStatsWindow(guildName)
   self.newStats['kioskPercent'][guildName] = self.newStats['kioskPercent'][guildName] or 0
   self.newStats['totalGold'][guildName] = self.newStats['totalGold'][guildName] or 0
   self.newStats['avgGold'][guildName] = self.newStats['avgGold'][guildName] or 0
-  self.newStats['biggestSale'][guildName] = self.newStats['biggestSale'][guildName] or {} 
+  self.newStats['biggestSale'][guildName] = self.newStats['biggestSale'][guildName] or {}
   self.newStats['biggestSale'][guildName][1] = self.newStats['biggestSale'][guildName][1] or 0
   self.newStats['biggestSale'][guildName][2] = self.newStats['biggestSale'][guildName][2] or GetString(MM_NOTHING)
 
@@ -1797,7 +1797,7 @@ function MasterMerchant:SwitchViewMode()
   if MasterMerchant:ActiveSettings().viewSize == 'full' then
     self.scrollList:RefreshFilters()
     ZO_Scroll_ResetToTop(self.scrollList.list)
-  else 
+  else
     self.guildScrollList:RefreshFilters()
     ZO_Scroll_ResetToTop(self.guildScrollList.list)
   end
@@ -1816,9 +1816,9 @@ function MasterMerchant:SwitchPriceMode()
     MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_EACH_COLUMN))
   end
 
-  if settingsToUse.viewSize == 'full' 
+  if settingsToUse.viewSize == 'full'
     then MasterMerchant.scrollList:RefreshFilters()
-    else MasterMerchant.guildScrollList:RefreshFilters() 
+    else MasterMerchant.guildScrollList:RefreshFilters()
   end
 end
 
@@ -1855,34 +1855,34 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantStatsGuild:SetDimensions(270,25)
   MasterMerchantStatsGuild:SetAnchor(LEFT, MasterMerchantStatsWindowGuildChooserLabel, RIGHT, 5, 0)
   MasterMerchantStatsGuild.m_comboBox:SetSortsItems(false)
-  
+
    -- Guild Time dropdown choice box
   local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantGuildTimeChooser', MasterMerchantGuildWindow, 'MasterMerchantStatsGuildDropdown')
   MasterMerchantGuildTime:SetDimensions(180,25)
   MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildSwitchViewButton, RIGHT, 5, 0)
   MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
-  
+
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantGuildTimeChooser)
   timeDropdown:ClearItems()
-  
+
   settingsToUse.rankIndex = settingsToUse.rankIndex or 1
-  
+
   local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateGuildWindow(1) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 1 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
-  
+
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_3DAY), function() self:UpdateGuildWindow(2) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_3DAY)) end
-  
+
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateGuildWindow(3) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 3 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
-  
+
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateGuildWindow(4) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 4 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
-  
+
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateGuildWindow(5) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 5 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
@@ -1890,15 +1890,15 @@ function MasterMerchant:SetupMasterMerchantWindow()
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateGuildWindow(8) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 8 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
-  
+
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateGuildWindow(6) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 6 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
-      
+
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_28DAY), function() self:UpdateGuildWindow(7) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_28DAY)) end
-  
+
   timeEntry = timeDropdown:CreateItemEntry(settingsToUse.customTimeframeText, function() self:UpdateGuildWindow(9) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 9 then timeDropdown:SetSelectedItem(settingsToUse.customTimeframeText) end
@@ -1912,14 +1912,14 @@ function MasterMerchant:SetupMasterMerchantWindow()
     fontString = font .. '|17'
     guildFontString = font .. '|17'
   end
-  
-  if settingsToUse.viewBuyerSeller == 'buyer' then 
-    MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))    
+
+  if settingsToUse.viewBuyerSeller == 'buyer' then
+    MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
   else
     MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
   end
 
-  if settingsToUse.viewGuildBuyerSeller == 'buyer' then 
+  if settingsToUse.viewGuildBuyerSeller == 'buyer' then
     MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
   elseif settingsToUse.viewGuildBuyerSeller == 'seller' then
     MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
@@ -1933,7 +1933,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantWindowHeadersSellTime:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantWindowHeadersSellTime, GetString(SK_TIME_COLUMN), 'time', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, fontString)
   MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  
+
   MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   if settingsToUse.showUnitPrice then
     ZO_SortHeader_Initialize(MasterMerchantWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
@@ -1945,16 +1945,16 @@ function MasterMerchant:SetupMasterMerchantWindow()
   ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'guildName', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
 
   MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetText(GetString(SK_RANK_COLUMN))
-  MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)  
+  MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersRank, GetString(SK_RANK_COLUMN), 'rank', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
-  
 
-  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)  
+
+  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersSales, GetString(SK_SALES_COLUMN), 'sales', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
   local ctrl = GetControl(MasterMerchantGuildWindowHeadersSales, "Name")
 
-  if settingsToUse.viewGuildBuyerSeller == 'buyer' then 
-    ctrl:SetText(GetString(SK_PURCHASES_COLUMN))  
+  if settingsToUse.viewGuildBuyerSeller == 'buyer' then
+    ctrl:SetText(GetString(SK_PURCHASES_COLUMN))
   elseif settingsToUse.viewGuildBuyerSeller == 'seller' then
     ctrl:SetText(GetString(SK_SALES_COLUMN))
   else
@@ -1964,7 +1964,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
 
   local txt
-  if settingsToUse.viewGuildBuyerSeller == 'buyer' then 
+  if settingsToUse.viewGuildBuyerSeller == 'buyer' then
     txt = GetString(SK_BUYER_COLUMN)
   elseif settingsToUse.viewGuildBuyerSeller == 'seller' then
     txt = GetString(SK_SELLER_COLUMN)
@@ -1974,15 +1974,15 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(txt))
   MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersSeller, txt, 'name', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, guildFontString)
-  
+
   MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetText(GetString(SK_TAX_COLUMN))
-  MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE) 
+  MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersTax, GetString(SK_TAX_COLUMN), 'tax', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
-  
+
   MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetText(GetString(SK_COUNT_COLUMN))
-  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE) 
+  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersCount, GetString(SK_COUNT_COLUMN), 'count', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
-  
+
   MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetText(GetString(SK_PERCENT_COLUMN))
   MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
 
@@ -2056,7 +2056,7 @@ function MasterMerchant:SetupScrollLists()
   self.scrollList = MMScrollList:New(MasterMerchantWindow)
   --self.scrollList:Initialize()
   self.functionPostHook(self.scrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
-    if header == MasterMerchantWindowHeadersPrice then 
+    if header == MasterMerchantWindowHeadersPrice then
       if header.mouseIsOver then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.95, 0.92, 0.26, 1)
       else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.81, 0.15, 1) end
     else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end

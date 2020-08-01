@@ -11,9 +11,9 @@ MM_Graph = ZO_Object:Subclass()
 
 function MM_Graph:New(control, pointTemplate, labelTemplate)
     local graph = ZO_Object.New(self)
-    
+
     graph.control = control
-    
+
     pointTemplate = pointTemplate or "MMGraphLabel"
     labelTemplate = labelTemplate or "MMGraphLabel"
 
@@ -32,7 +32,7 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
     self.yEndValue = yEndValue
 
     self:Clear();
-    
+
     self.paddingY = 0
     self.paddingX = 0
 
@@ -41,13 +41,13 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
     self.yStartLabel = self.labelPool:AcquireObject()
     self.yEndLabel = self.labelPool:AcquireObject()
 
-    self.xStartLabel:ClearAnchors()      
-    self.xEndLabel:ClearAnchors()  
-    self.yStartLabel:ClearAnchors()  
-    self.yEndLabel:ClearAnchors()  
+    self.xStartLabel:ClearAnchors()
+    self.xEndLabel:ClearAnchors()
+    self.yStartLabel:ClearAnchors()
+    self.yEndLabel:ClearAnchors()
 
     local x, y = self.control:GetDimensions()
-    local top = self.paddingY 
+    local top = self.paddingY
     local bottom = self.xStartLabel:GetFontHeight() * 1.25 + self.paddingY
 
     self.ySize = y - (top + bottom)
@@ -68,10 +68,10 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
 
     local right = self.paddingX + self.xEndLabel:GetTextWidth() / 2
 
-    self.xStartLabel:SetHidden(false)      
-    self.xEndLabel:SetHidden(false)  
-    self.yStartLabel:SetHidden(false)  
-    self.yEndLabel:SetHidden(false)  
+    self.xStartLabel:SetHidden(false)
+    self.xEndLabel:SetHidden(false)
+    self.yStartLabel:SetHidden(false)
+    self.yEndLabel:SetHidden(false)
 
     self.xSize = x - (left + right)
 
@@ -85,7 +85,7 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
     grid:SetAnchor(TOPRIGHT, self.control, BOTTOMLEFT, left + self.xSize, -(bottom + self.ySize))
 
     self.marker = self.control:GetNamedChild('Marker')
-    self.marker:SetHidden(true) 
+    self.marker:SetHidden(true)
 
     self.textAdjustmentY = self.xStartLabel:GetFontHeight() / 4
 end
@@ -103,7 +103,7 @@ function MM_Graph:AddPoint(x, y, color, tipText)
     y = (((y - self.yStartValue) / (self.yEndValue - self.yStartValue)) * self.ySize) - self.textAdjustmentY
 
     point:SetAnchor(BOTTOM, self.grid, BOTTOMLEFT, x, -y)
-    point:SetHidden(false)  
+    point:SetHidden(false)
 
     if tipText then
       point.data = {
@@ -126,13 +126,13 @@ function MM_Graph:AddYLabel(text, y)
     y = ((y - self.yStartValue) / (self.yEndValue - self.yStartValue)) * self.ySize
 
     label:SetAnchor(RIGHT, self.grid, BOTTOMLEFT, -5, -y)
-    label:SetHidden(false)  
+    label:SetHidden(false)
 
     local marker = self.marker
     marker:ClearAnchors()
     marker:SetAnchor(BOTTOMLEFT, self.grid, BOTTOMLEFT, 0, -(y-1) )
     marker:SetAnchor(TOPRIGHT, self.grid, BOTTOMRIGHT, 0, -y )
-    marker:SetHidden(false) 
+    marker:SetHidden(false)
 end
 
 function MM_Graph:Clear()

@@ -8,14 +8,14 @@ function MasterMerchant:initAGSIntegration()
   local DealFilterFragment = MasterMerchant.InitDealFilterFragmentClass()
 
   local ProfitFilter = MasterMerchant.InitProfitFilterClass()
-  AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.AFTER_FILTER_SETUP, 
+  AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.AFTER_FILTER_SETUP,
     function(...)
       AwesomeGuildStore:RegisterFilter(DealFilter:New())
       AwesomeGuildStore:RegisterFilterFragment( DealFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_FILTER))
       if self:ActiveSettings().minProfitFilter then
         AwesomeGuildStore:RegisterFilter(ProfitFilter:New())
         AwesomeGuildStore:RegisterFilterFragment( AwesomeGuildStore.class.PriceRangeFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_SELECTOR))
-      end        
+      end
     end
   )
 end

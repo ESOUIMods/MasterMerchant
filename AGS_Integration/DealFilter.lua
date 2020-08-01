@@ -1,19 +1,19 @@
 function MasterMerchant.InitDealFilterClass()
-	
+
 	local AGS = AwesomeGuildStore
 
 	local FilterBase = AGS.class.FilterBase
 	local ValueRangeFilterBase = AGS.class.ValueRangeFilterBase
-	
+
 	local FILTER_ID = AGS:GetFilterIds()
 
 	local DealFilter = ValueRangeFilterBase:Subclass()
 	MasterMerchant.DealFilter = DealFilter
-	
+
 	function DealFilter:New(...)
 		return ValueRangeFilterBase.New(self, ...)
 	end
-	
+
 	function DealFilter:Initialize()
 		ValueRangeFilterBase.Initialize(self, FILTER_ID.MASTER_MERCHANT_DEAL_FILTER, FilterBase.GROUP_SERVER, {
 			-- TRANSLATORS: label of the deal filter
@@ -25,7 +25,7 @@ function MasterMerchant.InitDealFilterClass()
 					id = 1,
 					label = "Overpriced",
 					icon = "MasterMerchant/AGS_Integration/overpriced_%s.dds",
-				},				
+				},
 				{
 					id = 2,
 					label = "Ok",
@@ -56,7 +56,7 @@ function MasterMerchant.InitDealFilterClass()
 
 		function DealFilter:CanFilter(subcategory)
 			return true
-		end		
+		end
 
 		local dealById = {}
 		for i = 1, #self.config.steps do
@@ -90,12 +90,12 @@ end
 
 
 function MasterMerchant.InitProfitFilterClass()
-	
+
 	local AGS = AwesomeGuildStore
 
 	local FilterBase = AGS.class.FilterBase
 	local ValueRangeFilterBase = AGS.class.ValueRangeFilterBase
-	
+
 	local FILTER_ID = AGS:GetFilterIds()
 
 	local MIN_PROFIT = 1
@@ -103,11 +103,11 @@ function MasterMerchant.InitProfitFilterClass()
 
 	local ProfitFilter = ValueRangeFilterBase:Subclass()
 	MasterMerchant.ProfitFilter = ProfitFilter
-	
+
 	function ProfitFilter:New(...)
 		return ValueRangeFilterBase.New(self, ...)
 	end
-	
+
 	function ProfitFilter:Initialize()
 		ValueRangeFilterBase.Initialize(self, FILTER_ID.MASTER_MERCHANT_DEAL_SELECTOR, FilterBase.GROUP_SERVER, {
 	        -- TRANSLATORS: label of the profit filter
@@ -121,14 +121,14 @@ function MasterMerchant.InitProfitFilterClass()
 
 		function ProfitFilter:CanFilter(subcategory)
 			return true
-		end		
+		end
 	end
 
 	function ProfitFilter:FilterLocalResult(result)
 		local index = result.itemUniqueId
 	  local itemLink = GetTradingHouseSearchResultItemLink(index)
 	  local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
-		
+
 		if not profit or (profit < (self.localMin or MIN_PROFIT)) or (profit > (self.localMax or MAX_PROFIT)) then
 			return false
 		end

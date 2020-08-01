@@ -236,7 +236,6 @@ ZO_CreateStringId("MM_VERBOSE_TIP", "Exibe mais mensagens de status em sua janel
 
 ZO_CreateStringId("MM_SIMPLE_SCAN_NAME", "Digitalização simples do histórico da guilda")
 ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "A varredura de guilda é menos intensiva para obter dados mais rapidamente, mas pode deixar lacunas no seu histórico.")
-  
+
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Indexação mínima")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Os índices do Histórico de vendas são ignorados para economizar memória, mas a pesquisa na tela MM é muito mais lenta.")
-  

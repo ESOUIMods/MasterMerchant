@@ -5,7 +5,7 @@
 -- Released under terms in license.txt accompanying this file.
 -- Distribution without license is prohibited!
 -- Translation provided by Urbs/Balver - EU Server
- 
+
 -- Options Menu
 ZO_CreateStringId("SK_ALERT_ANNOUNCE_NAME", "Bildschirmanzeige von Meldungen")
 ZO_CreateStringId("SK_ALERT_ANNOUNCE_TIP", "Zeigt Meldungen direkt in der Mitte auf dem Bildschirm an.")
@@ -41,19 +41,19 @@ ZO_CreateStringId("SK_ACCOUNT_WIDE_NAME", "Accountweite Einstellungen")
 ZO_CreateStringId("SK_ACCOUNT_WIDE_TIP", "Wenn aktiviert werden die Einstellungen für alle Charaktere des Accounts übernommen.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Offline Verkaufsreport")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Zeigt Meldungen im Chat für Verkäufe während man offline war.")
- 
+
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Ignoriere Preisausreisser")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Ignoriert Verkäufe deren Preis weit ausserhalb des üblichen Durchschnitts liegt.")
- 
+
 ZO_CreateStringId("SK_TRIM_DECIMALS_NAME", "Nachkommastellen verstecken")
 ZO_CreateStringId("SK_TRIM_DECIMALS_TIP", "Rundet alle Preise auf das nächstgelegene Goldstück.")
- 
+
 ZO_CreateStringId("SK_DELAY_INIT_NAME", "Start verzögern")
 ZO_CreateStringId("SK_DELAY_INIT_TIP", "Falls es beim Einloggen Probleme gibt kann diese Option den Start von Master Merchant verzögern bis der Charakter geladen ist.")
- 
+
 ZO_CreateStringId("SK_ROSTER_INFO_NAME", "Verkaufsanzeige im Gildenfenster")
 ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Zeigt die Summe der Käufe und Verkäufe, basierend auf dem gewählten Zeitraum der Historie, im Gildenmitgliederfenster an.")
- 
+
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Preisverlaufsgrafik anzeigen")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Zeigt ein Diagramm über den Verlauf des Itempreises im Tooltip an.")
 -- Main Window
@@ -62,7 +62,7 @@ ZO_CreateStringId("SK_VIEW_YOUR_SALES", "Zeigt eigene Verkäufe")
 ZO_CreateStringId("SK_ALL_SALES_TITLE", "Alle Verkäufe")
 ZO_CreateStringId("SK_YOUR_SALES_TITLE", "Eigene Verkäufe")
 ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Gildenstatistik")
- 
+
 ZO_CreateStringId("SK_SHOW_UNIT", "Zeigt St\195\188ckpreis")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Zeigt Gesamtpreis")
 ZO_CreateStringId("SK_BUYER_COLUMN", "K\195\164ufer")
@@ -87,7 +87,7 @@ ZO_CreateStringId("SK_TIME_MINUTES_LC", "<<1[vor 1 Minute/vor %d Minuten]>>")
 ZO_CreateStringId("SK_TIME_HOURS_LC", "<<1[vor 1 Stunde/vor %d Stunden]>>")
 ZO_CreateStringId("SK_TIME_DAYS_LC", "<<1[gestern/vor %d Tagen]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ".")
- 
+
 -- Chat and center screen alerts/messages
 ZO_CreateStringId("SK_FIRST_SCAN", "Gilde wird zum ersten mal gescannt.  Dies kann einige Minuten dauern!")
 ZO_CreateStringId("SK_REFRESH_LABEL", "Aktualisierung")
@@ -106,7 +106,7 @@ ZO_CreateStringId("SK_SALES_ALERT_GROUP", "%d Gegenst\195\164nde wurden verkauft
 ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "%d Gegenst\195\164nde wurden verkauft f\195\188r einen Gesammtwert von |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t.")
 ZO_CreateStringId("SK_SALES_REPORT", "Umsatzbericht:")
 ZO_CreateStringId("SK_SALES_REPORT_END", "Ende des Berichts.")
- 
+
 -- Stats Window
 ZO_CreateStringId("SK_STATS_TITLE", "Verkaufsstatistik")
 ZO_CreateStringId("SK_STATS_TIME_ALL", "Alle Daten erfassen")
@@ -116,16 +116,16 @@ ZO_CreateStringId("SK_STATS_TOTAL_GOLD", "Gesammte Einnahmen: %s |t16:16:EsoUI/A
 ZO_CreateStringId("SK_STATS_BIGGEST", "Gr\195\182\195\159ter Verkauf: %s (%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t)")
 ZO_CreateStringId("SK_STATS_DAYS", "Tage: ")
 ZO_CreateStringId("SK_STATS_ALL_GUILDS", "Alle Gilden")
- 
+
 -- Tooltip Pricing
 ZO_CreateStringId("SK_PRICETIP_SALES", "<<1[%d Verkauf/%d Verk\195\164ufe]>>")
 ZO_CreateStringId("SK_PRICETIP_ONEDAY", "Master Merchant Preis (%s, <1 Tag): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
 ZO_CreateStringId("SK_PRICETIP_MULTDAY", "Master Merchant Preis (%s, %d Tage): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
- 
+
 -- Keybindings
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "Ein-/Ausblenden des Fensters")
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_STATS_TOGGLE", "Ein-/Ausblenden der Statistik")
- 
+
 -- New values
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "M.M. Preis (%s, %d Tag): %.2f")
 ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "M.M. Preis (%s, %d Tage): %.2f")
@@ -167,7 +167,7 @@ ZO_CreateStringId("SK_TAX_COLUMN", "Steuer")
 ZO_CreateStringId("SK_COUNT_COLUMN", "Anzahl")
 ZO_CreateStringId("SK_PERCENT_COLUMN", "Prozent")
 ZO_CreateStringId("MM_NOTHING", "Nichts")
- 
+
 ZO_CreateStringId("MM_LISTING_ALERT", "Du hast  %s x%d für %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t in %s aufgeführt.")
 
 ZO_CreateStringId("MM_CALC_OPTIONS_NAME", "Calculation and Tip Options")

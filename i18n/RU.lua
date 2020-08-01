@@ -40,28 +40,28 @@ ZO_CreateStringId("SK_ACCOUNT_WIDE_NAME", 	"Настройки на аккаун
 ZO_CreateStringId("SK_ACCOUNT_WIDE_TIP", 		"Применяет все сделанные вами настройки для всех персонажей на вашем аккаунте.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", 	"Оффлайн отчет")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", 	"Выводит предупреждение в чат о проданных, пока вы были оффлайн, предметах при логине.")
-                                                                                                                                                                                   
+
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", 	"Игнорировать подозрительные цены")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", 	"Игнорировать сделки с ценами, сильно отклоняющимися от привычных.")
-                                                                                                                                                                                   
+
 ZO_CreateStringId("SK_TRIM_DECIMALS_NAME", 	"Округление цен")
 ZO_CreateStringId("SK_TRIM_DECIMALS_TIP", 	"Округляет все цены до золота.")
-                                                                                                                                                                                   
+
 ZO_CreateStringId("SK_DELAY_INIT_NAME", 		"Задержка инициализации")
 ZO_CreateStringId("SK_DELAY_INIT_TIP", 			"Если у вас есть проблемы с входом, установите задержку, пока ваш персонаж полностью не загрузится.")
-                                                                                                                                                                                   
+
 ZO_CreateStringId("SK_ROSTER_INFO_NAME", 		"Инфо в ростере гильдии")
 ZO_CreateStringId("SK_ROSTER_INFO_TIP", 		"Показывает число покупок и продаж в ростере гильдии, основанных на настройках времени в окне MM.")
-                                                                                                                                                                                   
+
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", 		"Граф истории цен")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", 			"Включает график истории цен предмета в подсказке к нему.")
--- Main window                                                                                                                                                                     
+-- Main window
 ZO_CreateStringId("SK_VIEW_ALL_SALES", 	 		"Вся инфо")
 ZO_CreateStringId("SK_VIEW_YOUR_SALES", 		"Ваша инфо")
 ZO_CreateStringId("SK_ALL_SALES_TITLE", 		"Вся информация")
 ZO_CreateStringId("SK_YOUR_SALES_TITLE", 		"Ваша информация")
 ZO_CreateStringId("SK_GUILD_SALES_TITLE", 	"Ранги в гильдии")
-                                                                                                                                                                                   
+
 ZO_CreateStringId("SK_SHOW_UNIT", 					"Цена за штуку")
 ZO_CreateStringId("SK_SHOW_TOTAL", 					"Общая цена")
 ZO_CreateStringId("SK_BUYER_COLUMN", 				"Покупатель")
@@ -115,8 +115,8 @@ ZO_CreateStringId("SK_STATS_TOTAL_GOLD", 		"Вceгo зoлoтa: %s |t16:16:EsoUI/
 ZO_CreateStringId("SK_STATS_BIGGEST", 			"Нaибoльшaя пpoдaжa: %s (%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t)")
 ZO_CreateStringId("SK_STATS_DAYS", 					"Дней: ")
 ZO_CreateStringId("SK_STATS_ALL_GUILDS", 		"Все гильдии")
-                                                                          
--- Tooltip Pricing                                                        
+
+-- Tooltip Pricing
 ZO_CreateStringId("SK_PRICETIP_SALES", 			"<<1[%d продажа/%d продаж]>>")
 ZO_CreateStringId("SK_PRICETIP_ONEDAY", 		"Цeнa Master Merchant (%s, <1 дня): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
 ZO_CreateStringId("SK_PRICETIP_MULTDAY", 		"Цeнa Master Merchant (%s, %d днeй): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
@@ -189,16 +189,16 @@ ZO_CreateStringId("MM_RANGE_FOCUS2", 					"Вариант 2")
 ZO_CreateStringId("MM_RANGE_NONE", 						"Нет")
 ZO_CreateStringId("MM_BLACKLIST_NAME", 				"Черный список игроков и гильдий")
 ZO_CreateStringId("MM_BLACKLIST_TIP", 				"Списиок имен игроков и гильдий, которые вы хотите исключить из подсчета цен аддоном MM.")
-                                                                                                                                                                                      
+
 ZO_CreateStringId("MM_SAUCY_NAME", 						"Показывать прибыль вместо наценки")
 ZO_CreateStringId("MM_SAUCY_TIP", 						"В магазине отображает потенциальную прибыль, вместо процента наценки.")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME","Фильтр по прибыли")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Добавляет в аддон АGS дополнительный фильтр, основаный на прибыли.")
 ZO_CreateStringId("MM_AUTO_ADVANCE_NAME", 		"Авто. след. страница")
 ZO_CreateStringId("MM_AUTO_ADVANCE_TIP", 			"Если все товары на странице уже отфильтрованы, переходит к следующей станице, пока не заполнит страницу отфильтрованными результатми.")
-                                                                                                                                                                                      
+
 ZO_CreateStringId("MM_PRICETIP_ITEMS", 				"/<<1[%d предмете/%d проданных]>>")
-                                                                                                                                                                                      
+
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_NAME", 	"Мин. кол-во предметов")
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_TIP", 		"Минимальное кол-во продаж предмета для сохранения в истории.")
 ZO_CreateStringId("MM_MAX_ITEM_COUNT_NAME", 	"Макс. кол-во предметов")
