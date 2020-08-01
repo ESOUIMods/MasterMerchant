@@ -8,6 +8,7 @@
 -- Sort scrollList by price in 'ordering' order (asc = true as per ZOS)
 -- Rather than using the built-in Lua quicksort, we use my own
 -- implementation of Shellsort to save on memory.
+local LMP = LibMediaProvider
 
 local ITEMS = 'full'
 local GUILDS = 'half'
@@ -204,18 +205,15 @@ function MMScrollList:SetupSalesRow(control, data)
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
 
-  local LMP = LibMediaProvider
-  if LMP then
-    local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
+  local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
-    control.rowId:SetFont(string.format(fontString, 12))
-    control.buyer:SetFont(string.format(fontString, 15))
-    control.guild:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-    control.itemName:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-    control.quant:SetFont(string.format(fontString, ((isFullSize and 15) or 10)) .. '|soft-shadow-thin')
-    control.sellTime:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-    control.price:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-  end
+  control.rowId:SetFont(string.format(fontString, 12))
+  control.buyer:SetFont(string.format(fontString, 15))
+  control.guild:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
+  control.itemName:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
+  control.quant:SetFont(string.format(fontString, ((isFullSize and 15) or 10)) .. '|soft-shadow-thin')
+  control.sellTime:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
+  control.price:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
 
   control.rowId:SetText(data.sortIndex)
 
@@ -319,21 +317,17 @@ function MMScrollList:SetupGuildSalesRow(control, data)
     return
   end
 
-  local LMP = LibMediaProvider
-  if LMP then
-    local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
+  local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
-    control.rowId:SetFont(string.format(fontString, 12))
-    control.seller:SetFont(string.format(fontString, 15))
-    control.itemName:SetFont(string.format(fontString, 15))
-    control.guild:SetFont(string.format(fontString, 15))
-    control.rank:SetFont(string.format(fontString, 15))
-    control.sales:SetFont(string.format(fontString, 15))
-    control.tax:SetFont(string.format(fontString, 15))
-    control.count:SetFont(string.format(fontString, 15))
-    control.percent:SetFont(string.format(fontString, 15))
-
-  end
+  control.rowId:SetFont(string.format(fontString, 12))
+  control.seller:SetFont(string.format(fontString, 15))
+  control.itemName:SetFont(string.format(fontString, 15))
+  control.guild:SetFont(string.format(fontString, 15))
+  control.rank:SetFont(string.format(fontString, 15))
+  control.sales:SetFont(string.format(fontString, 15))
+  control.tax:SetFont(string.format(fontString, 15))
+  control.count:SetFont(string.format(fontString, 15))
+  control.percent:SetFont(string.format(fontString, 15))
 
   control.rowId:SetText(data.sortIndex)
 
@@ -425,18 +419,15 @@ function MMScrollList:SetupListingsRow(control, data)
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
 
-  local LMP = LibMediaProvider
-  if LMP then
-    local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
+  local fontString = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont) .. '|%d'
 
-    control.rowId:SetFont(string.format(fontString, 12))
-    control.buyer:SetFont(string.format(fontString, 15))
-    control.guild:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-    control.itemName:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-    control.quant:SetFont(string.format(fontString, ((isFullSize and 15) or 10)) .. '|soft-shadow-thin')
-    control.sellTime:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-    control.price:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-  end
+  control.rowId:SetFont(string.format(fontString, 12))
+  control.buyer:SetFont(string.format(fontString, 15))
+  control.guild:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
+  control.itemName:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
+  control.quant:SetFont(string.format(fontString, ((isFullSize and 15) or 10)) .. '|soft-shadow-thin')
+  control.sellTime:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
+  control.price:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
 
   control.rowId:SetText(data.sortIndex)
 
@@ -1081,59 +1072,56 @@ end
 
 -- Handle the changing of window font settings
 function MasterMerchant:UpdateFonts()
-  local LMP = LibMediaProvider
-  if LMP then
-    local font = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont)
-    local fontString = font .. '|%d'
-    local mainButtonLabel = 14
-    local mainTitle = 26
-    local mainHeader = 17
-    local guildButtonLabel = 14
-    local guildTitle = 26
-    local guildHeader = 17
-    local guildQuant = 10
+  local font = LMP:Fetch('font', MasterMerchant:ActiveSettings().windowFont)
+  local fontString = font .. '|%d'
+  local mainButtonLabel = 14
+  local mainTitle = 26
+  local mainHeader = 17
+  local guildButtonLabel = 14
+  local guildTitle = 26
+  local guildHeader = 17
+  local guildQuant = 10
 
-    -- Main Window
-    MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-    MasterMerchantWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-    MasterMerchantWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-    MasterMerchantWindowHeadersSellTime:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-    MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-    MasterMerchantWindowSearchBox:SetFont(string.format(fontString, mainButtonLabel))
-    MasterMerchantWindowTitle:SetFont(string.format(fontString, mainTitle))
-    MasterMerchantSwitchViewButton:SetFont(string.format(fontString, mainButtonLabel))
-    MasterMerchantPriceSwitchButton:SetFont(string.format(fontString, mainButtonLabel))
-    MasterMerchantResetButton:SetFont(string.format(fontString, mainButtonLabel))
-    MasterMerchantRefreshButton:SetFont(string.format(fontString, mainButtonLabel))
+  -- Main Window
+  MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
+  MasterMerchantWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
+  MasterMerchantWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
+  MasterMerchantWindowHeadersSellTime:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
+  MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
+  MasterMerchantWindowSearchBox:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantWindowTitle:SetFont(string.format(fontString, mainTitle))
+  MasterMerchantSwitchViewButton:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantPriceSwitchButton:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantResetButton:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantRefreshButton:SetFont(string.format(fontString, mainButtonLabel))
 
-    -- Guild Window
-    MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-    MasterMerchantGuildWindowSearchBox:SetFont(string.format(fontString, guildButtonLabel))
-    MasterMerchantGuildWindowTitle:SetFont(string.format(fontString, guildTitle))
-    MasterMerchantGuildSwitchViewButton:SetFont(string.format(fontString, guildButtonLabel))
-    MasterMerchantGuildResetButton:SetFont(string.format(fontString, guildButtonLabel))
-    MasterMerchantGuildRefreshButton:SetFont(string.format(fontString, guildButtonLabel))
+  -- Guild Window
+  MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantGuildWindowSearchBox:SetFont(string.format(fontString, guildButtonLabel))
+  MasterMerchantGuildWindowTitle:SetFont(string.format(fontString, guildTitle))
+  MasterMerchantGuildSwitchViewButton:SetFont(string.format(fontString, guildButtonLabel))
+  MasterMerchantGuildResetButton:SetFont(string.format(fontString, guildButtonLabel))
+  MasterMerchantGuildRefreshButton:SetFont(string.format(fontString, guildButtonLabel))
 
-    -- Stats Window
-    MasterMerchantStatsWindowTitle:SetFont(string.format(fontString, mainTitle))
-    MasterMerchantStatsWindowGuildChooserLabel:SetFont(string.format(fontString, mainHeader))
-    MasterMerchantStatsGuildChooser.m_comboBox:SetFont(string.format(fontString, mainHeader))
-    MasterMerchantStatsWindowItemsSoldLabel:SetFont(string.format(fontString, mainHeader))
-    MasterMerchantStatsWindowTotalGoldLabel:SetFont(string.format(fontString, mainHeader))
-    MasterMerchantStatsWindowBiggestSaleLabel:SetFont(string.format(fontString, mainHeader))
-    MasterMerchantStatsWindowSliderSettingLabel:SetFont(string.format(fontString, mainHeader))
-    MasterMerchantStatsWindowSliderLabel:SetFont(string.format(fontString, mainButtonLabel))
+  -- Stats Window
+  MasterMerchantStatsWindowTitle:SetFont(string.format(fontString, mainTitle))
+  MasterMerchantStatsWindowGuildChooserLabel:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantStatsGuildChooser.m_comboBox:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantStatsWindowItemsSoldLabel:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantStatsWindowTotalGoldLabel:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantStatsWindowBiggestSaleLabel:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantStatsWindowSliderSettingLabel:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantStatsWindowSliderLabel:SetFont(string.format(fontString, mainButtonLabel))
 
-    MasterMerchantFeedbackTitle:SetFont(string.format(fontString, mainTitle))
-    MasterMerchantFeedbackNote:SetFont(string.format(fontString, mainHeader))
-    MasterMerchantFeedbackNote:SetText("I hope you are enjoying Master Merchant.  Your feedback is always welcome, so please drop me a note with or without a donation.  Your donation will help me focus my non adventuring ESO time on more features, and keep me from becoming a Nirn farmer.  Or you can donate a little real money here: http://tinyurl.com/ESOMMDonate")
-  end
+  MasterMerchantFeedbackTitle:SetFont(string.format(fontString, mainTitle))
+  MasterMerchantFeedbackNote:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantFeedbackNote:SetText("I hope you are enjoying Master Merchant.  Your feedback is always welcome, so please drop me a note with or without a donation.  Your donation will help me focus my non adventuring ESO time on more features, and keep me from becoming a Nirn farmer.  Or you can donate a little real money here: http://tinyurl.com/ESOMMDonate")
 end
 
 function MasterMerchant:updateCalc()
@@ -1904,14 +1892,11 @@ function MasterMerchant:SetupMasterMerchantWindow()
   if settingsToUse.rankIndex == 9 then timeDropdown:SetSelectedItem(settingsToUse.customTimeframeText) end
 
   -- Set sort column headers and search label from translation
-  local LMP = LibMediaProvider
   local fontString = 'ZoFontGameLargeBold'
   local guildFontString = 'ZoFontGameLargeBold'
-  if LMP then
-    local font = LMP:Fetch('font', self:ActiveSettings().windowFont)
-    fontString = font .. '|17'
-    guildFontString = font .. '|17'
-  end
+  local font = LMP:Fetch('font', self:ActiveSettings().windowFont)
+  fontString = font .. '|17'
+  guildFontString = font .. '|17'
 
   if settingsToUse.viewBuyerSeller == 'buyer' then
     MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))

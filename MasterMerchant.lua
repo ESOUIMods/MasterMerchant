@@ -4,6 +4,8 @@
 -- Extended Feb 2015 - Oct 2016 by (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
+local LAM = LibAddonMenu2
+local LMP = LibMediaProvider
 
 local OriginalGetTradingHouseSearchResultItemInfo
 local OriginalGetTradingHouseListingItemInfo
@@ -976,554 +978,548 @@ end
 
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
-  local LAM = LibAddonMenu2
-  if LAM then
-    local LMP = LibMediaProvider
-    if LMP then
-      local panelData = {
-        type = 'panel',
-        name = 'Master Merchant',
-        displayName = GetString(MM_APP_NAME),
-        author = GetString(MM_APP_AUTHOR),
-        version = self.version,
-        registerForDefaults = true,
-      }
-      LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
+  local panelData = {
+    type = 'panel',
+    name = 'Master Merchant',
+    displayName = GetString(MM_APP_NAME),
+    author = GetString(MM_APP_AUTHOR),
+    version = self.version,
+    registerForDefaults = true,
+  }
+  LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
 
-      local settingsToUse = MasterMerchant:ActiveSettings()
-      local optionsData = {
-        -- Sound and Alert options
+  local settingsToUse = MasterMerchant:ActiveSettings()
+  local optionsData = {
+    -- Sound and Alert options
+    [1] = {
+      type = 'submenu',
+      name = GetString(SK_ALERT_OPTIONS_NAME),
+      tooltip = GetString(SK_ALERT_OPTIONS_TIP),
+      controls = {
+        -- On-Screen Alerts
         [1] = {
-          type = 'submenu',
-          name = GetString(SK_ALERT_OPTIONS_NAME),
-          tooltip = GetString(SK_ALERT_OPTIONS_TIP),
-          controls = {
-            -- On-Screen Alerts
-            [1] = {
-              type = 'checkbox',
-              name = GetString(SK_ALERT_ANNOUNCE_NAME),
-              tooltip = GetString(SK_ALERT_ANNOUNCE_TIP),
-              getFunc = function() return self:ActiveSettings().showAnnounceAlerts end,
-              setFunc = function(value) self:ActiveSettings().showAnnounceAlerts = value end,
-            },
-            [2] = {
-              type = 'checkbox',
-              name = GetString(SK_ALERT_CYRODIIL_NAME),
-              tooltip = GetString(SK_ALERT_CYRODIIL_TIP),
-              getFunc = function() return self:ActiveSettings().showCyroAlerts end,
-              setFunc = function(value) self:ActiveSettings().showCyroAlerts = value end,
-            },
-            -- Chat Alerts
-            [3] = {
-              type = 'checkbox',
-              name = GetString(SK_ALERT_CHAT_NAME),
-              tooltip = GetString(SK_ALERT_CHAT_TIP),
-              getFunc = function() return self:ActiveSettings().showChatAlerts end,
-              setFunc = function(value) self:ActiveSettings().showChatAlerts = value end,
-            },
-            -- Sound to use for alerts
-            [4] = {
-              type = 'dropdown',
-              name = GetString(SK_ALERT_TYPE_NAME),
-              tooltip = GetString(SK_ALERT_TYPE_TIP),
-              choices = self:SoundKeys(),
-              getFunc = function() return self:SearchSounds(self:ActiveSettings().alertSoundName) end,
-              setFunc = function(value)
-                self:ActiveSettings().alertSoundName = self:SearchSoundNames(value)
-                PlaySound(self:ActiveSettings().alertSoundName)
-              end,
-            },
-            -- Whether or not to show multiple alerts for multiple sales
-            [5] = {
-              type = 'checkbox',
-              name = GetString(SK_MULT_ALERT_NAME),
-              tooltip = GetString(SK_MULT_ALERT_TIP),
-              getFunc = function() return self:ActiveSettings().showMultiple end,
-              setFunc = function(value) self:ActiveSettings().showMultiple = value end,
-            },
-            -- Offline sales report
-            [6] = {
-              type = 'checkbox',
-              name = GetString(SK_OFFLINE_SALES_NAME),
-              tooltip = GetString(SK_OFFLINE_SALES_TIP),
-              getFunc = function() return self:ActiveSettings().offlineSales end,
-              setFunc = function(value) self:ActiveSettings().offlineSales = value end,
-            },
-          },
+          type = 'checkbox',
+          name = GetString(SK_ALERT_ANNOUNCE_NAME),
+          tooltip = GetString(SK_ALERT_ANNOUNCE_TIP),
+          getFunc = function() return self:ActiveSettings().showAnnounceAlerts end,
+          setFunc = function(value) self:ActiveSettings().showAnnounceAlerts = value end,
         },
-        -- Tip display and calculation options
         [2] = {
-          type = 'submenu',
-          name = GetString(MM_CALC_OPTIONS_NAME),
-          tooltip = GetString(MM_CALC_OPTIONS_TIP),
-          controls = {
-            -- On-Screen Alerts
-            [1] = {
-              type = 'slider',
-              name = GetString(MM_DAYS_FOCUS_ONE_NAME),
-              tooltip = GetString(MM_DAYS_FOCUS_ONE_TIP),
-              min = 1,
-              max = 90,
-              getFunc = function() return self:ActiveSettings().focus1 end,
-              setFunc = function(value) self:ActiveSettings().focus1 = value end,
-            },
-            [2] = {
-              type = 'slider',
-              name = GetString(MM_DAYS_FOCUS_TWO_NAME),
-              tooltip = GetString(MM_DAYS_FOCUS_TWO_TIP),
-              min = 1,
-              max = 90,
-              getFunc = function() return self:ActiveSettings().focus2 end,
-              setFunc = function(value) self:ActiveSettings().focus2 = value end,
-            },
-            -- default time range
-            [3] = {
-              type = 'dropdown',
-              name = GetString(MM_DEFAULT_TIME_NAME),
-              tooltip = GetString(MM_DEFAULT_TIME_TIP),
-              choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
-              getFunc = function() return self:ActiveSettings().defaultDays end,
-              setFunc = function(value) self:ActiveSettings().defaultDays = value end,
-            },
-            -- shift time range
-            [4] = {
-              type = 'dropdown',
-              name = GetString(MM_SHIFT_TIME_NAME),
-              tooltip = GetString(MM_SHIFT_TIME_TIP),
-              choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
-              getFunc = function() return self:ActiveSettings().shiftDays end,
-              setFunc = function(value) self:ActiveSettings().shiftDays = value end,
-            },
-            -- ctrl time range
-            [5] = {
-              type = 'dropdown',
-              name = GetString(MM_CTRL_TIME_NAME),
-              tooltip = GetString(MM_CTRL_TIME_TIP),
-              choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
-              getFunc = function() return self:ActiveSettings().ctrlDays end,
-              setFunc = function(value) self:ActiveSettings().ctrlDays = value end,
-            },
-            -- ctrl-shift time range
-            [6] = {
-              type = 'dropdown',
-              name = GetString(MM_CTRLSHIFT_TIME_NAME),
-              tooltip = GetString(MM_CTRLSHIFT_TIME_TIP),
-              choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
-              getFunc = function() return self:ActiveSettings().ctrlShiftDays end,
-              setFunc = function(value) self:ActiveSettings().ctrlShiftDays = value end,
-            },
-            [7] = {
-              type = 'slider',
-              name = GetString(MM_NO_DATA_DEAL_NAME),
-              tooltip = GetString(MM_NO_DATA_DEAL_TIP),
-              min = 0,
-              max = 5,
-              getFunc = function() return self:ActiveSettings().noSalesInfoDeal end,
-              setFunc = function(value) self:ActiveSettings().noSalesInfoDeal = value end,
-            },
-            -- blacklisted players and guilds
-            [8] = {
-              type = 'editbox',
-              name = GetString(MM_BLACKLIST_NAME),
-              tooltip = GetString(MM_BLACKLIST_TIP),
-              getFunc = function() return self:ActiveSettings().blacklist end,
-              setFunc = function(value) self:ActiveSettings().blacklist = value end,
-            },
-            -- customTimeframe
-            [9] = {
-              type = 'slider',
-              name = GetString(MM_CUSTOM_TIMEFRAME_NAME),
-              tooltip = GetString(MM_CUSTOM_TIMEFRAME_TIP),
-              min = 1,
-              max = 24 * 31,
-              getFunc = function() return self:ActiveSettings().customTimeframe end,
-              setFunc = function(value) self:ActiveSettings().customTimeframe = value
-                self:ActiveSettings().customTimeframeText = self:ActiveSettings().customTimeframe .. ' ' .. self:ActiveSettings().customTimeframeType
-              end,
-            },
-            -- shift time range
-            [10] = {
-              type = 'dropdown',
-              name = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
-              tooltip = GetString(MM_CUSTOM_TIMEFRAME_SCALE_TIP),
-              choices = {GetString(MM_CUSTOM_TIMEFRAME_HOURS),GetString(MM_CUSTOM_TIMEFRAME_DAYS),GetString(MM_CUSTOM_TIMEFRAME_WEEKS),GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS)},
-              getFunc = function() return self:ActiveSettings().customTimeframeType end,
-              setFunc = function(value) self:ActiveSettings().customTimeframeType = value
-                self:ActiveSettings().customTimeframeText = self:ActiveSettings().customTimeframe .. ' ' .. self:ActiveSettings().customTimeframeType
-              end,
-            },
-          },
+          type = 'checkbox',
+          name = GetString(SK_ALERT_CYRODIIL_NAME),
+          tooltip = GetString(SK_ALERT_CYRODIIL_TIP),
+          getFunc = function() return self:ActiveSettings().showCyroAlerts end,
+          setFunc = function(value) self:ActiveSettings().showCyroAlerts = value end,
         },
-        -- Open main window with mailbox scenes
+        -- Chat Alerts
         [3] = {
           type = 'checkbox',
-          name = GetString(SK_OPEN_MAIL_NAME),
-          tooltip = GetString(SK_OPEN_MAIL_TIP),
-          getFunc = function() return self:ActiveSettings().openWithMail end,
-          setFunc = function(value)
-            self:ActiveSettings().openWithMail = value
-            local theFragment = ((settingsToUse.viewSize == ITEMS) and self.uiFragment) or ((settingsToUse.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
-            if value then
-              -- Register for the mail scenes
-              MAIL_INBOX_SCENE:AddFragment(theFragment)
-              MAIL_SEND_SCENE:AddFragment(theFragment)
-            else
-              -- Unregister for the mail scenes
-              MAIL_INBOX_SCENE:RemoveFragment(theFragment)
-              MAIL_SEND_SCENE:RemoveFragment(theFragment)
-            end
-          end,
+          name = GetString(SK_ALERT_CHAT_NAME),
+          tooltip = GetString(SK_ALERT_CHAT_TIP),
+          getFunc = function() return self:ActiveSettings().showChatAlerts end,
+          setFunc = function(value) self:ActiveSettings().showChatAlerts = value end,
         },
-        -- Open main window with trading house scene
+        -- Sound to use for alerts
         [4] = {
-          type = 'checkbox',
-          name = GetString(SK_OPEN_STORE_NAME),
-          tooltip = GetString(SK_OPEN_STORE_TIP),
-          getFunc = function() return self:ActiveSettings().openWithStore end,
+          type = 'dropdown',
+          name = GetString(SK_ALERT_TYPE_NAME),
+          tooltip = GetString(SK_ALERT_TYPE_TIP),
+          choices = self:SoundKeys(),
+          getFunc = function() return self:SearchSounds(self:ActiveSettings().alertSoundName) end,
           setFunc = function(value)
-            self:ActiveSettings().openWithStore = value
-            local theFragment = ((settingsToUse.viewSize == ITEMS) and self.uiFragment) or ((settingsToUse.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
-            if value then
-              -- Register for the store scene
-              TRADING_HOUSE_SCENE:AddFragment(theFragment)
-            else
-              -- Unregister for the store scene
-              TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
-            end
+            self:ActiveSettings().alertSoundName = self:SearchSoundNames(value)
+            PlaySound(self:ActiveSettings().alertSoundName)
           end,
         },
-        -- Show full sale price or post-tax price
+        -- Whether or not to show multiple alerts for multiple sales
         [5] = {
           type = 'checkbox',
-          name = GetString(SK_FULL_SALE_NAME),
-          tooltip = GetString(SK_FULL_SALE_TIP),
-          getFunc = function() return self:ActiveSettings().showFullPrice end,
-          setFunc = function(value)
-            self:ActiveSettings().showFullPrice = value
-            MasterMerchant.listIsDirty[ITEMS] = true
-            MasterMerchant.listIsDirty[GUILDS] = true
-            MasterMerchant.listIsDirty[LISTINGS] = true
-          end,
+          name = GetString(SK_MULT_ALERT_NAME),
+          tooltip = GetString(SK_MULT_ALERT_TIP),
+          getFunc = function() return self:ActiveSettings().showMultiple end,
+          setFunc = function(value) self:ActiveSettings().showMultiple = value end,
         },
-        -- Scan frequency (in seconds)
+        -- Offline sales report
         [6] = {
-          type = 'slider',
-          name = GetString(SK_SCAN_FREQ_NAME),
-          tooltip = GetString(SK_SCAN_FREQ_TIP),
-          min = 30,
-          max = 3600,
-          getFunc = function() return self:ActiveSettings().scanFreq end,
-          setFunc = function(value)
-            self:ActiveSettings().scanFreq = value
-
-            EVENT_MANAGER:UnregisterForUpdate(self.name)
-            local scanInterval = value * 1000
-            EVENT_MANAGER:RegisterForUpdate(self.name, scanInterval, function() self:ScanStoresParallel(true) end)
-          end,
+          type = 'checkbox',
+          name = GetString(SK_OFFLINE_SALES_NAME),
+          tooltip = GetString(SK_OFFLINE_SALES_TIP),
+          getFunc = function() return self:ActiveSettings().offlineSales end,
+          setFunc = function(value) self:ActiveSettings().offlineSales = value end,
         },
-        -- Size of sales history
+      },
+    },
+    -- Tip display and calculation options
+    [2] = {
+      type = 'submenu',
+      name = GetString(MM_CALC_OPTIONS_NAME),
+      tooltip = GetString(MM_CALC_OPTIONS_TIP),
+      controls = {
+        -- On-Screen Alerts
+        [1] = {
+          type = 'slider',
+          name = GetString(MM_DAYS_FOCUS_ONE_NAME),
+          tooltip = GetString(MM_DAYS_FOCUS_ONE_TIP),
+          min = 1,
+          max = 90,
+          getFunc = function() return self:ActiveSettings().focus1 end,
+          setFunc = function(value) self:ActiveSettings().focus1 = value end,
+        },
+        [2] = {
+          type = 'slider',
+          name = GetString(MM_DAYS_FOCUS_TWO_NAME),
+          tooltip = GetString(MM_DAYS_FOCUS_TWO_TIP),
+          min = 1,
+          max = 90,
+          getFunc = function() return self:ActiveSettings().focus2 end,
+          setFunc = function(value) self:ActiveSettings().focus2 = value end,
+        },
+        -- default time range
+        [3] = {
+          type = 'dropdown',
+          name = GetString(MM_DEFAULT_TIME_NAME),
+          tooltip = GetString(MM_DEFAULT_TIME_TIP),
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          getFunc = function() return self:ActiveSettings().defaultDays end,
+          setFunc = function(value) self:ActiveSettings().defaultDays = value end,
+        },
+        -- shift time range
+        [4] = {
+          type = 'dropdown',
+          name = GetString(MM_SHIFT_TIME_NAME),
+          tooltip = GetString(MM_SHIFT_TIME_TIP),
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          getFunc = function() return self:ActiveSettings().shiftDays end,
+          setFunc = function(value) self:ActiveSettings().shiftDays = value end,
+        },
+        -- ctrl time range
+        [5] = {
+          type = 'dropdown',
+          name = GetString(MM_CTRL_TIME_NAME),
+          tooltip = GetString(MM_CTRL_TIME_TIP),
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          getFunc = function() return self:ActiveSettings().ctrlDays end,
+          setFunc = function(value) self:ActiveSettings().ctrlDays = value end,
+        },
+        -- ctrl-shift time range
+        [6] = {
+          type = 'dropdown',
+          name = GetString(MM_CTRLSHIFT_TIME_NAME),
+          tooltip = GetString(MM_CTRLSHIFT_TIME_TIP),
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          getFunc = function() return self:ActiveSettings().ctrlShiftDays end,
+          setFunc = function(value) self:ActiveSettings().ctrlShiftDays = value end,
+        },
         [7] = {
           type = 'slider',
-          name = GetString(SK_HISTORY_DEPTH_NAME),
-          tooltip = GetString(SK_HISTORY_DEPTH_TIP),
-          min = 1,
-          max = 365,
-          getFunc = function() return self.systemSavedVariables.historyDepth end,
-          setFunc = function(value) self.systemSavedVariables.historyDepth = value end,
-        },
-        -- Min Number of Items before Purge
-        [8] = {
-          type = 'slider',
-          name = GetString(MM_MIN_ITEM_COUNT_NAME),
-          tooltip = GetString(MM_MIN_ITEM_COUNT_TIP),
-          min = 0,
-          max = 100,
-          getFunc = function() return self.systemSavedVariables.minItemCount end,
-          setFunc = function(value) self.systemSavedVariables.minItemCount = value end,
-        },
-        -- Max number of Items
-        [9] = {
-          type = 'slider',
-          name = GetString(MM_MAX_ITEM_COUNT_NAME),
-          tooltip = GetString(MM_MAX_ITEM_COUNT_TIP),
-          min = 100,
-          max = 10000,
-          getFunc = function() return self.systemSavedVariables.maxItemCount end,
-          setFunc = function(value) self.systemSavedVariables.maxItemCount = value end,
-        },
-        -- Whether or not to show the pricing data in tooltips
-        [10] = {
-          type = 'checkbox',
-          name = GetString(SK_SHOW_PRICING_NAME),
-          tooltip = GetString(SK_SHOW_PRICING_TIP),
-          getFunc = function() return self:ActiveSettings().showPricing end,
-          setFunc = function(value) self:ActiveSettings().showPricing = value end,
-        },
-        -- Whether or not to show the pricing graph in tooltips
-        [11] = {
-          type = 'checkbox',
-          name = GetString(SK_SHOW_GRAPH_NAME),
-          tooltip = GetString(SK_SHOW_GRAPH_TIP),
-          getFunc = function() return self:ActiveSettings().showGraph end,
-          setFunc = function(value) self:ActiveSettings().showGraph = value end,
-        },
-      -- Whether or not to show tooltips on the graph points
-        [12] = {
-          type = 'checkbox',
-          name = GetString(MM_GRAPH_INFO_NAME),
-          tooltip = GetString(MM_GRAPH_INFO_TIP),
-          getFunc = function() return self:ActiveSettings().displaySalesDetails end,
-          setFunc = function(value) self:ActiveSettings().displaySalesDetails = value end,
-        },
-        -- Whether or not to show the crafting costs data in tooltips
-        [13] = {
-          type = 'checkbox',
-          name = GetString(SK_SHOW_CRAFT_COST_NAME),
-          tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
-          getFunc = function() return self:ActiveSettings().showCraftCost end,
-          setFunc = function(value) self:ActiveSettings().showCraftCost = value end,
-        },
-        -- Whether or not to show the quality/level adjustment buttons
-        [14] = {
-          type = 'checkbox',
-          name = GetString(MM_LEVEL_QUALITY_NAME),
-          tooltip = GetString(MM_LEVEL_QUALITY_TIP),
-          getFunc = function() return self:ActiveSettings().displayItemAnalysisButtons end,
-          setFunc = function(value) self:ActiveSettings().displayItemAnalysisButtons = value end,
-        },
-
-        -- Should we show the stack price calculator?
-        [15] = {
-          type = 'checkbox',
-          name = GetString(SK_CALC_NAME),
-          tooltip = GetString(SK_CALC_TIP),
-          getFunc = function() return self:ActiveSettings().showCalc end,
-          setFunc = function(value) self:ActiveSettings().showCalc = value end,
-        },
-        -- should we trim outliers prices?
-        [16] = {
-          type = 'checkbox',
-          name = GetString(SK_TRIM_OUTLIERS_NAME),
-          tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
-          getFunc = function() return self:ActiveSettings().trimOutliers end,
-          setFunc = function(value) self:ActiveSettings().trimOutliers = value end,
-        },
-        -- should we trim off decimals?
-        [17] = {
-          type = 'checkbox',
-          name = GetString(SK_TRIM_DECIMALS_NAME),
-          tooltip = GetString(SK_TRIM_DECIMALS_TIP),
-          getFunc = function() return self:ActiveSettings().trimDecimals end,
-          setFunc = function(value) self:ActiveSettings().trimDecimals = value end,
-        },
-        -- should we replace inventory values?
-        [18] = {
-          type = 'checkbox',
-          name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
-          tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
-          getFunc = function() return self:ActiveSettings().replaceInventoryValues end,
-          setFunc = function(value) self:ActiveSettings().replaceInventoryValues = value end,
-        },
-        -- should we delay initialization?
-        [19] = {
-          type = 'checkbox',
-          name = GetString(SK_DELAY_INIT_NAME),
-          tooltip = GetString(SK_DELAY_INIT_TIP),
-          getFunc = function() return self.systemSavedVariables.delayInit end,
-          setFunc = function(value) self.systemSavedVariables.delayInit = value end,
-          -- Delay Init Change
-          disabled = true,
-        },
-        -- should we display info on guild roster?
-        [20] = {
-          type = 'checkbox',
-          name = GetString(SK_ROSTER_INFO_NAME),
-          tooltip = GetString(SK_ROSTER_INFO_TIP),
-          getFunc = function() return self:ActiveSettings().diplayGuildInfo end,
-          setFunc = function(value) self:ActiveSettings().diplayGuildInfo = value end,
-        },
-        -- should we display profit instead of margin?
-        [21] = {
-          type = 'checkbox',
-          name = GetString(MM_SAUCY_NAME),
-          tooltip = GetString(MM_SAUCY_TIP),
-          getFunc = function() return self:ActiveSettings().saucy end,
-          setFunc = function(value) self:ActiveSettings().saucy = value end,
-        },
-        -- should we display a Min Profit Filter in AGS?
-        [22] = {
-          type = 'checkbox',
-          name = GetString(MM_MIN_PROFIT_FILTER_NAME),
-          tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
-          getFunc = function() return self:ActiveSettings().minProfitFilter end,
-          setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
-        },
-        -- should we auto advance to the next page?
-        [23] = {
-          type = 'checkbox',
-          name = GetString(MM_AUTO_ADVANCE_NAME),
-          tooltip = GetString(MM_AUTO_ADVANCE_TIP),
-          getFunc = function() return self:ActiveSettings().autoNext end,
-          setFunc = function(value) self:ActiveSettings().autoNext = value end,
-        },
-        -- should we display the item listed message?
-        [24] = {
-          type = 'checkbox',
-          name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
-          tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
-          getFunc = function() return self:ActiveSettings().displayListingMessage end,
-          setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
-        },
-        -- Font to use
-        [25] = {
-          type = 'dropdown',
-          name = GetString(SK_WINDOW_FONT_NAME),
-          tooltip = GetString(SK_WINDOW_FONT_TIP),
-          choices = LMP:List(LMP.MediaType.FONT),
-          getFunc = function() return self:ActiveSettings().windowFont end,
-          setFunc = function(value)
-            self:ActiveSettings().windowFont = value
-            self:UpdateFonts()
-            if self:ActiveSettings().viewSize == ITEMS then self.scrollList:RefreshVisible()
-            elseif self:ActiveSettings().viewSize == GUILDS then self.guildScrollList:RefreshVisible()
-            else self.listingScrollList:RefreshVisible() end
-          end,
-        },
-        -- Verbose MM Messages
-        [26] = {
-          type = 'slider',
-          name = GetString(MM_VERBOSE_NAME),
-          tooltip = GetString(MM_VERBOSE_TIP),
+          name = GetString(MM_NO_DATA_DEAL_NAME),
+          tooltip = GetString(MM_NO_DATA_DEAL_TIP),
           min = 0,
           max = 5,
-          getFunc = function() return self:ActiveSettings().verbose end,
-          setFunc = function(value) self:ActiveSettings().verbose = value end,
+          getFunc = function() return self:ActiveSettings().noSalesInfoDeal end,
+          setFunc = function(value) self:ActiveSettings().noSalesInfoDeal = value end,
         },
-        -- Use simplified guild history scanning
-        [27] = {
-          type = 'checkbox',
-          name = GetString(MM_SIMPLE_SCAN_NAME),
-          tooltip = GetString(MM_SIMPLE_SCAN_TIP),
-          getFunc = function() return self:ActiveSettings().simpleSalesScanning end,
-          setFunc = function(value) self:ActiveSettings().simpleSalesScanning = value end,
+        -- blacklisted players and guilds
+        [8] = {
+          type = 'editbox',
+          name = GetString(MM_BLACKLIST_NAME),
+          tooltip = GetString(MM_BLACKLIST_TIP),
+          getFunc = function() return self:ActiveSettings().blacklist end,
+          setFunc = function(value) self:ActiveSettings().blacklist = value end,
         },
-        -- Skip Indexing?
-        [28] = {
-          type = 'checkbox',
-          name = GetString(MM_SKIP_INDEX_NAME),
-          tooltip = GetString(MM_SKIP_INDEX_TIP),
-          getFunc = function() return self:ActiveSettings().minimalIndexing end,
-          setFunc = function(value) self:ActiveSettings().minimalIndexing = value end,
-        },
-        -- Make all settings account-wide (or not)
-        [29] = {
-          type = 'checkbox',
-          name = GetString(SK_ACCOUNT_WIDE_NAME),
-          tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
-          getFunc = function() return self.acctSavedVariables.allSettingsAccount end,
-          setFunc = function(value)
-            if value then
-              self.acctSavedVariables.showChatAlerts = self.savedVariables.showChatAlerts
-              self.acctSavedVariables.showChatAlerts = self.savedVariables.showMultiple
-              self.acctSavedVariables.openWithMail = self.savedVariables.openWithMail
-              self.acctSavedVariables.openWithStore = self.savedVariables.openWithStore
-              self.acctSavedVariables.showFullPrice = self.savedVariables.showFullPrice
-              self.acctSavedVariables.winLeft = self.savedVariables.winLeft
-              self.acctSavedVariables.winTop = self.savedVariables.winTop
-              self.acctSavedVariables.guildWinLeft = self.savedVariables.guildWinLeft
-              self.acctSavedVariables.guildWinTop = self.savedVariables.guildWinTop
-              self.acctSavedVariables.statsWinLeft = self.savedVariables.statsWinLeft
-              self.acctSavedVariables.statsWinTop = self.savedVariables.statsWinTop
-              self.acctSavedVariables.windowFont = self.savedVariables.windowFont
-              self.acctSavedVariables.showCalc = self.savedVariables.showCalc
-              self.acctSavedVariables.showPricing = self.savedVariables.showPricing
-              self.acctSavedVariables.showCraftCost = self.savedVariables.showCraftCost
-              self.acctSavedVariables.showGraph = self.savedVariables.showGraph
-              self.acctSavedVariables.scanFreq = self.savedVariables.scanFreq
-              self.acctSavedVariables.showAnnounceAlerts = self.savedVariables.showAnnounceAlerts
-              self.acctSavedVariables.alertSoundName = self.savedVariables.alertSoundName
-              self.acctSavedVariables.showUnitPrice = self.savedVariables.showUnitPrice
-              self.acctSavedVariables.viewSize = self.savedVariables.viewSize
-              self.acctSavedVariables.offlineSales = self.savedVariables.offlineSales
-              self.acctSavedVariables.feedbackWinLeft = self.savedVariables.feedbackWinLeft
-              self.acctSavedVariables.feedbackWinTop = self.savedVariables.feedbackWinTop
-              self.acctSavedVariables.trimOutliers = self.savedVariables.trimOutliers
-              self.acctSavedVariables.trimDecimals = self.savedVariables.trimDecimals
-              self.acctSavedVariables.replaceInventoryValues = self.savedVariables.replaceInventoryValues
-              self.acctSavedVariables.diplayGuildInfo = self.savedVariables.diplayGuildInfo
-              self.acctSavedVariables.focus1 = self.savedVariables.focus1
-              self.acctSavedVariables.focus2 = self.savedVariables.focus2
-              self.acctSavedVariables.defaultDays = self.savedVariables.defaultDays
-              self.acctSavedVariables.shiftDays = self.savedVariables.shiftDays
-              self.acctSavedVariables.ctrlDays = self.savedVariables.ctrlDays
-              self.acctSavedVariables.ctrlShiftDays = self.savedVariables.ctrlShiftDays
-              self.acctSavedVariables.blacklisted = self.savedVariables.blacklisted
-              self.acctSavedVariables.saucy = self.savedVariables.saucy
-              self.acctSavedVariables.minProfitFilter = self.savedVariables.minProfitFilter
-              self.acctSavedVariables.autoNext = self.savedVariables.autoNext
-              self.acctSavedVariables.displayListingMessage = self.savedVariables.displayListingMessage
-              self.acctSavedVariables.noSalesInfoDeal = self.savedVariables.noSalesInfoDeal
-              self.acctSavedVariables.displaySalesDetails = self.savedVariables.displaySalesDetails
-              self.acctSavedVariables.displayItemAnalysisButtons = self.savedVariables.displayItemAnalysisButtons
-              self.acctSavedVariables.verbose = self.savedVariables.verbose
-              self.acctSavedVariables.simpleSalsesScanning = self.savedVariables.simpleSalsesScanning
-              self.acctSavedVariables.minimalIndexing = self.savedVariables.minimalIndexing
-            else
-              self.savedVariables.showChatAlerts = self.acctSavedVariables.showChatAlerts
-              self.savedVariables.showChatAlerts = self.acctSavedVariables.showMultiple
-              self.savedVariables.openWithMail = self.acctSavedVariables.openWithMail
-              self.savedVariables.openWithStore = self.acctSavedVariables.openWithStore
-              self.savedVariables.showFullPrice = self.acctSavedVariables.showFullPrice
-              self.savedVariables.winLeft = self.acctSavedVariables.winLeft
-              self.savedVariables.winTop = self.acctSavedVariables.winTop
-              self.savedVariables.guildWinLeft = self.acctSavedVariables.guildWinLeft
-              self.savedVariables.guildWinTop = self.acctSavedVariables.guildWinTop
-              self.savedVariables.statsWinLeft = self.acctSavedVariables.statsWinLeft
-              self.savedVariables.statsWinTop = self.acctSavedVariables.statsWinTop
-              self.savedVariables.windowFont = self.acctSavedVariables.windowFont
-              self.savedVariables.showPricing = self.acctSavedVariables.showPricing
-              self.savedVariables.showCraftCost = self.acctSavedVariables.showCraftCost
-              self.savedVariables.showGraph = self.acctSavedVariables.showGraph
-              self.savedVariables.showCalc = self.acctSavedVariables.showCalc
-              self.savedVariables.scanFreq = self.acctSavedVariables.scanFreq
-              self.savedVariables.showAnnounceAlerts = self.acctSavedVariables.showAnnounceAlerts
-              self.savedVariables.alertSoundName = self.acctSavedVariables.alertSoundName
-              self.savedVariables.showUnitPrice = self.acctSavedVariables.showUnitPrice
-              self.savedVariables.viewSize = self.acctSavedVariables.viewSize
-              self.savedVariables.offlineSales = self.acctSavedVariables.offlineSales
-              self.savedVariables.feedbackWinLeft = self.acctSavedVariables.feedbackWinLeft
-              self.savedVariables.feedbackWinTop = self.acctSavedVariables.feedbackWinTop
-              self.savedVariables.trimOutliers = self.acctSavedVariables.trimOutliers
-              self.savedVariables.trimDecimals = self.acctSavedVariables.trimDecimals
-              self.savedVariables.replaceInventoryValues = self.acctSavedVariables.replaceInventoryValues
-              self.savedVariables.diplayGuildInfo = self.acctSavedVariables.diplayGuildInfo
-              self.savedVariables.focus1 = self.acctSavedVariables.focus1
-              self.savedVariables.focus2 = self.acctSavedVariables.focus2
-              self.savedVariables.defaultDays = self.acctSavedVariables.defaultDays
-              self.savedVariables.shiftDays = self.acctSavedVariables.shiftDays
-              self.savedVariables.ctrlDays = self.acctSavedVariables.ctrlDays
-              self.savedVariables.ctrlShiftDays = self.acctSavedVariables.ctrlShiftDays
-              self.savedVariables.blacklisted = self.acctSavedVariables.blacklisted
-              self.savedVariables.saucy = self.acctSavedVariables.saucy
-              self.savedVariables.minProfitFilter = self.acctSavedVariables.minProfitFilter
-              self.savedVariables.autoNext = self.acctSavedVariables.autoNext
-              self.savedVariables.displayListingMessage = self.acctSavedVariables.displayListingMessage
-              self.savedVariables.noSalesInfoDeal = self.acctSavedVariables.noSalesInfoDeal
-              self.savedVariables.displaySalesDetails = self.acctSavedVariables.displaySalesDetails
-              self.savedVariables.displayItemAnalysisButtons = self.acctSavedVariables.displayItemAnalysisButtons
-              self.savedVariables.verbose = self.acctSavedVariables.verbose
-              self.savedVariables.simpleSalesScanning = self.acctSavedVariables.simpleSalesScanning
-              self.savedVariables.minimalIndexing = self.acctSavedVariables.minimalIndexing
-            end
-            self.acctSavedVariables.allSettingsAccount = value
+        -- customTimeframe
+        [9] = {
+          type = 'slider',
+          name = GetString(MM_CUSTOM_TIMEFRAME_NAME),
+          tooltip = GetString(MM_CUSTOM_TIMEFRAME_TIP),
+          min = 1,
+          max = 24 * 31,
+          getFunc = function() return self:ActiveSettings().customTimeframe end,
+          setFunc = function(value) self:ActiveSettings().customTimeframe = value
+            self:ActiveSettings().customTimeframeText = self:ActiveSettings().customTimeframe .. ' ' .. self:ActiveSettings().customTimeframeType
           end,
         },
-      }
+        -- shift time range
+        [10] = {
+          type = 'dropdown',
+          name = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
+          tooltip = GetString(MM_CUSTOM_TIMEFRAME_SCALE_TIP),
+          choices = {GetString(MM_CUSTOM_TIMEFRAME_HOURS),GetString(MM_CUSTOM_TIMEFRAME_DAYS),GetString(MM_CUSTOM_TIMEFRAME_WEEKS),GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS)},
+          getFunc = function() return self:ActiveSettings().customTimeframeType end,
+          setFunc = function(value) self:ActiveSettings().customTimeframeType = value
+            self:ActiveSettings().customTimeframeText = self:ActiveSettings().customTimeframe .. ' ' .. self:ActiveSettings().customTimeframeType
+          end,
+        },
+      },
+    },
+    -- Open main window with mailbox scenes
+    [3] = {
+      type = 'checkbox',
+      name = GetString(SK_OPEN_MAIL_NAME),
+      tooltip = GetString(SK_OPEN_MAIL_TIP),
+      getFunc = function() return self:ActiveSettings().openWithMail end,
+      setFunc = function(value)
+        self:ActiveSettings().openWithMail = value
+        local theFragment = ((settingsToUse.viewSize == ITEMS) and self.uiFragment) or ((settingsToUse.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
+        if value then
+          -- Register for the mail scenes
+          MAIL_INBOX_SCENE:AddFragment(theFragment)
+          MAIL_SEND_SCENE:AddFragment(theFragment)
+        else
+          -- Unregister for the mail scenes
+          MAIL_INBOX_SCENE:RemoveFragment(theFragment)
+          MAIL_SEND_SCENE:RemoveFragment(theFragment)
+        end
+      end,
+    },
+    -- Open main window with trading house scene
+    [4] = {
+      type = 'checkbox',
+      name = GetString(SK_OPEN_STORE_NAME),
+      tooltip = GetString(SK_OPEN_STORE_TIP),
+      getFunc = function() return self:ActiveSettings().openWithStore end,
+      setFunc = function(value)
+        self:ActiveSettings().openWithStore = value
+        local theFragment = ((settingsToUse.viewSize == ITEMS) and self.uiFragment) or ((settingsToUse.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
+        if value then
+          -- Register for the store scene
+          TRADING_HOUSE_SCENE:AddFragment(theFragment)
+        else
+          -- Unregister for the store scene
+          TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
+        end
+      end,
+    },
+    -- Show full sale price or post-tax price
+    [5] = {
+      type = 'checkbox',
+      name = GetString(SK_FULL_SALE_NAME),
+      tooltip = GetString(SK_FULL_SALE_TIP),
+      getFunc = function() return self:ActiveSettings().showFullPrice end,
+      setFunc = function(value)
+        self:ActiveSettings().showFullPrice = value
+        MasterMerchant.listIsDirty[ITEMS] = true
+        MasterMerchant.listIsDirty[GUILDS] = true
+        MasterMerchant.listIsDirty[LISTINGS] = true
+      end,
+    },
+    -- Scan frequency (in seconds)
+    [6] = {
+      type = 'slider',
+      name = GetString(SK_SCAN_FREQ_NAME),
+      tooltip = GetString(SK_SCAN_FREQ_TIP),
+      min = 30,
+      max = 3600,
+      getFunc = function() return self:ActiveSettings().scanFreq end,
+      setFunc = function(value)
+        self:ActiveSettings().scanFreq = value
 
-      -- And make the options panel
-      LAM:RegisterOptionControls('MasterMerchantOptions', optionsData)
-    end
-  end
+        EVENT_MANAGER:UnregisterForUpdate(self.name)
+        local scanInterval = value * 1000
+        EVENT_MANAGER:RegisterForUpdate(self.name, scanInterval, function() self:ScanStoresParallel(true) end)
+      end,
+    },
+    -- Size of sales history
+    [7] = {
+      type = 'slider',
+      name = GetString(SK_HISTORY_DEPTH_NAME),
+      tooltip = GetString(SK_HISTORY_DEPTH_TIP),
+      min = 1,
+      max = 365,
+      getFunc = function() return self.systemSavedVariables.historyDepth end,
+      setFunc = function(value) self.systemSavedVariables.historyDepth = value end,
+    },
+    -- Min Number of Items before Purge
+    [8] = {
+      type = 'slider',
+      name = GetString(MM_MIN_ITEM_COUNT_NAME),
+      tooltip = GetString(MM_MIN_ITEM_COUNT_TIP),
+      min = 0,
+      max = 100,
+      getFunc = function() return self.systemSavedVariables.minItemCount end,
+      setFunc = function(value) self.systemSavedVariables.minItemCount = value end,
+    },
+    -- Max number of Items
+    [9] = {
+      type = 'slider',
+      name = GetString(MM_MAX_ITEM_COUNT_NAME),
+      tooltip = GetString(MM_MAX_ITEM_COUNT_TIP),
+      min = 100,
+      max = 10000,
+      getFunc = function() return self.systemSavedVariables.maxItemCount end,
+      setFunc = function(value) self.systemSavedVariables.maxItemCount = value end,
+    },
+    -- Whether or not to show the pricing data in tooltips
+    [10] = {
+      type = 'checkbox',
+      name = GetString(SK_SHOW_PRICING_NAME),
+      tooltip = GetString(SK_SHOW_PRICING_TIP),
+      getFunc = function() return self:ActiveSettings().showPricing end,
+      setFunc = function(value) self:ActiveSettings().showPricing = value end,
+    },
+    -- Whether or not to show the pricing graph in tooltips
+    [11] = {
+      type = 'checkbox',
+      name = GetString(SK_SHOW_GRAPH_NAME),
+      tooltip = GetString(SK_SHOW_GRAPH_TIP),
+      getFunc = function() return self:ActiveSettings().showGraph end,
+      setFunc = function(value) self:ActiveSettings().showGraph = value end,
+    },
+  -- Whether or not to show tooltips on the graph points
+    [12] = {
+      type = 'checkbox',
+      name = GetString(MM_GRAPH_INFO_NAME),
+      tooltip = GetString(MM_GRAPH_INFO_TIP),
+      getFunc = function() return self:ActiveSettings().displaySalesDetails end,
+      setFunc = function(value) self:ActiveSettings().displaySalesDetails = value end,
+    },
+    -- Whether or not to show the crafting costs data in tooltips
+    [13] = {
+      type = 'checkbox',
+      name = GetString(SK_SHOW_CRAFT_COST_NAME),
+      tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
+      getFunc = function() return self:ActiveSettings().showCraftCost end,
+      setFunc = function(value) self:ActiveSettings().showCraftCost = value end,
+    },
+    -- Whether or not to show the quality/level adjustment buttons
+    [14] = {
+      type = 'checkbox',
+      name = GetString(MM_LEVEL_QUALITY_NAME),
+      tooltip = GetString(MM_LEVEL_QUALITY_TIP),
+      getFunc = function() return self:ActiveSettings().displayItemAnalysisButtons end,
+      setFunc = function(value) self:ActiveSettings().displayItemAnalysisButtons = value end,
+    },
+
+    -- Should we show the stack price calculator?
+    [15] = {
+      type = 'checkbox',
+      name = GetString(SK_CALC_NAME),
+      tooltip = GetString(SK_CALC_TIP),
+      getFunc = function() return self:ActiveSettings().showCalc end,
+      setFunc = function(value) self:ActiveSettings().showCalc = value end,
+    },
+    -- should we trim outliers prices?
+    [16] = {
+      type = 'checkbox',
+      name = GetString(SK_TRIM_OUTLIERS_NAME),
+      tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
+      getFunc = function() return self:ActiveSettings().trimOutliers end,
+      setFunc = function(value) self:ActiveSettings().trimOutliers = value end,
+    },
+    -- should we trim off decimals?
+    [17] = {
+      type = 'checkbox',
+      name = GetString(SK_TRIM_DECIMALS_NAME),
+      tooltip = GetString(SK_TRIM_DECIMALS_TIP),
+      getFunc = function() return self:ActiveSettings().trimDecimals end,
+      setFunc = function(value) self:ActiveSettings().trimDecimals = value end,
+    },
+    -- should we replace inventory values?
+    [18] = {
+      type = 'checkbox',
+      name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
+      tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
+      getFunc = function() return self:ActiveSettings().replaceInventoryValues end,
+      setFunc = function(value) self:ActiveSettings().replaceInventoryValues = value end,
+    },
+    -- should we delay initialization?
+    [19] = {
+      type = 'checkbox',
+      name = GetString(SK_DELAY_INIT_NAME),
+      tooltip = GetString(SK_DELAY_INIT_TIP),
+      getFunc = function() return self.systemSavedVariables.delayInit end,
+      setFunc = function(value) self.systemSavedVariables.delayInit = value end,
+      -- Delay Init Change
+      disabled = true,
+    },
+    -- should we display info on guild roster?
+    [20] = {
+      type = 'checkbox',
+      name = GetString(SK_ROSTER_INFO_NAME),
+      tooltip = GetString(SK_ROSTER_INFO_TIP),
+      getFunc = function() return self:ActiveSettings().diplayGuildInfo end,
+      setFunc = function(value) self:ActiveSettings().diplayGuildInfo = value end,
+    },
+    -- should we display profit instead of margin?
+    [21] = {
+      type = 'checkbox',
+      name = GetString(MM_SAUCY_NAME),
+      tooltip = GetString(MM_SAUCY_TIP),
+      getFunc = function() return self:ActiveSettings().saucy end,
+      setFunc = function(value) self:ActiveSettings().saucy = value end,
+    },
+    -- should we display a Min Profit Filter in AGS?
+    [22] = {
+      type = 'checkbox',
+      name = GetString(MM_MIN_PROFIT_FILTER_NAME),
+      tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
+      getFunc = function() return self:ActiveSettings().minProfitFilter end,
+      setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
+    },
+    -- should we auto advance to the next page?
+    [23] = {
+      type = 'checkbox',
+      name = GetString(MM_AUTO_ADVANCE_NAME),
+      tooltip = GetString(MM_AUTO_ADVANCE_TIP),
+      getFunc = function() return self:ActiveSettings().autoNext end,
+      setFunc = function(value) self:ActiveSettings().autoNext = value end,
+    },
+    -- should we display the item listed message?
+    [24] = {
+      type = 'checkbox',
+      name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
+      tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
+      getFunc = function() return self:ActiveSettings().displayListingMessage end,
+      setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
+    },
+    -- Font to use
+    [25] = {
+      type = 'dropdown',
+      name = GetString(SK_WINDOW_FONT_NAME),
+      tooltip = GetString(SK_WINDOW_FONT_TIP),
+      choices = LMP:List(LMP.MediaType.FONT),
+      getFunc = function() return self:ActiveSettings().windowFont end,
+      setFunc = function(value)
+        self:ActiveSettings().windowFont = value
+        self:UpdateFonts()
+        if self:ActiveSettings().viewSize == ITEMS then self.scrollList:RefreshVisible()
+        elseif self:ActiveSettings().viewSize == GUILDS then self.guildScrollList:RefreshVisible()
+        else self.listingScrollList:RefreshVisible() end
+      end,
+    },
+    -- Verbose MM Messages
+    [26] = {
+      type = 'slider',
+      name = GetString(MM_VERBOSE_NAME),
+      tooltip = GetString(MM_VERBOSE_TIP),
+      min = 0,
+      max = 5,
+      getFunc = function() return self:ActiveSettings().verbose end,
+      setFunc = function(value) self:ActiveSettings().verbose = value end,
+    },
+    -- Use simplified guild history scanning
+    [27] = {
+      type = 'checkbox',
+      name = GetString(MM_SIMPLE_SCAN_NAME),
+      tooltip = GetString(MM_SIMPLE_SCAN_TIP),
+      getFunc = function() return self:ActiveSettings().simpleSalesScanning end,
+      setFunc = function(value) self:ActiveSettings().simpleSalesScanning = value end,
+    },
+    -- Skip Indexing?
+    [28] = {
+      type = 'checkbox',
+      name = GetString(MM_SKIP_INDEX_NAME),
+      tooltip = GetString(MM_SKIP_INDEX_TIP),
+      getFunc = function() return self:ActiveSettings().minimalIndexing end,
+      setFunc = function(value) self:ActiveSettings().minimalIndexing = value end,
+    },
+    -- Make all settings account-wide (or not)
+    [29] = {
+      type = 'checkbox',
+      name = GetString(SK_ACCOUNT_WIDE_NAME),
+      tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
+      getFunc = function() return self.acctSavedVariables.allSettingsAccount end,
+      setFunc = function(value)
+        if value then
+          self.acctSavedVariables.showChatAlerts = self.savedVariables.showChatAlerts
+          self.acctSavedVariables.showChatAlerts = self.savedVariables.showMultiple
+          self.acctSavedVariables.openWithMail = self.savedVariables.openWithMail
+          self.acctSavedVariables.openWithStore = self.savedVariables.openWithStore
+          self.acctSavedVariables.showFullPrice = self.savedVariables.showFullPrice
+          self.acctSavedVariables.winLeft = self.savedVariables.winLeft
+          self.acctSavedVariables.winTop = self.savedVariables.winTop
+          self.acctSavedVariables.guildWinLeft = self.savedVariables.guildWinLeft
+          self.acctSavedVariables.guildWinTop = self.savedVariables.guildWinTop
+          self.acctSavedVariables.statsWinLeft = self.savedVariables.statsWinLeft
+          self.acctSavedVariables.statsWinTop = self.savedVariables.statsWinTop
+          self.acctSavedVariables.windowFont = self.savedVariables.windowFont
+          self.acctSavedVariables.showCalc = self.savedVariables.showCalc
+          self.acctSavedVariables.showPricing = self.savedVariables.showPricing
+          self.acctSavedVariables.showCraftCost = self.savedVariables.showCraftCost
+          self.acctSavedVariables.showGraph = self.savedVariables.showGraph
+          self.acctSavedVariables.scanFreq = self.savedVariables.scanFreq
+          self.acctSavedVariables.showAnnounceAlerts = self.savedVariables.showAnnounceAlerts
+          self.acctSavedVariables.alertSoundName = self.savedVariables.alertSoundName
+          self.acctSavedVariables.showUnitPrice = self.savedVariables.showUnitPrice
+          self.acctSavedVariables.viewSize = self.savedVariables.viewSize
+          self.acctSavedVariables.offlineSales = self.savedVariables.offlineSales
+          self.acctSavedVariables.feedbackWinLeft = self.savedVariables.feedbackWinLeft
+          self.acctSavedVariables.feedbackWinTop = self.savedVariables.feedbackWinTop
+          self.acctSavedVariables.trimOutliers = self.savedVariables.trimOutliers
+          self.acctSavedVariables.trimDecimals = self.savedVariables.trimDecimals
+          self.acctSavedVariables.replaceInventoryValues = self.savedVariables.replaceInventoryValues
+          self.acctSavedVariables.diplayGuildInfo = self.savedVariables.diplayGuildInfo
+          self.acctSavedVariables.focus1 = self.savedVariables.focus1
+          self.acctSavedVariables.focus2 = self.savedVariables.focus2
+          self.acctSavedVariables.defaultDays = self.savedVariables.defaultDays
+          self.acctSavedVariables.shiftDays = self.savedVariables.shiftDays
+          self.acctSavedVariables.ctrlDays = self.savedVariables.ctrlDays
+          self.acctSavedVariables.ctrlShiftDays = self.savedVariables.ctrlShiftDays
+          self.acctSavedVariables.blacklisted = self.savedVariables.blacklisted
+          self.acctSavedVariables.saucy = self.savedVariables.saucy
+          self.acctSavedVariables.minProfitFilter = self.savedVariables.minProfitFilter
+          self.acctSavedVariables.autoNext = self.savedVariables.autoNext
+          self.acctSavedVariables.displayListingMessage = self.savedVariables.displayListingMessage
+          self.acctSavedVariables.noSalesInfoDeal = self.savedVariables.noSalesInfoDeal
+          self.acctSavedVariables.displaySalesDetails = self.savedVariables.displaySalesDetails
+          self.acctSavedVariables.displayItemAnalysisButtons = self.savedVariables.displayItemAnalysisButtons
+          self.acctSavedVariables.verbose = self.savedVariables.verbose
+          self.acctSavedVariables.simpleSalsesScanning = self.savedVariables.simpleSalsesScanning
+          self.acctSavedVariables.minimalIndexing = self.savedVariables.minimalIndexing
+        else
+          self.savedVariables.showChatAlerts = self.acctSavedVariables.showChatAlerts
+          self.savedVariables.showChatAlerts = self.acctSavedVariables.showMultiple
+          self.savedVariables.openWithMail = self.acctSavedVariables.openWithMail
+          self.savedVariables.openWithStore = self.acctSavedVariables.openWithStore
+          self.savedVariables.showFullPrice = self.acctSavedVariables.showFullPrice
+          self.savedVariables.winLeft = self.acctSavedVariables.winLeft
+          self.savedVariables.winTop = self.acctSavedVariables.winTop
+          self.savedVariables.guildWinLeft = self.acctSavedVariables.guildWinLeft
+          self.savedVariables.guildWinTop = self.acctSavedVariables.guildWinTop
+          self.savedVariables.statsWinLeft = self.acctSavedVariables.statsWinLeft
+          self.savedVariables.statsWinTop = self.acctSavedVariables.statsWinTop
+          self.savedVariables.windowFont = self.acctSavedVariables.windowFont
+          self.savedVariables.showPricing = self.acctSavedVariables.showPricing
+          self.savedVariables.showCraftCost = self.acctSavedVariables.showCraftCost
+          self.savedVariables.showGraph = self.acctSavedVariables.showGraph
+          self.savedVariables.showCalc = self.acctSavedVariables.showCalc
+          self.savedVariables.scanFreq = self.acctSavedVariables.scanFreq
+          self.savedVariables.showAnnounceAlerts = self.acctSavedVariables.showAnnounceAlerts
+          self.savedVariables.alertSoundName = self.acctSavedVariables.alertSoundName
+          self.savedVariables.showUnitPrice = self.acctSavedVariables.showUnitPrice
+          self.savedVariables.viewSize = self.acctSavedVariables.viewSize
+          self.savedVariables.offlineSales = self.acctSavedVariables.offlineSales
+          self.savedVariables.feedbackWinLeft = self.acctSavedVariables.feedbackWinLeft
+          self.savedVariables.feedbackWinTop = self.acctSavedVariables.feedbackWinTop
+          self.savedVariables.trimOutliers = self.acctSavedVariables.trimOutliers
+          self.savedVariables.trimDecimals = self.acctSavedVariables.trimDecimals
+          self.savedVariables.replaceInventoryValues = self.acctSavedVariables.replaceInventoryValues
+          self.savedVariables.diplayGuildInfo = self.acctSavedVariables.diplayGuildInfo
+          self.savedVariables.focus1 = self.acctSavedVariables.focus1
+          self.savedVariables.focus2 = self.acctSavedVariables.focus2
+          self.savedVariables.defaultDays = self.acctSavedVariables.defaultDays
+          self.savedVariables.shiftDays = self.acctSavedVariables.shiftDays
+          self.savedVariables.ctrlDays = self.acctSavedVariables.ctrlDays
+          self.savedVariables.ctrlShiftDays = self.acctSavedVariables.ctrlShiftDays
+          self.savedVariables.blacklisted = self.acctSavedVariables.blacklisted
+          self.savedVariables.saucy = self.acctSavedVariables.saucy
+          self.savedVariables.minProfitFilter = self.acctSavedVariables.minProfitFilter
+          self.savedVariables.autoNext = self.acctSavedVariables.autoNext
+          self.savedVariables.displayListingMessage = self.acctSavedVariables.displayListingMessage
+          self.savedVariables.noSalesInfoDeal = self.acctSavedVariables.noSalesInfoDeal
+          self.savedVariables.displaySalesDetails = self.acctSavedVariables.displaySalesDetails
+          self.savedVariables.displayItemAnalysisButtons = self.acctSavedVariables.displayItemAnalysisButtons
+          self.savedVariables.verbose = self.acctSavedVariables.verbose
+          self.savedVariables.simpleSalesScanning = self.acctSavedVariables.simpleSalesScanning
+          self.savedVariables.minimalIndexing = self.acctSavedVariables.minimalIndexing
+        end
+        self.acctSavedVariables.allSettingsAccount = value
+      end,
+    },
+  }
+
+  -- And make the options panel
+  LAM:RegisterOptionControls('MasterMerchantOptions', optionsData)
 end
 
 
@@ -4144,8 +4140,6 @@ local function OnAddOnLoaded(eventCode, addOnName)
      -- Set up AGS integration, if it's installed
      MasterMerchant:initAGSIntegration()
    end
-
-   local LMP = LibMediaProvider
 
    --if the first loaded version of LibMediaProvider was r6 and older, fonts are
    --already registered, but with invalid paths.
