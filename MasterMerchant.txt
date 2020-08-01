@@ -9,7 +9,8 @@
 ## APIVersion: 100031 100032
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Khaibit & (dOpiate & Garkin) & Philgo
-## Version: 2.3.1
+## Version: 2.3.2
+## AddOnVersion: 232
 ## License: See license - distribution without license is prohibited!
 ## LastUpdated: Aug 2020
 ## SavedVariables: ShopkeeperSavedVars
