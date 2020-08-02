@@ -13,8 +13,8 @@
 ## License: See license - distribution without license is prohibited!
 ## LastUpdated: Aug 2020
 ## SavedVariables: ShopkeeperSavedVars
-## DependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data LibExecutionQueue LibAddonMenu-2.0 LibMediaProvider-1.0
-## OptionalDependsOn: GuildSalesAssistant AwesomeGuildStore
+## DependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data LibExecutionQueue>=200 LibAddonMenu-2.0>=31 LibMediaProvider-1.0>=14
+## OptionalDependsOn: GuildSalesAssistant AwesomeGuildStore>=2614
 
 MasterMerchantMisc.xml
 MasterMerchantSales.xml

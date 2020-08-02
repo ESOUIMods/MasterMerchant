@@ -11,7 +11,7 @@
 ## Author: Philgo
 ## IsLibrary: true
 ## Version: 2.0.0
-## AddOnVersion: 100
+## AddOnVersion: 200
 ## License: Do whatever you want with this code.
 ## LastUpdated: Jan 2019
 
