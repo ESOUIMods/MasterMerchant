@@ -108,6 +108,19 @@ MMGuild = {
 }
 
   function MMGuild:new(_name)
+      local function guild_system_offline()
+        local weekCutoff = 1595962800 -- Tuesday, 28-Jul-20 19:00:00 UTC
+
+        if GetWorldName() == 'EU Megaserver' then
+            weekCutoff = 1595941200  -- Tuesday, 28-Jul-20 13:00:00 UTC
+        end
+
+        while weekCutoff + (7 * 86400) < GetTimeStamp() do
+          weekCutoff = weekCutoff + (7 * 86400)
+        end
+        return weekCutoff
+      end
+
       o = {}   -- create object if user does not provide one
       setmetatable(o, self)
       self.__index = self
@@ -121,22 +134,11 @@ MMGuild = {
       o.tax = {}
 
       -- Calc Guild Week Cutoff
-      local weekCutoff = 1595811600 -- 21:00 Sunday ET / 01:00 UTC Monday
-      if GetTimeStamp() > 1596416400 then
-        weekCutoff = weekCutoff + (42 * 3600)  -- + 42 hours = 15:00 Tuesday ET / 19:00 Tuesday UTC
+	  local _, weekCutoff = GetGuildKioskCycleTimes()
+      if weekCutoff == 0 then -- guild system is down, do something about it
+        weekCutoff = guild_system_offline()
       end
-
-      if GetWorldName() == 'EU Megaserver' then
-        if GetTimeStamp() > 1596416400 then
-          weekCutoff = weekCutoff - (6 * 3600) -- move to 19:00 UTC Sunday
-        else
-          weekCutoff = weekCutoff - (5 * 3600) -- move to 14:00 UTC Tuesday
-        end
-      end
-
-	    while weekCutoff + (7 * 86400) < GetTimeStamp() do
-        weekCutoff = weekCutoff + (7 * 86400)
-      end
+      weekCutoff = weekCutoff - (7 * 86400)
 
       -- Calc Day Cutoff in Local Time
       local dayCutoff = GetTimeStamp() - GetSecondsSinceMidnight()
