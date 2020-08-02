@@ -1560,8 +1560,8 @@ function MasterMerchant:addStatsItemTooltip()
       end
     else
       --DEBUG
-      MasterMerchant.v(5, mocParent)
-      MasterMerchant.v(5, skMoc)
+      --MasterMerchant.v(5, mocParent)
+      --MasterMerchant.v(5, skMoc)
       --ZO_ListDialog1ListContents
       --ZO_SmithingTopLevelImprovementPanelSlotContainer
     end
