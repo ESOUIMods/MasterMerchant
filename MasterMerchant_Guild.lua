@@ -132,13 +132,20 @@ MMGuild = {
       o.stack = {}
       o.sales = {}
       o.tax = {}
+      o.kiosk_cycle = 0
+      o.week_start = 0
 
       -- Calc Guild Week Cutoff
-	  local _, weekCutoff = GetGuildKioskCycleTimes()
+      local _, weekCutoff = GetGuildKioskCycleTimes()
       if weekCutoff == 0 then -- guild system is down, do something about it
-        weekCutoff = guild_system_offline()
+        weekCutoff = guild_system_offline() -- do not subtract time because of while loop
+        o.week_start = weekCutoff -- this is 7 day back already
+        o.kiosk_cycle = weekCutoff + (7 * 86400) -- add 7 days for when week would end
+      else
+        o.kiosk_cycle = weekCutoff -- future date when kiosk changes per zenimax
+        weekCutoff = weekCutoff - (7 * 86400) -- deduct 7 days
+        o.week_start = weekCutoff -- store in this new variable for debugging
       end
-      weekCutoff = weekCutoff - (7 * 86400)
 
       -- Calc Day Cutoff in Local Time
       local dayCutoff = GetTimeStamp() - GetSecondsSinceMidnight()
