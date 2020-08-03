@@ -2840,6 +2840,12 @@ function MasterMerchant:InitRosterChanges()
   GUILD_ROSTER_ENTRY_SORT_KEYS['count'] = { tiebreaker = 'displayName', isNumeric = true }
   GUILD_ROSTER_ENTRY_SORT_KEYS['perChange'] = { tiebreaker = 'sold', isNumeric = true }
 
+  local isValid, point, relTo, relPoint, offsetX, offsetY = ZO_GuildSharedInfoBank:GetAnchor()
+  ZO_GuildSharedInfoBank:SetAnchor(point, nil, relPoint, 240, 40)
+
+  local isValid, point, relTo, relPoint, offsetX, offsetY = ZO_GuildRosterHideOffline:GetAnchor()
+  ZO_GuildRosterHideOffline:SetAnchor(point, nil, relPoint, 80, 30)
+
   MasterMerchant.originalRosterBuildMasterList = ZO_GuildRosterManager.BuildMasterList
   ZO_GuildRosterManager.BuildMasterList = MasterMerchant.BuildMasterList
 
