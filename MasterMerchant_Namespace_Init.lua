@@ -26,12 +26,65 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '2.3.6'
+MasterMerchant.version = '2.3.7'
 MasterMerchant.locale = 'en'
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
 MasterMerchant.isScanningParallel = {}
 MasterMerchant.salesData = { }
+
+local logger = LibDebugLogger.Create(MasterMerchant.name)
+MasterMerchant.logger = logger
+local SDLV = DebugLogViewer
+if SDLV then MasterMerchant.viewer = true else MasterMerchant.viewer = false end
+
+local function create_log(log_type, log_content)
+  if log_type == "Debug" then
+    MasterMerchant.logger:Debug(log_content)
+  end
+  if log_type == "Verbose" then
+    MasterMerchant.logger:Verbose(log_content)
+  end
+end
+
+local function emit_message(log_type, text)
+  if(text == "") then
+      text = "[Empty String]"
+  end
+  create_log(log_type, text)
+end
+
+local function emit_table(log_type, t, indent, table_history)
+  indent          = indent or "."
+  table_history    = table_history or {}
+
+  for k, v in pairs(t) do
+    local vType = type(v)
+
+    emit_message(log_type, indent.."("..vType.."): "..tostring(k).." = "..tostring(v))
+
+    if(vType == "table") then
+      if(table_history[v]) then
+        emit_message(log_type, indent.."Avoiding cycle on table...")
+      else
+        table_history[v] = true
+        emit_table(log_type, v, indent.."  ", table_history)
+      end
+    end
+  end
+end
+
+function MasterMerchant.dm(log_type, ...)
+  if not MasterMerchant.logger then return end
+  for i = 1, select("#", ...) do
+    local value = select(i, ...)
+    if(type(value) == "table") then
+      emit_table(log_type, value)
+    else
+      emit_message(log_type, tostring(value))
+    end
+  end
+end
 
 -- We do 'lazy' updates on the scroll lists, this is used to
 -- mark whether we need to RefreshData() before showing

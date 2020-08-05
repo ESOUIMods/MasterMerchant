@@ -143,7 +143,7 @@ MMGuild = {
         o.kiosk_cycle = weekCutoff + (7 * 86400) -- add 7 days for when week would end
       else
         o.kiosk_cycle = weekCutoff -- future date when kiosk changes per zenimax
-        weekCutoff = weekCutoff - (7 * 86400) -- deduct 7 days
+        weekCutoff = weekCutoff - MasterMerchant.days_last_kiosk() -- deduct 7 days
         o.week_start = weekCutoff -- store in this new variable for debugging
       end
 
@@ -162,9 +162,9 @@ MMGuild = {
       o.fiveStart = o.fourStart - 7 * 86400 -- prior week start
       o.fiveEnd = o.fourStart -- prior week end
 
-      o.sixStart = GetTimeStamp() - 10 * 86400 -- last 10 days
-      o.sevenStart = GetTimeStamp() - 30 * 86400 -- last 30 days
-      o.eightStart = GetTimeStamp() - 7 * 86400 -- last 7 days
+      o.sixStart = dayCutoff - 10 * 86400 -- last 10 days
+      o.sevenStart = dayCutoff - 30 * 86400 -- last 30 days
+      o.eightStart = dayCutoff - 7 * 86400 -- last 7 days
 
       if MasterMerchant:ActiveSettings().customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_HOURS) then
         o.nineStart = GetTimeStamp() - MasterMerchant:ActiveSettings().customTimeframe * 3600 -- last x hours
@@ -194,7 +194,17 @@ MMGuild = {
   end
 
   function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, searchText)
+    if not rankIndex then
+      --MasterMerchant.dm("Debug", string.format("%s %s", "rankIndex: ", rankIndex))
+    end
+    if not amount then
+      --MasterMerchant.dm("Debug", string.format("%s %s", "amount: ", amount))
+      --MasterMerchant.dm("Debug", string.format("%s %s", "type: ", type(amount)))
+    end
     amount = tonumber(amount)
+    if not amount then
+      --MasterMerchant.dm("Debug", string.format("%s %s", "#amount: ", amount))
+    end
     if type(stack) ~= 'number' then stack = 1 end
 
     if not self.ranks[rankIndex] then
@@ -237,6 +247,9 @@ MMGuild = {
     if sellerName == nil then return end
     if date == nil then return end
     if type(date) ~= 'number' then return end
+    if not amount then
+      --MasterMerchant.dm("Debug", string.format("%s %s", "addSaleByDate amount: ", amount))
+    end
     if (date >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.twoStart and date < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.threeStart) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText) end;

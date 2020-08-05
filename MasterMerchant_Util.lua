@@ -10,7 +10,11 @@
 function MasterMerchant.v(level, ...)
   -- DEBUG
   if (level <= MasterMerchant:ActiveSettings().verbose) then
-    if ... then d(...) end
+    if ... and MasterMerchant.viewer then
+      MasterMerchant.dm("Debug", ...)
+    else
+      d(...)
+    end
     return true
   end
   return false

@@ -41,6 +41,21 @@ function MasterMerchant:setupGuildColors()
   end
 end
 
+function MasterMerchant.days_last_kiosk()
+  local days_last_kiosk
+  if GetTimeStamp() > 1597172400 then -- proposed flip begining Tuesday Aug 11
+    days_last_kiosk = 604800 -- 7 days if after Aug 11
+  else
+    days_last_kiosk = 777600 -- 9 days 1 Hour to reflect old cuttof of 6:00 PM Pacific
+  end
+  if GetWorldName() == 'EU Megaserver' then
+    days_last_kiosk = days_last_kiosk - (3600 * 5)
+  else
+    days_last_kiosk = days_last_kiosk - (3600 * 6)
+  end
+  return days_last_kiosk
+end
+
 function MasterMerchant:TimeCheck()
     -- setup focus info
     local range = self:ActiveSettings().defaultDays
@@ -3337,6 +3352,7 @@ function MasterMerchant:Initialize()
 
   -- Populate savedVariables
   self.savedVariables = ZO_SavedVars:New('ShopkeeperSavedVars', 1, GetDisplayName(), Defaults)
+  -- self.acctSavedVariables.scanHistory is no longer used
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), acctDefaults)
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, {}, nil, 'MasterMerchant')
 
@@ -3958,6 +3974,11 @@ function MasterMerchant:InitItemHistory()
 
     local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
       self.totalRecords = self.totalRecords + 1
+      if not saledata.price then
+        --MasterMerchant.dm("Debug", string.format("%s %s", "loopfunc saledata.price: ", saledata.price))
+        --if saledata then MasterMerchant.dm("Debug", saledata) end
+        --if versiondata.sales then MasterMerchant.dm("Debug", versiondata.sales) end
+      end
       if (not (saledata == {})) and saledata.guild then
         if (extradata.doGuildItems) then
           self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild)
