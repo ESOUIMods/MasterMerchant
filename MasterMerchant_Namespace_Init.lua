@@ -33,8 +33,10 @@ MasterMerchant.isScanning = false
 MasterMerchant.isScanningParallel = {}
 MasterMerchant.salesData = { }
 
-local logger = LibDebugLogger.Create(MasterMerchant.name)
-MasterMerchant.logger = logger
+if LibDebugLogger then
+  local logger = LibDebugLogger.Create(MasterMerchant.name)
+  MasterMerchant.logger = logger
+end
 local SDLV = DebugLogViewer
 if SDLV then MasterMerchant.viewer = true else MasterMerchant.viewer = false end
 
