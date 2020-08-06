@@ -36,8 +36,12 @@ function MasterMerchant:setupGuildColors()
     nextGuild = nextGuild + 1
     local nextGuildID = GetGuildId(nextGuild)
     local nextGuildName = GetGuildName(nextGuildID)
-    local r, g, b = GetChatCategoryColor(CHAT_CHANNEL_GUILD_1 - 3 + nextGuild)
-    self.guildColor[nextGuildName] = {r, g, b};
+    if nextGuildName ~= "" or nextGuildName ~= nil then
+      local r, g, b = GetChatCategoryColor(CHAT_CHANNEL_GUILD_1 - 3 + nextGuild)
+      self.guildColor[nextGuildName] = {r, g, b};
+    else
+      self.guildColor[nextGuildName] = {255, 255, 255};
+    end
   end
 end
 
@@ -1223,7 +1227,7 @@ function MasterMerchant:LibAddonInit()
       type = 'slider',
       name = GetString(SK_SCAN_FREQ_NAME),
       tooltip = GetString(SK_SCAN_FREQ_TIP),
-      min = 30,
+      min = 1200,
       max = 3600,
       getFunc = function() return self:ActiveSettings().scanFreq end,
       setFunc = function(value)
@@ -1339,18 +1343,8 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return self:ActiveSettings().replaceInventoryValues end,
       setFunc = function(value) self:ActiveSettings().replaceInventoryValues = value end,
     },
-    -- should we delay initialization?
-    [19] = {
-      type = 'checkbox',
-      name = GetString(SK_DELAY_INIT_NAME),
-      tooltip = GetString(SK_DELAY_INIT_TIP),
-      getFunc = function() return self.systemSavedVariables.delayInit end,
-      setFunc = function(value) self.systemSavedVariables.delayInit = value end,
-      -- Delay Init Change
-      disabled = true,
-    },
     -- should we display info on guild roster?
-    [20] = {
+    [19] = {
       type = 'checkbox',
       name = GetString(SK_ROSTER_INFO_NAME),
       tooltip = GetString(SK_ROSTER_INFO_TIP),
@@ -1358,7 +1352,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().diplayGuildInfo = value end,
     },
     -- should we display profit instead of margin?
-    [21] = {
+    [20] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -1366,7 +1360,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().saucy = value end,
     },
     -- should we display a Min Profit Filter in AGS?
-    [22] = {
+    [21] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1374,7 +1368,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
     },
     -- should we auto advance to the next page?
-    [23] = {
+    [22] = {
       type = 'checkbox',
       name = GetString(MM_AUTO_ADVANCE_NAME),
       tooltip = GetString(MM_AUTO_ADVANCE_TIP),
@@ -1382,7 +1376,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().autoNext = value end,
     },
     -- should we display the item listed message?
-    [24] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
       tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
@@ -1390,7 +1384,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
     },
     -- Font to use
-    [25] = {
+    [24] = {
       type = 'dropdown',
       name = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
@@ -1405,17 +1399,17 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- Verbose MM Messages
-    [26] = {
+    [25] = {
       type = 'slider',
       name = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
-      min = 0,
+      min = 1,
       max = 5,
       getFunc = function() return self:ActiveSettings().verbose end,
       setFunc = function(value) self:ActiveSettings().verbose = value end,
     },
     -- Use simplified guild history scanning
-    [27] = {
+    [26] = {
       type = 'checkbox',
       name = GetString(MM_SIMPLE_SCAN_NAME),
       tooltip = GetString(MM_SIMPLE_SCAN_TIP),
@@ -1423,7 +1417,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().simpleSalesScanning = value end,
     },
     -- Skip Indexing?
-    [28] = {
+    [27] = {
       type = 'checkbox',
       name = GetString(MM_SKIP_INDEX_NAME),
       tooltip = GetString(MM_SKIP_INDEX_TIP),
@@ -1431,7 +1425,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().minimalIndexing = value end,
     },
     -- Make all settings account-wide (or not)
-    [29] = {
+    [28] = {
       type = 'checkbox',
       name = GetString(SK_ACCOUNT_WIDE_NAME),
       tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
@@ -3257,7 +3251,7 @@ function MasterMerchant:Initialize()
     ['feedbackWinTop'] = 420,
     ['windowFont'] = 'ProseAntique',
     ['historyDepth'] = 30,
-    ['scanFreq'] = 600,
+    ['scanFreq'] = 1200,
     ['showAnnounceAlerts'] = true,
     ['showCyroAlerts'] = true,
     ['alertSoundName'] = 'Book_Acquired',
@@ -3314,7 +3308,7 @@ function MasterMerchant:Initialize()
     ['feedbackWinTop'] = 420,
     ['windowFont'] = 'ProseAntique',
     ['historyDepth'] = 30,
-    ['scanFreq'] = 600,
+    ['scanFreq'] = 1200,
     ['showAnnounceAlerts'] = true,
     ['showCyroAlerts'] = true,
     ['alertSoundName'] = 'Book_Acquired',
@@ -4088,6 +4082,8 @@ function MasterMerchant:InitScrollLists()
 
     -- RegisterForUpdate lets us scan at a given interval (in ms), so we'll use that to
     -- keep the sales history updated
+    if self:ActiveSettings().scanFreq < 1200 then self:ActiveSettings().scanFreq = 1200 end
+    if self.savedVariables.scanFreq < 1200 then self.savedVariables.scanFreq = 1200 end
     local scanInterval = self:ActiveSettings().scanFreq * 1000
     EVENT_MANAGER:RegisterForUpdate(self.name, scanInterval, function() self:ScanStoresParallel(true) end)
 
@@ -4253,10 +4249,14 @@ function MasterMerchant.Slash(allArgs)
     -- Adjust the last scan times to scan back that far...
     local checkTime = GetTimeStamp() - (hoursBack * 3600)
     local guildNum = 1
+    local do_scan = true
     while guildNum <= GetNumGuilds() do
       local guildID = GetGuildId(guildNum)
       local guildName = GetGuildName(guildID)
-      if MasterMerchant.systemSavedVariables.lastScan[guildName] and (guildNumber == 0 or guildNumber == guildNum) then
+      if GetTimeStamp() - 1200 > MasterMerchant.systemSavedVariables.lastScan[guildName] then
+        MasterMerchant.v(1, "You scanned already in the last 20 minutes.")
+        do_scan = false
+      elseif MasterMerchant.systemSavedVariables.lastScan[guildName] and (guildNumber == 0 or guildNumber == guildNum) then
         MasterMerchant.numEvents[guildName] = 0
         MasterMerchant.systemSavedVariables.lastScan[guildName] = checkTime
         MasterMerchant.systemSavedVariables.newestItem[guildName] = MasterMerchant.systemSavedVariables.newestItem[guildName] or 0
@@ -4266,7 +4266,7 @@ function MasterMerchant.Slash(allArgs)
       end
       guildNum = guildNum + 1
     end
-    MasterMerchant:ScanStoresParallel(true)
+    if do_scan then MasterMerchant:ScanStoresParallel(true) end
 
     return
   end
