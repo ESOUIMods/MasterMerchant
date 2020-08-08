@@ -1227,7 +1227,7 @@ function MasterMerchant:LibAddonInit()
       type = 'slider',
       name = GetString(SK_SCAN_FREQ_NAME),
       tooltip = GetString(SK_SCAN_FREQ_TIP),
-      min = 1200,
+      min = 120,
       max = 3600,
       getFunc = function() return self:ActiveSettings().scanFreq end,
       setFunc = function(value)
@@ -2262,7 +2262,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
   -- (hopefully!) unique - search much faster
   -- Only takes a few milliseconds to load up
   for i = 1, GetNumGuildMembers(guildID) do
-    local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildID, i)
+    local guildMemInfo, _, _, _, secsSinceLogoff = GetGuildMemberInfo(guildID, i)
     guildMemberInfo[string.lower(guildMemInfo)] = true
   end
 
@@ -2621,7 +2621,8 @@ end
 
 function MasterMerchant:RequestMoreGuildHistoryCategoryEvents(guildId, selectedCategory)
   if self.moreEventsRequested[guildId] or
-      DoesGuildHistoryCategoryHaveOutstandingRequest(guildId, selectedCategory) or IsGuildHistoryCategoryRequestQueued(guildId, selectedCategory) or
+      DoesGuildHistoryCategoryHaveOutstandingRequest(guildId, selectedCategory) or
+      IsGuildHistoryCategoryRequestQueued(guildId, selectedCategory) or
       not DoesGuildHistoryCategoryHaveMoreEvents(guildId, GUILD_HISTORY_STORE) then
     return
   end
@@ -3251,7 +3252,7 @@ function MasterMerchant:Initialize()
     ['feedbackWinTop'] = 420,
     ['windowFont'] = 'ProseAntique',
     ['historyDepth'] = 30,
-    ['scanFreq'] = 1200,
+    ['scanFreq'] = 120,
     ['showAnnounceAlerts'] = true,
     ['showCyroAlerts'] = true,
     ['alertSoundName'] = 'Book_Acquired',
@@ -3308,7 +3309,7 @@ function MasterMerchant:Initialize()
     ['feedbackWinTop'] = 420,
     ['windowFont'] = 'ProseAntique',
     ['historyDepth'] = 30,
-    ['scanFreq'] = 1200,
+    ['scanFreq'] = 120,
     ['showAnnounceAlerts'] = true,
     ['showCyroAlerts'] = true,
     ['alertSoundName'] = 'Book_Acquired',
@@ -4082,8 +4083,8 @@ function MasterMerchant:InitScrollLists()
 
     -- RegisterForUpdate lets us scan at a given interval (in ms), so we'll use that to
     -- keep the sales history updated
-    if self:ActiveSettings().scanFreq < 1200 then self:ActiveSettings().scanFreq = 1200 end
-    if self.savedVariables.scanFreq < 1200 then self.savedVariables.scanFreq = 1200 end
+    if self:ActiveSettings().scanFreq < 120 then self:ActiveSettings().scanFreq = 120 end
+    if self.savedVariables.scanFreq < 120 then self.savedVariables.scanFreq = 120 end
     local scanInterval = self:ActiveSettings().scanFreq * 1000
     EVENT_MANAGER:RegisterForUpdate(self.name, scanInterval, function() self:ScanStoresParallel(true) end)
 
@@ -4249,14 +4250,10 @@ function MasterMerchant.Slash(allArgs)
     -- Adjust the last scan times to scan back that far...
     local checkTime = GetTimeStamp() - (hoursBack * 3600)
     local guildNum = 1
-    local do_scan = true
     while guildNum <= GetNumGuilds() do
       local guildID = GetGuildId(guildNum)
       local guildName = GetGuildName(guildID)
-      if GetTimeStamp() - 1200 > MasterMerchant.systemSavedVariables.lastScan[guildName] then
-        MasterMerchant.v(1, "You scanned already in the last 20 minutes.")
-        do_scan = false
-      elseif MasterMerchant.systemSavedVariables.lastScan[guildName] and (guildNumber == 0 or guildNumber == guildNum) then
+      if MasterMerchant.systemSavedVariables.lastScan[guildName] and (guildNumber == 0 or guildNumber == guildNum) then
         MasterMerchant.numEvents[guildName] = 0
         MasterMerchant.systemSavedVariables.lastScan[guildName] = checkTime
         MasterMerchant.systemSavedVariables.newestItem[guildName] = MasterMerchant.systemSavedVariables.newestItem[guildName] or 0
@@ -4266,7 +4263,7 @@ function MasterMerchant.Slash(allArgs)
       end
       guildNum = guildNum + 1
     end
-    if do_scan then MasterMerchant:ScanStoresParallel(true) end
+    MasterMerchant:ScanStoresParallel(true)
 
     return
   end
