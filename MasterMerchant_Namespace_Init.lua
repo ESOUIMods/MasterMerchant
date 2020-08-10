@@ -26,11 +26,11 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '2.3.9'
+MasterMerchant.version = '2.4.0'
 MasterMerchant.locale = 'en'
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
-MasterMerchant.isScanningParallel = {}
+MasterMerchant.isScanningParallel = { }
 MasterMerchant.salesData = { }
 
 if LibDebugLogger then
