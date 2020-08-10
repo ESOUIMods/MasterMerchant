@@ -264,9 +264,9 @@ function MasterMerchant:indexHistoryTables()
 
   local prefunc = function(extraData)
     if MasterMerchant:ActiveSettings().minimalIndexing then
-      MasterMerchant.v(3, 'Minimal Indexing...')
+      MasterMerchant.v(4, 'Minimal Indexing...')
     else
-      MasterMerchant.v(3, 'Full Indexing...')
+      MasterMerchant.v(4, 'Full Indexing...')
     end
     extraData.start = GetTimeStamp()
     extraData.checkMilliseconds = 60
@@ -326,10 +326,10 @@ function MasterMerchant:indexHistoryTables()
 
   local postfunc = function(extraData)
     self:setScanning(false)
-    MasterMerchant.v(3, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
-    MasterMerchant.v(3, '  ' .. extraData.indexCount .. ' sales records')
+    MasterMerchant.v(4, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
+    MasterMerchant.v(4, '  ' .. extraData.indexCount .. ' sales records')
     if extraData.wordsIndexCount > 1 then
-      MasterMerchant.v(3, '  ' .. extraData.wordsIndexCount .. ' unique words')
+      MasterMerchant.v(4, '  ' .. extraData.wordsIndexCount .. ' unique words')
     end
   end
 
