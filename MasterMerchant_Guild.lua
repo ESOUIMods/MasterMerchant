@@ -141,10 +141,6 @@ MMGuild = {
         weekCutoff = guild_system_offline() -- do not subtract time because of while loop
         o.week_start = weekCutoff -- this is 7 day back already
         o.kiosk_cycle = weekCutoff + (7 * 86400) -- add 7 days for when week would end
-      else
-        o.kiosk_cycle = weekCutoff -- future date when kiosk changes per zenimax
-        weekCutoff = weekCutoff - MasterMerchant.days_last_kiosk() -- deduct 7 days
-        o.week_start = weekCutoff -- store in this new variable for debugging
       end
 
       -- Calc Day Cutoff in Local Time
@@ -154,12 +150,12 @@ MMGuild = {
 
       o.twoStart = o.oneStart - 86400 -- yesterday
 
-      o.threeStart = weekCutoff -- back up to Monday for this week
+      o.threeStart = weekCutoff - MasterMerchant.days_last_kiosk(MM_INDEX_THISWEEK) -- Tuesday for the upcomming flip
 
-      o.fourStart = o.threeStart - 7 * 86400 -- last week start
+      o.fourStart = o.threeStart - MasterMerchant.days_last_kiosk(MM_INDEX_LASTWEEK) -- last week start
       o.fourEnd = o.threeStart -- last week end
 
-      o.fiveStart = o.fourStart - 7 * 86400 -- prior week start
+      o.fiveStart = o.fourStart - MasterMerchant.days_last_kiosk(MM_INDEX_PRIORWEEK) -- prior week start
       o.fiveEnd = o.fourStart -- prior week end
 
       o.sixStart = dayCutoff - 10 * 86400 -- last 10 days
