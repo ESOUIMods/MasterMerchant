@@ -476,10 +476,8 @@ function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
   searchByWords is a function at this point
   ]]--
   for i in searchByWords do
-    if self.SRIndex[i] == nil then
-      -- extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-      self.SRIndex[i] = {}
-    end
+    --extraData.wordsIndexCount = extraData.wordsIndexCount + 1
+    self.SRIndex[i] = self.SRIndex[i] or {}
     tinsert(self.SRIndex[i], wordData)
   end
 
