@@ -2545,15 +2545,15 @@ function MasterMerchant:ScanOlderParallel(guildID, doAlert, oldNumEvents, badLoa
         else
           MasterMerchant.v(vlevel, MasterMerchant.concat(guildName, ZO_FormatDurationAgo(math.max(secsSinceFirst, secsSinceLast))))
         end
-        self.lastUpdateTime[guildName] = GetTimeStamp()
-        self.lastUpdateCount[guildName] = numEvents
+        self.lastUpdateTime[guildName] = GetTimeStamp() - 86400
+        self.lastUpdateCount[guildName] = 0
       end
 
       local inCooldown = not MasterMerchant:RequestMoreGuildHistoryCategoryEvents(guildID, GUILD_HISTORY_STORE)
       if inCooldown then
         -- We were told we are not getting more records just yet, so it's not really a badLoad
         MasterMerchant.v(6, 'In RequestMoreGuildHistoryCategoryEvents Cooldown.')
-        badLoads = -1
+        --badLoads = -1
       end
       -- DEBUG  -guild scanning
       zo_callLater(function() self:ScanOlderParallel(guildID, doAlert, numEvents, badLoads) end, 3000)
