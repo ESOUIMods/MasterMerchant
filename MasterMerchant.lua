@@ -1440,9 +1440,12 @@ function MasterMerchant:LibAddonInit()
       name = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
       min = 1,
-      max = 6,
+      max = 7,
       getFunc = function() return self:ActiveSettings().verbose end,
-      setFunc = function(value) self:ActiveSettings().verbose = value end,
+      setFunc = function(value)
+                  self:ActiveSettings().verbose = value
+                  self.savedVariables.verbose = value
+                end,
     },
     -- Use simplified guild history scanning
     [26] = {
@@ -2502,9 +2505,9 @@ function MasterMerchant:DoScanParallel(guildID, checkOlder, doAlert, lastSaleTim
 
   -- DEBUG
   if self.addedEvents[guildName] > 0 then
-    MasterMerchant.v(3, 'Added ' .. self.addedEvents[guildName] .. ' sales records from ' .. guildName .. '.')
+    MasterMerchant.v(3, 'Completed Scanning: ' .. guildName .. ' added ' .. self.addedEvents[guildName] .. ' sales.')
   else
-    MasterMerchant.v(4, 'Completed Scanning ' .. guildName .. ' but found no new sales.')
+    MasterMerchant.v(3, 'Completed Scanning: ' .. guildName .. ' but found no new sales.')
   end
 
   self:PostScanParallel(guildName, doAlert)
@@ -2552,7 +2555,7 @@ function MasterMerchant:ScanOlderParallel(guildID, doAlert, oldNumEvents, badLoa
       local inCooldown = not MasterMerchant:RequestMoreGuildHistoryCategoryEvents(guildID, GUILD_HISTORY_STORE)
       if inCooldown then
         -- We were told we are not getting more records just yet, so it's not really a badLoad
-        MasterMerchant.v(6, 'In RequestMoreGuildHistoryCategoryEvents Cooldown.')
+        MasterMerchant.v(7, 'In RequestMoreGuildHistoryCategoryEvents Cooldown.')
         --badLoads = -1
       end
       -- DEBUG  -guild scanning
@@ -2567,7 +2570,7 @@ function MasterMerchant:ScanOlderParallel(guildID, doAlert, oldNumEvents, badLoa
       zo_callLater(function() self:DoScanParallel(guildID, true, doAlert) end, 500)
     end
   else
-    MasterMerchant.v(5, 'Guild ' .. guildID .. ' (' .. guildName .. ') has no sales.')
+    MasterMerchant.v(3, 'Completed Scanning: ' .. guildName .. '. There are no sales events in the guild history to scan.')
     self:setScanningParallel(false, guildName)
   end
 end
@@ -2623,7 +2626,7 @@ function MasterMerchant:ScanStoresParallel(doAlert)
           self.systemSavedVariables.lastScan[guildName] = self.systemSavedVariables.lastScan[guildName] or newGuildTime
           self:setScanningParallel(true, guildName)
           if not MasterMerchant:RequestMoreGuildHistoryCategoryEvents(guildID, GUILD_HISTORY_STORE) then
-            MasterMerchant.v(6, 'In RequestMoreGuildHistoryCategoryEvents Cooldown.')
+            MasterMerchant.v(7, 'In RequestMoreGuildHistoryCategoryEvents Cooldown.')
           end
           zo_callLater(function() self:ScanOlderParallel(guildID, doAlert, nil, nil) end, 500 + (5000 * (i-1)))
         end
@@ -2668,12 +2671,15 @@ function MasterMerchant:RequestMoreGuildHistoryCategoryEvents(guildID, selectedC
     MasterMerchant.v(5, 'More data requested for guild: ' .. GetGuildName(guildID))
   else
     -- Try every 30 seconds until they let us go thru
-    MasterMerchant.v(6, 'More data request denied for guild: ' .. GetGuildName(guildID))
+    MasterMerchant.v(7, 'More data request denied for guild: ' .. GetGuildName(guildID))
+    self.moreEventsRequested[guildID] = false
+    --[[
     self.moreEventsRequested[guildID] = true
     zo_callLater(function()
       self.moreEventsRequested[guildID] = false
       MasterMerchant:RequestMoreGuildHistoryCategoryEvents(guildID, selectedCategory)
     end, 30000)
+    ]]--
   end
   return result
 end
