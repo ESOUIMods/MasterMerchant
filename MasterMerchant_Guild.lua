@@ -150,12 +150,13 @@ MMGuild = {
 
       o.twoStart = o.oneStart - 86400 -- yesterday
 
-      o.threeStart = weekCutoff - MasterMerchant.days_last_kiosk(MM_INDEX_THISWEEK) -- Tuesday for the upcomming flip
+      o.threeStart = weekCutoff - 7 * 86400  -- Tuesday Aug 18
+      o.threeEnd = weekCutoff -- Tuesday flip Aug 25
 
-      o.fourStart = o.threeStart - MasterMerchant.days_last_kiosk(MM_INDEX_LASTWEEK) -- last week start
+      o.fourStart = o.threeStart - 7 * 86400 -- last week Tuesday flip
       o.fourEnd = o.threeStart -- last week end
 
-      o.fiveStart = o.fourStart - MasterMerchant.days_last_kiosk(MM_INDEX_PRIORWEEK) -- prior week start
+      o.fiveStart = o.fourStart - MasterMerchant.days_last_kiosk(MM_INDEX_PRIORWEEK) -- prior week start Aug 2
       o.fiveEnd = o.fourStart -- prior week end
 
       o.sixStart = dayCutoff - 10 * 86400 -- last 10 days
@@ -248,7 +249,7 @@ MMGuild = {
     end
     if (date >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.twoStart and date < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort, searchText) end;
-    if (date >= self.threeStart) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText) end;
+    if (date >= self.threeStart and date < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.fourStart and date < self.fourEnd) then self:addSale(sellerName, 4, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.fiveStart and date < self.fiveEnd) then self:addSale(sellerName, 5, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.sixStart) then self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText) end;
@@ -261,7 +262,7 @@ MMGuild = {
     if sellerName == nil then return end
     if (date >= self.oneStart) then self:removeSale(sellerName, 1, amount) end;
     if (date >= self.twoStart and date < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end;
-    if (date >= self.threeStart) then self:removeSale(sellerName, 3, amount, stack) end;
+    if (date >= self.threeStart and date < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end;
     if (date >= self.fourStart and date < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end;
     if (date >= self.fiveStart and date < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end;
     if (date >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end;

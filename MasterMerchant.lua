@@ -63,13 +63,8 @@ function MasterMerchant.days_last_kiosk(weekIndex)
   --MM_INDEX_PRIORWEEK
 
   -- between 1597172400 Aug 11 3PM and 1597777200 Aug 18 3PM
-  if weekIndex == MM_INDEX_PRIORWEEK and (currentTime > 1597172400 and currentTime < 1597777200) then
-    --MasterMerchant.dm("Debug", "MM_INDEX_PRIORWEEK 1597172400 1597777200 Seven Day Week")
-    days_last_kiosk = 604800 -- 7 days if after Aug 11
-  end
-  -- between 1597172400 Aug 11 3PM and 1597777200 Aug 18 3PM
-  if weekIndex == MM_INDEX_LASTWEEK and (currentTime > 1597172400 and currentTime < 1597777200) then
-    --MasterMerchant.dm("Debug", "MM_INDEX_LASTWEEK 1597172400 1597777200 Nine Day Week")
+  if weekIndex == MM_INDEX_PRIORWEEK and currentTime > 1597777200 then
+    MasterMerchant.dm("Debug", "MM_INDEX_PRIORWEEK Nine Day Week")
     days_last_kiosk = 777600 -- 9 days 1 Hour to reflect old cuttof of 6:00 PM Pacific
     if GetWorldName() == 'EU Megaserver' then
       days_last_kiosk = days_last_kiosk - (3600 * 5)
@@ -77,22 +72,6 @@ function MasterMerchant.days_last_kiosk(weekIndex)
       days_last_kiosk = days_last_kiosk - (3600 * 6)
     end
   end
-  --
-  if weekIndex == MM_INDEX_THISWEEK and (currentTime > 1597172400 and currentTime < 1597777200) then -- 1597777200 Aug 18 3PM
-    --MasterMerchant.dm("Debug", "MM_INDEX_THISWEEK Seven Day Week Agu 11 to 18")
-    days_last_kiosk = 604800 -- 7 days back after Aug 18
-  end
-
-  -- for all dates after Aug 18
-  if weekIndex == MM_INDEX_PRIORWEEK and currentTime > 1597777200 then
-    --MasterMerchant.dm("Debug", "Regular Prior Week")
-    days_last_kiosk = 604800 -- 7 days if after Aug 11
-  end
-  if weekIndex == MM_INDEX_THISWEEK and currentTime > 1597777200 then -- 1597777200 Aug 18 3PM
-    --MasterMerchant.dm("Debug", "Regular Week")
-    days_last_kiosk = 604800 -- 7 days back after Aug 18
-  end
-
   return days_last_kiosk
 end
 
