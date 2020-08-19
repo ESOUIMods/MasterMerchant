@@ -64,7 +64,7 @@ function MasterMerchant.days_last_kiosk(weekIndex)
 
   -- between 1597172400 Aug 11 3PM and 1597777200 Aug 18 3PM
   if weekIndex == MM_INDEX_PRIORWEEK and currentTime > 1597777200 then
-    MasterMerchant.dm("Debug", "MM_INDEX_PRIORWEEK Nine Day Week")
+    --MasterMerchant.dm("Debug", "MM_INDEX_PRIORWEEK Nine Day Week")
     days_last_kiosk = 777600 -- 9 days 1 Hour to reflect old cuttof of 6:00 PM Pacific
     if GetWorldName() == 'EU Megaserver' then
       days_last_kiosk = days_last_kiosk - (3600 * 5)
