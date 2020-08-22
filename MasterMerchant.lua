@@ -2645,7 +2645,7 @@ function MasterMerchant:RequestMoreGuildHistoryCategoryEvents(guildID, selectedC
     not DoesGuildHistoryCategoryHaveMoreEvents(guildID, GUILD_HISTORY_STORE) then
     return
   end
-  local result = RequestMoreGuildHistoryCategoryEvents(guildId, selectedCategory)
+  local result = RequestMoreGuildHistoryCategoryEvents(guildID, selectedCategory)
   if result then
     MasterMerchant.v(5, 'More data requested for guild: ' .. GetGuildName(guildID))
   else
