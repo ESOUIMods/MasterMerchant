@@ -9,7 +9,7 @@
 
 function MasterMerchant.v(level, ...)
   -- DEBUG
-  if (level <= MasterMerchant:ActiveSettings().verbose) then
+  if (level <= MasterMerchant.verboseLevel) then
     if ... and MasterMerchant.viewer then
       MasterMerchant.dm("Debug", ...)
     else
@@ -107,9 +107,9 @@ end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
     if itemLink then
-	    local theIID = string.match(itemLink, '|H.-:item:(.-):')
+	    local theIID = GetItemLinkItemId(itemLink)
 	    local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
-	    local tipStats = MasterMerchant:toolTipStats(tonumber(theIID), itemIndex, true, true, false)
+	    local tipStats = MasterMerchant:toolTipStats(theIID, itemIndex, true, true, false)
 	    if tipStats.avgPrice then
 		    return tipStats.avgPrice
         end
@@ -230,8 +230,28 @@ function MasterMerchant:setScanning(start)
   end
 end
 
-function MasterMerchant:setDigging(start)
-  self.isDigging = start
+function MasterMerchant:setScanningHistory(start, guildName)
+  MasterMerchant.isScanningHistory[guildName] = start
+  MasterMerchantResetButton:SetEnabled(not start)
+  MasterMerchantGuildResetButton:SetEnabled(not start)
+  MasterMerchantRefreshButton:SetEnabled(not start)
+  MasterMerchantGuildRefreshButton:SetEnabled(not start)
+
+  if not start then
+    MasterMerchantWindowLoadingIcon.animation:Stop()
+    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
+    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
+  end
+
+  MasterMerchantWindowLoadingIcon:SetHidden(not start)
+  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
+  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
+
+  if start then
+    MasterMerchantWindowLoadingIcon.animation:PlayForward()
+    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
+    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
+  end
 end
 
 function MasterMerchant:setScanningParallel(start, guildName)
@@ -326,14 +346,27 @@ function MasterMerchant:indexHistoryTables()
 
 end
 
--- And here we add a new item
-function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
-
-  local theIID = string.match(theEvent.itemName, '|H.-:item:(.-):')
+function MasterMerchant:CheckForDuplicate(theEvent)
+  local dupe = false
+  --[[ we need to be able to calculate theIID and itemIndex 
+  when not used with add to history tables event though 
+  the function will calculate them.
+  ]]--
+  local theIID = GetItemLinkItemId(theEvent.itemName)
   if theIID == nil then return end
-  theIID = tonumber(theIID)
   local itemIndex = self.makeIndexFromLink(theEvent.itemName)
 
+  --[[
+    ["buyer"] = buyer,
+    ["guild"] = guild,
+    ["itemLink"] = itemName,
+    ["quant"] = quant,
+    ["timestamp"] = saleTime,
+    ["price"] = salePrice,
+    ["seller"] = seller,
+    ["wasKiosk"] = kioskSale,
+    ["id"] = id,
+  ]]--
   local newSalesItem =
     {buyer = theEvent.buyer,
     guild = theEvent.guild,
@@ -345,24 +378,27 @@ function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
     wasKiosk = theEvent.kioskSale,
     id = theEvent.id}
 
-  if (checkForDups and self.salesData[theIID] and self.salesData[theIID][itemIndex]) then
+  if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
       if v.id == newSalesItem.id then
-        return false
-      end
-      if v.id == nil and
-          v.buyer == newSalesItem.buyer and
-          v.guild == newSalesItem.guild and
-          v.quant == newSalesItem.quant and
-          v.price == newSalesItem.price and
-          v.seller == newSalesItem.seller and
-          string.match(v.itemLink, '|H(.-)|h') == string.match(newSalesItem.itemLink, '|H(.-)|h') and
-          (math.abs(v.timestamp - newSalesItem.timestamp) < 2) then
-        v.id = newSalesItem.id
-        return false
+        dupe = true
+        break
       end
     end
   end
+  return dupe, newSalesItem
+end
+
+-- And here we add a new item
+function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
+
+  local theIID = GetItemLinkItemId(theEvent.itemName)
+  if theIID == nil then return end
+  local itemIndex = self.makeIndexFromLink(theEvent.itemName)
+  
+  local isDuplicate, newSalesItem = MasterMerchant:CheckForDuplicate(theEvent)
+  
+  if isDuplicate then return false end
 
   if not self.salesData[theIID] then
     -- Add to the split memory set

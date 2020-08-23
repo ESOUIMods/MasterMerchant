@@ -244,9 +244,6 @@ MMGuild = {
     if sellerName == nil then return end
     if date == nil then return end
     if type(date) ~= 'number' then return end
-    if not amount then
-      --MasterMerchant.dm("Debug", string.format("%s %s", "addSaleByDate amount: ", amount))
-    end
     if (date >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.twoStart and date < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.threeStart and date < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText) end;

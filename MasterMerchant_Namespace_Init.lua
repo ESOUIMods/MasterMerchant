@@ -26,12 +26,20 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '2.4.7'
+MasterMerchant.version = '2.4.8'
 MasterMerchant.locale = 'en'
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
 MasterMerchant.isScanningParallel = { }
 MasterMerchant.salesData = { }
+MasterMerchant.eventsCache = { }
+MasterMerchant.eventsSinceCache = { }
+MasterMerchant.lastHistoryRequest = { }
+MasterMerchant.verboseLevel = 6
+MasterMerchant.lastHeadEvent = { }
+MasterMerchant.lastTailEvent = { }
+MasterMerchant.lastInputVar = { } -- debug var
+MasterMerchant.isScanningHistory = { } -- added for debug on 8-21
 
 if LibDebugLogger then
   local logger = LibDebugLogger.Create(MasterMerchant.name)
@@ -113,6 +121,7 @@ MasterMerchant.alertQueue = { }
 MasterMerchant.addedEvents = { }
 MasterMerchant.lastUpdateTime = { }
 MasterMerchant.lastUpdateCount = { }
+MasterMerchant.lastNonDuplicate = { }
 
 MasterMerchant.curSort = { 'time', 'desc' }
 MasterMerchant.curGuildSort = { 'rank', 'asc' }
