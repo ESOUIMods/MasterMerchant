@@ -1537,7 +1537,7 @@ function MasterMerchant:PurgeDups()
             if checking.id == nil then
               dup = true
             end
-            if eventArray[checking.id] then
+            if eventArray[tonumber(checking.id)] then
               dup = true
             end
             if dup then
@@ -1545,7 +1545,7 @@ function MasterMerchant:PurgeDups()
               count = count + 1
             else
               table.insert(newSales, checking)
-              eventArray[checking.id] = true
+              eventArray[tonumber(checking.id)] = true
             end
           end
           itemData['sales'] = newSales
@@ -1776,6 +1776,8 @@ function MasterMerchant:CleanOutBad()
       or string.sub(saledata['seller'], 1, 1) ~= '@'
       or saledata['itemLink'] == nil
       or type(saledata['itemLink']) ~= 'string'
+      or saledata['id'] == nil
+      or type(saledata['id']) ~= 'number'
       or (not string.match(tostring(saledata['itemLink']), '|H.-:item:(.-):')) then
         -- Remove it
         versiondata['sales'][saleid] = nil
@@ -1791,14 +1793,14 @@ function MasterMerchant:CleanOutBad()
         buyer = saledata.buyer,
         guild = saledata.guild,
         itemName = saledata.itemLink,
-        quant = saledata.quant,
-        saleTime = saledata.timestamp,
-        salePrice = saledata.price,
+        quant = tonumber(saledata.quant),
+        saleTime = tonumber(saledata.timestamp),
+        salePrice = tonumber(saledata.price),
         seller = saledata.seller,
         kioskSale = saledata.wasKiosk,
-        id = saledata.id
+        id = tonumber(saledata.id)
       }
-      MasterMerchant:addToHistoryTables(theEvent, false)
+      MasterMerchant:addToHistoryTables(theEvent)
       extraData.moveCount = extraData.moveCount + 1
       -- Remove it from it's current location
       versiondata['sales'][saleid] = nil
@@ -2215,7 +2217,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
   end
 
   --MasterMerchant.dm("Debug", "ProcessGuildHistoryResponse: " .. guildName)
-  for i = self.systemSavedVariables.numEvents[guildName], numEvents do
+  for i = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName], numEvents do
     local theEvent = {}
     theEvent.eventType, theEvent.secsSince, theEvent.seller, theEvent.buyer, theEvent.quant, theEvent.itemName, theEvent.salePrice, _, theEvent.id = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, i)
     theEvent.guild = guildName
@@ -2232,7 +2234,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
       if theEvent.itemName ~= nil and theEvent.seller ~= nil and theEvent.buyer ~= nil and theEvent.salePrice ~= nil then
         -- Insert the entry into the SalesData table and associated indexes
         -- Don't trust ZOS at all, always check for Dups
-        local added = MasterMerchant:addToHistoryTables(theEvent, true)
+        local added = MasterMerchant:addToHistoryTables(theEvent)
         -- (doAlert and (self.savedVariables.showChatAlerts or self.savedVariables.showAnnounceAlerts))
         if added and string.lower(theEvent.seller) == thePlayer then
           --MasterMerchant.dm("Debug", "alertQueue updated")
@@ -2260,7 +2262,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
 
     NEW METHOD: PostScanParallel
     ]]--
-    MasterMerchant.v(3, 'Event Monitor found ' .. eventsAdded .. ' sales records for ' .. guildName .. '.')
+    MasterMerchant.v(5, 'Event Monitor found ' .. eventsAdded .. ' sales records for ' .. guildName .. '.')
     MasterMerchant:PostScanParallel(guildName, true)
   else
     MasterMerchant.v(5, 'Event Monitor found no new sales for ' .. guildName .. '.')
@@ -2268,19 +2270,19 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
 
   if erroneousEvent then
     MasterMerchant.v(6, 'Erroneous timestamp for a sales event detected for ' .. guildName .. '.')
-    for i = self.systemSavedVariables.lastNonDuplicate[guildName], numEvents do
+    for i = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName], numEvents do
       local theEvent = {}
       theEvent.eventType, theEvent.secsSince, theEvent.seller, theEvent.buyer, theEvent.quant, theEvent.itemName, theEvent.salePrice, _, theEvent.id = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, i)
       if MasterMerchant:CheckForDuplicate(theEvent) then
       else
-        self.systemSavedVariables.numEvents[guildName] = i
-        self.systemSavedVariables.lastNonDuplicate[guildName] = i
+        ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] = i
+        ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName] = i
         break
       end
     end
   else
-    self.systemSavedVariables.numEvents[guildName] = numEvents
-    self.systemSavedVariables.lastNonDuplicate[guildName] = numEvents
+    ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] = numEvents
+    ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName] = numEvents
     --[[
     OLD METHOD: Queue up another scan in 60 seconds if there maybe
     some more left. One minute because the server will sometimes
@@ -2346,7 +2348,7 @@ function MasterMerchant:ScanStoresParallel(doAlert)
   when using /mm missing and just below and Scan Stores Parallel
   is called to start the entire process.
   ]]--
-  MasterMerchant.v(4, 'Event Monitor Activated, watching for guild history updates...')
+  MasterMerchant.v(2, 'Event Monitor Activated, watching for guild history updates...')
   self.requestTimestamp = GetTimeStamp()
   self.addedEvents = self.addedEvents or {}
 
@@ -3038,6 +3040,8 @@ function MasterMerchant:Initialize()
     ['autoNext'] = false,
     ['displayListingMessage'] = false,
     ['verbose'] = 4,
+    ["numEvents"] = {},
+    ["lastNonDuplicate"] = {},
   }
 
   local acctDefaults = {
@@ -3095,6 +3099,8 @@ function MasterMerchant:Initialize()
     ['autoNext'] = false,
     ['displayListingMessage'] = false,
     ['verbose'] = 4,
+    ["numEvents"] = {},
+    ["lastNonDuplicate"] = {},
   }
 
   -- Populate savedVariables
@@ -3213,6 +3219,7 @@ function MasterMerchant:Initialize()
   -- Default in the verbose setting
   if (MasterMerchant:ActiveSettings().verbose == nil) then
     MasterMerchant:ActiveSettings().verbose = 4
+    MasterMerchant.verboseLevel = 4
   end
   if (type(MasterMerchant:ActiveSettings().verbose) == 'boolean') then
     if MasterMerchant:ActiveSettings().verbose then
@@ -3223,6 +3230,7 @@ function MasterMerchant:Initialize()
       MasterMerchant.verboseLevel = 2
     end
   end
+  MasterMerchant.verboseLevel = MasterMerchant:ActiveSettings().verbose or 4
 
   -- Move the old single addon sales history to the multi addon sales history
   if self.acctSavedVariables.SalesData then
@@ -3951,8 +3959,8 @@ function MasterMerchant.Slash(allArgs)
 
   if args == 'help' then
     MasterMerchant.v(1, "/mm  - show/hide the main Master Merchant window")
-    MasterMerchant.v(1, "/mm missing <Guild number> <Hours back>  - rescans the availiable guild history to try to pick up missed records (defaults to all guilds, max history)")
     MasterMerchant.v(1, "/mm dups  - scans your history to purge duplicate entries")
+    MasterMerchant.v(1, "/mm clean - cleans out bad sales records (invalid information)")
     MasterMerchant.v(1, "/mm clearprices  - clears your historical listing prices")
     MasterMerchant.v(1, "/mm invisible  - resets the MM window positions in case they are invisible (aka off the screen)")
     MasterMerchant.v(1, "/mm export <Guild number>  - 'exports' last weeks sales/purchase totals for the guild")
@@ -4030,12 +4038,14 @@ function MasterMerchant.Slash(allArgs)
   end
 
   if args == 'verbose' then
-    if guildNumber == nil then guildNumber = -1 end
-    if guildNumber >= 1 and guildNumber <= 6 then
+    if guildNumber == nil then guildNumber = 1 end
+    if guildNumber >= 1 and guildNumber <= 7 then
       MasterMerchant:ActiveSettings().verbose = guildNumber
+      MasterMerchant.savedVariables.verbose = guildNumber
+      MasterMerchant.verboseLevel = guildNumber
       MasterMerchant.v(2, "Verbosity setting changed.")
     else
-      MasterMerchant.v(2, "Verbosity setting must be between 1 and 6.")
+      MasterMerchant.v(2, "Verbosity setting must be between 1 and 7.")
     end
     return
   end
@@ -4118,14 +4128,20 @@ EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_PLAYER_DEACTIVATED, On
 
 function MasterMerchant:PlayerLoaded(_, initial)
     if initial then
+      --MasterMerchant.dm("Debug", "PlayerLoaded")
       local guildNum = GetNumGuilds()
-      if self.systemSavedVariables.numEvents == nil then self.systemSavedVariables.numEvents = {} end
-      if self.systemSavedVariables.lastNonDuplicate == nil then self.systemSavedVariables.lastNonDuplicate = {} end
+      if ShopkeeperSavedVars == nil then ShopkeeperSavedVars = {} end
+      if ShopkeeperSavedVars["Default"] == nil then ShopkeeperSavedVars["Default"] = {} end
+      if ShopkeeperSavedVars["Default"]["MasterMerchant"] == nil then ShopkeeperSavedVars["Default"]["MasterMerchant"] = {} end
+      if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"] == nil then ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"] = {} end
+      if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"] == nil then ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"] = {} end
+      if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"] == nil then ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"] = {} end
+
       for i = 1, guildNum do
         local guildID = GetGuildId(i)
         local guildName = GetGuildName(guildID)
-        self.systemSavedVariables.numEvents[guildName] = 1
-        self.systemSavedVariables.lastNonDuplicate[guildName] = 1
+        ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] = 1
+        ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName] = 1
       end
     end
   EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_Initial", EVENT_PLAYER_ACTIVATED)

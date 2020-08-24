@@ -348,8 +348,8 @@ end
 
 function MasterMerchant:CheckForDuplicate(theEvent)
   local dupe = false
-  --[[ we need to be able to calculate theIID and itemIndex 
-  when not used with add to history tables event though 
+  --[[ we need to be able to calculate theIID and itemIndex
+  when not used with add to history tables event though
   the function will calculate them.
   ]]--
   local theIID = GetItemLinkItemId(theEvent.itemName)
@@ -371,16 +371,17 @@ function MasterMerchant:CheckForDuplicate(theEvent)
     {buyer = theEvent.buyer,
     guild = theEvent.guild,
     itemLink = theEvent.itemName,
-    quant = theEvent.quant,
-    timestamp = theEvent.saleTime,
-    price = theEvent.salePrice,
+    quant = tonumber(theEvent.quant),
+    timestamp = tonumber(theEvent.saleTime),
+    price = tonumber(theEvent.salePrice),
     seller = theEvent.seller,
     wasKiosk = theEvent.kioskSale,
-    id = theEvent.id}
+    id = tonumber(theEvent.id)
+  }
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
-      if v.id == newSalesItem.id then
+      if tonumber(v.id) == tonumber(newSalesItem.id) then
         dupe = true
         break
       end
@@ -390,14 +391,14 @@ function MasterMerchant:CheckForDuplicate(theEvent)
 end
 
 -- And here we add a new item
-function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
+function MasterMerchant:addToHistoryTables(theEvent)
 
   local theIID = GetItemLinkItemId(theEvent.itemName)
   if theIID == nil then return end
   local itemIndex = self.makeIndexFromLink(theEvent.itemName)
-  
+
   local isDuplicate, newSalesItem = MasterMerchant:CheckForDuplicate(theEvent)
-  
+
   if isDuplicate then return false end
 
   if not self.salesData[theIID] then

@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '2.4.8'
+MasterMerchant.version = '2.4.9'
 MasterMerchant.locale = 'en'
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
@@ -35,7 +35,7 @@ MasterMerchant.salesData = { }
 MasterMerchant.eventsCache = { }
 MasterMerchant.eventsSinceCache = { }
 MasterMerchant.lastHistoryRequest = { }
-MasterMerchant.verboseLevel = 6
+MasterMerchant.verboseLevel = 4
 MasterMerchant.lastHeadEvent = { }
 MasterMerchant.lastTailEvent = { }
 MasterMerchant.lastInputVar = { } -- debug var
