@@ -10,11 +10,7 @@
 function MasterMerchant.v(level, ...)
   -- DEBUG
   if (level <= MasterMerchant:ActiveSettings().verbose) then
-    if ... and MasterMerchant.viewer then
-      MasterMerchant.dm("Debug", ...)
-    else
-      d(...)
-    end
+    if ... then d(...) end
     return true
   end
   return false
@@ -266,7 +262,7 @@ function MasterMerchant:indexHistoryTables()
   --do return end
 
   local prefunc = function(extraData)
-    MasterMerchant.v(4, 'Indexing...')
+    MasterMerchant.v(3, 'Indexing...')
     extraData.start = GetTimeStamp()
     extraData.checkMilliseconds = 60
     extraData.indexCount = 0
@@ -315,9 +311,9 @@ function MasterMerchant:indexHistoryTables()
 
   local postfunc = function(extraData)
     self:setScanning(false)
-    MasterMerchant.v(4, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
-    MasterMerchant.v(4, '  ' .. extraData.indexCount .. ' sales records')
-    MasterMerchant.v(4, '  ' .. extraData.wordsIndexCount .. ' words')
+    MasterMerchant.v(3, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
+    MasterMerchant.v(3, '  ' .. extraData.indexCount .. ' sales records')
+    MasterMerchant.v(3, '  ' .. extraData.wordsIndexCount .. ' words')
   end
 
   if not self.isScanning then
@@ -328,6 +324,9 @@ end
 
 -- And here we add a new item
 function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
+
+  -- DEBUG  Stop Adding
+  --do return end
 
   local theIID = string.match(theEvent.itemName, '|H.-:item:(.-):')
   if theIID == nil then return end
@@ -459,6 +458,7 @@ function MasterMerchant:addToHistoryTables(theEvent, checkForDups)
   end
 
   return true
+
 end
 
 -- Inserts a comma or period as appropriate every 3 numbers and returns

@@ -156,7 +156,7 @@ MMGuild = {
       o.fourStart = o.threeStart - 7 * 86400 -- last week Tuesday flip
       o.fourEnd = o.threeStart -- last week end
 
-      o.fiveStart = o.fourStart - MasterMerchant.days_last_kiosk(MM_INDEX_PRIORWEEK) -- prior week start Aug 2
+      o.fiveStart = o.fourStart - 7 * 86400
       o.fiveEnd = o.fourStart -- prior week end
 
       o.sixStart = dayCutoff - 10 * 86400 -- last 10 days
@@ -191,17 +191,7 @@ MMGuild = {
   end
 
   function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, searchText)
-    if not rankIndex then
-      --MasterMerchant.dm("Debug", string.format("%s %s", "rankIndex: ", rankIndex))
-    end
-    if not amount then
-      --MasterMerchant.dm("Debug", string.format("%s %s", "amount: ", amount))
-      --MasterMerchant.dm("Debug", string.format("%s %s", "type: ", type(amount)))
-    end
     amount = tonumber(amount)
-    if not amount then
-      --MasterMerchant.dm("Debug", string.format("%s %s", "#amount: ", amount))
-    end
     if type(stack) ~= 'number' then stack = 1 end
 
     if not self.ranks[rankIndex] then
@@ -244,9 +234,6 @@ MMGuild = {
     if sellerName == nil then return end
     if date == nil then return end
     if type(date) ~= 'number' then return end
-    if not amount then
-      --MasterMerchant.dm("Debug", string.format("%s %s", "addSaleByDate amount: ", amount))
-    end
     if (date >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.twoStart and date < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort, searchText) end;
     if (date >= self.threeStart and date < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText) end;

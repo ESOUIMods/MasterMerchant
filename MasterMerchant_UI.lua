@@ -865,7 +865,7 @@ function MMScrollList:FilterScrollList()
             end
           end
         end
-        MasterMerchant.v(6, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
+        MasterMerchant.v(5, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
 
       end
     end
@@ -991,7 +991,7 @@ function MMScrollList:FilterScrollList()
             end
           end
         end
-        MasterMerchant.v(6, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
+        MasterMerchant.v(5, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
 
       end
     end
@@ -1389,7 +1389,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 	end
   end
 
-  if self:ActiveSettings().verbose == 7 then
+  if MasterMerchant.v(5) then
     if not tooltip.mmTextDebug then
       tooltip.mmTextDebug = tooltip.textPool:AcquireObject()
       tooltip:AddControl(tooltip.mmTextDebug)
@@ -1560,8 +1560,8 @@ function MasterMerchant:addStatsItemTooltip()
       end
     else
       --DEBUG
-      --MasterMerchant.v(6, mocParent)
-      --MasterMerchant.v(6, skMoc)
+      MasterMerchant.v(5, mocParent)
+      MasterMerchant.v(5, skMoc)
       --ZO_ListDialog1ListContents
       --ZO_SmithingTopLevelImprovementPanelSlotContainer
     end
