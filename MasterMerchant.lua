@@ -53,28 +53,6 @@ function MasterMerchant:setupGuildColors()
   end
 end
 
--- 1597777200 Aug 18 3PM
--- 1597172400 Aug 11 3PM
-function MasterMerchant.days_last_kiosk(weekIndex)
-  local currentTime = GetTimeStamp()
-  local days_last_kiosk
-  --MM_INDEX_THISWEEK
-  --MM_INDEX_LASTWEEK
-  --MM_INDEX_PRIORWEEK
-
-  -- between 1597172400 Aug 11 3PM and 1597777200 Aug 18 3PM
-  if weekIndex == MM_INDEX_PRIORWEEK and currentTime > 1597777200 then
-    --MasterMerchant.dm("Debug", "MM_INDEX_PRIORWEEK Nine Day Week")
-    days_last_kiosk = 777600 -- 9 days 1 Hour to reflect old cuttof of 6:00 PM Pacific
-    if GetWorldName() == 'EU Megaserver' then
-      days_last_kiosk = days_last_kiosk - (3600 * 5)
-    else
-      days_last_kiosk = days_last_kiosk - (3600 * 6)
-    end
-  end
-  return days_last_kiosk
-end
-
 function MasterMerchant:TimeCheck()
     -- setup focus info
     local range = self:ActiveSettings().defaultDays
@@ -1777,7 +1755,7 @@ function MasterMerchant:CleanOutBad()
       or saledata['itemLink'] == nil
       or type(saledata['itemLink']) ~= 'string'
       or saledata['id'] == nil
-      or type(saledata['id']) ~= 'number'
+      -- or type(saledata['id']) ~= 'number'
       or (not string.match(tostring(saledata['itemLink']), '|H.-:item:(.-):')) then
         -- Remove it
         versiondata['sales'][saleid] = nil
@@ -3721,11 +3699,6 @@ function MasterMerchant:InitItemHistory()
 
     local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
       self.totalRecords = self.totalRecords + 1
-      if not saledata.price then
-        --MasterMerchant.dm("Debug", string.format("%s %s", "loopfunc saledata.price: ", saledata.price))
-        --if saledata then MasterMerchant.dm("Debug", saledata) end
-        --if versiondata.sales then MasterMerchant.dm("Debug", versiondata.sales) end
-      end
       if (not (saledata == {})) and saledata.guild then
         if (extradata.doGuildItems) then
           self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild)
