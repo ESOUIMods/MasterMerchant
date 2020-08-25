@@ -2176,6 +2176,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 end
 
 function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category)
+  if not MasterMerchant.isInitialized then return end
   if self.isScanning then return end
   MasterMerchant:setScanning(true)
 
@@ -2349,9 +2350,6 @@ end
 
 -- Handle the refresh button - although there is no background scan so deduct 50
 function MasterMerchant:DoRefresh()
-  EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name, EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
-  EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_GUILD_HISTORY_RESPONSE_RECEIVED, function(...) MasterMerchant:ProcessGuildHistoryResponse(...) end)
-
   local guildNum = GetNumGuilds()
   for i = 1, guildNum do
     local guildID = GetGuildId(i)
@@ -2969,6 +2967,17 @@ function MasterMerchant.SetupPendingPost(self)
 	end
 end
 
+-- register event monitor
+local function OnPlayerDeactivated(eventCode)
+  EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
+end
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventDisable", EVENT_PLAYER_DEACTIVATED, OnPlayerDeactivated)
+
+local function OnPlayerActivated(eventCode)
+  EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED, function(...) MasterMerchant:ProcessGuildHistoryResponse(...) end)
+end
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
+
 -- Init function
 function MasterMerchant:Initialize()
   -- SavedVar defaults
@@ -3468,9 +3477,9 @@ function MasterMerchant:Initialize()
   -- Right, we're all set up, so wait for the player activated event
   -- and then do an initial (deep) scan in case it's been a while since the player
   -- logged on, then use RegisterForUpdate to set up a timed scan.
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
+	EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_DeepScan", EVENT_PLAYER_ACTIVATED, function()
 
-    EVENT_MANAGER:UnregisterForEvent(self.name, EVENT_PLAYER_ACTIVATED )
+    EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_DeepScan", EVENT_PLAYER_ACTIVATED )
 
     --[[self:playSounds()
     local mmPlaySound = PlaySound
@@ -3812,7 +3821,7 @@ function MasterMerchant:InitScrollLists()
     end
     self:ScanStoresParallel(true)
 
-    EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_GUILD_HISTORY_RESPONSE_RECEIVED, function(...) MasterMerchant:ProcessGuildHistoryResponse(...) end)
+    MasterMerchant.isInitialized = true
 
 end
 
@@ -4097,11 +4106,6 @@ end
 
 -- Register for the OnAddOnLoaded event
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
-
-local function OnPlayerDeactivated(eventCode)
-  EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name, EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
-end
-EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_PLAYER_DEACTIVATED, OnPlayerDeactivated) -- Verified
 
 function MasterMerchant:PlayerLoaded(_, initial)
     if initial then

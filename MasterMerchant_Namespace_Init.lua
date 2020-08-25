@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.0.2'
+MasterMerchant.version = '3.0.3'
 MasterMerchant.locale = 'en'
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
@@ -40,6 +40,7 @@ MasterMerchant.lastHeadEvent = { }
 MasterMerchant.lastTailEvent = { }
 MasterMerchant.lastInputVar = { } -- debug var
 MasterMerchant.isScanningHistory = { } -- added for debug on 8-21
+MasterMerchant.isInitialized = false -- added 8-25
 
 if LibDebugLogger then
   local logger = LibDebugLogger.Create(MasterMerchant.name)
