@@ -178,11 +178,11 @@
             MasterMerchant:SendNote(0)
           </OnClicked>
         </Button>
-        <Button name="$(parent)Small" inherits="ZO_DefaultButton" text="Send 500">
+        <Button name="$(parent)Small" inherits="ZO_DefaultButton" text="Send 5000">
           <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Feedback" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
           <Dimensions x="130" />
           <OnClicked>
-            MasterMerchant:SendNote(500)
+            MasterMerchant:SendNote(5000)
           </OnClicked>
         </Button>
         <Button name="$(parent)Large" inherits="ZO_DefaultButton" text="Send 50000">
@@ -192,11 +192,11 @@
             MasterMerchant:SendNote(50000)
           </OnClicked>
         </Button>
-        <Button name="$(parent)Medium" inherits="ZO_DefaultButton" text="Send 5000">
+        <Button name="$(parent)Medium" inherits="ZO_DefaultButton" text="Send 15000">
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Large" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="0" />
           <Dimensions x="130" />
           <OnClicked>
-            MasterMerchant:SendNote(5000)
+            MasterMerchant:SendNote(15000)
           </OnClicked>
         </Button>
       </Controls>

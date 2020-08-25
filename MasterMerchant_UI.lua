@@ -1121,7 +1121,7 @@ function MasterMerchant:UpdateFonts()
 
   MasterMerchantFeedbackTitle:SetFont(string.format(fontString, mainTitle))
   MasterMerchantFeedbackNote:SetFont(string.format(fontString, mainHeader))
-  MasterMerchantFeedbackNote:SetText("I hope you are enjoying Master Merchant.  Your feedback is always welcome, so please drop me a note with or without a donation.  Your donation will help me focus my non adventuring ESO time on more features, and keep me from becoming a Nirn farmer.  Or you can donate a little real money here: http://tinyurl.com/ESOMMDonate")
+  MasterMerchantFeedbackNote:SetText("I hope you are enjoying Master Merchant. Your feedback is always welcome. If you have wondered if there is some way you could help me get a Starbucks or a burger, maybe even help me in updating my computer so I can continue working on mods you can visit: https://sharlikran.github.io/")
 end
 
 function MasterMerchant:updateCalc()
