@@ -997,6 +997,7 @@ function MasterMerchant:LibAddonInit()
     author = GetString(MM_APP_AUTHOR),
     version = self.version,
     registerForDefaults = true,
+    website = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
   }
   LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
 
@@ -2346,25 +2347,28 @@ function MasterMerchant:ScanStoresParallel(doAlert)
 end
 
 
--- Handle the refresh button - do a scan if it's been more than a minute
--- since the last successful one.
+-- Handle the refresh button - although there is no background scan so deduct 50
 function MasterMerchant:DoRefresh()
-  local timeStamp = GetTimeStamp()
+  EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name, EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
+  EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_GUILD_HISTORY_RESPONSE_RECEIVED, function(...) MasterMerchant:ProcessGuildHistoryResponse(...) end)
 
-  -- If it's been less than 30 seconds since we last scanned the store,
-  -- don't do it again so we don't hammer the server either accidentally
-  -- or on purpose, otherwise add a message to chat updating the user and
-  -- kick off the scan
-  local timeLimit = timeStamp - 29
   local guildNum = GetNumGuilds()
-  if guildNum > 0 then
-    local firstGuildName = GetGuildName(1)
-    if self.systemSavedVariables.lastScan[firstGuildName] == nil or timeLimit > self.systemSavedVariables.lastScan[firstGuildName] then
-      MasterMerchant.v(1, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_REFRESH_START)))
-      self:ScanStoresParallel(true)
-
-    else MasterMerchant.v(1, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_REFRESH_WAIT))) end
+  for i = 1, guildNum do
+    local guildID = GetGuildId(i)
+    local guildName = GetGuildName(guildID)
+    if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] < 50 then
+      ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] = 1
+    else
+      ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] - 50
+    end
+    MasterMerchant.v(5, "Event tracking index for " .. guildName .. " is now (" .. ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["numEvents"][guildName] .. ").")
+    if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName] < 50 then
+      ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName] = 1
+    else
+      ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName] = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["lastNonDuplicate"][guildName] - 50
+    end
   end
+  MasterMerchant.v(4, 'All event tracking indexes decremented by 50.')
 end
 
 function MasterMerchant:initGMTools()
