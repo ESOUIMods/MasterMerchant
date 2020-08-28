@@ -2943,9 +2943,11 @@ local function splitItem(t, index)
     quality = tonumber(quality)
     local combinedLvl = lvl + CPLVL
     local essence = effectIds[itemId]
-    if not essence then error("essence nil") return end
+    if not essence then return end
+    if not potencyIds[combinedLvl] then return end
     local potency = potencyIds[combinedLvl][essence[2]]
     local quality = qualityIds[quality]
+    if not potency or not quality or not essence then return end
     return {
         {["item"] = getItemLinkFromItemId(potency), ["required"] = 1}, 
         {["item"] = getItemLinkFromItemId(essence[1]), ["required"] = 1}, 
