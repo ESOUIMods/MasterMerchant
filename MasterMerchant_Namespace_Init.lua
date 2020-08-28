@@ -2955,37 +2955,3 @@ end
 
 MasterMerchant.virtualRecipe = {}
 setmetatable(MasterMerchant.virtualRecipe, {["__index"] = splitItem})
---[[
--- This is the test code to verify that it's equivalent to the previous table.
-didItWork = 0
-badOnes = {}
-numMerRecipes = 0
-function runVerification()
-    for key, t in pairs(FakeMasterMerchant.virtualRecipe) do
-        numMerRecipes = numMerRecipes + 1
-        local fine, result = pcall(function()return splitItem(nil, key)end)
-        if not fine then
-            badOnes[#badOnes + 1] = {key, result}
-        end
-        if #t ~= 3 then
-            didItWork = didItWork + 1
-            badOnes[#badOnes + 1] = {key, result, t, "t bad"}
-        end
-        for i = 1, 3 do
-            if not result then
-                didItWork = didItWork + 1
-                badOnes[#badOnes + 1] = {key, result, t, "result nil"}
-            elseif not result[i] then
-                didItWork = didItWork + 1
-                badOnes[#badOnes + 1] = {key, result, t, "result parts nil"}
-            elseif t[i].required ~= result[i].required or t[i].item ~= result[i].item then
-                didItWork = didItWork + 1
-                badOnes[#badOnes + 1] = {key, result, t, "mismatch"}
-            end
-        end
-    end
-    d(numMerRecipes)
-    d(didItWork)
-
-end
-]]
