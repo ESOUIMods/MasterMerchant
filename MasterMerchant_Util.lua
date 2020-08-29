@@ -128,7 +128,7 @@ function MasterMerchant.makeIndexFromLink(itemLink)
   end
   local vetReq = GetItemLinkRequiredChampionPoints(itemLink) / 10
   local itemQuality = GetItemLinkQuality(itemLink)
-  local itemTrait = GetItemLinkTraitInfo(itemLink)
+  local itemTrait = GetItemLinkTraitType(itemLink)
   --Add final number in the link to handle item differences like 2 and 3 buff potions
   local theLastNumber = string.match(itemLink, '|H.-:item:.-:(%d-)|h') or 0
 
@@ -179,7 +179,7 @@ function MasterMerchant.addedSearchToItem(itemLink)
     adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMTYPE", itemType)))
   end
 
-  local itemTrait = GetItemLinkTraitInfo(itemLink)
+  local itemTrait = GetItemLinkTraitType(itemLink)
   if (itemTrait ~= 0) then
     adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMTRAITTYPE", itemTrait)))
   end
