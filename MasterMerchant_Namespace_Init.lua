@@ -41,6 +41,14 @@ MasterMerchant.lastTailEvent = { }
 MasterMerchant.lastInputVar = { } -- debug var
 MasterMerchant.isScanningHistory = { } -- added for debug on 8-21
 MasterMerchant.isInitialized = false -- added 8-25
+MasterMerchant.eventIndex = { } -- added 8-25
+MasterMerchant.oldestEvent = { } -- added 8-25
+MasterMerchant.eventCount = { } -- added 8-25
+MasterMerchant.currentGuildID = 0 -- added 8-25
+-- hack as defaults to prevent nil index error
+MasterMerchant.eventIndex[MasterMerchant.currentGuildID] = 0 -- added 8-25
+MasterMerchant.oldestEvent[MasterMerchant.currentGuildID] = 0 -- added 8-25
+MasterMerchant.eventCount[MasterMerchant.currentGuildID] = 0 -- added 8-25
 
 if LibDebugLogger then
   local logger = LibDebugLogger.Create(MasterMerchant.name)
