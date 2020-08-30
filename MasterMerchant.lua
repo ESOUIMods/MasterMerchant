@@ -4287,7 +4287,7 @@ function MasterMerchant:PlayerLoaded(_, initial)
       if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["eventIndex"] == nil then ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["eventIndex"] = {} end
       if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["eventCount"] == nil then ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["eventCount"] = {} end
       if ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["oldestEvent"] == nil then ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["oldestEvent"] = {} end
-      
+
       for i = 1, guildNum do
         local guildID = GetGuildId(i)
         local guildName = GetGuildName(guildID)
