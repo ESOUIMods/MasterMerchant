@@ -2857,7 +2857,6 @@ MasterMerchant.internalRecipeData =
 [165782]=1147,
 [28464]=17106,
 [139167]=323,
-[116442]=4765,
 }
 
 local function getItemLinkFromItemId(itemId) 
@@ -2867,12 +2866,7 @@ end
 
 local function indexRecipes(t, index)
     local itemId = GetItemLinkItemId(index)
-    local offset = MasterMerchant.internalRecipeData[itemId]
-    if offset == nil then
-      return nil
-    end
-    local recipeId = itemId + offset
-
+    local recipeId = itemId + MasterMerchant.internalRecipeData[itemId]
     if recipeId then
         -- Item is in the list!
         return getItemLinkFromItemId(recipeId)
@@ -2958,6 +2952,10 @@ local qualityIds =
     [4] = 45853 ,
     [5] = 45854 ,
 }
+
+local function getItemLinkFromItemId(itemId) 
+    return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", tonumber(itemId), 10000) 
+end 
 
 local function splitItem(t, index)
     local itemId, lvl, CPLVL, quality = string.match(index,"(%d+):(%d+):(%d+):(%d+)")
