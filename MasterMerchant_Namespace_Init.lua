@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.0.3'
+MasterMerchant.version = '3.0.4'
 MasterMerchant.locale = 'en'
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
@@ -2910,7 +2910,7 @@ local effectIds =
 }
 -- 68344
 
-local potencyIds = 
+local potencyIds =
 {
     [5] =  {45855 , 45817 },
     [10] = {45856 , 45818 },
@@ -2939,9 +2939,9 @@ local qualityIds =
     [5] = 45854 ,
 }
 
-local function getItemLinkFromItemId(itemId) 
-    return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", tonumber(itemId), 10000) 
-end 
+local function getItemLinkFromItemId(itemId)
+    return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", tonumber(itemId), 10000)
+end
 
 local function splitItem(t, index)
     local itemId, lvl, CPLVL, quality = string.match(index,"(%d+):(%d+):(%d+):(%d+)")
@@ -2957,8 +2957,8 @@ local function splitItem(t, index)
     local quality = qualityIds[quality]
     if not potency or not quality or not essence then return end
     return {
-        {["item"] = getItemLinkFromItemId(potency), ["required"] = 1}, 
-        {["item"] = getItemLinkFromItemId(essence[1]), ["required"] = 1}, 
+        {["item"] = getItemLinkFromItemId(potency), ["required"] = 1},
+        {["item"] = getItemLinkFromItemId(essence[1]), ["required"] = 1},
         {["item"] = getItemLinkFromItemId(quality), ["required"] = 1}
     }
 end
