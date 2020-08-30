@@ -2953,10 +2953,7 @@ local qualityIds =
     [5] = 45854 ,
 }
 
-local function getItemLinkFromItemId(itemId) 
     return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", tonumber(itemId), 10000) 
-end 
-
 local function splitItem(t, index)
     local itemId, lvl, CPLVL, quality = string.match(index,"(%d+):(%d+):(%d+):(%d+)")
     itemId = tonumber(itemId)
