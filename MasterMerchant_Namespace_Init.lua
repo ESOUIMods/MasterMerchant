@@ -41,6 +41,14 @@ MasterMerchant.lastTailEvent = { }
 MasterMerchant.lastInputVar = { } -- debug var
 MasterMerchant.isScanningHistory = { } -- added for debug on 8-21
 MasterMerchant.isInitialized = false -- added 8-25
+MasterMerchant.eventIndex = { } -- added 8-25
+MasterMerchant.oldestEvent = { } -- added 8-25
+MasterMerchant.eventCount = { } -- added 8-25
+MasterMerchant.currentGuildID = 0 -- added 8-25
+-- hack as defaults to prevent nil index error
+MasterMerchant.eventIndex[MasterMerchant.currentGuildID] = 0 -- added 8-25
+MasterMerchant.oldestEvent[MasterMerchant.currentGuildID] = 0 -- added 8-25
+MasterMerchant.eventCount[MasterMerchant.currentGuildID] = 0 -- added 8-25
 
 if LibDebugLogger then
   local logger = LibDebugLogger.Create(MasterMerchant.name)
@@ -2860,8 +2868,8 @@ MasterMerchant.internalRecipeData =
 [116442]=4765,
 }
 
-local function getItemLinkFromItemId(itemId) 
-    return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId) 
+local function getItemLinkFromItemId(itemId)
+    return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId)
 end
 
 
@@ -2880,7 +2888,7 @@ local function indexRecipes(t, index)
     return nil
 end
 
-local recipeMetatable = 
+local recipeMetatable =
 {
     ["__index"] = indexRecipes,
 }
@@ -2930,7 +2938,7 @@ local effectIds =
 }
 -- 68344
 
-local potencyIds = 
+local potencyIds =
 {
     [5] =  {45855 , 45817 },
     [10] = {45856 , 45818 },
@@ -2973,8 +2981,8 @@ local function splitItem(t, index)
     local quality = qualityIds[quality]
     if not potency or not quality or not essence then return end
     return {
-        {["item"] = getItemLinkFromItemId(potency), ["required"] = 1}, 
-        {["item"] = getItemLinkFromItemId(essence[1]), ["required"] = 1}, 
+        {["item"] = getItemLinkFromItemId(potency), ["required"] = 1},
+        {["item"] = getItemLinkFromItemId(essence[1]), ["required"] = 1},
         {["item"] = getItemLinkFromItemId(quality), ["required"] = 1}
     }
 end
