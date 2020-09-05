@@ -1347,8 +1347,16 @@ function MasterMerchant:LibAddonInit()
         MasterMerchant.listIsDirty[LISTINGS] = true
       end,
     },
-    -- Size of sales history
+    -- use size of sales history only
     [6] = {
+      type = 'checkbox',
+      name = GetString(MM_DAYS_ONLY_NAME),
+      tooltip = GetString(MM_DAYS_ONLY_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.useSalesHistory = value end,
+    },
+    -- Size of sales history
+    [7] = {
       type = 'slider',
       name = GetString(SK_HISTORY_DEPTH_NAME),
       tooltip = GetString(SK_HISTORY_DEPTH_TIP),
@@ -1358,7 +1366,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self.systemSavedVariables.historyDepth = value end,
     },
     -- Min Number of Items before Purge
-    [7] = {
+    [8] = {
       type = 'slider',
       name = GetString(MM_MIN_ITEM_COUNT_NAME),
       tooltip = GetString(MM_MIN_ITEM_COUNT_TIP),
@@ -1366,9 +1374,10 @@ function MasterMerchant:LibAddonInit()
       max = 100,
       getFunc = function() return self.systemSavedVariables.minItemCount end,
       setFunc = function(value) self.systemSavedVariables.minItemCount = value end,
+			disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
     },
     -- Max number of Items
-    [8] = {
+    [9] = {
       type = 'slider',
       name = GetString(MM_MAX_ITEM_COUNT_NAME),
       tooltip = GetString(MM_MAX_ITEM_COUNT_TIP),
@@ -1376,9 +1385,10 @@ function MasterMerchant:LibAddonInit()
       max = 10000,
       getFunc = function() return self.systemSavedVariables.maxItemCount end,
       setFunc = function(value) self.systemSavedVariables.maxItemCount = value end,
+			disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
     },
     -- Whether or not to show the pricing data in tooltips
-    [9] = {
+    [10] = {
       type = 'checkbox',
       name = GetString(SK_SHOW_PRICING_NAME),
       tooltip = GetString(SK_SHOW_PRICING_TIP),
@@ -1386,7 +1396,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().showPricing = value end,
     },
     -- Whether or not to show the pricing graph in tooltips
-    [10] = {
+    [11] = {
       type = 'checkbox',
       name = GetString(SK_SHOW_GRAPH_NAME),
       tooltip = GetString(SK_SHOW_GRAPH_TIP),
@@ -1394,7 +1404,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().showGraph = value end,
     },
   -- Whether or not to show tooltips on the graph points
-    [11] = {
+    [12] = {
       type = 'checkbox',
       name = GetString(MM_GRAPH_INFO_NAME),
       tooltip = GetString(MM_GRAPH_INFO_TIP),
@@ -1402,7 +1412,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().displaySalesDetails = value end,
     },
     -- Whether or not to show the crafting costs data in tooltips
-    [12] = {
+    [13] = {
       type = 'checkbox',
       name = GetString(SK_SHOW_CRAFT_COST_NAME),
       tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
@@ -1410,7 +1420,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().showCraftCost = value end,
     },
     -- Whether or not to show the quality/level adjustment buttons
-    [13] = {
+    [14] = {
       type = 'checkbox',
       name = GetString(MM_LEVEL_QUALITY_NAME),
       tooltip = GetString(MM_LEVEL_QUALITY_TIP),
@@ -1419,7 +1429,7 @@ function MasterMerchant:LibAddonInit()
     },
 
     -- Should we show the stack price calculator?
-    [14] = {
+    [15] = {
       type = 'checkbox',
       name = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
@@ -1427,7 +1437,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().showCalc = value end,
     },
     -- should we trim outliers prices?
-    [15] = {
+    [16] = {
       type = 'checkbox',
       name = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
@@ -1435,7 +1445,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().trimOutliers = value end,
     },
     -- should we trim off decimals?
-    [16] = {
+    [17] = {
       type = 'checkbox',
       name = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
@@ -1443,7 +1453,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().trimDecimals = value end,
     },
     -- should we replace inventory values?
-    [17] = {
+    [18] = {
       type = 'checkbox',
       name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
@@ -1451,7 +1461,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().replaceInventoryValues = value end,
     },
     -- should we display info on guild roster?
-    [18] = {
+    [19] = {
       type = 'checkbox',
       name = GetString(SK_ROSTER_INFO_NAME),
       tooltip = GetString(SK_ROSTER_INFO_TIP),
@@ -1459,7 +1469,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().diplayGuildInfo = value end,
     },
     -- should we display profit instead of margin?
-    [19] = {
+    [20] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -1467,7 +1477,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().saucy = value end,
     },
     -- should we display a Min Profit Filter in AGS?
-    [20] = {
+    [21] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1475,7 +1485,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
     },
     -- should we auto advance to the next page?
-    [21] = {
+    [22] = {
       type = 'checkbox',
       name = GetString(MM_AUTO_ADVANCE_NAME),
       tooltip = GetString(MM_AUTO_ADVANCE_TIP),
@@ -1483,7 +1493,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().autoNext = value end,
     },
     -- should we display the item listed message?
-    [22] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
       tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
@@ -1491,7 +1501,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
     },
     -- Font to use
-    [23] = {
+    [24] = {
       type = 'dropdown',
       name = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
@@ -1506,7 +1516,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- Verbose MM Messages
-    [24] = {
+    [25] = {
       type = 'slider',
       name = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
@@ -1520,7 +1530,7 @@ function MasterMerchant:LibAddonInit()
                 end,
     },
     -- Make all settings account-wide (or not)
-    [25] = {
+    [26] = {
       type = 'checkbox',
       name = GetString(SK_ACCOUNT_WIDE_NAME),
       tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
@@ -3264,6 +3274,7 @@ function MasterMerchant:Initialize()
     numEvents = {},
     lastNonDuplicate = {},
     oldestEvent = {},
+    useSalesHistory = false,
   }
 
   for i = 1, GetNumGuilds() do
@@ -3806,16 +3817,28 @@ function MasterMerchant:TruncateHistory()
 
     local salesCount = MasterMerchant.NonContiguousNonNilCount(versiondata['sales'])
     for saleid, saledata in MasterMerchant.spairs(versiondata['sales'], function(a, b) return MasterMerchant.CleanTimestamp(a) < MasterMerchant.CleanTimestamp(b) end) do
-      if salesCount > self.systemSavedVariables.minItemCount and
-        ( salesCount > self.systemSavedVariables.maxItemCount
-          or saledata['timestamp'] == nil
-          or type(saledata['timestamp']) ~= 'number'
-          or saledata['timestamp'] < extraData.epochBack
-        ) then
-          -- Remove it by setting it to nil
-          versiondata['sales'][saleid] = nil
-          extraData.deleteCount = extraData.deleteCount + 1
-          salesCount = salesCount - 1
+      if MasterMerchant.useSalesHistory then
+        if ( saledata['timestamp'] < extraData.epochBack
+            or saledata['timestamp'] == nil
+            or type(saledata['timestamp']) ~= 'number'
+          ) then
+            -- Remove it by setting it to nil
+            versiondata['sales'][saleid] = nil
+            extraData.deleteCount = extraData.deleteCount + 1
+            salesCount = salesCount - 1
+        end
+      else
+        if salesCount > self.systemSavedVariables.minItemCount and
+          ( salesCount > self.systemSavedVariables.maxItemCount
+            or saledata['timestamp'] == nil
+            or type(saledata['timestamp']) ~= 'number'
+            or saledata['timestamp'] < extraData.epochBack
+          ) then
+            -- Remove it by setting it to nil
+            versiondata['sales'][saleid] = nil
+            extraData.deleteCount = extraData.deleteCount + 1
+            salesCount = salesCount - 1
+        end
       end
     end
     return true
