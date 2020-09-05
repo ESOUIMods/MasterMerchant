@@ -190,6 +190,15 @@ ZO_CreateStringId("MM_RANGE_NONE", 						"Нет")
 ZO_CreateStringId("MM_BLACKLIST_NAME", 				"Черный список игроков и гильдий")
 ZO_CreateStringId("MM_BLACKLIST_TIP", 				"Списиок имен игроков и гильдий, которые вы хотите исключить из подсчета цен аддоном MM.")
 
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Custom Timeframe")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_TIP", "An extra timeframe to choose from in the item and guild lists.")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_SCALE_NAME", "Custom Timeframe Units")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_SCALE_TIP", "The time unit in which the Custom Timeframe is expressed.")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_HOURS", "Hours")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_DAYS", "Days")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_WEEKS", "Weeks")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_GUILD_WEEKS", "Full Guild Weeks")
+
 ZO_CreateStringId("MM_SAUCY_NAME", 						"Показывать прибыль вместо наценки")
 ZO_CreateStringId("MM_SAUCY_TIP", 						"В магазине отображает потенциальную прибыль, вместо процента наценки.")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME","Фильтр по прибыли")
@@ -230,3 +239,6 @@ ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "Сканирование гильдий
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Минимальная индексация")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Индексы истории продаж пропускаются, чтобы сэкономить память, но поиск на экране MM намного медленнее.")
+
+ZO_CreateStringId("MM_DAYS_ONLY_NAME", "Use Sales History Size Only")
+ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when trimming sales history. This will ignore mix and max count.")

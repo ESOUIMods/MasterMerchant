@@ -240,3 +240,6 @@ ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "L'analyse de guilde est moins intensive
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Indexation minimale")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Les index de l'historique des ventes sont ignorés pour économiser de la mémoire, mais la recherche dans l'écran MM est beaucoup plus lente.")
+
+ZO_CreateStringId("MM_DAYS_ONLY_NAME", "Use Sales History Size Only")
+ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when trimming sales history. This will ignore mix and max count.")

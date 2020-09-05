@@ -190,6 +190,15 @@ ZO_CreateStringId("MM_RANGE_NONE", "なし")
 ZO_CreateStringId("MM_BLACKLIST_NAME", "プレイヤーとギルドのブラックリスト")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "MMが計算時、無視したいプレイヤーとギルドの名前のリストです。")
 
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Custom Timeframe")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_TIP", "An extra timeframe to choose from in the item and guild lists.")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_SCALE_NAME", "Custom Timeframe Units")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_SCALE_TIP", "The time unit in which the Custom Timeframe is expressed.")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_HOURS", "Hours")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_DAYS", "Days")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_WEEKS", "Weeks")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_GUILD_WEEKS", "Full Guild Weeks")
+
 ZO_CreateStringId("MM_SAUCY_NAME", "マージンではなく利益を表示")
 ZO_CreateStringId("MM_SAUCY_TIP", "ギルドストア内で、マージンパーセンテージではなく期待される利益を表示します。")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "利益フィルタを表示")
@@ -230,3 +239,6 @@ ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "ギルドスキャンは、データを
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "最小限のインデックス")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "メモリを節約するために販売履歴インデックスはスキップされますが、MM画面からの検索ははるかに遅くなります。")
+
+ZO_CreateStringId("MM_DAYS_ONLY_NAME", "Use Sales History Size Only")
+ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when trimming sales history. This will ignore mix and max count.")

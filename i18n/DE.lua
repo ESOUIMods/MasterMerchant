@@ -240,3 +240,6 @@ ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "Das Scannen von Gilden ist weniger inte
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Minimale Indizierung")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Verkaufsverlaufsindizes werden übersprungen, um Speicherplatz zu sparen, aber die Suche auf dem MM-Bildschirm ist viel langsamer.")
+
+ZO_CreateStringId("MM_DAYS_ONLY_NAME", "Use Sales History Size Only")
+ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when trimming sales history. This will ignore mix and max count.")
