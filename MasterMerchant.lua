@@ -3590,7 +3590,7 @@ function MasterMerchant:Initialize()
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_PENDING_ITEM_UPDATE, function (eventCode, slotId, isPending)
     if settingsToUse.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
       local theLink = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
-      local theIID = GetItemLinkItemId(itemLink)
+      local theIID = GetItemLinkItemId(theLink)
       local theIData = self.makeIndexFromLink(theLink)
       local postedStats = self:toolTipStats(theIID, theIData)
       MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
@@ -4000,7 +4000,7 @@ function MasterMerchant:InitScrollLists()
     if numGuilds > 0 then
       MasterMerchant.currentGuildID = GetGuildId(1) or 0
       MasterMerchant:UpdateControlData()
-      MasterMerchant.dm("Debug", "MasterMerchant.currentGuildID: " .. MasterMerchant.currentGuildID)
+      --MasterMerchant.dm("Debug", "MasterMerchant.currentGuildID: " .. MasterMerchant.currentGuildID)
     else
       MasterMerchant.currentGuildID = 0
     end
