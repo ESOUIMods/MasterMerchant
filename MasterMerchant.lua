@@ -97,6 +97,7 @@ local function DoesControlExist(controlName)
 end
 
 local function UpdateText(controlName, data)
+    if MasterMerchant.currentGuildID <= 0 then return end
     local control = GetControlByName(controlName)
     local text
     if type(data) == "table" then
@@ -153,7 +154,7 @@ end
 ]]--
 function MasterMerchant:NewGuildSelected()
     --MasterMerchant.dm("Debug", GUILD_SELECTOR.guildId)
-    MasterMerchant.currentGuildID = GUILD_SELECTOR.guildId
+    MasterMerchant.currentGuildID = GUILD_SELECTOR.guildId or 0
     MasterMerchant:UpdateControlData()
     --MasterMerchant:refresh()
 end
