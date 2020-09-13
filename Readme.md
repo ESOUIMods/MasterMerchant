@@ -217,7 +217,7 @@ Added some protection around TRADING_HOUSE use to help gamepad mode users
 
 ## ChangeLog for 2.0.5
 Reworked the Awesome Guild Store integration for Wrathstone version (Thanks sirinsidiator for this Awesome addon)
-- The MM Deal and Profit filters will be available when AGS updates to Wrathstone
+The MM Deal and Profit filters will be available when AGS updates to Wrathstone
 Fixed "In Combat" scan pausing (thanks mubcrabs)
 
 ## ChangeLog for 2.0.4a
