@@ -7,6 +7,147 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.0.9
+
+- Fix for error generated guild finder rather then guild history
+
+## ChangeLog for 3.0.8
+
+- Added localization strings for new "Use Sales History Size Only" to the rest of the languages
+
+## ChangeLog for 3.0.7
+
+- Fix Price Calculator Bug
+- Add toggle to ignore min and max count when trimming sales data
+
+## ChangeLog for 3.0.6
+
+- Same as 3.0.4
+- More recipe updates from - Dolgubon
+- Fix for Lua errors for new saved vars - Dolgubon
+
+## ChangeLog for 3.0.5
+
+- Reverted back to 3.0.3 until a fix for Lua errors can be implemented
+
+## ChangeLog for 3.0.4
+
+- Adjustment to item link trait discovery Aldanga
+- Update to recipe calculations Dolgubon (Still some recipes may not show mat price)
+- Added event index count to guild history tab and the amount of history loaded in hours, days. Using a built in Zenimax routine. It does not show 1d 3h, just 1 day or 2 days.
+
+## ChangeLog for 3.0.3
+
+- Updated event monitor so it will properly activate after zoning
+
+## ChangeLog for 3.0.2
+
+- Added decrement button since background scan is no longer present. It will deduct 50 from the event index, more like a rewind just a bit if you think you missed a sale.
+
+## ChangeLog for 3.0.1
+
+- Uncommented a few things in MM clean when checking for numbers that should not be strings
+
+## ChangeLog for 3.0.0
+
+- Initial changes to add an event monitor for guild history as it comes in. This is the same feature as introduced in 2.4.8.
+
+## ChangeLog for 2.5.0
+
+- Reverted MM to the sate of Philgo's last update 2.3.1
+- Fix for MasterMerchant_Util.lua:466 to fix bug introduced in 2.3.1
+- Reverted all scanning mechanics to 2.3.1
+- Reverted indexing and filtering mechanics to 2.2.1
+- By reverting indexing and filtering mechanics this fixes the issues with personal sales not appearing in the master merchant window
+- Updated Kiosk flip times for Tuesday. Which includes the removal of tracking the 9 day week prior to the kiosk flip.
+
+## ChangeLog for 2.4.9
+
+- Updated /mm help
+- Typecast certain variables for comparisons. Which hopefully will not allow anymore duplicate sales entries.
+- Changed verbose level for Event Monitor (Now verbose 5) Default verbose is 4
+- Hopefully fixed bug with MasterMerchant.lua line:2218
+
+## ChangeLog for 2.4.8
+
+- Simple indexing and scanning removed (introduced in 2.3.1)
+- Background scan removed (See NOTE1)
+- /mm missing removed (See NOTE2)
+- Added guild history monitoring
+- Improved duplicate checking when using /mm dups
+
+NOTE1: During testing the requests from the server were denied 1440 times and granted 30 times over a course of 40 minutes for 3 different guilds.
+
+NOTE2: Guild history is not sorted. Therefore you can not start at a certain place by tracking a specific time or event and scan from that point. The only viable option is to track the number of events and then avoid scanning the same events.
+
+## ChangeLog for 2.4.7
+
+- Left a debug message active sorry
+
+## ChangeLog for 2.4.6
+
+- Left a debug message active sorry
+
+## ChangeLog for 2.4.5
+
+- Revised Kiosk cut off time routines
+
+## ChangeLog for 2.4.4
+
+- Removed Philgo's Simple Indexing and Simple Scanning.
+
+Note: At this time there are still performance issues. I will be addressing them as time permits. Removing Simple Indexing and Simple Scanning will introduce old performance issues. There isn't anything I can do about that at this time. I went with functionality over performance for now.
+
+## ChangeLog for 2.4.3
+
+- Fixed some typos
+
+## ChangeLog for 2.4.2
+
+- Revised Kiosk cut off time routines
+
+NOTE: Needs testing for EU
+
+## ChangeLog for 2.4.1
+
+- Oops missed a few debug message thresholds
+
+## ChangeLog for 2.4.0
+
+- Time between scans 5 minutes minimum now because data is provided by the server without requesting it.
+- Time between requests for data 30 seconds because the server already gives you data about once a minute.
+
+NOTE: After more testing with my new cache library there is no reason to send frequent requests to the server for more data because the request is denied. Data is already provided about every minute. My cache library shows that with that kind of interval, 2 to 3 minutes you would be caught up as far as sales for your guild. After that you would just receive data you already have plus any new sales. This includes being logged out for 5 hours.
+
+## ChangeLog for 2.3.9
+
+- Removed some of the additional delays.
+
+## ChangeLog for 2.3.8
+
+- Added debug framework for odd reported errors
+
+## ChangeLog for 2.3.7
+
+- First adjustment for 9 day week, then regular 7 day weeks.
+- More updates as information is confirmed.
+
+## ChangeLog for 2.3.6
+
+- Adjusted position of UI element 'Hide Offline' when viewing guild sales from guild roster
+
+## ChangeLog for 2.3.5
+
+- Adjusted routine to account for when the guild store is offline and we are waiting for Zenimax to resolve the issue
+
+## ChangeLog for 2.3.4
+
+- Use Zenimax API function GetGuildKioskCycleTimes() instead of previous method
+
+## ChangeLog for 2.3.3
+
+- Removed left over debug routines for mouse over controls when verbose was set to 5
+
 ## ChangeLog for 2.3.2
 
 - Fix for MasterMerchant_Util.lua:466
