@@ -1363,8 +1363,8 @@ function MasterMerchant:LibAddonInit()
       tooltip = GetString(SK_HISTORY_DEPTH_TIP),
       min = 1,
       max = 365,
-      getFunc = function() return self.systemSavedVariables.historyDepth end,
-      setFunc = function(value) self.systemSavedVariables.historyDepth = value end,
+      getFunc = function() return MasterMerchant.systemSavedVariables.historyDepth end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.historyDepth = value end,
     },
     -- Min Number of Items before Purge
     [8] = {
@@ -1373,8 +1373,8 @@ function MasterMerchant:LibAddonInit()
       tooltip = GetString(MM_MIN_ITEM_COUNT_TIP),
       min = 0,
       max = 100,
-      getFunc = function() return self.systemSavedVariables.minItemCount end,
-      setFunc = function(value) self.systemSavedVariables.minItemCount = value end,
+      getFunc = function() return MasterMerchant.systemSavedVariables.minItemCount end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.minItemCount = value end,
 			disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
     },
     -- Max number of Items
@@ -1384,8 +1384,8 @@ function MasterMerchant:LibAddonInit()
       tooltip = GetString(MM_MAX_ITEM_COUNT_TIP),
       min = 100,
       max = 10000,
-      getFunc = function() return self.systemSavedVariables.maxItemCount end,
-      setFunc = function(value) self.systemSavedVariables.maxItemCount = value end,
+      getFunc = function() return MasterMerchant.systemSavedVariables.maxItemCount end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.maxItemCount = value end,
 			disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
     },
     -- Whether or not to show the pricing data in tooltips
@@ -3276,6 +3276,9 @@ function MasterMerchant:Initialize()
     lastNonDuplicate = {},
     oldestEvent = {},
     useSalesHistory = false,
+    historyDepth = 30,
+    minItemCount = 20,
+    maxItemCount = 5000,
   }
 
   for i = 1, GetNumGuilds() do
@@ -3322,7 +3325,7 @@ function MasterMerchant:Initialize()
     -- Now that we're done with it, clear it out and change the one setting that has changed in magnitude
     self.acctSavedVariables.scanHistory = nil
 
-    self.systemSavedVariables.historyDepth = 30
+    MasterMerchant.systemSavedVariables.historyDepth = MasterMerchant.systemSavedVariables.historyDepth or 30
 
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
         ReloadUI('ingame')
@@ -3381,13 +3384,18 @@ function MasterMerchant:Initialize()
 
   -- Move the historyDepth variable to a system wide area
   if (self.systemSavedVariables.historyDepth == nil) then
-    self.systemSavedVariables.historyDepth = MasterMerchant:ActiveSettings().historyDepth or 30;
+    local temp = MasterMerchant.systemSavedVariables.historyDepth or 30
+    self.systemSavedVariables.historyDepth = temp or 30
+    MasterMerchant:ActiveSettings().historyDepth = temp or 30
+    MasterMerchant.systemSavedVariables.historyDepth = temp or 30
   end
 
   -- Default in the Min/Max Item count settings
   if (self.systemSavedVariables.minItemCount == nil) then
       self.systemSavedVariables.minItemCount = 20
       self.systemSavedVariables.maxItemCount = 5000
+      MasterMerchant.systemSavedVariables.minItemCount = 20
+      MasterMerchant.systemSavedVariables.maxItemCount = 5000
   end
 
   -- Default in the replace inventory values setting
@@ -3809,7 +3817,7 @@ function MasterMerchant:TruncateHistory()
   local prefunc = function(extraData)
     extraData.start = GetTimeStamp()
     extraData.deleteCount = 0
-    extraData.epochBack = GetTimeStamp() - (86400 * self.systemSavedVariables.historyDepth)
+    extraData.epochBack = GetTimeStamp() - (86400 * MasterMerchant.systemSavedVariables.historyDepth)
 
     self:setScanning(true)
   end
@@ -3829,8 +3837,8 @@ function MasterMerchant:TruncateHistory()
             salesCount = salesCount - 1
         end
       else
-        if salesCount > self.systemSavedVariables.minItemCount and
-          ( salesCount > self.systemSavedVariables.maxItemCount
+        if salesCount > MasterMerchant.systemSavedVariables.minItemCount and
+          ( salesCount > MasterMerchant.systemSavedVariables.maxItemCount
             or saledata['timestamp'] == nil
             or type(saledata['timestamp']) ~= 'number'
             or saledata['timestamp'] < extraData.epochBack
