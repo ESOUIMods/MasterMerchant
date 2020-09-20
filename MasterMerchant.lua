@@ -1122,6 +1122,7 @@ end
 
 -- Table where the guild roster columns shall be placed
 MasterMerchant.guild_columns = {}
+MasterMerchant.UI_GuildTime = nil
 
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
@@ -1472,9 +1473,13 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return self:ActiveSettings().diplayGuildInfo end,
       setFunc = function(value) 
         
-        self:ActiveSettings().diplayGuildInfo = value 
+        self:ActiveSettings().diplayGuildInfo = value
 
-        for key,column in pairs(MasterMerchant.guild_columns) do
+        if self.UI_GuildTime then
+          self.UI_GuildTime:SetHidden( not value )
+        end
+
+        for key,column in pairs(self.guild_columns) do
           column:IsDisabled( not value )
         end
 
@@ -2679,13 +2684,6 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
     buyingAdvice = nil
 end
 
-function MasterMerchant:initRosterStats()
-  if MasterMerchant.originalRosterStatsCallback then return end
-
-  self:InitRosterChanges()
-
-end
-
 --/script ZO_SharedRightBackground:SetWidth(1088)
 function MasterMerchant:InitRosterChanges()
 
@@ -2694,6 +2692,7 @@ function MasterMerchant:InitRosterChanges()
   -- LibGuildRoster adding the Bought Column
   MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({ 
     key = 'MM_Bought',
+    disabled = not settingsToUse.diplayGuildInfo,
     width = 110,
     header = {
       title = GetString(SK_PURCHASES_COLUMN),
@@ -2727,6 +2726,7 @@ function MasterMerchant:InitRosterChanges()
   -- LibGuildRoster adding the Sold Column
   MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({ 
     key = 'MM_Sold',
+    disabled = not settingsToUse.diplayGuildInfo,
     width = 110,
     header = {
       title = GetString(SK_SALES_COLUMN),
@@ -2760,6 +2760,7 @@ function MasterMerchant:InitRosterChanges()
   -- LibGuildRoster adding the Tax Column
   MasterMerchant.guild_columns['per'] = LibGuildRoster:AddColumn({ 
     key = 'MM_PerChg',
+    disabled = not settingsToUse.diplayGuildInfo,
     width = 70,
     header = {
       title = GetString(SK_PER_CHANGE_COLUMN),
@@ -2793,6 +2794,7 @@ function MasterMerchant:InitRosterChanges()
   -- LibGuildRoster adding the Count Column
   MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({ 
     key = 'MM_Count',
+    disabled = not settingsToUse.diplayGuildInfo,
     width = 80,
     header = {
       title = GetString(SK_COUNT_COLUMN),
@@ -2824,15 +2826,21 @@ function MasterMerchant:InitRosterChanges()
   })
 
    -- Guild Time dropdown choice box
-  local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
+  MasterMerchant.UI_GuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
   
   -- Placing Guild Time dropdown at the bottom of the Count Column when it has been generated
   LibGuildRoster:OnRosterReady(function()
-    MasterMerchantGuildTime:SetAnchor(TOP, MasterMerchant.guild_columns['count']:GetHeader(), BOTTOMRIGHT, -80, 570)
-    MasterMerchantGuildTime:SetDimensions(180,25)
+    MasterMerchant.UI_GuildTime:SetAnchor(TOP, MasterMerchant.guild_columns['count']:GetHeader(), BOTTOMRIGHT, -80, 570)
+    MasterMerchant.UI_GuildTime:SetDimensions(180,25)
+
+    -- Don't render the dropdown this cycle if the settings have columns disabled
+    if MasterMerchant.guild_columns['count'].isDisabled then
+      MasterMerchant.UI_GuildTime:SetHidden(true)
+    end
+
   end)
 
-  MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
+  MasterMerchant.UI_GuildTime.m_comboBox:SetSortsItems(false)
 
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantRosterTimeChooser)
   timeDropdown:ClearItems()
@@ -3924,9 +3932,7 @@ function MasterMerchant:InitItemHistory()
       end
 
       -- Set up guild roster info
-      if self:ActiveSettings().diplayGuildInfo then
-        self:initRosterStats()
-      end
+      self:InitRosterChanges()
 
       self:setScanning(false)
 
