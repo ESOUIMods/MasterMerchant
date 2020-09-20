@@ -2713,6 +2713,39 @@ function MasterMerchant:InitRosterChanges()
     }
   })
 
+  -- LibGuildRoster adding the Sold Column
+  LibGuildRoster:AddColumn({ 
+    key = 'MM_Sold',
+    width = 110,
+    header = {
+      title = GetString(SK_SALES_COLUMN),
+      align = TEXT_ALIGN_RIGHT
+    },
+    row = {
+      align = TEXT_ALIGN_RIGHT,
+      data = function( guildId, data, index )
+
+        local amountSold = 0
+
+        if MasterMerchant.guildSales and
+          MasterMerchant.guildSales[GUILD_ROSTER_MANAGER.guildName] and
+          MasterMerchant.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers and
+          MasterMerchant.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
+          MasterMerchant.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
+
+          amountSold = MasterMerchant.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[settingsToUse.rankIndexRoster or 1] or 0
+
+        end
+        
+        return amountSold
+
+      end,
+      format = function( value )
+          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+      end
+    }
+  })
+
    -- Guild Time dropdown choice box
   local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
   MasterMerchantGuildTime:SetDimensions(180,25)
