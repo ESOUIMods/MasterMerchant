@@ -2673,18 +2673,6 @@ function MasterMerchant:initRosterStats()
 
   self:InitRosterChanges()
 
-  local dataType = GUILD_ROSTER_KEYBOARD.list.dataTypes[GUILD_MEMBER_DATA]
-
-  MasterMerchant.originalRosterStatsCallback = dataType.setupCallback
-  if MasterMerchant.originalRosterStatsCallback then
-      dataType.setupCallback = function(...)
-          local row, data = ...
-          MasterMerchant.originalRosterStatsCallback(...)
-          zo_callLater(function() MasterMerchant.AddRosterStats(row, data) end, 25)
-      end
-  else
-    MasterMerchant.v(5, GetString(MM_ADVICE_ERROR))
-  end
 end
 
 function MasterMerchant:BuildMasterList()
