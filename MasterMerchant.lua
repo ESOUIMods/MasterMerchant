@@ -1474,10 +1474,7 @@ function MasterMerchant:LibAddonInit()
         
         self:ActiveSettings().diplayGuildInfo = value 
 
-        d('setFunc inside MM settings')
-
         for key,column in pairs(MasterMerchant.guild_columns) do
-          d('Setting '..column.key..' to '..tostring(value))
           column:IsDisabled( not value )
         end
 
