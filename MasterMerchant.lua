@@ -2677,76 +2677,11 @@ end
 
 --/script ZO_SharedRightBackground:SetWidth(1088)
 function MasterMerchant:InitRosterChanges()
-  local additionalWidth = 360  -- Remember to up size of MM_ExtraBackground in xml
-
-  GUILD_ROSTER_ENTRY_SORT_KEYS['bought'] = { tiebreaker = 'displayName', isNumeric = true }
-  GUILD_ROSTER_ENTRY_SORT_KEYS['sold'] = { tiebreaker = 'displayName', isNumeric = true }
-  GUILD_ROSTER_ENTRY_SORT_KEYS['count'] = { tiebreaker = 'displayName', isNumeric = true }
-  GUILD_ROSTER_ENTRY_SORT_KEYS['perChange'] = { tiebreaker = 'sold', isNumeric = true }
-
-  local isValid, point, relTo, relPoint, offsetX, offsetY = ZO_GuildSharedInfoBank:GetAnchor()
-  ZO_GuildSharedInfoBank:SetAnchor(point, nil, relPoint, 240, 40)
-
-  local isValid, point, relTo, relPoint, offsetX, offsetY = ZO_GuildRosterHideOffline:GetAnchor()
-  ZO_GuildRosterHideOffline:SetAnchor(point, nil, relPoint, 80, 30)
-
-  -- MasterMerchant.originalRosterBuildMasterList = ZO_GuildRosterManager.BuildMasterList
-  -- ZO_GuildRosterManager.BuildMasterList = MasterMerchant.BuildMasterList
-
-  local background = CreateControlFromVirtual(ZO_GuildRoster:GetName() .. 'MMBiggerBackground', ZO_GuildRoster, 'MM_ExtraBackground')
-  background:SetAnchor(TOPLEFT, ZO_GuildRoster, TOPLEFT, 0, 0)
-  background:SetDrawLayer(0)
-  background:GetNamedChild('ImageLeft'):SetTextureCoords(0,(additionalWidth + 60)/1024,0,1)
-  background:GetNamedChild('ImageLeft'):SetColor(1,1,1,.8)
-  background:SetHidden(false)
-
-  headers = ZO_GuildRosterHeaders
-
-  local controlName = headers:GetName() .. 'Bought'
-  local boughtHeader = CreateControlFromVirtual(controlName, headers, 'ZO_SortHeader')
-  ZO_SortHeader_Initialize(boughtHeader, GetString(SK_PURCHASES_COLUMN), 'bought', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, 'ZoFontGameLargeBold')
-
-  local origWidth = ZO_GuildRoster:GetWidth()
-  ZO_GuildRoster:SetWidth(origWidth + additionalWidth)
-  local anchorControl = headers:GetNamedChild('Level')
-  boughtHeader:SetAnchor(TOPLEFT, anchorControl, TOPRIGHT, 20, 0)
-  anchorControl.sortHeaderGroup:AddHeader(boughtHeader)
-
-  boughtHeader:SetDimensions(110,32)
-  boughtHeader:SetHidden(false)
-
-  controlName = headers:GetName() .. 'Sold'
-  local soldHeader = CreateControlFromVirtual(controlName, headers, 'ZO_SortHeader')
-  ZO_SortHeader_Initialize(soldHeader, GetString(SK_SALES_COLUMN), 'sold', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, 'ZoFontGameLargeBold')
-  boughtHeader.sortHeaderGroup:AddHeader(soldHeader)
-  soldHeader:SetAnchor(LEFT, boughtHeader, RIGHT, 0, 0)
-  soldHeader:SetDimensions(110,32)
-  soldHeader:SetHidden(false)
-
-  controlName = headers:GetName() .. 'PerChg'
-  local percentHeader = CreateControlFromVirtual(controlName, headers, 'ZO_SortHeader')
-  ZO_SortHeader_Initialize(percentHeader, GetString(SK_PER_CHANGE_COLUMN), 'perChange', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, 'ZoFontGameLargeBold')
-  boughtHeader.sortHeaderGroup:AddHeader(percentHeader)
-  percentHeader:SetAnchor(LEFT, soldHeader, RIGHT, 10, 0)
-  percentHeader:SetDimensions(70,32)
-  percentHeader:SetHidden(false)
-  percentHeader.data = {
-    tooltipText = GetString(SK_PER_CHANGE_TIP)
-  }
-  percentHeader:SetMouseEnabled(true)
-  percentHeader:SetHandler("OnMouseEnter", ZO_Options_OnMouseEnter)
-  percentHeader:SetHandler("OnMouseExit", ZO_Options_OnMouseExit)
-
-
-  controlName = headers:GetName() .. 'Count'
-  local countHeader = CreateControlFromVirtual(controlName, headers, 'ZO_SortHeader')
-  ZO_SortHeader_Initialize(countHeader, GetString(SK_COUNT_COLUMN), 'count', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, 'ZoFontGameLargeBold')
-  boughtHeader.sortHeaderGroup:AddHeader(countHeader)
-  countHeader:SetAnchor(LEFT, percentHeader, RIGHT, 0, 0)
-  countHeader:SetDimensions(80,32)
-  countHeader:SetHidden(false)
 
   local settingsToUse = MasterMerchant:ActiveSettings()
+
+
+
    -- Guild Time dropdown choice box
   local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
   MasterMerchantGuildTime:SetDimensions(180,25)
@@ -2793,8 +2728,6 @@ function MasterMerchant:InitRosterChanges()
   timeEntry = timeDropdown:CreateItemEntry(settingsToUse.customTimeframeText, function() self:UpdateRosterWindow(9) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndexRoster == 9 then timeDropdown:SetSelectedItem(settingsToUse.customTimeframeText) end
-
-  GUILD_ROSTER_MANAGER:RefreshData()
 
 end
 
