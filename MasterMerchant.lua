@@ -2680,7 +2680,38 @@ function MasterMerchant:InitRosterChanges()
 
   local settingsToUse = MasterMerchant:ActiveSettings()
 
+  -- LibGuildRoster adding the Bought Column
+  LibGuildRoster:AddColumn({ 
+    key = 'MM_Bought',
+    width = 110,
+    header = {
+      title = GetString(SK_PURCHASES_COLUMN),
+      align = TEXT_ALIGN_RIGHT
+    },
+    row = {
+      align = TEXT_ALIGN_RIGHT,
+      data = function( guildId, data, index )
 
+        local amountBought = 0
+
+        if MasterMerchant.guildPurchases and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName] and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
+
+           amountBought = MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[settingsToUse.rankIndexRoster or 1] or 0
+
+        end
+        
+        return amountBought
+
+      end,
+      format = function( value )
+          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+      end
+    }
+  })
 
    -- Guild Time dropdown choice box
   local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
