@@ -1120,6 +1120,9 @@ function MasterMerchant:SalesStats(statsDays)
            kioskPercent = kioskPercentage, }
 end
 
+-- Table where the guild roster columns shall be placed
+MasterMerchant.guild_columns = {}
+
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
   local panelData = {
@@ -1467,7 +1470,18 @@ function MasterMerchant:LibAddonInit()
       name = GetString(SK_ROSTER_INFO_NAME),
       tooltip = GetString(SK_ROSTER_INFO_TIP),
       getFunc = function() return self:ActiveSettings().diplayGuildInfo end,
-      setFunc = function(value) self:ActiveSettings().diplayGuildInfo = value end,
+      setFunc = function(value) 
+        
+        self:ActiveSettings().diplayGuildInfo = value 
+
+        d('setFunc inside MM settings')
+
+        for key,column in pairs(MasterMerchant.guild_columns) do
+          d('Setting '..column.key..' to '..tostring(value))
+          column:IsDisabled( not value )
+        end
+
+      end,
     },
     -- should we display profit instead of margin?
     [20] = {
@@ -2681,7 +2695,7 @@ function MasterMerchant:InitRosterChanges()
   local settingsToUse = MasterMerchant:ActiveSettings()
 
   -- LibGuildRoster adding the Bought Column
-  LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({ 
     key = 'MM_Bought',
     width = 110,
     header = {
@@ -2714,7 +2728,7 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- LibGuildRoster adding the Sold Column
-  LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({ 
     key = 'MM_Sold',
     width = 110,
     header = {
@@ -2747,7 +2761,7 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- LibGuildRoster adding the Tax Column
-  LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['per'] = LibGuildRoster:AddColumn({ 
     key = 'MM_PerChg',
     width = 70,
     header = {
@@ -2780,7 +2794,7 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- LibGuildRoster adding the Count Column
-  LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({ 
     key = 'MM_Count',
     width = 80,
     header = {
@@ -2790,7 +2804,7 @@ function MasterMerchant:InitRosterChanges()
     row = {
       align = TEXT_ALIGN_RIGHT,
       data = function( guildId, data, index )
-      
+
         local saleCount = 0
 
         if MasterMerchant.guildSales and
@@ -2814,8 +2828,13 @@ function MasterMerchant:InitRosterChanges()
 
    -- Guild Time dropdown choice box
   local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
-  MasterMerchantGuildTime:SetDimensions(180,25)
-  MasterMerchantGuildTime:SetAnchor(TOPRIGHT, ZO_GuildRoster, BOTTOMRIGHT, -120, -5)
+  
+  -- Placing Guild Time dropdown at the bottom of the Count Column when it has been generated
+  LibGuildRoster:OnRosterReady(function()
+    MasterMerchantGuildTime:SetAnchor(TOP, MasterMerchant.guild_columns['count']:GetHeader(), BOTTOMRIGHT, -80, 570)
+    MasterMerchantGuildTime:SetDimensions(180,25)
+  end)
+
   MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
 
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantRosterTimeChooser)
@@ -2860,83 +2879,6 @@ function MasterMerchant:InitRosterChanges()
   if settingsToUse.rankIndexRoster == 9 then timeDropdown:SetSelectedItem(settingsToUse.customTimeframeText) end
 
 end
-
-function MasterMerchant.AddRosterStats(rowControl, result)
-
-    if result == nil then return end
-
-    local settingsToUse = MasterMerchant:ActiveSettings()
-    local anchorControl
-    local bought = rowControl:GetNamedChild('Bought')
-
-		if(not bought) then
-			local controlName = rowControl:GetName() .. 'Bought'
-			bought = rowControl:CreateControl(controlName, CT_LABEL)
-      anchorControl = rowControl:GetNamedChild('Level')
-			bought:SetAnchor(LEFT, anchorControl, RIGHT, 0, 0)
-			bought:SetFont('ZoFontGame')
-      bought:SetWidth(110)
-      bought:SetHidden(false)
-      bought:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-
-      local level = rowControl:GetNamedChild('Level')
-      local note = rowControl:GetNamedChild('Note')
-      note:ClearAnchors()
-      note:SetAnchor(LEFT, level, RIGHT, -18, 0)
-	  end
-
-    local sold = rowControl:GetNamedChild('Sold')
-		if(not sold) then
-			local controlName = rowControl:GetName() .. 'Sold'
-			sold = rowControl:CreateControl(controlName, CT_LABEL)
-			sold:SetAnchor(LEFT, bought, RIGHT, 0, 0)
-			sold:SetFont('ZoFontGame')
-      sold:SetWidth(110)
-      sold:SetHidden(false)
-      sold:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-	  end
-
-    local percent = rowControl:GetNamedChild('Percent')
-		if(not percent) then
-			local controlName = rowControl:GetName() .. 'Percent'
-			percent = rowControl:CreateControl(controlName, CT_LABEL)
-			percent:SetAnchor(LEFT, sold, RIGHT, 0, 0)
-			percent:SetFont('ZoFontGame')
-      percent:SetWidth(80)
-      percent:SetHidden(false)
-      percent:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-	  end
-
-    local count = rowControl:GetNamedChild('Count')
-		if(not count) then
-			local controlName = rowControl:GetName() .. 'Count'
-			count = rowControl:CreateControl(controlName, CT_LABEL)
-			count:SetAnchor(LEFT, percent, RIGHT, 0, 0)
-			count:SetFont('ZoFontGame')
-      count:SetWidth(65)
-      count:SetHidden(false)
-      count:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-	  end
-
-    local stringBought = MasterMerchant.LocalizedNumber(result.bought)
-    bought:SetText(stringBought .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
-
-    local stringSold = MasterMerchant.LocalizedNumber(result.sold)
-    sold:SetText(stringSold .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
-
-    --local stringPercent = '---'
-    --if result.perChange ~= -101 then
-    --   stringPercent = MasterMerchant.LocalizedNumber(result.perChange) .. '%'
-    --end
-    --percent:SetText(stringPercent)
-    local stringPercent = MasterMerchant.LocalizedNumber(math.floor((result.sold or 0) * 0.035))
-    percent:SetText(stringPercent .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
-
-    local stringCount = MasterMerchant.LocalizedNumber(result.count)
-    count:SetText(stringCount)
-end
-
-
 
 
 -- Handle the reset button - clear out the search and scan tables,
