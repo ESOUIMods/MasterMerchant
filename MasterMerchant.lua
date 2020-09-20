@@ -2675,57 +2675,6 @@ function MasterMerchant:initRosterStats()
 
 end
 
-function MasterMerchant:BuildMasterList()
-  --[[
-  This happens when you go to the guild history for a guild.
-  This happens each time you change guilds also. Meaning
-  it is refreshed each time.
-
-  BuildMasterList, AddRosterStats
-  ]]--
-    if not self.masterList then return end
-
-    MasterMerchant.originalRosterBuildMasterList(self)
-
-    local settingsToUse = MasterMerchant:ActiveSettings()
-
-    for i = 1, #self.masterList do
-        local data = self.masterList[i]
-          local amountBought = 0
-          if MasterMerchant.guildPurchases and
-             MasterMerchant.guildPurchases[self.guildName] and
-             MasterMerchant.guildPurchases[self.guildName].sellers and
-             MasterMerchant.guildPurchases[self.guildName].sellers[data.displayName] and
-             MasterMerchant.guildPurchases[self.guildName].sellers[data.displayName].sales then
-             amountBought = MasterMerchant.guildPurchases[self.guildName].sellers[data.displayName].sales[settingsToUse.rankIndexRoster or 1] or 0
-          end
-          data.bought = amountBought
-
-          local amountSold = 0
-          local saleCount = 0
-          local priorWeek = 0
-          if MasterMerchant.guildSales and
-             MasterMerchant.guildSales[self.guildName] and
-             MasterMerchant.guildSales[self.guildName].sellers and
-             MasterMerchant.guildSales[self.guildName].sellers[data.displayName] and
-             MasterMerchant.guildSales[self.guildName].sellers[data.displayName].sales then
-             amountSold = MasterMerchant.guildSales[self.guildName].sellers[data.displayName].sales[settingsToUse.rankIndexRoster or 1] or 0
-             saleCount = MasterMerchant.guildSales[self.guildName].sellers[data.displayName].count[settingsToUse.rankIndexRoster or 1] or 0
-             priorWeek = MasterMerchant.guildSales[self.guildName].sellers[data.displayName].sales[(settingsToUse.rankIndexRoster or 1) + 1] or 0
-          end
-          data.sold = amountSold
-          data.count = saleCount
-
-          --local perChange = -101
-          --if (settingsToUse.rankIndexRoster == 1 or settingsToUse.rankIndexRoster == 3 or settingsToUse.rankIndexRoster == 4) and priorWeek > 0 then
-          --   perChange = math.floor(((amountSold - priorWeek)/priorWeek) * 1000 + 0.5)/10
-          --end
-          --data.perChange = perChange
-
-          data.perChange = math.floor(data.sold * 0.035)
-    end
-end
-
 --/script ZO_SharedRightBackground:SetWidth(1088)
 function MasterMerchant:InitRosterChanges()
   local additionalWidth = 360  -- Remember to up size of MM_ExtraBackground in xml
@@ -2741,8 +2690,8 @@ function MasterMerchant:InitRosterChanges()
   local isValid, point, relTo, relPoint, offsetX, offsetY = ZO_GuildRosterHideOffline:GetAnchor()
   ZO_GuildRosterHideOffline:SetAnchor(point, nil, relPoint, 80, 30)
 
-  MasterMerchant.originalRosterBuildMasterList = ZO_GuildRosterManager.BuildMasterList
-  ZO_GuildRosterManager.BuildMasterList = MasterMerchant.BuildMasterList
+  -- MasterMerchant.originalRosterBuildMasterList = ZO_GuildRosterManager.BuildMasterList
+  -- ZO_GuildRosterManager.BuildMasterList = MasterMerchant.BuildMasterList
 
   local background = CreateControlFromVirtual(ZO_GuildRoster:GetName() .. 'MMBiggerBackground', ZO_GuildRoster, 'MM_ExtraBackground')
   background:SetAnchor(TOPLEFT, ZO_GuildRoster, TOPLEFT, 0, 0)
