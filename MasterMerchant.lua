@@ -1470,10 +1470,10 @@ function MasterMerchant:LibAddonInit()
       type = 'checkbox',
       name = GetString(SK_ROSTER_INFO_NAME),
       tooltip = GetString(SK_ROSTER_INFO_TIP),
-      getFunc = function() return self:ActiveSettings().diplayGuildInfo end,
-      setFunc = function(value) 
-        
-        self:ActiveSettings().diplayGuildInfo = value
+      getFunc = function() return MasterMerchant.systemSavedVariables.diplayGuildInfo end,
+      setFunc = function(value)
+
+        MasterMerchant.systemSavedVariables.diplayGuildInfo = value
 
         if self.UI_GuildTime then
           self.UI_GuildTime:SetHidden( not value )
@@ -2690,9 +2690,9 @@ function MasterMerchant:InitRosterChanges()
   local settingsToUse = MasterMerchant:ActiveSettings()
 
   -- LibGuildRoster adding the Bought Column
-  MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({
     key = 'MM_Bought',
-    disabled = not settingsToUse.diplayGuildInfo,
+    disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo,
     width = 110,
     header = {
       title = GetString(SK_PURCHASES_COLUMN),
@@ -2713,7 +2713,7 @@ function MasterMerchant:InitRosterChanges()
            amountBought = MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[settingsToUse.rankIndexRoster or 1] or 0
 
         end
-        
+
         return amountBought
 
       end,
@@ -2724,9 +2724,9 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- LibGuildRoster adding the Sold Column
-  MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({
     key = 'MM_Sold',
-    disabled = not settingsToUse.diplayGuildInfo,
+    disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo,
     width = 110,
     header = {
       title = GetString(SK_SALES_COLUMN),
@@ -2747,7 +2747,7 @@ function MasterMerchant:InitRosterChanges()
           amountSold = MasterMerchant.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[settingsToUse.rankIndexRoster or 1] or 0
 
         end
-        
+
         return amountSold
 
       end,
@@ -2758,9 +2758,9 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- LibGuildRoster adding the Tax Column
-  MasterMerchant.guild_columns['per'] = LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['per'] = LibGuildRoster:AddColumn({
     key = 'MM_PerChg',
-    disabled = not settingsToUse.diplayGuildInfo,
+    disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo,
     width = 70,
     header = {
       title = GetString(SK_PER_CHANGE_COLUMN),
@@ -2792,9 +2792,9 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- LibGuildRoster adding the Count Column
-  MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({ 
+  MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({
     key = 'MM_Count',
-    disabled = not settingsToUse.diplayGuildInfo,
+    disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo,
     width = 80,
     header = {
       title = GetString(SK_COUNT_COLUMN),
@@ -2827,7 +2827,7 @@ function MasterMerchant:InitRosterChanges()
 
    -- Guild Time dropdown choice box
   MasterMerchant.UI_GuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
-  
+
   -- Placing Guild Time dropdown at the bottom of the Count Column when it has been generated
   LibGuildRoster:OnRosterReady(function()
     MasterMerchant.UI_GuildTime:SetAnchor(TOP, MasterMerchant.guild_columns['count']:GetHeader(), BOTTOMRIGHT, -80, 570)
@@ -3226,6 +3226,7 @@ function MasterMerchant:Initialize()
     historyDepth = 30,
     minItemCount = 20,
     maxItemCount = 5000,
+    diplayGuildInfo = false,
   }
 
   for i = 1, GetNumGuilds() do
@@ -3243,6 +3244,8 @@ function MasterMerchant:Initialize()
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), acctDefaults)
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
   self.currentGuildID = GetGuildId(1) or 0
+
+  MasterMerchant.systemSavedVariables.diplayGuildInfo = MasterMerchant.systemSavedVariables.diplayGuildInfo or false
 
   EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_Initial", EVENT_PLAYER_ACTIVATED, function(...) MasterMerchant:PlayerLoaded(...) end)
 
@@ -3470,6 +3473,9 @@ function MasterMerchant:Initialize()
       GuildSalesAssistant:InitializeMM()
       GuildSalesAssistant:LoadInitialData(self.salesData)
   end
+
+  -- New, added 9/26
+  self:InitRosterChanges()
 
   if not self.systemSavedVariables.delayInit then
     self:TruncateHistory()
@@ -3932,7 +3938,7 @@ function MasterMerchant:InitItemHistory()
       end
 
       -- Set up guild roster info
-      self:InitRosterChanges()
+      -- self:InitRosterChanges()
 
       self:setScanning(false)
 
