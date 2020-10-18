@@ -376,12 +376,17 @@ function MasterMerchant:CheckForDuplicate(theEvent)
     price = tonumber(theEvent.salePrice),
     seller = theEvent.seller,
     wasKiosk = theEvent.kioskSale,
-    id = tonumber(theEvent.id)
+    id = theEvent.id
   }
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
-      if tonumber(v.id) == tonumber(newSalesItem.id) then
+      if type(v.id) == "number" then
+        if tostring(v.id) == newSalesItem.id then
+          dupe = true
+          break
+        end
+      elseif v.id == newSalesItem.id then
         dupe = true
         break
       end

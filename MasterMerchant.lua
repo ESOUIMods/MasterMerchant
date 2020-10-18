@@ -1888,6 +1888,7 @@ function MasterMerchant:CleanOutBad()
     extraData.moveCount = 0
     extraData.deleteCount = 0
     extraData.checkMilliseconds = 120
+    extraData.eventIdIsNumber = 0
 
     self:setScanning(true)
   end
@@ -1923,6 +1924,10 @@ function MasterMerchant:CleanOutBad()
     end
     local newid = GetItemLinkItemId(saledata['itemLink'])
     local newversion = MasterMerchant.makeIndexFromLink(saledata['itemLink'])
+    if type(saledata['id']) == 'number' then
+      saledata['id'] = tostring(saledata['id'])
+      extraData.eventIdIsNumber = extraData.eventIdIsNumber + 1
+    end
     if ((newid ~= itemid) or (newversion ~= versionid)) then
       -- Move this records by inserting it another list and keep a count
       local theEvent =
@@ -1935,7 +1940,7 @@ function MasterMerchant:CleanOutBad()
         salePrice = tonumber(saledata.price),
         seller = saledata.seller,
         kioskSale = saledata.wasKiosk,
-        id = tonumber(saledata.id)
+        id = saledata.id
       }
       MasterMerchant:addToHistoryTables(theEvent)
       extraData.moveCount = extraData.moveCount + 1
@@ -1974,6 +1979,7 @@ function MasterMerchant:CleanOutBad()
     MasterMerchant.v(2,  '  ' .. extraData.versionCount .. ' bad item versions')
     MasterMerchant.v(2,  '  ' .. extraData.idCount .. ' bad item IDs')
     MasterMerchant.v(2,  '  ' .. extraData.muleIdCount .. ' bad mule item IDs')
+    MasterMerchant.v(2,  '  ' .. extraData.eventIdIsNumber .. ' events with numbers converted to strings')
 
     local LEQ = LibExecutionQueue:new()
     if extraData.deleteCount > 0 then
@@ -2357,7 +2363,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
   --MasterMerchant.dm("Debug", "ProcessGuildHistoryResponse: " .. guildName)
   for i = MasterMerchant.systemSavedVariables["numEvents"][guildName], numEvents do
     local theEvent = {}
-    theEvent.eventType, theEvent.secsSince, theEvent.seller, theEvent.buyer, theEvent.quant, theEvent.itemName, theEvent.salePrice, _, theEvent.id = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, i)
+    theEvent.eventType, theEvent.secsSince, theEvent.seller, theEvent.buyer, theEvent.quant, theEvent.itemName, theEvent.salePrice = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, i)
     theEvent.guild = guildName
     theEvent.saleTime = GetTimeStamp() - theEvent.secsSince
     if theEvent.secsSince > MasterMerchant.oneYearInSeconds then
@@ -2372,6 +2378,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
     if theEvent.eventType == GUILD_EVENT_ITEM_SOLD then
 
       theEvent.kioskSale = (guildMemberInfo[string.lower(theEvent.buyer)] == nil)
+      theEvent.id = Id64ToString(GetGuildEventId(guildID, GUILD_HISTORY_STORE, i))
 
       if theEvent.itemName ~= nil and theEvent.seller ~= nil and theEvent.buyer ~= nil and theEvent.salePrice ~= nil then
         -- Insert the entry into the SalesData table and associated indexes
