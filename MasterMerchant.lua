@@ -3777,6 +3777,7 @@ function MasterMerchant:Initialize()
     if self.systemSavedVariables.delayInit then
       -- Finish the init after the player has loaded....
       zo_callLater(function()
+          MasterMerchant.v(1, "Master Merchant 2.x is at end of life. Please install Master Merchant 3.0 instead.")
           MasterMerchant.v(1, "|cFFFF00Master Merchant Initializing...|r")
           local LEQ = LibExecutionQueue:new()
           LEQ:Start()
