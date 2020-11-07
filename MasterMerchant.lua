@@ -4091,7 +4091,7 @@ end
 function MasterMerchant:SendNote(gold)
   MasterMerchantFeedback:SetHidden(true)
   SCENE_MANAGER:Show('mailSend')
-  ZO_MailSendToField:SetText('@Philgo68')
+  ZO_MailSendToField:SetText('@Sharlikran')
   ZO_MailSendSubjectField:SetText('Master Merchant')
   QueueMoneyAttachment(gold)
   ZO_MailSendBodyField:TakeFocus()

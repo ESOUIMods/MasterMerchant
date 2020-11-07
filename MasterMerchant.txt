@@ -6,7 +6,7 @@
 
 
 ## Title: Master Merchant 2.5.0 by Philgo
-## APIVersion: 100031 100032
+## APIVersion: 100031 100033
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Khaibit & (dOpiate & Garkin) & Philgo
 ## Version: 2.5.0
