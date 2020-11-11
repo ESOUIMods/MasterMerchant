@@ -307,7 +307,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
           (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
           (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
           (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) and
-          ((not self:ActiveSettings().trimOutliers) or math.abs((item.price/item.quant) - initMean) <= (3 * standardDeviation)) then
+          ((not MasterMerchant.systemSavedVariables.trimOutliers) or math.abs((item.price/item.quant) - initMean) <= (3 * standardDeviation)) then
           avgPrice = avgPrice + item.price
           countSold = countSold + item.quant
           legitSales = legitSales + 1
@@ -348,7 +348,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
           (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
           (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
           (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) and
-          ((not self:ActiveSettings().trimOutliers) or math.abs((item.price/item.quant) - initMean) <= (3 * standardDeviation)) then
+          ((not MasterMerchant.systemSavedVariables.trimOutliers) or math.abs((item.price/item.quant) - initMean) <= (3 * standardDeviation)) then
           local weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
           avgPrice = avgPrice + (item.price * weightValue)
           countSold = countSold + item.quant
@@ -1447,8 +1447,8 @@ function MasterMerchant:LibAddonInit()
       type = 'checkbox',
       name = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
-      getFunc = function() return self:ActiveSettings().trimOutliers end,
-      setFunc = function(value) self:ActiveSettings().trimOutliers = value end,
+      getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliers end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.trimOutliers = value end,
     },
     -- should we trim off decimals?
     [17] = {
@@ -1466,8 +1466,16 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return self:ActiveSettings().replaceInventoryValues end,
       setFunc = function(value) self:ActiveSettings().replaceInventoryValues = value end,
     },
-    -- should we display info on guild roster?
+    -- should we add taxes to the export?
     [19] = {
+      type = 'checkbox',
+      name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
+      tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.showAmountTaxes end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
+    },
+    -- should we display info on guild roster?
+    [20] = {
       type = 'checkbox',
       name = GetString(SK_ROSTER_INFO_NAME),
       tooltip = GetString(SK_ROSTER_INFO_TIP),
@@ -1487,7 +1495,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- should we display profit instead of margin?
-    [20] = {
+    [21] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -1495,7 +1503,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().saucy = value end,
     },
     -- should we display a Min Profit Filter in AGS?
-    [21] = {
+    [22] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1503,7 +1511,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
     },
     -- should we auto advance to the next page?
-    [22] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(MM_AUTO_ADVANCE_NAME),
       tooltip = GetString(MM_AUTO_ADVANCE_TIP),
@@ -1511,7 +1519,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().autoNext = value end,
     },
     -- should we display the item listed message?
-    [23] = {
+    [24] = {
       type = 'checkbox',
       name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
       tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
@@ -1519,7 +1527,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
     },
     -- Font to use
-    [24] = {
+    [25] = {
       type = 'dropdown',
       name = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
@@ -1534,7 +1542,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- Verbose MM Messages
-    [25] = {
+    [26] = {
       type = 'slider',
       name = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
@@ -1548,7 +1556,7 @@ function MasterMerchant:LibAddonInit()
                 end,
     },
     -- Make all settings account-wide (or not)
-    [26] = {
+    [27] = {
       type = 'checkbox',
       name = GetString(SK_ACCOUNT_WIDE_NAME),
       tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
@@ -2124,7 +2132,13 @@ function MasterMerchant:ExportLastWeek()
         end
 
         -- sample [2] = "@Name&Sales&Purchases&Rank"
-        table.insert(list, displayName .. "&"  .. amountSold .. "&"  .. amountBought .. "&" .. rankIndex)
+        local amountTaxes = 0
+        amountTaxes = math.floor(amountSold * 0.035)
+        if MasterMerchant.systemSavedVariables.showAmountTaxes then
+          table.insert(list, displayName .. "&"  .. amountSold .. "&"  .. amountBought .. "&" .. amountTaxes .. "&" .. rankIndex)
+        else
+          table.insert(list, displayName .. "&"  .. amountSold .. "&"  .. amountBought .. "&" .. rankIndex)
+        end
     end
 
 end
@@ -2496,6 +2510,7 @@ function MasterMerchant:ScanStoresParallel(doAlert)
   ]]--
   MasterMerchant.v(2, 'LibHistoire Activated, listening for guild sales...')
     -- do not start listening until mm is fully Initialized
+  MasterMerchant.isInitialized = true -- moved in 3.2.7
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
     MasterMerchant:SetupListener(guildID)
@@ -3217,6 +3232,8 @@ function MasterMerchant:Initialize()
     maxItemCount = 5000,
     diplayGuildInfo = false,
     lastReceivedEventID = {},
+    showAmountTaxes = false,
+    trimOutliers = false,
   }
 
   for i = 1, GetNumGuilds() do
@@ -4045,7 +4062,7 @@ function MasterMerchant:InitScrollLists()
     end
     self:ScanStoresParallel(true)
 
-    MasterMerchant.isInitialized = true
+    -- MasterMerchant.isInitialized = true
     -- CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function() MasterMerchant:NewGuildSelected() end)
 end
 
@@ -4212,13 +4229,23 @@ function MasterMerchant.Slash(allArgs)
   end
 
   if args == 'export' then
+    if not MasterMerchant.isInitialized then
+      MasterMerchant.v(2, "Master Merchant is still initializing.")
+      return
+    end
     MasterMerchant.guildNumber = guildNumber
-    if MasterMerchant.guildNumber or 0 > 0 then
-      MasterMerchant.v(2, "'Exporting' last weeks sales/purchase/rank data.")
+    if (MasterMerchant.guildNumber > 0) and (GetNumGuilds() > 0) then
+      MasterMerchant.v(2, "Exporting selected weeks sales/purchase/taxes/rank data.")
       MasterMerchant:ExportLastWeek()
       MasterMerchant.v(2, "Export complete.  /reloadui to save the file.")
     else
       MasterMerchant.v(2, "Please include the guild number you wish to export.")
+      MasterMerchant.v(2, "For example '/mm export 1' to export guild 1.")
+      for i = 1, GetNumGuilds() do
+        local guildID = GetGuildId(i)
+        local guildName = GetGuildName(guildID)
+        MasterMerchant.v(2, string.format("[%s] - %s", i, guildName))
+      end
     end
     return
   end
