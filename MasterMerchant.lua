@@ -3238,18 +3238,13 @@ function MasterMerchant:Initialize()
     systemDefault["eventIndex"][guildID] = 0
     systemDefault["eventCount"][guildID] = 0
     systemDefault["oldestEvent"][guildID] = 0
+    systemDefault["lastReceivedEventID"][guildID] = "0"
   end
   -- Populate savedVariables
   self.savedVariables = ZO_SavedVars:New('ShopkeeperSavedVars', 1, GetDisplayName(), Defaults)
   -- self.acctSavedVariables.scanHistory is no longer used
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), acctDefaults)
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
-
-  local saveDataPlaceholder = MasterMerchant.systemSavedVariables
-  for i = 1, GetNumGuilds() do
-    local guildID = GetGuildId(i)
-    if saveDataPlaceholder.lastReceivedEventID[guildID] == nil then saveDataPlaceholder.lastReceivedEventID[guildID] = "0" end
-  end
 
   self.currentGuildID = GetGuildId(1) or 0
 
@@ -3964,10 +3959,9 @@ function MasterMerchant:InitItemHistory()
 
 function SetupListener(guildID)
     local listener = LGH:CreateGuildHistoryListener(guildID, GUILD_HISTORY_STORE)
-    local saveData = MasterMerchant.systemSavedVariables
     local lastReceivedEventID
-    if saveData.lastReceivedEventID[guildID] then
-        lastReceivedEventID = StringToId64(saveData.lastReceivedEventID[guildID]) or 0
+    if MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] then
+        lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID]) or 0
         listener:SetAfterEventId(lastReceivedEventID)
     end
     listener:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
@@ -3976,7 +3970,7 @@ function SetupListener(guildID)
       -- MasterMerchant.systemSavedVariables.lastReceivedEventID[guildID]
       if eventType == GUILD_EVENT_ITEM_SOLD then
         if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
-            saveData.lastReceivedEventID[guildID] = Id64ToString(eventId)
+            MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = Id64ToString(eventId)
             lastReceivedEventID = eventId
         end
         local guildName = GetGuildName(guildID)
@@ -3992,10 +3986,6 @@ function SetupListener(guildID)
             kioskSale = false,
             id = Id64ToString(eventId)
         }
-        local secsSince = eventTime - GetTimeStamp()
-        if secsSince > MasterMerchant.systemSavedVariables["oldestEvent"][guildID] then
-          MasterMerchant.systemSavedVariables["oldestEvent"][guildID] = secsSince
-        end
         theEvent.kioskSale = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
 
         local added = MasterMerchant:addToHistoryTables(theEvent)
