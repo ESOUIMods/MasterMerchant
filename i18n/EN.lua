@@ -89,7 +89,7 @@ ZO_CreateStringId("SK_THOUSANDS_SEP", ",")
 
 -- Chat and center screen alerts/messages
 ZO_CreateStringId("SK_FIRST_SCAN", "Scanning your guilds for the first time.  This can take a few minutes!")
-ZO_CreateStringId("SK_REFRESH_LABEL", "Decrement")
+ZO_CreateStringId("SK_REFRESH_LABEL", "Refresh")
 ZO_CreateStringId("SK_REFRESH_START", "Starting refresh.")
 ZO_CreateStringId("SK_REFRESH_DONE", "Refresh complete.")
 ZO_CreateStringId("SK_REFRESH_WAIT", "Please wait a minute or so between refreshes.")

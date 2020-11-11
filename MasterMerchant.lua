@@ -2495,6 +2495,12 @@ function MasterMerchant:ScanStoresParallel(doAlert)
   is called to start the entire process.
   ]]--
   MasterMerchant.v(2, 'LibHistoire Activated, listening for guild sales...')
+    -- do not start listening until mm is fully Initialized
+  for i = 1, GetNumGuilds() do
+    local guildID = GetGuildId(i)
+    MasterMerchant:SetupListener(guildID)
+  end
+
   self.requestTimestamp = GetTimeStamp()
   self.addedEvents = self.addedEvents or {}
 
@@ -2516,34 +2522,17 @@ end
 
 -- Handle the refresh button - although there is no background scan so deduct 50
 function MasterMerchant:DoRefresh()
-  local guildNum = GetNumGuilds()
-  for i = 1, guildNum do
-    local guildID = GetGuildId(i)
-    local guildName = GetGuildName(guildID)
-    -- eventCount
-    if MasterMerchant.systemSavedVariables["numEvents"][guildName] < 50 then
-      MasterMerchant.systemSavedVariables["numEvents"][guildName] = 1
-
-      MasterMerchant.systemSavedVariables["eventCount"][guildID] = MasterMerchant.systemSavedVariables["numEvents"][guildName]
-    else
-      MasterMerchant.systemSavedVariables["numEvents"][guildName] = MasterMerchant.systemSavedVariables["numEvents"][guildName] - 50
-
-      MasterMerchant.systemSavedVariables["eventCount"][guildID] = MasterMerchant.systemSavedVariables["numEvents"][guildName]
-    end
-    MasterMerchant.v(5, "Event tracking index for " .. guildName .. " is now (" .. MasterMerchant.systemSavedVariables["numEvents"][guildName] .. ").")
-    -- eventIndex
-    if MasterMerchant.systemSavedVariables["lastNonDuplicate"][guildName] < 50 then
-      MasterMerchant.systemSavedVariables["lastNonDuplicate"][guildName] = 1
-
-      MasterMerchant.systemSavedVariables["eventIndex"][guildID] = MasterMerchant.systemSavedVariables["lastNonDuplicate"][guildName]
-    else
-      MasterMerchant.systemSavedVariables["lastNonDuplicate"][guildName] = MasterMerchant.systemSavedVariables["lastNonDuplicate"][guildName] - 50
-
-      MasterMerchant.systemSavedVariables["eventIndex"][guildID] = MasterMerchant.systemSavedVariables["lastNonDuplicate"][guildName]
-    end
+  if MasterMerchant.LibHistoireRefreshed then
+    MasterMerchant.v(2, 'LibHistoire can only be refreshed once per session. This will take a while and LibHistoire does not notify MM when it has completed.')
+    return
   end
-  MasterMerchant.v(4, 'All event tracking indexes decremented by 50.')
-  --MasterMerchant:UpdateControlData()
+  MasterMerchant.v(2, 'LibHistoire refreshing...')
+  for i = 1, GetNumGuilds() do
+    local guildID = GetGuildId(i)
+    MasterMerchant.LibHistoireListener[guildID]:Stop()
+    MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = "0"
+    MasterMerchant:SetupListener(guildID)
+  end
 end
 
 function MasterMerchant:initGMTools()
@@ -3957,16 +3946,17 @@ function MasterMerchant:InitItemHistory()
   end
  end
 
-function SetupListener(guildID)
-    local listener = LGH:CreateGuildHistoryListener(guildID, GUILD_HISTORY_STORE)
+function MasterMerchant:SetupListener(guildID)
+    -- listener
+    MasterMerchant.LibHistoireListener[guildID] = LGH:CreateGuildHistoryListener(guildID, GUILD_HISTORY_STORE)
     local lastReceivedEventID
     if MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] then
-      MasterMerchant.dm("Info", string.format("MasterMerchant Saved Var: %s, GuildID: (%s)", MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID], guildID))
+      --MasterMerchant.dm("Info", string.format("MasterMerchant Saved Var: %s, GuildID: (%s)", MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID], guildID))
       lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID])
-      MasterMerchant.dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
-      listener:SetAfterEventId(lastReceivedEventID)
+      --MasterMerchant.dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
+      MasterMerchant.LibHistoireListener[guildID]:SetAfterEventId(lastReceivedEventID)
     end
-    listener:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
+    MasterMerchant.LibHistoireListener[guildID]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
       --if self.isScanning then return end
       --MasterMerchant:setScanning(true)
       -- MasterMerchant.systemSavedVariables.lastReceivedEventID[guildID]
@@ -4006,7 +3996,7 @@ function SetupListener(guildID)
         --MasterMerchant:UpdateControlData()
       end
     end)
-    listener:Start()
+    MasterMerchant.LibHistoireListener[guildID]:Start()
 end
 
 function MasterMerchant:InitScrollLists()
@@ -4056,12 +4046,6 @@ function MasterMerchant:InitScrollLists()
     self:ScanStoresParallel(true)
 
     MasterMerchant.isInitialized = true
-    -- do not start listening until isInitialized is true
-    for i = 1, numGuilds do
-      local guildID = GetGuildId(i)
-      SetupListener(guildID)
-    end
-
     -- CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function() MasterMerchant:NewGuildSelected() end)
 end
 
