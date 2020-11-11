@@ -5,8 +5,8 @@
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
 
-## Title: Lib Execution Queue
-## APIVersion: 100031 100032
+## Title: LibExecutionQueue
+## APIVersion: 100032 100033
 ## Description: Allows you to queue up functions for execution and breakup long running operations fairly easily (See MasterMerchant for examples)
 ## Author: Philgo
 ## IsLibrary: true

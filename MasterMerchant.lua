@@ -3961,8 +3961,10 @@ function SetupListener(guildID)
     local listener = LGH:CreateGuildHistoryListener(guildID, GUILD_HISTORY_STORE)
     local lastReceivedEventID
     if MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] then
-        lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID]) or 0
-        listener:SetAfterEventId(lastReceivedEventID)
+      MasterMerchant.dm("Debug", string.format("MasterMerchant Saved Var: %s, GuildID: (%s)", MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID], guildID))
+      lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID])
+      MasterMerchant.dm("Debug", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
+      listener:SetAfterEventId(lastReceivedEventID)
     end
     listener:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
       --if self.isScanning then return end
