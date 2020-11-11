@@ -3238,13 +3238,19 @@ function MasterMerchant:Initialize()
     systemDefault["eventIndex"][guildID] = 0
     systemDefault["eventCount"][guildID] = 0
     systemDefault["oldestEvent"][guildID] = 0
-    systemDefault["lastReceivedEventID"][guildID] = 0
   end
   -- Populate savedVariables
   self.savedVariables = ZO_SavedVars:New('ShopkeeperSavedVars', 1, GetDisplayName(), Defaults)
   -- self.acctSavedVariables.scanHistory is no longer used
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), acctDefaults)
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
+
+  local saveDataPlaceholder = MasterMerchant.systemSavedVariables
+  for i = 1, GetNumGuilds() do
+    local guildID = GetGuildId(i)
+    if saveDataPlaceholder.lastReceivedEventID[guildID] == nil then saveDataPlaceholder.lastReceivedEventID[guildID] = "0" end
+  end
+
   self.currentGuildID = GetGuildId(1) or 0
 
   MasterMerchant.systemSavedVariables.diplayGuildInfo = MasterMerchant.systemSavedVariables.diplayGuildInfo or false
@@ -3961,51 +3967,52 @@ function SetupListener(guildID)
     local saveData = MasterMerchant.systemSavedVariables
     local lastReceivedEventID
     if saveData.lastReceivedEventID[guildID] then
-        lastReceivedEventID = StringToId64(saveData.lastReceivedEventID[guildID])
+        lastReceivedEventID = StringToId64(saveData.lastReceivedEventID[guildID]) or 0
         listener:SetAfterEventId(lastReceivedEventID)
     end
     listener:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
       --if self.isScanning then return end
       --MasterMerchant:setScanning(true)
       -- MasterMerchant.systemSavedVariables.lastReceivedEventID[guildID]
-      if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
-          saveData.lastReceivedEventID[guildID] = Id64ToString(eventId)
-          lastReceivedEventID = eventId
-      end
-      local guildName = GetGuildName(guildID)
-      local thePlayer = string.lower(GetDisplayName())
-      local theEvent = {
-          buyer = p2,
-          guild = guildName,
-          itemName = p4,
-          quant = p3,
-          saleTime = eventTime,
-          salePrice = p5,
-          seller = p1,
-          kioskSale = false,
-          id = Id64ToString(eventId)
-      }
-      local secsSince = eventTime - GetTimeStamp()
-      if secsSince > MasterMerchant.systemSavedVariables["oldestEvent"][guildID] then
-        MasterMerchant.systemSavedVariables["oldestEvent"][guildID] = secsSince
-      end
-      theEvent.kioskSale = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
+      if eventType == GUILD_EVENT_ITEM_SOLD then
+        if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
+            saveData.lastReceivedEventID[guildID] = Id64ToString(eventId)
+            lastReceivedEventID = eventId
+        end
+        local guildName = GetGuildName(guildID)
+        local thePlayer = string.lower(GetDisplayName())
+        local theEvent = {
+            buyer = p2,
+            guild = guildName,
+            itemName = p4,
+            quant = p3,
+            saleTime = eventTime,
+            salePrice = p5,
+            seller = p1,
+            kioskSale = false,
+            id = Id64ToString(eventId)
+        }
+        local secsSince = eventTime - GetTimeStamp()
+        if secsSince > MasterMerchant.systemSavedVariables["oldestEvent"][guildID] then
+          MasterMerchant.systemSavedVariables["oldestEvent"][guildID] = secsSince
+        end
+        theEvent.kioskSale = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
 
-      local added = MasterMerchant:addToHistoryTables(theEvent)
-      -- (doAlert and (self.savedVariables.showChatAlerts or self.savedVariables.showAnnounceAlerts))
-      if added and string.lower(theEvent.seller) == thePlayer then
-        --MasterMerchant.dm("Debug", "alertQueue updated")
-        table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
+        local added = MasterMerchant:addToHistoryTables(theEvent)
+        -- (doAlert and (self.savedVariables.showChatAlerts or self.savedVariables.showAnnounceAlerts))
+        if added and string.lower(theEvent.seller) == thePlayer then
+          --MasterMerchant.dm("Debug", "alertQueue updated")
+          table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
+        end
+        if added then
+          MasterMerchant:PostScanParallel(guildName, true)
+        end
+        if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
+          GuildSalesAssistant:InsertEvent(theEvent)
+        end
+        --MasterMerchant:setScanning(false)
+        --MasterMerchant:UpdateControlData()
       end
-      if added then
-        MasterMerchant:PostScanParallel(guildName, true)
-      end
-      if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
-        GuildSalesAssistant:InsertEvent(theEvent)
-      end
-      --MasterMerchant:setScanning(false)
-      --MasterMerchant:UpdateControlData()
-
     end)
     listener:Start()
 end
