@@ -6,6 +6,7 @@
 -- Distribution without license is prohibited!
 local LAM = LibAddonMenu2
 local LMP = LibMediaProvider
+local LGH = LibHistoire
 
 local OriginalGetTradingHouseSearchResultItemInfo
 local OriginalGetTradingHouseListingItemInfo
@@ -138,6 +139,7 @@ function MasterMerchant:UpdateControlData()
     end
 end
 
+--[[
 -- this post hook calls UpdateText
 ZO_PostHook(GUILD_HISTORY, "RefreshFilters", function()
     MasterMerchant:UpdateControlData()
@@ -147,17 +149,16 @@ end)
 ZO_PostHook(GUILD_HISTORY, "New", function()
     MasterMerchant:CreateControls()
 end)
---[[
 function MasterMerchant:refresh()
     GUILD_HISTORY:RefreshFilters()
 end
-]]--
 function MasterMerchant:NewGuildSelected()
     --MasterMerchant.dm("Debug", GUILD_SELECTOR.guildId)
     MasterMerchant.currentGuildID = GUILD_SELECTOR.guildId or 0
     MasterMerchant:UpdateControlData()
     --MasterMerchant:refresh()
 end
+]]--
 
 ------------------------------
 --- MM Stuff               ---
@@ -2351,15 +2352,6 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
   --local eventsScaned = 0
   local erroneousEvent = false
 
-  local guildMemberInfo = {}
-  -- Index the table with the account names themselves as they're
-  -- (hopefully!) unique - search much faster
-  -- Only takes a few milliseconds to load up
-  for i = 1, GetNumGuildMembers(guildID) do
-    local guildMemInfo, _, _, _, secsSinceLogoff = GetGuildMemberInfo(guildID, i)
-    guildMemberInfo[string.lower(guildMemInfo)] = true
-  end
-
   --MasterMerchant.dm("Debug", "ProcessGuildHistoryResponse: " .. guildName)
   for i = MasterMerchant.systemSavedVariables["numEvents"][guildName], numEvents do
     local theEvent = {}
@@ -2377,7 +2369,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
 
     if theEvent.eventType == GUILD_EVENT_ITEM_SOLD then
 
-      theEvent.kioskSale = (guildMemberInfo[string.lower(theEvent.buyer)] == nil)
+      theEvent.kioskSale = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
       theEvent.id = Id64ToString(GetGuildEventId(guildID, GUILD_HISTORY_STORE, i))
 
       if theEvent.itemName ~= nil and theEvent.seller ~= nil and theEvent.buyer ~= nil and theEvent.salePrice ~= nil then
@@ -2451,7 +2443,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
   end
 
   MasterMerchant:setScanning(false)
-  MasterMerchant:UpdateControlData()
+  -- MasterMerchant:UpdateControlData()
 end
 
 -- Scans all stores a player has access to in parallel.
@@ -2502,7 +2494,7 @@ function MasterMerchant:ScanStoresParallel(doAlert)
   when using /mm missing and just below and Scan Stores Parallel
   is called to start the entire process.
   ]]--
-  MasterMerchant.v(2, 'Event Monitor Activated, watching for guild history updates...')
+  MasterMerchant.v(2, 'LibHistoire Activated, listening for guild sales...')
   self.requestTimestamp = GetTimeStamp()
   self.addedEvents = self.addedEvents or {}
 
@@ -2551,7 +2543,7 @@ function MasterMerchant:DoRefresh()
     end
   end
   MasterMerchant.v(4, 'All event tracking indexes decremented by 50.')
-  MasterMerchant:UpdateControlData()
+  --MasterMerchant:UpdateControlData()
 end
 
 function MasterMerchant:initGMTools()
@@ -3083,7 +3075,7 @@ function MasterMerchant.SetupPendingPost(self)
 	end
 end
 
--- register event monitor
+--[[ register event monitor
 local function OnPlayerDeactivated(eventCode)
   EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
 end
@@ -3093,6 +3085,7 @@ local function OnPlayerActivated(eventCode)
   EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED, function(...) MasterMerchant:ProcessGuildHistoryResponse(...) end)
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
+]]--
 
 -- ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
 -- self.savedVariables.verbose = value
@@ -3234,6 +3227,7 @@ function MasterMerchant:Initialize()
     minItemCount = 20,
     maxItemCount = 5000,
     diplayGuildInfo = false,
+    lastReceivedEventID = {},
   }
 
   for i = 1, GetNumGuilds() do
@@ -3244,6 +3238,7 @@ function MasterMerchant:Initialize()
     systemDefault["eventIndex"][guildID] = 0
     systemDefault["eventCount"][guildID] = 0
     systemDefault["oldestEvent"][guildID] = 0
+    systemDefault["lastReceivedEventID"][guildID] = 0
   end
   -- Populate savedVariables
   self.savedVariables = ZO_SavedVars:New('ShopkeeperSavedVars', 1, GetDisplayName(), Defaults)
@@ -3256,7 +3251,7 @@ function MasterMerchant:Initialize()
 
   EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_Initial", EVENT_PLAYER_ACTIVATED, function(...) MasterMerchant:PlayerLoaded(...) end)
 
-  MasterMerchant:CreateControls()
+  --MasterMerchant:CreateControls()
 
   -- Convert the old linear sales history to the new format
   if self.acctSavedVariables.scanHistory then
@@ -3855,6 +3850,8 @@ end
 
 function MasterMerchant:InitItemHistory()
 
+  MasterMerchant.v(5, 'Starting Guild and Item total initialization')
+
   local extradata = {}
 
   if self.guildItems == nil then
@@ -3959,6 +3956,60 @@ function MasterMerchant:InitItemHistory()
   end
  end
 
+function SetupListener(guildID)
+    local listener = LGH:CreateGuildHistoryListener(guildID, GUILD_HISTORY_STORE)
+    local saveData = MasterMerchant.systemSavedVariables
+    local lastReceivedEventID
+    if saveData.lastReceivedEventID[guildID] then
+        lastReceivedEventID = StringToId64(saveData.lastReceivedEventID[guildID])
+        listener:SetAfterEventId(lastReceivedEventID)
+    end
+    listener:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
+      --if self.isScanning then return end
+      --MasterMerchant:setScanning(true)
+      -- MasterMerchant.systemSavedVariables.lastReceivedEventID[guildID]
+      if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
+          saveData.lastReceivedEventID[guildID] = Id64ToString(eventId)
+          lastReceivedEventID = eventId
+      end
+      local guildName = GetGuildName(guildID)
+      local thePlayer = string.lower(GetDisplayName())
+      local theEvent = {
+          buyer = p2,
+          guild = guildName,
+          itemName = p4,
+          quant = p3,
+          saleTime = eventTime,
+          salePrice = p5,
+          seller = p1,
+          kioskSale = false,
+          id = Id64ToString(eventId)
+      }
+      local secsSince = eventTime - GetTimeStamp()
+      if secsSince > MasterMerchant.systemSavedVariables["oldestEvent"][guildID] then
+        MasterMerchant.systemSavedVariables["oldestEvent"][guildID] = secsSince
+      end
+      theEvent.kioskSale = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
+
+      local added = MasterMerchant:addToHistoryTables(theEvent)
+      -- (doAlert and (self.savedVariables.showChatAlerts or self.savedVariables.showAnnounceAlerts))
+      if added and string.lower(theEvent.seller) == thePlayer then
+        --MasterMerchant.dm("Debug", "alertQueue updated")
+        table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
+      end
+      if added then
+        MasterMerchant:PostScanParallel(guildName, true)
+      end
+      if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
+        GuildSalesAssistant:InsertEvent(theEvent)
+      end
+      --MasterMerchant:setScanning(false)
+      --MasterMerchant:UpdateControlData()
+
+    end)
+    listener:Start()
+end
+
 function MasterMerchant:InitScrollLists()
 
     self:SetupScrollLists()
@@ -3966,18 +4017,21 @@ function MasterMerchant:InitScrollLists()
     local numGuilds = GetNumGuilds()
     if numGuilds > 0 then
       MasterMerchant.currentGuildID = GetGuildId(1) or 0
-      MasterMerchant:UpdateControlData()
+      --MasterMerchant:UpdateControlData()
       --MasterMerchant.dm("Debug", "MasterMerchant.currentGuildID: " .. MasterMerchant.currentGuildID)
     else
+      -- used for event index on guild history tab
       MasterMerchant.currentGuildID = 0
     end
     for i = 1, numGuilds do
       local guildID = GetGuildId(i)
       local guildName = GetGuildName(guildID)
-      MasterMerchant.lastHistoryRequest[guildID] = GetTimeStamp()
-      MasterMerchant.lastHeadEvent[guildID] = 0
       MasterMerchant.alertQueue[guildName] = {}
-      if MasterMerchant.eventsSinceCache[guildID] == nil then MasterMerchant.eventsSinceCache[guildID] = {} end
+      for m = 1, GetNumGuildMembers(guildID) do
+        local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildID, m)
+        if MasterMerchant.guildMemberInfo[guildID] == nil then MasterMerchant.guildMemberInfo[guildID] = {} end
+        MasterMerchant.guildMemberInfo[guildID][string.lower(guildMemInfo)] = true
+      end
     end
 
     MasterMerchant.v(2, '|cFFFF00Master Merchant Initialized -- Holding information on ' .. self.totalRecords .. ' sales.|r')
@@ -4003,7 +4057,13 @@ function MasterMerchant:InitScrollLists()
     self:ScanStoresParallel(true)
 
     MasterMerchant.isInitialized = true
-    CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function() MasterMerchant:NewGuildSelected() end)
+    -- do not start listening until isInitialized is true
+    for i = 1, numGuilds do
+      local guildID = GetGuildId(i)
+      SetupListener(guildID)
+    end
+
+    -- CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function() MasterMerchant:NewGuildSelected() end)
 end
 
 local dealInfoCache = {}
