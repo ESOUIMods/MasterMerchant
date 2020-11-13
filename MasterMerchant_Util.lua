@@ -346,27 +346,51 @@ function MasterMerchant:indexHistoryTables()
 
 end
 
-function MasterMerchant:CheckForDuplicate(theEvent)
+function MasterMerchant:CheckForDuplicate(itemLink, eventID)
   local dupe = false
   --[[ we need to be able to calculate theIID and itemIndex
-  when not used with add to history tables event though
+  when not used with addToHistoryTables() event though
   the function will calculate them.
   ]]--
-  local theIID = GetItemLinkItemId(theEvent.itemName)
+  local theIID = GetItemLinkItemId(itemLink)
   if theIID == nil then return end
-  local itemIndex = self.makeIndexFromLink(theEvent.itemName)
+  local itemIndex = self.makeIndexFromLink(itemLink)
+
+  if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
+    for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
+      if type(v.id) == "number" then
+        if tostring(v.id) == eventID then
+          dupe = true
+          break
+        end
+      elseif v.id == eventID then
+        dupe = true
+        break
+      end
+    end
+  end
+  return dupe
+end
+
+-- And here we add a new item
+function MasterMerchant:addToHistoryTables(theEvent)
+
+  local theIID = GetItemLinkItemId(theEvent.itemLink)
+  if theIID == nil then return end
+  local itemIndex = self.makeIndexFromLink(theEvent.itemLink)
 
   --[[
-    ["buyer"] = buyer,
-    ["guild"] = guild,
-    ["itemLink"] = itemName,
-    ["quant"] = quant,
-    ["timestamp"] = saleTime,
-    ["price"] = salePrice,
-    ["seller"] = seller,
-    ["wasKiosk"] = kioskSale,
-    ["id"] = id,
-  ]]--
+  local theEvent = {
+    buyer = p2,
+    guild = guildName,
+    itemName = p4,
+    quant = p3,
+    saleTime = eventTime,
+    salePrice = p5,
+    seller = p1,
+    kioskSale = false,
+    id = Id64ToString(eventId)
+  }
   local newSalesItem =
     {buyer = theEvent.buyer,
     guild = theEvent.guild,
@@ -378,33 +402,19 @@ function MasterMerchant:CheckForDuplicate(theEvent)
     wasKiosk = theEvent.kioskSale,
     id = theEvent.id
   }
-
-  if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
-    for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
-      if type(v.id) == "number" then
-        if tostring(v.id) == newSalesItem.id then
-          dupe = true
-          break
-        end
-      elseif v.id == newSalesItem.id then
-        dupe = true
-        break
-      end
-    end
-  end
-  return dupe, newSalesItem
-end
-
--- And here we add a new item
-function MasterMerchant:addToHistoryTables(theEvent)
-
-  local theIID = GetItemLinkItemId(theEvent.itemName)
-  if theIID == nil then return end
-  local itemIndex = self.makeIndexFromLink(theEvent.itemName)
-
-  local isDuplicate, newSalesItem = MasterMerchant:CheckForDuplicate(theEvent)
-
-  if isDuplicate then return false end
+  [1] =
+  {
+    ["price"] = 120,
+    ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+    ["id"] = 1353657539,
+    ["guild"] = "Unstable Unicorns",
+    ["buyer"] = "@Traeky",
+    ["quant"] = 1,
+    ["wasKiosk"] = true,
+    ["timestamp"] = 1597969403,
+    ["seller"] = "@cherrypick",
+  },
+  ]]--
 
   if not self.salesData[theIID] then
     -- Add to the split memory set
@@ -427,7 +437,7 @@ function MasterMerchant:addToHistoryTables(theEvent)
       [15] = function (k) MM15Data.savedVariables.SalesData[k] = {}; return MM15Data.savedVariables.SalesData[k]  end
     }
 
-    local hash = MasterMerchant.hashString(string.lower(GetItemLinkName(theEvent.itemName)))
+    local hash = MasterMerchant.hashString(string.lower(GetItemLinkName(theEvent.itemLink)))
 
     self.salesData[theIID] = action[hash](theIID)
   end
@@ -435,41 +445,41 @@ function MasterMerchant:addToHistoryTables(theEvent)
   local insertedIndex = 1
 
   if self.salesData[theIID][itemIndex] then
-    table.insert(self.salesData[theIID][itemIndex]['sales'], newSalesItem)
+    table.insert(self.salesData[theIID][itemIndex]['sales'], theEvent)
     insertedIndex = #self.salesData[theIID][itemIndex]['sales']
   else
     self.salesData[theIID][itemIndex] = {
-      itemIcon = GetItemLinkInfo(newSalesItem.itemLink),
-      itemAdderText = self.addedSearchToItem(newSalesItem.itemLink),
-      itemDesc = GetItemLinkName(newSalesItem.itemLink),
-      sales = {newSalesItem}}
+      itemIcon = GetItemLinkInfo(theEvent.itemLink),
+      itemAdderText = self.addedSearchToItem(theEvent.itemLink),
+      itemDesc = GetItemLinkName(theEvent.itemLink),
+      sales = {theEvent}}
   end
 
-  local guild = MasterMerchant.guildSales[newSalesItem.guild] or MMGuild:new(newSalesItem.guild)
-  MasterMerchant.guildSales[newSalesItem.guild] = guild;
-  guild:addSaleByDate(newSalesItem.seller, newSalesItem.timestamp, newSalesItem.price, newSalesItem.quant, false)
+  local guild = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
+  MasterMerchant.guildSales[theEvent.guild] = guild;
+  guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
 
-  guild = MasterMerchant.guildPurchases[newSalesItem.guild] or MMGuild:new(newSalesItem.guild)
-  MasterMerchant.guildPurchases[newSalesItem.guild] = guild;
-  guild:addSaleByDate(newSalesItem.buyer, newSalesItem.timestamp, newSalesItem.price, newSalesItem.quant, newSalesItem.wasKiosk)
+  guild = MasterMerchant.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
+  MasterMerchant.guildPurchases[theEvent.guild] = guild;
+  guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk)
 
-  guild = MasterMerchant.guildItems[newSalesItem.guild] or MMGuild:new(newSalesItem.guild)
-  MasterMerchant.guildItems[newSalesItem.guild] = guild;
-  guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, newSalesItem.timestamp, newSalesItem.price, newSalesItem.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
+  guild = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+  MasterMerchant.guildItems[theEvent.guild] = guild;
+  guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
 
   local searchBuyer = 'b' .. string.lower(theEvent.buyer)
   local searchSeller = 's' .. string.lower(theEvent.seller)
   local searchGuild = string.lower(theEvent.guild)
-  local searchName = MasterMerchant.concat(string.lower(GetItemLinkName(theEvent.itemName)), self.addedSearchToItem(theEvent.itemName))
+  local searchName = MasterMerchant.concat(string.lower(GetItemLinkName(theEvent.itemLink)), self.addedSearchToItem(theEvent.itemLink))
   local guildByWords = string.gmatch(searchGuild, '%S+')
   local nameByWords = string.gmatch(searchName, '%S+')
   local playerName = string.lower(GetDisplayName())
   local isSelfSale = playerName == string.lower(theEvent.seller)
 
   if isSelfSale then
-    guild = MasterMerchant.myItems[newSalesItem.guild] or MMGuild:new(newSalesItem.guild)
-    MasterMerchant.myItems[newSalesItem.guild] = guild;
-    guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, newSalesItem.timestamp, newSalesItem.price, newSalesItem.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
+    guild = MasterMerchant.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+    MasterMerchant.myItems[theEvent.guild] = guild;
+    guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
   end
 
   local wordData = {theIID, itemIndex, insertedIndex}

@@ -1939,16 +1939,51 @@ function MasterMerchant:CleanOutBad()
     end
     if ((newid ~= itemid) or (newversion ~= versionid)) then
       -- Move this records by inserting it another list and keep a count
-      local theEvent =
-      {
+        --[[
+        local theEvent = {
+          buyer = p2,
+          guild = guildName,
+          itemName = p4,
+          quant = p3,
+          saleTime = eventTime,
+          salePrice = p5,
+          seller = p1,
+          kioskSale = false,
+          id = Id64ToString(eventId)
+        }
+        local newSalesItem =
+          {buyer = theEvent.buyer,
+          guild = theEvent.guild,
+          itemLink = theEvent.itemName,
+          quant = tonumber(theEvent.quant),
+          timestamp = tonumber(theEvent.saleTime),
+          price = tonumber(theEvent.salePrice),
+          seller = theEvent.seller,
+          wasKiosk = theEvent.kioskSale,
+          id = theEvent.id
+        }
+        [1] =
+        {
+          ["price"] = 120,
+          ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+          ["id"] = 1353657539,
+          ["guild"] = "Unstable Unicorns",
+          ["buyer"] = "@Traeky",
+          ["quant"] = 1,
+          ["wasKiosk"] = true,
+          ["timestamp"] = 1597969403,
+          ["seller"] = "@cherrypick",
+        },
+        ]]--
+      local theEvent = {
         buyer = saledata.buyer,
         guild = saledata.guild,
-        itemName = saledata.itemLink,
+        itemLink = saledata.itemLink,
         quant = tonumber(saledata.quant),
-        saleTime = tonumber(saledata.timestamp),
-        salePrice = tonumber(saledata.price),
+        timestamp = tonumber(saledata.timestamp),
+        price = tonumber(saledata.price),
         seller = saledata.seller,
-        kioskSale = saledata.wasKiosk,
+        wasKiosk = saledata.wasKiosk,
         id = saledata.id
       }
       MasterMerchant:addToHistoryTables(theEvent)
@@ -2221,9 +2256,45 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
     for i = 1, numAlerts do
       local theEvent = table.remove(MasterMerchant.alertQueue[guildName], 1)
       numSold = numSold + 1
+        --[[
+        local theEvent = {
+          buyer = p2,
+          guild = guildName,
+          itemName = p4,
+          quant = p3,
+          saleTime = eventTime,
+          salePrice = p5,
+          seller = p1,
+          kioskSale = false,
+          id = Id64ToString(eventId)
+        }
+        local newSalesItem =
+          {buyer = theEvent.buyer,
+          guild = theEvent.guild,
+          itemLink = theEvent.itemName,
+          quant = tonumber(theEvent.quant),
+          timestamp = tonumber(theEvent.saleTime),
+          price = tonumber(theEvent.salePrice),
+          seller = theEvent.seller,
+          wasKiosk = theEvent.kioskSale,
+          id = theEvent.id
+        }
+        [1] =
+        {
+          ["price"] = 120,
+          ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+          ["id"] = 1353657539,
+          ["guild"] = "Unstable Unicorns",
+          ["buyer"] = "@Traeky",
+          ["quant"] = 1,
+          ["wasKiosk"] = true,
+          ["timestamp"] = 1597969403,
+          ["seller"] = "@cherrypick",
+        },
+        ]]--
 
       -- Adjust the price if they want the post-cut prices instead
-      local dispPrice = theEvent.salePrice
+      local dispPrice = theEvent.price
       if not settingsToUse.showFullPrice then
         local cutPrice = dispPrice * (1 - (GetTradingHouseCutPercentage() / 100))
         dispPrice = math.floor(cutPrice + 0.5)
@@ -2233,9 +2304,9 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
       -- Offline sales report
       if self.isFirstScan and settingsToUse.offlineSales then
         local stringPrice = self.LocalizedNumber(dispPrice)
-        local textTime = self.TextTimeSince(theEvent.saleTime, true)
+        local textTime = self.TextTimeSince(theEvent.timestamp, true)
         if i == 1 then MasterMerchant.v(1, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT))) end
-        MasterMerchant.v(1, zo_strformat('<<t:1>>', theEvent.itemName) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
+        MasterMerchant.v(1, zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
         if i == numAlerts then
           -- Total of offline sales
           MasterMerchant.v(1, string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
@@ -2255,9 +2326,9 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
             -- We'll add a numerical suffix to avoid queueing two identical messages in a row
             -- because the alerts will 'miss' if we do
-            local textTime = self.TextTimeSince(theEvent.saleTime, true)
+            local textTime = self.TextTimeSince(theEvent.timestamp, true)
             local alertSuffix = ''
-            if lastEvent[1] ~= nil and theEvent.itemName == lastEvent[1].itemName and textTime == lastEvent[2] then
+            if lastEvent[1] ~= nil and theEvent.itemLink == lastEvent[1].itemLink and textTime == lastEvent[2] then
               lastEvent[3] = lastEvent[3] + 1
               alertSuffix = ' (' .. lastEvent[3] .. ')'
             else
@@ -2271,16 +2342,16 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
             if self.locale == 'de' then
               if theEvent.quant > 1 then
                 MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemName),
+                  string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink),
                                 stringPrice, theEvent.guild, textTime) .. alertSuffix)
               else
                 MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR),zo_strformat('<<t:1>>', theEvent.itemName),
+                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR),zo_strformat('<<t:1>>', theEvent.itemLink),
                                 stringPrice, theEvent.guild, textTime) .. alertSuffix)
               end
             else
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemName),
+                string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
                               theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
             end
           end
@@ -2290,14 +2361,14 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
             if self.locale == 'de' then
               if theEvent.quant > 1 then
                 MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                                      theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemName), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.saleTime, true)))
+                                      theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
               else
                 MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
-                                      zo_strformat('<<t:1>>', theEvent.itemName), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.saleTime, true)))
+                                      zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
               end
             else
               MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                                    zo_strformat('<<t:1>>', theEvent.itemName), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.saleTime, true)))
+                                    zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
             end
           end
         end
@@ -2357,7 +2428,7 @@ end
 function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category)
   if not MasterMerchant.isInitialized then return end
   if self.isScanning then return end
-  MasterMerchant:setScanning(true)
+  self:setScanning(true)
 
   local guildName = GetGuildName(guildID)
   local numEvents = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
@@ -2456,7 +2527,7 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
     ]]--
   end
 
-  MasterMerchant:setScanning(false)
+  self:setScanning(false)
   -- MasterMerchant:UpdateControlData()
 end
 
@@ -2537,17 +2608,23 @@ end
 
 -- Handle the refresh button - although there is no background scan so deduct 50
 function MasterMerchant:DoRefresh()
+  if not MasterMerchant.isInitialized then
+    MasterMerchant.v(2, 'Master Merchant is still initializing.')
+    return
+  end
   if MasterMerchant.LibHistoireRefreshed then
     MasterMerchant.v(2, 'LibHistoire can only be refreshed once per session. This will take a while and LibHistoire does not notify MM when it has completed.')
     return
   end
+  self:setScanning(true)
   MasterMerchant.v(2, 'LibHistoire refreshing...')
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
-    MasterMerchant.LibHistoireListener[guildID]:Stop()
     MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = "0"
     MasterMerchant:SetupListener(guildID)
   end
+  MasterMerchant.LibHistoireRefreshed = true
+  zo_callLater(function() self:setScanning(false) end, 60000 * 20) -- 20 minutes
 end
 
 function MasterMerchant:initGMTools()
@@ -3974,9 +4051,6 @@ function MasterMerchant:SetupListener(guildID)
       MasterMerchant.LibHistoireListener[guildID]:SetAfterEventId(lastReceivedEventID)
     end
     MasterMerchant.LibHistoireListener[guildID]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
-      --if self.isScanning then return end
-      --MasterMerchant:setScanning(true)
-      -- MasterMerchant.systemSavedVariables.lastReceivedEventID[guildID]
       if eventType == GUILD_EVENT_ITEM_SOLD then
         if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
             MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = Id64ToString(eventId)
@@ -3984,32 +4058,71 @@ function MasterMerchant:SetupListener(guildID)
         end
         local guildName = GetGuildName(guildID)
         local thePlayer = string.lower(GetDisplayName())
+        --[[
+        local theEvent = {
+          buyer = p2,
+          guild = guildName,
+          itemName = p4,
+          quant = p3,
+          saleTime = eventTime,
+          salePrice = p5,
+          seller = p1,
+          kioskSale = false,
+          id = Id64ToString(eventId)
+        }
+        local newSalesItem =
+          {buyer = theEvent.buyer,
+          guild = theEvent.guild,
+          itemLink = theEvent.itemName,
+          quant = tonumber(theEvent.quant),
+          timestamp = tonumber(theEvent.saleTime),
+          price = tonumber(theEvent.salePrice),
+          seller = theEvent.seller,
+          wasKiosk = theEvent.kioskSale,
+          id = theEvent.id
+        }
+        [1] =
+        {
+          ["price"] = 120,
+          ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+          ["id"] = 1353657539,
+          ["guild"] = "Unstable Unicorns",
+          ["buyer"] = "@Traeky",
+          ["quant"] = 1,
+          ["wasKiosk"] = true,
+          ["timestamp"] = 1597969403,
+          ["seller"] = "@cherrypick",
+        },
+        ]]--
         local theEvent = {
             buyer = p2,
             guild = guildName,
-            itemName = p4,
+            itemLink = p4,
             quant = p3,
-            saleTime = eventTime,
-            salePrice = p5,
+            timestamp = eventTime,
+            price = p5,
             seller = p1,
-            kioskSale = false,
+            wasKiosk = false,
             id = Id64ToString(eventId)
         }
-        theEvent.kioskSale = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
+        theEvent.wasKiosk = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
 
-        local added = MasterMerchant:addToHistoryTables(theEvent)
+        local isDuplicate = MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id)
+
+        if not isDuplicate then
+          MasterMerchant:addToHistoryTables(theEvent)
+          MasterMerchant:PostScanParallel(guildName, true)
+        end
         -- (doAlert and (self.savedVariables.showChatAlerts or self.savedVariables.showAnnounceAlerts))
-        if added and string.lower(theEvent.seller) == thePlayer then
+        if not isDuplicate and string.lower(theEvent.seller) == thePlayer then
           --MasterMerchant.dm("Debug", "alertQueue updated")
           table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
         end
-        if added then
-          MasterMerchant:PostScanParallel(guildName, true)
-        end
+        --[[ Needs Updated for consistant variable name changes
         if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
           GuildSalesAssistant:InsertEvent(theEvent)
         end
-        --MasterMerchant:setScanning(false)
+        ]]--
         --MasterMerchant:UpdateControlData()
       end
     end)
@@ -4251,13 +4364,23 @@ function MasterMerchant.Slash(allArgs)
   end
 
   if args == 'sales' then
+    if not MasterMerchant.isInitialized then
+      MasterMerchant.v(2, "Master Merchant is still initializing.")
+      return
+    end
     MasterMerchant.guildNumber = guildNumber
-    if MasterMerchant.guildNumber or 0 > 0 then
+    if (MasterMerchant.guildNumber > 0) and (GetNumGuilds() > 0) then
       MasterMerchant.v(2, "'Exporting' sales activity.")
       MasterMerchant:ExportSalesData()
       MasterMerchant.v(2, "Export complete.  /reloadui to save the file.")
     else
       MasterMerchant.v(2, "Please include the guild number you wish to export.")
+      MasterMerchant.v(2, "For example '/mm sales 1' to export guild 1.")
+      for i = 1, GetNumGuilds() do
+        local guildID = GetGuildId(i)
+        local guildName = GetGuildName(guildID)
+        MasterMerchant.v(2, string.format("[%s] - %s", i, guildName))
+      end
     end
     return
   end
@@ -4277,6 +4400,16 @@ function MasterMerchant.Slash(allArgs)
     else
       MasterMerchant.v(2, "Verbosity setting must be between 1 and 7.")
     end
+    return
+  end
+
+  if args == 'freeze' then
+    MasterMerchant:setScanning(true)
+    return
+  end
+
+  if args == 'unfreeze' then
+    MasterMerchant:setScanning(false)
     return
   end
 
