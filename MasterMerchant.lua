@@ -197,6 +197,7 @@ function MasterMerchant:TimeCheck()
       range = self:ActiveSettings().shiftDays
     end
 
+  -- 10000 for numDays is more or less like saying it is undefined
     local daysRange = 10000
     if range == GetString(MM_RANGE_NONE) then return -1, -1 end
     if range == GetString(MM_RANGE_FOCUS1) then daysRange = self:ActiveSettings().focus1 end
@@ -207,6 +208,7 @@ end
 
 -- Computes the weighted moving average across available data
 function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clickable)
+  -- 10000 for numDays is more or less like saying it is undefined
   local returnData = {['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = 10000, ['numItems'] = nil, ['craftCost'] = nil}
 
   -- make sure we have a list of sales to work with
@@ -252,12 +254,45 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       end
     end
 
-    medianTableCount = #medianTable
-    if initCount == 0 or medianTableCount == 0 then
-      returnData = {['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = daysRange, ['numItems'] = nil, ['craftCost'] = nil}
+    --[[TODO: what is goBack
+
+    if no sales were found do it again but don't worry about
+    item.timestamp being greater then timeCheck.
+    if no sales are found this way, returnData will indicate
+    no sales using MM's undefind value constants
+    ]]--
+    if (initCount == 0 and goBack) then
+      daysRange = 10000
+      timeCheck = GetTimeStamp() - (86400 * daysRange)
+      initSum = 0
+      initCount = 0
+      oldestTime = nil
+      newestTime = nil
+      medianTable = {}
+      -- IPAIRS
+      for i, item in pairs(list) do
+        if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and
+          (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+          (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+          (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+            if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+            if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+            local individualSale = item.price / item.quant
+            initSum = initSum + item.price
+            initCount = initCount + item.quant
+            table.insert( medianTable, individualSale )
+        end
+      end
+    end
+
+    if initCount == 0 then
       return returnData
     end
 
+    -- 10000 for numDays is more or less like saying it is undefined
+    --[[TODO: how is daysRange used here. This could be this way if
+        the first loop returned no sales but the second loop did
+    ]]--
     if (daysRange == 10000) then
       daysHistory = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
     else
@@ -268,19 +303,16 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     initMean = (initSum / initCount)
 
     -- determine the median
-    if medianTableCount > 4 then
-      table.sort( medianTable )
+    medianTableCount = #medianTable
+    table.sort( medianTable )
 
-      -- If we have an even number of table elements or odd.
-      if math.fmod(medianTableCount,2) == 0 then
-        -- assign mean value of middle two elements
-        initMedian = ( medianTable[medianTableCount/2] + medianTable[(medianTableCount/2)+1] ) / 2
-      else
-        -- assign middle element
-        initMedian = medianTable[math.ceil(medianTableCount/2)]
-      end
+    -- If we have an even number of table elements or odd.
+    if math.fmod(medianTableCount,2) == 0 then
+      -- assign mean value of middle two elements
+      initMedian = ( medianTable[medianTableCount/2] + medianTable[(medianTableCount/2)+1] ) / 2
     else
-      initMedian = initMean
+      -- assign middle element
+      initMedian = medianTable[math.ceil(medianTableCount/2)]
     end
 
     -- determine the standard deviation, which requires the mean
@@ -354,12 +386,12 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
               table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
             end -- skip dots
           end
-        end
+        end -- end outlier
       end
       avgPrice = avgPrice / countSold
       if legitSales >= 1 then
-        returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                      ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
+      returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays']= daysHistory, ['numItems'] = countSold,
+                    ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
       end
     -- For a weighted average, the latest data gets a weighting of X, where X is the number of
     -- days the data covers, thus making newest data worth more.
@@ -411,8 +443,8 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       end
       avgPrice = avgPrice / weigtedCountSold
       if legitSales >= 1 then
-        returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                      ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
+      returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                    ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
       end
     end
   end
@@ -819,6 +851,7 @@ end
 function MasterMerchant:onItemActionLinkStatsLink(itemLink)
   local tipLine, days = MasterMerchant:itemPriceTip(itemLink, true)
   if not tipLine then
+    -- 10000 for numDays is more or less like saying it is undefined
     if days == 10000 then
       tipLine = GetString(MM_TIP_FORMAT_NONE)
     else
