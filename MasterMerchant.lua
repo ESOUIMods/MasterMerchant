@@ -221,13 +221,22 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     if timeCheck == -1 then return returnData end
 
     -- setup some initial values
-    local initMean = 0
+    local initSum = 0
     local initCount = 0
+    local initMean = 0
     local oldestTime = nil
     local newestTime = nil
     local lowPrice = nil
     local highPrice = nil
     local daysHistory = 0
+    local virtualMean = 0
+    local deviationSum = 0
+    local medianTable = {}
+    local medianTableCount = 0
+    local initMedian = 0
+    local standardDeviation = 0
+    local isOutlier = false
+    local priceDeterminant = nil
      -- IPAIRS
     for i, item in pairs(list) do
       if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
@@ -236,37 +245,16 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
         (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
           if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
           if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-          initMean = initMean + item.price
+          local individualSale = item.price / item.quant
+          initSum = initSum + item.price
           initCount = initCount + item.quant
+          table.insert( medianTable, individualSale )
       end
     end
 
-    if (initCount == 0 and goBack) then
-      daysRange = 10000
-      timeCheck = GetTimeStamp() - (86400 * daysRange)
-      initMean = 0
-      initCount = 0
-      oldestTime = nil
-      newestTime = nil
-      lowPrice = nil
-      highPrice = nil
-      daysHistory = 0
-      -- IPAIRS
-      for i, item in pairs(list) do
-        if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and
-          (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-            if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-            if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-            initMean = initMean + item.price
-            initCount = initCount + item.quant
-        end
-      end
-    end
-
-    if initCount == 0 then
-      returnData = {['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = daysRange, ['numItems'] = nil}
+    medianTableCount = #medianTable
+    if initCount == 0 or medianTableCount == 0 then
+      returnData = {['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = daysRange, ['numItems'] = nil, ['craftCost'] = nil}
       return returnData
     end
 
@@ -276,22 +264,47 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       daysHistory = daysRange
     end
 
-    initMean = initMean / initCount
+    -- determine the mean
+    initMean = (initSum / initCount)
 
-    -- calc standard deviation
-    local standardDeviation = 0
-    local sampleCount = 0
-    -- IPAIRS
-    for i, item in pairs(list) do
-      if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-        (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-        (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-        (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-          sampleCount = sampleCount+item.quant
-          standardDeviation = standardDeviation + ((((item.price / item.quant) - initMean) ^ 2) * item.quant)
+    -- determine the median
+    if medianTableCount > 4 then
+      table.sort( medianTable )
+
+      -- If we have an even number of table elements or odd.
+      if math.fmod(medianTableCount,2) == 0 then
+        -- assign mean value of middle two elements
+        initMedian = ( medianTable[medianTableCount/2] + medianTable[(medianTableCount/2)+1] ) / 2
+      else
+        -- assign middle element
+        initMedian = medianTable[math.ceil(medianTableCount/2)]
       end
+    else
+      initMedian = initMean
     end
-    standardDeviation = math.sqrt(standardDeviation / sampleCount)
+
+    -- determine the standard deviation, which requires the mean
+    if initCount > 1 then
+      for i, item in pairs(list) do
+        if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
+          (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+          (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+          (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+            local individualSale = item.price / item.quant
+            virtualMean = individualSale - initMean
+            deviationSum = deviationSum + (virtualMean * virtualMean)
+        end
+      end
+      standardDeviation = math.sqrt(deviationSum / (initCount-1))
+    else
+      standardDeviation = 0
+    end
+
+    if MasterMerchant.systemSavedVariables.trimOutliers then
+      priceDeterminant = initMedian
+    else
+      priceDeterminant = initMean
+    end
 
     local timeInterval = newestTime - oldestTime
     local avgPrice = 0
@@ -303,84 +316,104 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     if timeInterval < 86400 then
       -- IPAIRS
       for i, item in pairs(list) do
-        if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-          (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) and
-          ((not MasterMerchant.systemSavedVariables.trimOutliers) or math.abs((item.price/item.quant) - initMean) <= (3 * standardDeviation)) then
-          avgPrice = avgPrice + item.price
-          countSold = countSold + item.quant
-          legitSales = legitSales + 1
-          if lowPrice == nil or lowPrice > item.price/item.quant then lowPrice = item.price/item.quant end
-          if highPrice == nil or highPrice < item.price/item.quant then highPrice = item.price/item.quant end
-          if not skipDots then
-            local tooltip = nil
-            if clickable then
-              local stringPrice = '';
-              if self:ActiveSettings().trimDecimals then
-                stringPrice = string.format('%.0f', item.price/item.quant)
-              else
-                stringPrice = string.format('%.2f', item.price/item.quant)
+        local individualSale = item.price / item.quant
+        local isOutlier
+        local highRange
+        local lowRange
+        if priceDeterminant - (3 * standardDeviation) <= 1 then lowRange = 1 else lowRange = priceDeterminant - (3 * standardDeviation) end
+        if priceDeterminant + (3 * standardDeviation) <= 2 then highRange = 2 else highRange = priceDeterminant + (3 * standardDeviation) end
+        if (individualSale >= lowRange and individualSale <= highRange) then isOutlier = false else isOutlier = true end
+        if not MasterMerchant.systemSavedVariables.trimOutliers or not isOutlier then
+          if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
+            (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+            (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+            (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+            avgPrice = avgPrice + item.price
+            countSold = countSold + item.quant
+            legitSales = legitSales + 1
+            if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min( lowPrice, individualSale ) end
+            if highPrice == nil then highPrice = individualSale else highPrice = math.max( highPrice, individualSale ) end
+            if not skipDots then
+              local tooltip = nil
+              if clickable then
+                local stringPrice = '';
+                if self:ActiveSettings().trimDecimals then
+                  stringPrice = string.format('%.0f', item.price/item.quant)
+                else
+                  stringPrice = string.format('%.2f', item.price/item.quant)
+                end
+                stringPrice = self.LocalizedNumber(stringPrice)
+                if item.quant == 1 then
+                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                    string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.buyer, stringPrice)
+                else
+                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                    string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
+                end
               end
-              stringPrice = self.LocalizedNumber(stringPrice)
-              if item.quant == 1 then
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                  string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.buyer, stringPrice)
-              else
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                  string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
-              end
-            end
-            table.insert(salesPoints, {item.timestamp, item.price/item.quant, self.guildColor[item.guild], tooltip})
+              table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
+            end -- skip dots
           end
         end
       end
       avgPrice = avgPrice / countSold
-      returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays']= daysHistory, ['numItems'] = countSold,
-                    ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
+      if legitSales >= 1 then
+        returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                      ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
+      end
     -- For a weighted average, the latest data gets a weighting of X, where X is the number of
     -- days the data covers, thus making newest data worth more.
     else
       local dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
       -- IPAIRS
       for i, item in pairs(list) do
-        if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-          (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) and
-          ((not MasterMerchant.systemSavedVariables.trimOutliers) or math.abs((item.price/item.quant) - initMean) <= (3 * standardDeviation)) then
-          local weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
-          avgPrice = avgPrice + (item.price * weightValue)
-          countSold = countSold + item.quant
-          weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
-          legitSales = legitSales + 1
-          if lowPrice == nil or lowPrice > item.price/item.quant then lowPrice = item.price/item.quant end
-          if highPrice == nil or highPrice < item.price/item.quant then highPrice = item.price/item.quant end
-          if not skipDots then
-            local tooltip = nil
-            if clickable then
-              local stringPrice = '';
-              if self:ActiveSettings().trimDecimals then
-                stringPrice = string.format('%.0f', item.price/item.quant)
-              else
-                stringPrice = string.format('%.2f', item.price/item.quant)
+        local individualSale = item.price / item.quant
+        local isOutlier
+        local highRange
+        local lowRange
+        if priceDeterminant - (3 * standardDeviation) <= 1 then lowRange = 1 else lowRange = priceDeterminant - (3 * standardDeviation) end
+        if priceDeterminant + (3 * standardDeviation) <= 2 then highRange = 2 else highRange = priceDeterminant + (3 * standardDeviation) end
+        if (individualSale >= lowRange and individualSale <= highRange) then isOutlier = false else isOutlier = true end
+        if not MasterMerchant.systemSavedVariables.trimOutliers or not isOutlier then
+          if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
+            (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+            (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+            (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+            local weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
+            avgPrice = avgPrice + (item.price * weightValue)
+            countSold = countSold + item.quant
+            weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
+            legitSales = legitSales + 1
+            if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min( lowPrice, individualSale ) end
+            if highPrice == nil then highPrice = individualSale else highPrice = math.max( highPrice, individualSale ) end
+            if not skipDots then
+              local tooltip = nil
+              if clickable then
+                local stringPrice = '';
+                if self:ActiveSettings().trimDecimals then
+                  stringPrice = string.format('%.0f', item.price/item.quant)
+                else
+                  stringPrice = string.format('%.2f', item.price/item.quant)
+                end
+                stringPrice = self.LocalizedNumber(stringPrice)
+                if item.quant == 1 then
+                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                    string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)),  item.buyer, stringPrice)
+                else
+                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                    string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
+                end
               end
-              stringPrice = self.LocalizedNumber(stringPrice)
-              if item.quant == 1 then
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                  string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)),  item.buyer, stringPrice)
-              else
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                  string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
-              end
-            end
-            table.insert(salesPoints, {item.timestamp, item.price/item.quant, self.guildColor[item.guild], tooltip})
+              table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
+            end -- end skip dots
           end
-        end
+        end -- end outlier
       end
       avgPrice = avgPrice / weigtedCountSold
-      returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                    ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
+      if legitSales >= 1 then
+        returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                      ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
+      end
     end
   end
   return returnData
