@@ -260,6 +260,10 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     item.timestamp being greater then timeCheck.
     if no sales are found this way, returnData will indicate
     no sales using MM's undefind value constants
+
+    possible use for goBack. goBack is an argument in SlideSales
+    which is used when a player changes there account name.
+    goBack is also used in SwitchPrice, and GetItemLinePrice
     ]]--
     if (initCount == 0 and goBack) then
       daysRange = 10000
