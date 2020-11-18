@@ -206,6 +206,56 @@ function MasterMerchant:TimeCheck()
     return GetTimeStamp() - (86400 * daysRange), daysRange
 end
 
+function MasterMerchant:FindMeanDaysRange(list, timeCheck)
+  local lowerBlacklist = self:ActiveSettings().blacklist and self:ActiveSettings().blacklist:lower() or ""
+  local initSum = 0
+  local initCount = 0
+  local initMean = 0
+  local medianTable = {}
+  local oldestTime = nil
+  local newestTime = nil
+  for i, item in pairs(list) do
+    if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
+      (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+      (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+      (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+        if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+        if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+        local individualSale = item.price / item.quant
+        initSum = initSum + item.price
+        initCount = initCount + item.quant
+        table.insert( medianTable, individualSale )
+    end
+  end
+  initMean = (initSum / initCount)
+  return initCount, initMean, medianTable, oldestTime, newestTime
+end
+
+function MasterMerchant:FindMeanAllSales(list)
+  local lowerBlacklist = self:ActiveSettings().blacklist and self:ActiveSettings().blacklist:lower() or ""
+  local initSum = 0
+  local initCount = 0
+  local initMean = 0
+  local medianTable = {}
+  local oldestTime = nil
+  local newestTime = nil
+  for i, item in pairs(list) do
+    if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and
+      (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+      (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+      (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+        if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+        if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+        local individualSale = item.price / item.quant
+        initSum = initSum + item.price
+        initCount = initCount + item.quant
+        table.insert( medianTable, individualSale )
+    end
+  end
+  initMean = (initSum / initCount)
+  return initCount, initMean, medianTable, oldestTime, newestTime
+end
+
 -- Computes the weighted moving average across available data
 function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clickable)
   -- 10000 for numDays is more or less like saying it is undefined
@@ -239,21 +289,9 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     local standardDeviation = 0
     local isOutlier = false
     local priceDeterminant = nil
-     -- IPAIRS
-    for i, item in pairs(list) do
-      if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-        (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-        (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-        (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-          if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-          if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-          local individualSale = item.price / item.quant
-          initSum = initSum + item.price
-          initCount = initCount + item.quant
-          table.insert( medianTable, individualSale )
-      end
+    if not goBack then
+      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
     end
-
     --[[TODO: what is goBack
 
     if no sales were found do it again but don't worry about
@@ -265,28 +303,10 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     which is used when a player changes there account name.
     goBack is also used in SwitchPrice, and GetItemLinePrice
     ]]--
-    if (initCount == 0 and goBack) then
+    if goBack then
       daysRange = 10000
       timeCheck = GetTimeStamp() - (86400 * daysRange)
-      initSum = 0
-      initCount = 0
-      oldestTime = nil
-      newestTime = nil
-      medianTable = {}
-      -- IPAIRS
-      for i, item in pairs(list) do
-        if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and
-          (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-            if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-            if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-            local individualSale = item.price / item.quant
-            initSum = initSum + item.price
-            initCount = initCount + item.quant
-            table.insert( medianTable, individualSale )
-        end
-      end
+      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanAllSales(list)
     end
 
     if initCount == 0 then
@@ -303,20 +323,22 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       daysHistory = daysRange
     end
 
-    -- determine the mean
-    initMean = (initSum / initCount)
+    if MasterMerchant.systemSavedVariables.trimOutliers then
+      -- determine the median
+      medianTableCount = #medianTable
+      table.sort( medianTable )
 
-    -- determine the median
-    medianTableCount = #medianTable
-    table.sort( medianTable )
-
-    -- If we have an even number of table elements or odd.
-    if math.fmod(medianTableCount,2) == 0 then
-      -- assign mean value of middle two elements
-      initMedian = ( medianTable[medianTableCount/2] + medianTable[(medianTableCount/2)+1] ) / 2
+      -- If we have an even number of table elements or odd.
+      if math.fmod(medianTableCount,2) == 0 then
+        -- assign mean value of middle two elements
+        initMedian = ( medianTable[medianTableCount/2] + medianTable[(medianTableCount/2)+1] ) / 2
+      else
+        -- assign middle element
+        initMedian = medianTable[math.ceil(medianTableCount/2)]
+      end
+      priceDeterminant = initMedian
     else
-      -- assign middle element
-      initMedian = medianTable[math.ceil(medianTableCount/2)]
+      priceDeterminant = initMean
     end
 
     -- determine the standard deviation, which requires the mean
@@ -334,12 +356,6 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       standardDeviation = math.sqrt(deviationSum / (initCount-1))
     else
       standardDeviation = 0
-    end
-
-    if MasterMerchant.systemSavedVariables.trimOutliers then
-      priceDeterminant = initMedian
-    else
-      priceDeterminant = initMean
     end
 
     local timeInterval = newestTime - oldestTime
@@ -386,7 +402,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
                   tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
                     string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
                 end
-              end
+              end -- clickable
               table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
             end -- skip dots
           end
@@ -2307,7 +2323,7 @@ end
 function MasterMerchant:PostScanParallel(guildName, doAlert)
   -- If the index is blank (first scan after login or after reset),
   -- build the indexes now that we have a scanned table.
-  self:setScanningParallel(false, guildName)
+  -- self:setScanningParallel(false, guildName)
   self.veryFirstScan = false
   if self.SRIndex == {} then MasterMerchant:indexHistoryTables() end
   local settingsToUse = MasterMerchant:ActiveSettings()
