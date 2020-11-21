@@ -2427,7 +2427,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
           -- German word order differs so argument order also needs to be changed
           -- Also due to plurality differences in German, need to differentiate
           -- single item sold vs. multiple of an item sold.
-          if self.locale == 'de' then
+          if MasterMerchant.systemSavedVariables.locale == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
                 string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink),
@@ -2446,7 +2446,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
         -- Chat alert
         if settingsToUse.showChatAlerts then
-          if self.locale == 'de' then
+          if MasterMerchant.systemSavedVariables.locale == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
                                     theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
@@ -3430,6 +3430,7 @@ function MasterMerchant:Initialize()
     trimOutliers = false,
     useDefaultDaysRange = false,
     itemIDConvertedToString = false,
+    locale = GetCVar('Language.2'),
   }
 
   for i = 1, GetNumGuilds() do
@@ -3726,13 +3727,7 @@ function MasterMerchant:Initialize()
     LEQ:Add(function () self:InitScrollLists() end, 'InitScrollLists')
   end
 
-  -- We'll grab their locale now, it's really only used for a couple things as
-  -- most localization is handled by the i18n/$(language).lua files
-  -- Defaults to English because bias, that's why. :P
-  self.locale = GetCVar('Language.2')
-  if self.locale ~= 'en' and self.locale ~= 'de' and self.locale ~= 'fr' then
-    self.locale = 'en'
-  end
+  self.locale = MasterMerchant.systemSavedVariables.locale
 
   self:setupGuildColors()
 
