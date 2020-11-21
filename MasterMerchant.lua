@@ -303,7 +303,9 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     which is used when a player changes there account name.
     goBack is also used in SwitchPrice, and GetItemLinePrice
     ]]--
-    if goBack then
+    if goBack and MasterMerchant.systemSavedVariables.useDefaultDaysRange then
+      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
+    elseif goBack then
       daysRange = 10000
       timeCheck = GetTimeStamp() - (86400 * daysRange)
       initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanAllSales(list)
@@ -1519,7 +1521,6 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return self:ActiveSettings().displayItemAnalysisButtons end,
       setFunc = function(value) self:ActiveSettings().displayItemAnalysisButtons = value end,
     },
-
     -- Should we show the stack price calculator?
     [15] = {
       type = 'checkbox',
@@ -1552,8 +1553,16 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return self:ActiveSettings().replaceInventoryValues end,
       setFunc = function(value) self:ActiveSettings().replaceInventoryValues = value end,
     },
-    -- should we add taxes to the export?
+    -- should we use the default days range for the tooltips?
     [19] = {
+      type = 'checkbox',
+      name = GetString(MM_DEFAULT_PRICESWAP_TIME_NAME),
+      tooltip = GetString(MM_DEFAULT_PRICESWAP_TIME_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.useDefaultDaysRange end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.useDefaultDaysRange = value end,
+    },
+    -- should we add taxes to the export?
+    [20] = {
       type = 'checkbox',
       name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -1561,7 +1570,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
     },
     -- should we display info on guild roster?
-    [20] = {
+    [21] = {
       type = 'checkbox',
       name = GetString(SK_ROSTER_INFO_NAME),
       tooltip = GetString(SK_ROSTER_INFO_TIP),
@@ -1581,7 +1590,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- should we display profit instead of margin?
-    [21] = {
+    [22] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -1589,7 +1598,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().saucy = value end,
     },
     -- should we display a Min Profit Filter in AGS?
-    [22] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1597,7 +1606,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
     },
     -- should we auto advance to the next page?
-    [23] = {
+    [24] = {
       type = 'checkbox',
       name = GetString(MM_AUTO_ADVANCE_NAME),
       tooltip = GetString(MM_AUTO_ADVANCE_TIP),
@@ -1605,7 +1614,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().autoNext = value end,
     },
     -- should we display the item listed message?
-    [24] = {
+    [25] = {
       type = 'checkbox',
       name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
       tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
@@ -1613,7 +1622,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
     },
     -- Font to use
-    [25] = {
+    [26] = {
       type = 'dropdown',
       name = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
@@ -1628,7 +1637,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- Verbose MM Messages
-    [26] = {
+    [27] = {
       type = 'slider',
       name = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
@@ -1642,7 +1651,7 @@ function MasterMerchant:LibAddonInit()
                 end,
     },
     -- Skip Indexing?
-    [27] = {
+    [28] = {
       type = 'checkbox',
       name = GetString(MM_SKIP_INDEX_NAME),
       tooltip = GetString(MM_SKIP_INDEX_TIP),
@@ -1650,7 +1659,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.minimalIndexing = value end,
     },
     -- Make all settings account-wide (or not)
-    [28] = {
+    [29] = {
       type = 'checkbox',
       name = GetString(SK_ACCOUNT_WIDE_NAME),
       tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
@@ -3390,6 +3399,7 @@ function MasterMerchant:Initialize()
     lastReceivedEventID = {},
     showAmountTaxes = false,
     trimOutliers = false,
+    useDefaultDaysRange = false,
   }
 
   for i = 1, GetNumGuilds() do
@@ -3439,8 +3449,6 @@ function MasterMerchant:Initialize()
 
     -- Now that we're done with it, clear it out and change the one setting that has changed in magnitude
     self.acctSavedVariables.scanHistory = nil
-
-    MasterMerchant.systemSavedVariables.historyDepth = MasterMerchant.systemSavedVariables.historyDepth or 30
 
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
         ReloadUI('ingame')
@@ -3498,19 +3506,49 @@ function MasterMerchant:Initialize()
   if (MasterMerchant:ActiveSettings().blacklist == nil) then MasterMerchant:ActiveSettings().blacklist = '' end
 
   -- Move the historyDepth variable to a system wide area
-  if (self.systemSavedVariables.historyDepth == nil) then
-    local temp = MasterMerchant.systemSavedVariables.historyDepth or 30
-    self.systemSavedVariables.historyDepth = temp or 30
-    MasterMerchant:ActiveSettings().historyDepth = temp or 30
-    MasterMerchant.systemSavedVariables.historyDepth = temp or 30
+  if MasterMerchant.systemSavedVariables.historyDepth == nil then
+    MasterMerchant.systemSavedVariables.historyDepth = 30
   end
 
-  -- Default in the Min/Max Item count settings
-  if (self.systemSavedVariables.minItemCount == nil) then
-      self.systemSavedVariables.minItemCount = 20
-      self.systemSavedVariables.maxItemCount = 5000
-      MasterMerchant.systemSavedVariables.minItemCount = 20
-      MasterMerchant.systemSavedVariables.maxItemCount = 5000
+  if self.acctSavedVariables.historyDepth then
+    MasterMerchant.systemSavedVariables.historyDepth = math.max( MasterMerchant.systemSavedVariables.historyDepth, self.acctSavedVariables.historyDepth )
+    self.acctSavedVariables.historyDepth = nil
+  end
+  if self.savedVariables.historyDepth then
+    MasterMerchant.systemSavedVariables.historyDepth = math.max( MasterMerchant.systemSavedVariables.historyDepth, self.savedVariables.historyDepth )
+    self.savedVariables.historyDepth = nil
+  end
+  if MasterMerchant:ActiveSettings().historyDepth then
+    MasterMerchant.systemSavedVariables.historyDepth = math.max( MasterMerchant.systemSavedVariables.historyDepth, MasterMerchant:ActiveSettings().historyDepth )
+    MasterMerchant:ActiveSettings().historyDepth = nil
+  end
+
+  -- Min Count
+  if self.acctSavedVariables.minItemCount then
+    MasterMerchant.systemSavedVariables.minItemCount = math.max( MasterMerchant.systemSavedVariables.minItemCount, self.acctSavedVariables.minItemCount )
+    self.acctSavedVariables.minItemCount = nil
+  end
+  if self.savedVariables.minItemCount then
+    MasterMerchant.systemSavedVariables.minItemCount = math.max( MasterMerchant.systemSavedVariables.minItemCount, self.savedVariables.minItemCount )
+    self.savedVariables.minItemCount = nil
+  end
+  if MasterMerchant:ActiveSettings().minItemCount then
+    MasterMerchant.systemSavedVariables.minItemCount = math.max( MasterMerchant.systemSavedVariables.minItemCount, MasterMerchant:ActiveSettings().minItemCount )
+    MasterMerchant:ActiveSettings().minItemCount = nil
+  end
+
+  -- Max Count
+  if self.acctSavedVariables.maxItemCount then
+    MasterMerchant.systemSavedVariables.maxItemCount = math.max( MasterMerchant.systemSavedVariables.maxItemCount, self.acctSavedVariables.maxItemCount )
+    self.acctSavedVariables.maxItemCount = nil
+  end
+  if self.savedVariables.maxItemCount then
+    MasterMerchant.systemSavedVariables.maxItemCount = math.max( MasterMerchant.systemSavedVariables.maxItemCount, self.savedVariables.maxItemCount )
+    self.savedVariables.maxItemCount = nil
+  end
+  if MasterMerchant:ActiveSettings().maxItemCount then
+    MasterMerchant.systemSavedVariables.maxItemCount = math.max( MasterMerchant.systemSavedVariables.maxItemCount, MasterMerchant:ActiveSettings().maxItemCount )
+    MasterMerchant:ActiveSettings().maxItemCount = nil
   end
 
   -- Default in the replace inventory values setting

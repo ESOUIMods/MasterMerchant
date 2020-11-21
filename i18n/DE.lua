@@ -247,3 +247,6 @@ ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when tri
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_NAME", "Add Taxes Sales Rank Export")
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_TIP", "Will calculate 3.5% of total sales as the amount of Taxes for a user when using /mm export.")
 
+
+ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_NAME", "Use Tooltip Days Range")
+ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_TIP", "Use the Tooltip Default Days Range when displaying the MM price on the inventory grid.")

@@ -10,10 +10,14 @@
 function MasterMerchant.v(level, ...)
   -- DEBUG
   if (level <= MasterMerchant.verboseLevel) then
-    if ... and MasterMerchant.viewer then
-      MasterMerchant.dm("Debug", ...)
-    else
-      d(...)
+    if ... then
+      if CHAT_ROUTER then
+        CHAT_ROUTER:AddSystemMessage(...)
+      elseif RequestDebugPrintText then
+        RequestDebugPrintText(...)
+      else
+        d(...)
+      end
     end
     return true
   end
