@@ -7,6 +7,81 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.3.3
+
+- Added toggle to use the default range for tooltips, for inventory as well.
+
+## ChangeLog for 3.3.2
+
+- Significant performance improvements when adding events during Refresh.
+- Added Simple Indexing - For those who do not search sales and want MM to have a smaller memory footprint.
+- Reduced forced Master Merchant window lock to 10 minutes for Refresh. Again after the next LibHistoire I will be able to unlock the window automatically after LibHistoire finishes sending events to MM.
+
+NOTE: On my Lynnfield i3 4GB Ram Potato I was able to reduce the Refresh time for a backup that was about 12 days old to under 10 minutes. Your situation may be different. Again, if you have low FPS viewing All sales then LibHistoire is still working. Close the Master Merchant window and wait longer. Hopefully Sirinsidiator will update LibHistoire soon.
+
+## ChangeLog for 3.3.1
+
+- Removed leftover MM 2.x code that prevented the Refresh routine from properly locking the Master Merchant window. The 20 minute lock may not be sufficient depending on how much data there is in the cache. See the sticky post.
+
+## ChangeLog for 3.3.0
+
+- More updates to prevent errors when calculating outliers while holding down CTRL or SHIFT
+
+## ChangeLog for 3.2.9
+
+- Updated mean and standard deviation calculation
+- Added median value calculation for use when determining outliers
+- Updated routine for determining outliers
+
+## ChangeLog for 3.2.8
+
+- Performance increase to checking for duplicate sales. No optimization for adding new sales unfortunately. - Added temporary `/mm freeze` and `/mm unfreeze` for Master Merchant window when processing 100,000+ sales or more
+- Temporary workaround until next LibHistoire update. After clicking Refresh the Master Merchant window will be locked and will not update for 20 minutes while MM and LibHistoire communicate.
+
+NOTE: After the next update LibHistoire will have an internal API function I can check to know when data is being transmitted to MM and lock and unlock the Master Merchant window automatically.
+
+## ChangeLog for 3.2.7
+
+- Added taxes to `/mm export` feature, see documentation
+- Adjusted saved vars tracking var for outlier prices
+
+## ChangeLog for 3.2.6
+
+- Added version check for LibHistoire 1.0.2
+- Removed Info/Debug messages
+- Updated when MM starts LibHistoire and begins listening for information
+
+## ChangeLog for 3.2.5
+
+- I will rant at Siri later, debug messages are not logged by his mod by default. I have changed it to Info, so I can see the output.
+
+## ChangeLog for 3.2.4
+
+- Added debug messages for nil value Lua error
+
+## ChangeLog for 3.2.3
+
+- Attempt to address error in MasterMerchant.lua:3971: attempt to index a nil value
+
+## ChangeLog for 3.2.2
+
+- Opps didn't save version number properly in manifest file.
+
+## ChangeLog for 3.2.1
+
+- Attempt to address error in MasterMerchant.lua:3965: attempt to index a nil value
+- Code added to restrict listening to guild sales. Which is an attempt to address possible performance hits.
+
+NOTE: I don't feel MM 3.2.0 really has an effect on the game in a drastic way. If there is any pause or freeze in any way that is just because the library is sending data on first use. If you have thousands of sales, up to maybe 30,000 or more sales in a busy guild all being sent to MM at once, there will be a freeze. This should settle down after a few days if you keep the new library linked.
+
+## ChangeLog for 3.2.0
+
+- Now using LibHistoire for guild sales instead of scanning guild history directly.
+
+## ChangeLog for 3.1.0
+
+- To display information on the roster MM now uses LibGuildRoster
+
 ## ChangeLog for 3.0.9
 
 - Fix for error generated guild finder rather then guild history
