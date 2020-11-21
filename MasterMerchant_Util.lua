@@ -10,7 +10,15 @@
 function MasterMerchant.v(level, ...)
   -- DEBUG
   if (level <= MasterMerchant:ActiveSettings().verbose) then
-    if ... then d(...) end
+    if ... then
+      if CHAT_ROUTER then
+        CHAT_ROUTER:AddSystemMessage(...)
+      elseif RequestDebugPrintText then
+        RequestDebugPrintText(...)
+      else
+        d(...)
+      end
+    end
     return true
   end
   return false

@@ -985,6 +985,7 @@ function MasterMerchant:LibAddonInit()
     author = GetString(MM_APP_AUTHOR),
     version = self.version,
     registerForDefaults = true,
+    website = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
   }
   LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
 
@@ -3333,40 +3334,6 @@ function MasterMerchant:Initialize()
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), acctDefaults)
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, {}, nil, 'MasterMerchant')
 
-  -- Convert the old linear sales history to the new format
-  if self.acctSavedVariables.scanHistory then
-    for i = 1, #self.acctSavedVariables.scanHistory do
-      local v = self.acctSavedVariables.scanHistory[i]
-      local theIID = string.match(v[3], '|H.-:item:(.-):')
-      theIID = tonumber(theIID)
-      local itemIndex = self.makeIndexFromLink(v[3])
-      if not self.acctSavedVariables.SalesData[theIID] then self.acctSavedVariables.SalesData[theIID] = {} end
-      if MasterMerchant.acctSavedVariables.SalesData[theIID][itemIndex] then
-        table.insert(MasterMerchant.acctSavedVariables.SalesData[theIID][itemIndex]['sales'],
-          {buyer = v[1], guild = v[2], itemLink = v[3], quant = v[5], timestamp = v[6], price = v[7], seller = v[8], wasKiosk = v[9]})
-      else
-        MasterMerchant.acctSavedVariables.SalesData[theIID][itemIndex] = {
-          ['itemIcon'] = v[4],
-          ['sales'] = {{buyer = v[1], guild = v[2], itemLink = v[3], quant = v[5], timestamp = v[6], price = v[7], seller = v[8], wasKiosk = v[9]}}}
-      end
-
-      -- We track newest sales items in a savedVar now since we don't have a linear list to easily grab from
-      if not self.acctSavedVariables.newestItem[v[2]] then self.acctSavedVariables.newestItem[v[2]] = v[6]
-      elseif self.acctSavedVariables.newestItem[v[2]] < v[6] then self.acctSavedVariables.newestItem[v[2]] = v[6] end
-    end
-
-    -- Now that we're done with it, clear it out and change the one setting that has changed in magnitude
-    self.acctSavedVariables.scanHistory = nil
-
-    self.systemSavedVariables.historyDepth = 30
-
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
-        ReloadUI('ingame')
-    end)
-    error('Please /reloadui to convert move to the next step...')
-
-  end
-
   -- Move the guild scanning variables to a system wide area
   if (self.systemSavedVariables.delayInit == nil) then
     self.systemSavedVariables.delayInit = self.acctSavedVariables.delayInit or false;
@@ -3495,81 +3462,17 @@ function MasterMerchant:Initialize()
     self.acctSavedVariables.SalesData = nil
   end
 
-  -- Covert each data file as needed
-  if GetAPIVersion() == 100011 then
-    self:AdjustItems(MM00Data)
-    self:AdjustItems(MM01Data)
-    self:AdjustItems(MM02Data)
-    self:AdjustItems(MM03Data)
-    self:AdjustItems(MM04Data)
-    self:AdjustItems(MM05Data)
-    self:AdjustItems(MM06Data)
-    self:AdjustItems(MM07Data)
-    self:AdjustItems(MM08Data)
-    self:AdjustItems(MM09Data)
-    self:AdjustItems(MM10Data)
-    self:AdjustItems(MM11Data)
-    self:AdjustItems(MM12Data)
-    self:AdjustItems(MM13Data)
-    self:AdjustItems(MM14Data)
-    self:AdjustItems(MM15Data)
-  end
-
-  -- Check for and reindex if the item structure has changed
-  self:ReIndexSales(MM00Data)
-  self:ReIndexSales(MM01Data)
-  self:ReIndexSales(MM02Data)
-  self:ReIndexSales(MM03Data)
-  self:ReIndexSales(MM04Data)
-  self:ReIndexSales(MM05Data)
-  self:ReIndexSales(MM06Data)
-  self:ReIndexSales(MM07Data)
-  self:ReIndexSales(MM08Data)
-  self:ReIndexSales(MM09Data)
-  self:ReIndexSales(MM10Data)
-  self:ReIndexSales(MM11Data)
-  self:ReIndexSales(MM12Data)
-  self:ReIndexSales(MM13Data)
-  self:ReIndexSales(MM14Data)
-  self:ReIndexSales(MM15Data)
-
-  -- Bring seperate lists together we can still access the sales history all together
-  self:ReferenceSales(MM00Data)
-  self:ReferenceSales(MM01Data)
-  self:ReferenceSales(MM02Data)
-  self:ReferenceSales(MM03Data)
-  self:ReferenceSales(MM04Data)
-  self:ReferenceSales(MM05Data)
-  self:ReferenceSales(MM06Data)
-  self:ReferenceSales(MM07Data)
-  self:ReferenceSales(MM08Data)
-  self:ReferenceSales(MM09Data)
-  self:ReferenceSales(MM10Data)
-  self:ReferenceSales(MM11Data)
-  self:ReferenceSales(MM12Data)
-  self:ReferenceSales(MM13Data)
-  self:ReferenceSales(MM14Data)
-  self:ReferenceSales(MM15Data)
-
   self.systemSavedVariables.dataLocations = self.systemSavedVariables.dataLocations or {}
   self.systemSavedVariables.dataLocations[GetWorldName()] = true
-
-  if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
-      GuildSalesAssistant:InitializeMM()
-      GuildSalesAssistant:LoadInitialData(self.salesData)
-  end
 
   if not self.systemSavedVariables.delayInit then
     self:TruncateHistory()
     self:InitItemHistory()
-    self:indexHistoryTables()
   else
     -- Queue them for later
     local LEQ = LibExecutionQueue:new()
     LEQ:Add(function () self:TruncateHistory() end, 'TruncateHistory')
     LEQ:Add(function () self:InitItemHistory() end, 'InitItemHistory')
-    LEQ:Add(function () self:indexHistoryTables() end, 'indexHistoryTables')
-    LEQ:Add(function () self:InitScrollLists() end, 'InitScrollLists')
   end
 
   -- We'll grab their locale now, it's really only used for a couple things as
@@ -3774,23 +3677,38 @@ function MasterMerchant:Initialize()
       end
     end
 
-    if self.systemSavedVariables.delayInit then
-      -- Finish the init after the player has loaded....
-      zo_callLater(function()
-          MasterMerchant.v(1, "Master Merchant 2.x is at end of life. Please install Master Merchant 3.0 instead.")
-          MasterMerchant.v(1, "With the addition of LibHistoire Master Merchant 3.0 is highly recommended!")
-          MasterMerchant.v(1, "Sirinsidiator waited to update 3.x and wanted to compare MM totals with his own personal mod that tracks sales values.")
-          MasterMerchant.v(1, "On Nov 03 2020 at 07:41 3.x passed Sirinsidiator's litmus test.")
-          MasterMerchant.v(1, "Please read the LibHistoire description page as to why using the library is important to the future of sales mods.")
-          MasterMerchant.v(1, "On Nov 20 2020 another version of MM will be uploaded. On Nov 27 2020 MM 2.x will be moved to the Discontinued Category.")
-          MasterMerchant.v(1, "|cFFFF00Master Merchant Initializing...|r")
-          local LEQ = LibExecutionQueue:new()
-          LEQ:Start()
-      end, 10)
-    else
-      -- The others were already done...
-      self:InitScrollLists()
-    end
+    zo_callLater(function()
+        MasterMerchant:setScanning(true)
+        MasterMerchant.v(1, "|cCF3432 Master Merchant 2.x is at end of life. Please install Master Merchant 3.0 instead. |r")
+        MasterMerchant.v(1, "|c29D0D0 As mentioned last update, on On Nov 27 2020 MM 2.x will be moved to the Discontinued Category. |r")
+        MasterMerchant.v(1, "|cF4CB35 MM 3.0 is fully automated with the addition of LibHistoire although the server has not been sending any new sales. |r")
+        MasterMerchant.v(1, "|cF4CB35 Requests for older sales may be being granted. However, please do not complain about server load balancing. |r")
+        MasterMerchant.v(1, "|cF4CB35 Mods do not have control over the server. |r")
+        MasterMerchant.v(1, "|cFFFF00 There is online documentation for Master Merchant that explains how to uninstall 2.x if you have issues. |r")
+        MasterMerchant.v(1, "|cFFFF00 MM 3.0 uses the same settings file and will not loose sales data. |r")
+        MasterMerchant.v(1, "|cFFFF00 If your older sales are truncated (removed) change the MM 3.0 settings and then restore your MM backup data files. |r")
+        MasterMerchant.v(1, "|cFFFF00 Master Merchant will not be initializing... |r")
+        local LEQ = LibExecutionQueue:new()
+        LEQ:Start()
+    end, 40)
+
+    zo_callLater(function()
+        MasterMerchant:setScanning(true)
+        PlaySound('Book_Acquired')
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, "Objective_Complete",
+          "|c29D0D0 Master Merchant 2.x is at end of life. Please install Master Merchant 3.0. |r")
+        local LEQ = LibExecutionQueue:new()
+        LEQ:Start()
+    end, 120)
+
+    zo_callLater(function()
+        MasterMerchant:setScanning(true)
+        PlaySound('Book_Acquired')
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, "Objective_Complete",
+          "|cDA773C Backup your MM 2.x Data files. There is documentation linked on the Master Merchant 3.0 description page. |r")
+        local LEQ = LibExecutionQueue:new()
+        LEQ:Start()
+    end, 200)
 
 	end)
 end
@@ -4142,10 +4060,10 @@ local function OnAddOnLoaded(eventCode, addOnName)
    if addOnName == MasterMerchant.name then
         MasterMerchant:Initialize()
         -- Set up /mm as a slash command toggle for the main window
-        SLASH_COMMANDS['/mm'] = MasterMerchant.Slash
+        --SLASH_COMMANDS['/mm'] = MasterMerchant.Slash
    elseif addOnName == "AwesomeGuildStore" then
      -- Set up AGS integration, if it's installed
-     MasterMerchant:initAGSIntegration()
+     --MasterMerchant:initAGSIntegration()
    end
 
    --if the first loaded version of LibMediaProvider was r6 and older, fonts are
