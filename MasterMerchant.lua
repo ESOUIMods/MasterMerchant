@@ -4079,7 +4079,7 @@ end
 
 function MasterMerchant:InitItemHistory()
 
-  MasterMerchant.v(5, 'Starting Guild and Item total initialization')
+  MasterMerchant.v(3, 'Starting Guild and Item total initialization')
 
   local extradata = {}
 
@@ -4119,14 +4119,16 @@ function MasterMerchant:InitItemHistory()
           self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild)
           local guild = self.guildItems[saledata.guild]
           local _, firstsaledata = next(versiondata.sales, nil)
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, MasterMerchant.concat(versiondata.itemDesc, versiondata.itemAdderText))
+          local seatchData = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
         end
 
         if (extradata.doMyItems and string.lower(saledata.seller) == extradata.playerName) then
           self.myItems[saledata.guild] = self.myItems[saledata.guild] or MMGuild:new(saledata.guild)
           local guild = self.myItems[saledata.guild]
           local _, firstsaledata = next(versiondata.sales, nil)
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, MasterMerchant.concat(versiondata.itemDesc, versiondata.itemAdderText))
+          local seatchData = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
         end
 
         if (extradata.doGuildSales) then
@@ -4170,12 +4172,9 @@ function MasterMerchant:InitItemHistory()
         end
       end
 
-      -- Set up guild roster info
-      -- self:InitRosterChanges()
-
       self:setScanning(false)
 
-      MasterMerchant.v(5, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
+      MasterMerchant.v(3, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
     end
 
     if not self.isScanning then
