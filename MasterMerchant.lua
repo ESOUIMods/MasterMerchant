@@ -3106,6 +3106,7 @@ function MasterMerchant:DoReset()
   self:ScanStoresParallel(true)
 end
 
+--[[TODO Use this to convert even IDs to strings]]--
 function MasterMerchant:AdjustItems(otherData)
   if not (otherData.savedVariables.ItemsConverted or false) then
     local somethingConverted = false
@@ -3161,6 +3162,7 @@ function MasterMerchant:ReferenceSales(otherData)
   end
 end
 
+-- TODO Check This
 function MasterMerchant:ReIndexSales(otherData)
   local needToReindex = false
   local needToAddDescription = false
