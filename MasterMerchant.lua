@@ -3108,23 +3108,14 @@ end
 
 --[[TODO Use this to convert even IDs to strings]]--
 function MasterMerchant:AdjustItems(otherData)
-  if not (otherData.savedVariables.ItemsConverted or false) then
-    local somethingConverted = false
-    for k, v in pairs(otherData.savedVariables.SalesData) do
-        for j, dataList in pairs(v) do
-            for i = 1, #dataList.sales, 1 do
-                dataList.sales[i].itemLink = self:UpdateItemLink(dataList.sales[i].itemLink)
-                somethingConverted = true
-            end
+  for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
+      for field, itemIndexData in pairs(itemIndex) do
+        for sale, saleData in pairs(itemIndexData['sales']) do
+          if type(saleData.id) ~= 'string' then
+            saleData.id = tostring(saleData.id)
+          end
         end
-    end
-    otherData.savedVariables.ItemsConverted = true
-    if somethingConverted then
-      EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
-        ReloadUI('ingame')
-      end)
-      error(otherData.name .. ' converted.  Please /reloadui to convert the next file...')
-    end
+      end
   end
 end
 
@@ -3164,20 +3155,39 @@ end
 
 -- TODO Check This
 function MasterMerchant:ReIndexSales(otherData)
+  --[[This uses the first itemIndex ["50:16:4:7:0"] found
+  if it does not have 4 colons, then the data needs to be
+  updated. As if there was a time when the itemIndex was
+  shorter.
+
+  It also looks to see if there is an itemDesc and
+  itemAdderText for the first item in the database. If not
+  found then the next step would be to add those fields.
+
+  This is no longer needed
+  ]]--
+  --[[ added 11-21-2020 because this could be used for something
+  else in the future
+  ]]--
+  if (GetAPIVersion() >= 100015) then return end
+
   local needToReindex = false
   local needToAddDescription = false
+  local needToAdditemAdderText = false
   for _, v in pairs(otherData.savedVariables.SalesData) do
     if v then
       for j, dataList in pairs(v) do
-        local _, count = string.gsub(j, ':', ':')
+        local key, count = string.gsub(j, ':', ':')
         needToReindex = (count ~= 4)
         needToAddDescription = (dataList['itemDesc'] == nil)
+        needToAdditemAdderText = (dataList['itemAdderText'] == nil)
         break
       end
       break
     end
   end
   if needToReindex then
+    --MasterMerchant.dm("Debug", "needToReindex")
     local tempSales = otherData.savedVariables.SalesData
     otherData.savedVariables.SalesData = {}
 
@@ -3202,15 +3212,31 @@ function MasterMerchant:ReIndexSales(otherData)
         end
       end
     end
-  elseif needToAddDescription then
+  end
+  if needToAddDescription then
+    --MasterMerchant.dm("Debug", "needToAddDescription")
+    -- spin through and split Item Description into a seperate string
+    for _, v in pairs(otherData.savedVariables.SalesData) do
+      for _, dataList in pairs(v) do
+        _, item = next(dataList['sales'], nil)
+        dataList['itemDesc'] = GetItemLinkName(item.itemLink)
+      end
+    end
+  end
+  if needToAdditemAdderText then
+    --MasterMerchant.dm("Debug", "needToAdditemAdderText")
     -- spin through and split Item Description into a seperate string
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
         _, item = next(dataList['sales'], nil)
         dataList['itemAdderText'] = self.addedSearchToItem(item.itemLink)
-        dataList['itemDesc'] = GetItemLinkName(item.itemLink)
       end
     end
+  end
+  --[[It appears that after champion ranks were introduced there was the need
+  to add a description of the item and add things like cp160 purple  epic.
+  ]]--
+  --[[
   elseif (not self.systemSavedVariables.switchedToChampionRanks) and (GetAPIVersion() >= 100015) then
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
@@ -3220,6 +3246,7 @@ function MasterMerchant:ReIndexSales(otherData)
     end
   end
   self.systemSavedVariables.switchedToChampionRanks = (GetAPIVersion() >= 100015)
+  ]]--
 end
 
 function MasterMerchant.SetupPendingPost(self)
@@ -3402,6 +3429,7 @@ function MasterMerchant:Initialize()
     showAmountTaxes = false,
     trimOutliers = false,
     useDefaultDaysRange = false,
+    itemIDConvertedToString = false,
   }
 
   for i = 1, GetNumGuilds() do
@@ -3615,8 +3643,8 @@ function MasterMerchant:Initialize()
     self.acctSavedVariables.SalesData = nil
   end
 
-  -- Covert each data file as needed
-  if GetAPIVersion() == 100011 then
+  -- Convert event IDs to string if not converted
+  if not MasterMerchant.systemSavedVariables.itemIDConvertedToString then
     self:AdjustItems(MM00Data)
     self:AdjustItems(MM01Data)
     self:AdjustItems(MM02Data)
@@ -3633,9 +3661,11 @@ function MasterMerchant:Initialize()
     self:AdjustItems(MM13Data)
     self:AdjustItems(MM14Data)
     self:AdjustItems(MM15Data)
+    MasterMerchant.systemSavedVariables.itemIDConvertedToString = true
   end
 
   -- Check for and reindex if the item structure has changed
+  --[[This is obsolete until needed for future expansion
   self:ReIndexSales(MM00Data)
   self:ReIndexSales(MM01Data)
   self:ReIndexSales(MM02Data)
@@ -3652,6 +3682,7 @@ function MasterMerchant:Initialize()
   self:ReIndexSales(MM13Data)
   self:ReIndexSales(MM14Data)
   self:ReIndexSales(MM15Data)
+  ]]--
 
   -- Bring seperate lists together we can still access the sales history all together
   self:ReferenceSales(MM00Data)

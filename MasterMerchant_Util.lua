@@ -378,12 +378,7 @@ function MasterMerchant:CheckForDuplicate(itemLink, eventID)
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
-      if type(v.id) == "number" then
-        if tostring(v.id) == eventID then
-          dupe = true
-          break
-        end
-      elseif v.id == eventID then
+      if v.id == eventID then
         dupe = true
         break
       end
