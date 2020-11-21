@@ -286,7 +286,11 @@ function MasterMerchant:indexHistoryTables()
   --do return end
 
   local prefunc = function(extraData)
-    MasterMerchant.v(4, 'Indexing...')
+    if MasterMerchant.systemSavedVariables.minimalIndexing then
+      MasterMerchant.v(3, 'Minimal Indexing...')
+    else
+      MasterMerchant.v(3, 'Full Indexing...')
+    end
     extraData.start = GetTimeStamp()
     extraData.checkMilliseconds = 60
     extraData.indexCount = 0
@@ -305,29 +309,39 @@ function MasterMerchant:indexHistoryTables()
 
     extraData.indexCount = extraData.indexCount + 1
 
-    versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(soldItem['itemLink'])
-    versiondata.itemDesc = versiondata.itemDesc or GetItemLinkName(soldItem['itemLink'])
-    versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(soldItem['itemLink'])
-
-    temp[2] = soldItem['buyer'] or ''
-    temp[4] = soldItem['seller'] or ''
-    temp[6] = soldItem['guild'] or ''
-    temp[8] = versiondata.itemDesc or ''
-    temp[10] = versiondata.itemAdderText or ''
-    if playerName == tolower(soldItem['seller']) then
-      temp[12] = MasterMerchant.PlayerSpecialText
+    local searchText
+    if MasterMerchant.systemSavedVariables.minimalIndexing then
+      if playerName == tolower(soldItem['seller']) then
+        searchText = MasterMerchant.PlayerSpecialText
+      else
+        searchText = ''
+      end
     else
-      temp[12] = ''
-    end
-    local searchText = tolower(tconcat(temp, ''))
-    local searchByWords = string.gmatch(searchText, '%S+')
+      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(soldItem['itemLink'])
+      versiondata.itemDesc = versiondata.itemDesc or GetItemLinkName(soldItem['itemLink'])
+      versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(soldItem['itemLink'])
 
-    local wordData = {numberID, itemData, itemIndex}
+      temp[2] = soldItem['buyer'] or ''
+      temp[4] = soldItem['seller'] or ''
+      temp[6] = soldItem['guild'] or ''
+      temp[8] = versiondata.itemDesc or ''
+      temp[10] = versiondata.itemAdderText or ''
+      if playerName == tolower(soldItem['seller']) then
+        temp[12] = MasterMerchant.PlayerSpecialText
+      else
+        temp[12] = ''
+      end
+      searchText = tolower(tconcat(temp, ''))
+    end
 
     -- Index each word
+    local searchByWords = string.gmatch(searchText, '%S+')
+    local wordData = {numberID, itemData, itemIndex}
     for i in searchByWords do
-      extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-      self.SRIndex[i] = self.SRIndex[i] or {}
+      if self.SRIndex[i] == nil then
+        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
+        self.SRIndex[i] = {}
+      end
       tinsert(self.SRIndex[i], wordData)
     end
 
@@ -335,9 +349,11 @@ function MasterMerchant:indexHistoryTables()
 
   local postfunc = function(extraData)
     self:setScanning(false)
-    MasterMerchant.v(4, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
-    MasterMerchant.v(4, '  ' .. extraData.indexCount .. ' sales records')
-    MasterMerchant.v(4, '  ' .. extraData.wordsIndexCount .. ' words')
+    MasterMerchant.v(3, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
+    MasterMerchant.v(3, '  ' .. extraData.indexCount .. ' sales records')
+    if extraData.wordsIndexCount > 1 then
+      MasterMerchant.v(3, '  ' .. extraData.wordsIndexCount .. ' unique words')
+    end
   end
 
   if not self.isScanning then
@@ -372,12 +388,24 @@ function MasterMerchant:CheckForDuplicate(itemLink, eventID)
   return dupe
 end
 
+--[[Set which MMxxData.lua file will store the item information
+based on the modulo obtained from the hash which is based on
+the itemLink information.
+]]--
+local function setSalesData(itemLink, theIID)
+  local hash = MasterMerchant.hashString(string.lower(GetItemLinkName(itemLink)))
+  local dataTable = _G[string.format("MM%02dData", hash)]
+  local savedVars = dataTable.savedVariables
+  local salesData = savedVars.SalesData
+  salesData[theIID] = {}
+  return salesData[theIID]
+end
+
 -- And here we add a new item
 function MasterMerchant:addToHistoryTables(theEvent)
 
-  local theIID = GetItemLinkItemId(theEvent.itemLink)
-  if theIID == nil then return end
-  local itemIndex = self.makeIndexFromLink(theEvent.itemLink)
+  -- DEBUG  Stop Adding
+  --do return end
 
   --[[
   local theEvent = {
@@ -416,46 +444,52 @@ function MasterMerchant:addToHistoryTables(theEvent)
   },
   ]]--
 
+  --[[The quality effects itemIndex although the ID from the
+  itemLink may be the same. We will keep them separate.
+  ]]--
+  local itemIndex = self.makeIndexFromLink(theEvent.itemLink)
+  --[[theIID is used in the SRIndex so define it here.
+  ]]--
+  local theIID = GetItemLinkItemId(theEvent.itemLink)
+  if theIID == nil then return end
+
+  --[[If the ID from the itemLink doesn't exist determine which
+  file or container it will belong to using setSalesData()
+  ]]--
   if not self.salesData[theIID] then
-    -- Add to the split memory set
-    local action = {
-      [0] = function (k) MM00Data.savedVariables.SalesData[k] = {}; return MM00Data.savedVariables.SalesData[k] end,
-      [1] = function (k) MM01Data.savedVariables.SalesData[k] = {}; return MM01Data.savedVariables.SalesData[k]  end,
-      [2] = function (k) MM02Data.savedVariables.SalesData[k] = {}; return MM02Data.savedVariables.SalesData[k]  end,
-      [3] = function (k) MM03Data.savedVariables.SalesData[k] = {}; return MM03Data.savedVariables.SalesData[k]  end,
-      [4] = function (k) MM04Data.savedVariables.SalesData[k] = {}; return MM04Data.savedVariables.SalesData[k]  end,
-      [5] = function (k) MM05Data.savedVariables.SalesData[k] = {}; return MM05Data.savedVariables.SalesData[k]  end,
-      [6] = function (k) MM06Data.savedVariables.SalesData[k] = {}; return MM06Data.savedVariables.SalesData[k]  end,
-      [7] = function (k) MM07Data.savedVariables.SalesData[k] = {}; return MM07Data.savedVariables.SalesData[k]  end,
-      [8] = function (k) MM08Data.savedVariables.SalesData[k] = {}; return MM08Data.savedVariables.SalesData[k]  end,
-      [9] = function (k) MM09Data.savedVariables.SalesData[k] = {}; return MM09Data.savedVariables.SalesData[k]  end,
-      [10] = function (k) MM10Data.savedVariables.SalesData[k] = {}; return MM10Data.savedVariables.SalesData[k]  end,
-      [11] = function (k) MM11Data.savedVariables.SalesData[k] = {}; return MM11Data.savedVariables.SalesData[k]  end,
-      [12] = function (k) MM12Data.savedVariables.SalesData[k] = {}; return MM12Data.savedVariables.SalesData[k]  end,
-      [13] = function (k) MM13Data.savedVariables.SalesData[k] = {}; return MM13Data.savedVariables.SalesData[k]  end,
-      [14] = function (k) MM14Data.savedVariables.SalesData[k] = {}; return MM14Data.savedVariables.SalesData[k]  end,
-      [15] = function (k) MM15Data.savedVariables.SalesData[k] = {}; return MM15Data.savedVariables.SalesData[k]  end
-    }
-
-    local hash = MasterMerchant.hashString(string.lower(GetItemLinkName(theEvent.itemLink)))
-
-    self.salesData[theIID] = action[hash](theIID)
+    self.salesData[theIID] = setSalesData(theEvent.itemLink, theIID)
   end
 
   local insertedIndex = 1
 
+  local searchItemDesc = ""
+  local searchItemAdderText = ""
+
   if self.salesData[theIID][itemIndex] then
-    table.insert(self.salesData[theIID][itemIndex]['sales'], theEvent)
-    insertedIndex = #self.salesData[theIID][itemIndex]['sales']
+    local nextLocation = #self.salesData[theIID][itemIndex]['sales'] + 1
+    searchItemDesc = self.salesData[theIID][itemIndex].itemDesc
+    searchItemAdderText = self.salesData[theIID][itemIndex].itemAdderText
+    if self.salesData[theIID][itemIndex]['sales'][nextLocation] == nil then
+      table.insert(self.salesData[theIID][itemIndex]['sales'], nextLocation, theEvent)
+      insertedIndex = nextLocation
+    else
+      table.insert(self.salesData[theIID][itemIndex]['sales'], theEvent)
+      insertedIndex = #self.salesData[theIID][itemIndex]['sales']
+    end
   else
+    searchItemDesc = GetItemLinkName(theEvent.itemLink)
+    searchItemAdderText = self.addedSearchToItem(theEvent.itemLink)
     self.salesData[theIID][itemIndex] = {
       itemIcon = GetItemLinkInfo(theEvent.itemLink),
-      itemAdderText = self.addedSearchToItem(theEvent.itemLink),
-      itemDesc = GetItemLinkName(theEvent.itemLink),
+      itemAdderText = searchItemAdderText,
+      itemDesc = searchItemDesc,
       sales = {theEvent}}
   end
 
-  local guild = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
+  local guild
+  local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
+
+  guild = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildSales[theEvent.guild] = guild;
   guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
 
@@ -465,49 +499,46 @@ function MasterMerchant:addToHistoryTables(theEvent)
 
   guild = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildItems[theEvent.guild] = guild;
-  guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
+  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
 
-  local searchBuyer = 'b' .. string.lower(theEvent.buyer)
-  local searchSeller = 's' .. string.lower(theEvent.seller)
-  local searchGuild = string.lower(theEvent.guild)
-  local searchName = MasterMerchant.concat(string.lower(GetItemLinkName(theEvent.itemLink)), self.addedSearchToItem(theEvent.itemLink))
-  local guildByWords = string.gmatch(searchGuild, '%S+')
-  local nameByWords = string.gmatch(searchName, '%S+')
   local playerName = string.lower(GetDisplayName())
   local isSelfSale = playerName == string.lower(theEvent.seller)
 
   if isSelfSale then
     guild = MasterMerchant.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
     MasterMerchant.myItems[theEvent.guild] = guild;
-    guild:addSaleByDate(self.salesData[theIID][itemIndex].sales[1].itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, MasterMerchant.concat(self.salesData[theIID][itemIndex].itemDesc, self.salesData[theIID][itemIndex].itemAdderText))
+    guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
   end
 
+  local temp = {'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', ''}
+  local searchText = ""
+  if MasterMerchant.systemSavedVariables.minimalIndexing then
+    if isSelfSale then
+      searchText = MasterMerchant.PlayerSpecialText
+    else
+      searchText = ''
+    end
+  else
+    temp[2] = theEvent.buyer or ''
+    temp[4] = theEvent.seller or ''
+    temp[6] = theEvent.guild or ''
+    temp[8] = searchItemDesc or ''
+    temp[10] = searchItemAdderText or ''
+    if isSelfSale then
+      temp[12] = MasterMerchant.PlayerSpecialText
+    else
+      temp[12] = ''
+    end
+    searchText = string.lower(table.concat(temp, ''))
+  end
+
+  local searchByWords = string.gmatch(searchText, '%S+')
   local wordData = {theIID, itemIndex, insertedIndex}
 
-  -- Index buyer
-  if self.SRIndex[searchBuyer] == nil then self.SRIndex[searchBuyer] = {wordData}
-  else table.insert(self.SRIndex[searchBuyer], wordData) end
-
-  -- Index seller
-  if self.SRIndex[searchSeller] == nil then self.SRIndex[searchSeller] = {wordData}
-  else table.insert(self.SRIndex[searchSeller], wordData) end
-
-  -- Index each word in the guild name
-  for i in guildByWords do
-    if self.SRIndex[i] == nil then self.SRIndex[i] = {wordData}
-    else table.insert(self.SRIndex[i], wordData) end
-  end
-
-  -- Index each word in the item name
-  for i in nameByWords do
-    if self.SRIndex[i] == nil then self.SRIndex[i] = {wordData}
-    else table.insert(self.SRIndex[i], wordData) end
-  end
-
-  -- Add index marker for Self Sales
-  if isSelfSale then
-    if self.SRIndex[MasterMerchant.PlayerSpecialText] == nil then self.SRIndex[MasterMerchant.PlayerSpecialText] = {wordData}
-    else table.insert(self.SRIndex[MasterMerchant.PlayerSpecialText], wordData) end
+  -- Index each word
+  for i in searchByWords do
+    self.SRIndex[i] = self.SRIndex[i] or {}
+    table.insert(self.SRIndex[i], wordData)
   end
 
   return true
@@ -607,26 +638,3 @@ function MasterMerchant:SearchSoundNames(name)
     if theSound.name == name then return theSound.sound end
   end
 end
-
--- ZOS provides prehook functions, but not posthook.  So here they are.
-function MasterMerchant.functionPostHook(control, funcName, callback)
-  local tmp = control[funcName]
-  if ((tmp ~= nil) and (type(tmp) == 'function')) then
-    local newFunc = function(...)
-      if (not tmp(...)) then return callback(...) end
-    end
-    control[funcName] = newFunc
-  end
-end
-
-function MasterMerchant.handlerPostHook(control, handName, callback)
-    local tmp = control:GetHandler(handName)
-    local newFunc
-    if(tmp) then
-        newFunc = function(...)
-            if(not tmp(...)) then return callback(...) end
-        end
-    else newFunc = callback end
-    control:SetHandler(handName, newFunc)
-end
-

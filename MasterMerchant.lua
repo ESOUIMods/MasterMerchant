@@ -1641,8 +1641,16 @@ function MasterMerchant:LibAddonInit()
                   MasterMerchant.verboseLevel = value
                 end,
     },
-    -- Make all settings account-wide (or not)
+    -- Skip Indexing?
     [27] = {
+      type = 'checkbox',
+      name = GetString(MM_SKIP_INDEX_NAME),
+      tooltip = GetString(MM_SKIP_INDEX_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.minimalIndexing end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.minimalIndexing = value end,
+    },
+    -- Make all settings account-wide (or not)
+    [28] = {
       type = 'checkbox',
       name = GetString(SK_ACCOUNT_WIDE_NAME),
       tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
@@ -2324,8 +2332,6 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
   -- If the index is blank (first scan after login or after reset),
   -- build the indexes now that we have a scanned table.
   -- self:setScanningParallel(false, guildName)
-  self.veryFirstScan = false
-  if self.SRIndex == {} then MasterMerchant:indexHistoryTables() end
   local settingsToUse = MasterMerchant:ActiveSettings()
 
   -- If there's anything in the alert queue, handle it.
@@ -2387,75 +2393,61 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
       end
       totalGold = totalGold + dispPrice
 
-      -- Offline sales report
-      if self.isFirstScan and settingsToUse.offlineSales then
+      -- If they want multiple alerts, we'll alert on each loop iteration
+      -- or if there's only one.
+      if settingsToUse.showMultiple or numAlerts == 1 then
+        -- Insert thousands separators for the price
         local stringPrice = self.LocalizedNumber(dispPrice)
-        local textTime = self.TextTimeSince(theEvent.timestamp, true)
-        if i == 1 then MasterMerchant.v(1, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT))) end
-        MasterMerchant.v(1, zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
-        if i == numAlerts then
-          -- Total of offline sales
-          MasterMerchant.v(1, string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
-          MasterMerchant.v(1, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT_END)))
-       end
-      -- Subsequent scans
-      else
-        -- If they want multiple alerts, we'll alert on each loop iteration
-        -- or if there's only one.
-        if settingsToUse.showMultiple or numAlerts == 1 then
-          -- Insert thousands separators for the price
-          local stringPrice = self.LocalizedNumber(dispPrice)
 
-          -- On-screen alert; map index 37 is Cyrodiil
-          if settingsToUse.showAnnounceAlerts and
-            (settingsToUse.showCyroAlerts or GetCurrentMapZoneIndex ~= 37) then
+        -- On-screen alert; map index 37 is Cyrodiil
+        if settingsToUse.showAnnounceAlerts and
+          (settingsToUse.showCyroAlerts or GetCurrentMapZoneIndex ~= 37) then
 
-            -- We'll add a numerical suffix to avoid queueing two identical messages in a row
-            -- because the alerts will 'miss' if we do
-            local textTime = self.TextTimeSince(theEvent.timestamp, true)
-            local alertSuffix = ''
-            if lastEvent[1] ~= nil and theEvent.itemLink == lastEvent[1].itemLink and textTime == lastEvent[2] then
-              lastEvent[3] = lastEvent[3] + 1
-              alertSuffix = ' (' .. lastEvent[3] .. ')'
-            else
-              lastEvent[1] = theEvent
-              lastEvent[2] = textTime
-              lastEvent[3] = 1
-            end
-            -- German word order differs so argument order also needs to be changed
-            -- Also due to plurality differences in German, need to differentiate
-            -- single item sold vs. multiple of an item sold.
-            if self.locale == 'de' then
-              if theEvent.quant > 1 then
-                MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink),
-                                stringPrice, theEvent.guild, textTime) .. alertSuffix)
-              else
-                MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR),zo_strformat('<<t:1>>', theEvent.itemLink),
-                                stringPrice, theEvent.guild, textTime) .. alertSuffix)
-              end
+          -- We'll add a numerical suffix to avoid queueing two identical messages in a row
+          -- because the alerts will 'miss' if we do
+          local textTime = self.TextTimeSince(theEvent.timestamp, true)
+          local alertSuffix = ''
+          if lastEvent[1] ~= nil and theEvent.itemLink == lastEvent[1].itemLink and textTime == lastEvent[2] then
+            lastEvent[3] = lastEvent[3] + 1
+            alertSuffix = ' (' .. lastEvent[3] .. ')'
+          else
+            lastEvent[1] = theEvent
+            lastEvent[2] = textTime
+            lastEvent[3] = 1
+          end
+          -- German word order differs so argument order also needs to be changed
+          -- Also due to plurality differences in German, need to differentiate
+          -- single item sold vs. multiple of an item sold.
+          if self.locale == 'de' then
+            if theEvent.quant > 1 then
+              MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
+                string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink),
+                              stringPrice, theEvent.guild, textTime) .. alertSuffix)
             else
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
-                              theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
+                string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR),zo_strformat('<<t:1>>', theEvent.itemLink),
+                              stringPrice, theEvent.guild, textTime) .. alertSuffix)
             end
+          else
+            MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
+              string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
+                            theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
           end
+        end
 
-          -- Chat alert
-          if settingsToUse.showChatAlerts then
-            if self.locale == 'de' then
-              if theEvent.quant > 1 then
-                MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                                      theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
-              else
-                MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
-                                      zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
-              end
-            else
+        -- Chat alert
+        if settingsToUse.showChatAlerts then
+          if self.locale == 'de' then
+            if theEvent.quant > 1 then
               MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                                    zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
+                                    theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
+            else
+              MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
+                                    zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
             end
+          else
+            MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
+                                  zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
           end
         end
       end
@@ -2476,16 +2468,16 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
     end
   end
 
-  self:SpecialMessage(false)
+  --self:SpecialMessage(false)
 
   -- Set the stats slider past the max if this is brand new data
-  if self.isFirstScan and doAlert then MasterMerchantStatsWindowSlider:SetValue(15) end
-  self.isFirstScan = false
+  --if self.isFirstScan and doAlert then MasterMerchantStatsWindowSlider:SetValue(15) end
+  --self.isFirstScan = false
 
   -- We only have to refresh scroll list data if the window is actually visible; methods
   -- to show these windows refresh data before display
   if settingsToUse.viewSize == ITEMS then
-    if not MasterMerchantWindow:IsHidden() then
+    if not MasterMerchantWindow:IsHidden() and not self.isScanning then
       self.scrollList:RefreshData()
     else
       self.listIsDirty[ITEMS] = true
@@ -2493,7 +2485,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
     self.listIsDirty[GUILDS] = true
     self.listIsDirty[LISTINGS] = true
   elseif settingsToUse.viewSize == GUILDS then
-    if not MasterMerchantGuildWindow:IsHidden() then
+    if not MasterMerchantGuildWindow:IsHidden() and not self.isScanning then
       self.guildScrollList:RefreshData()
     else
       self.listIsDirty[GUILDS] = true
@@ -2501,7 +2493,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
     self.listIsDirty[ITEMS] = true
     self.listIsDirty[LISTINGS] = true
   else
-    if not MasterMerchantListingWindow:IsHidden() then
+    if not MasterMerchantListingWindow:IsHidden() and not self.isScanning then
       self.listingScrollList:RefreshData()
     else
       self.listIsDirty[LISTINGS] = true
@@ -2710,7 +2702,7 @@ function MasterMerchant:DoRefresh()
     MasterMerchant:SetupListener(guildID)
   end
   MasterMerchant.LibHistoireRefreshed = true
-  zo_callLater(function() self:setScanning(false) end, 60000 * 20) -- 20 minutes
+  zo_callLater(function() self:setScanning(false) end, 60000 * 10) -- 10 minutes
 end
 
 function MasterMerchant:initGMTools()
@@ -3384,6 +3376,7 @@ function MasterMerchant:Initialize()
 
   local systemDefault =
   {
+    minimalIndexing = false,
     eventIndex = {},
     eventCount = {},
     numEvents = {},
@@ -4197,19 +4190,15 @@ function MasterMerchant:SetupListener(guildID)
 
         if not isDuplicate then
           MasterMerchant:addToHistoryTables(theEvent)
-          MasterMerchant:PostScanParallel(guildName, true)
         end
         -- (doAlert and (self.savedVariables.showChatAlerts or self.savedVariables.showAnnounceAlerts))
         if not isDuplicate and string.lower(theEvent.seller) == thePlayer then
           --MasterMerchant.dm("Debug", "alertQueue updated")
           table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
         end
-        --[[ Needs Updated for consistant variable name changes
-        if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
-          GuildSalesAssistant:InsertEvent(theEvent)
+        if not isDuplicate then
+          MasterMerchant:PostScanParallel(guildName, true)
         end
-        ]]--
-        --MasterMerchant:UpdateControlData()
       end
     end)
     MasterMerchant.LibHistoireListener[guildID]:Start()

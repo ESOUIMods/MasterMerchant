@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.3.1'
+MasterMerchant.version = '3.3.2'
 MasterMerchant.locale = 'en'
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
@@ -68,6 +68,9 @@ local function create_log(log_type, log_content)
   end
   if log_type == "Verbose" then
     MasterMerchant.logger:Verbose(log_content)
+  end
+  if log_type == "Warn" then
+    MasterMerchant.logger:Warn(log_content)
   end
 end
 

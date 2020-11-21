@@ -548,7 +548,7 @@ function MMScrollList:New(control)
     ZO_SortHeader_OnMouseExit(MasterMerchantGuildWindowHeadersRank)
   end
 
-  MasterMerchant.functionPostHook(skList, 'RefreshData', function()
+  ZO_PostHook(skList, 'RefreshData', function()
     local texCon = skList.list.scrollbar:GetThumbTextureControl()
     if texCon:GetHeight() < 10 then skList.list.scrollbar:SetThumbTextureHeight(10) end
   end)
@@ -2040,30 +2040,30 @@ function MasterMerchant:SetupScrollLists()
     -- Scroll list init
   self.scrollList = MMScrollList:New(MasterMerchantWindow)
   --self.scrollList:Initialize()
-  self.functionPostHook(self.scrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
+  ZO_PostHook(self.scrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
     if header == MasterMerchantWindowHeadersPrice then
       if header.mouseIsOver then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.95, 0.92, 0.26, 1)
       else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.81, 0.15, 1) end
     else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end
   end)
-  self.handlerPostHook(MasterMerchantWindowHeadersPrice, 'OnMouseExit', function()
+  ZO_PostHookHandler(MasterMerchantWindowHeadersPrice, 'OnMouseExit', function()
     if MasterMerchantWindowHeadersPrice.selected then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.81, 0.15, 1)
     else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end
   end)
-  self.handlerPostHook(MasterMerchantWindowHeadersPrice, 'OnMouseEnter', function(control)
+  ZO_PostHookHandler(MasterMerchantWindowHeadersPrice, 'OnMouseEnter', function(control)
     if control == MasterMerchantWindowHeadersPrice then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.81, 0.15, 1)
     else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end
   end)
 
   self.guildScrollList = MMScrollList:New(MasterMerchantGuildWindow)
   --self.guildScrollList:Initialize()
-  self.functionPostHook(self.guildScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
+  ZO_PostHook(self.guildScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
     MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   end)
-  self.handlerPostHook(MasterMerchantGuildWindowHeadersSales, 'OnMouseExit', function()
+  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersSales, 'OnMouseExit', function()
     MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   end)
-  self.handlerPostHook(MasterMerchantGuildWindowHeadersSales, 'OnMouseEnter', function()
+  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersSales, 'OnMouseEnter', function()
     MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   end)
 end
