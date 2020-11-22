@@ -384,7 +384,6 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
         -- assign middle element
         initMedian = medianTable[math.ceil(#medianTable/2)]
       end
-      MasterMerchant.dm("Debug", string.format("initMedian %s", initMedian))
     end
 
     --[[ Determine the standard deviation, which requires the mean
@@ -400,9 +399,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       elseif goBack then
         standardDeviation = MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean, timeCheck)
       end
-      MasterMerchant.dm("Debug", string.format("standardDeviation %s", standardDeviation))
     end
-    MasterMerchant.dm("Debug", string.format("initMean %s", initMean))
 
     local priceDeterminant
     local timeInterval = newestTime - oldestTime
@@ -414,7 +411,6 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     local legitSales = 0
     local salesPoints = {}
     local rangeDeviation = (3 * standardDeviation)
-    MasterMerchant.dm("Debug", string.format("rangeDeviation %s", rangeDeviation))
     local weightValue = 0
     local dayInterval = 0
     local lowRange = 1
@@ -425,11 +421,8 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     else
       priceDeterminant = initMean
     end
-    MasterMerchant.dm("Debug", string.format("priceDeterminant %s", priceDeterminant))
     if priceDeterminant - rangeDeviation > 1 then lowRange = priceDeterminant - rangeDeviation end
     if priceDeterminant + rangeDeviation > 2 then highRange = priceDeterminant + rangeDeviation end
-    MasterMerchant.dm("Debug", string.format("lowRange %s", lowRange))
-    MasterMerchant.dm("Debug", string.format("highRange %s", highRange))
     if timeInterval > 86400 then
       dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
     end
@@ -1578,6 +1571,7 @@ function MasterMerchant:LibAddonInit()
       choices = {GetString(MM_STATISTICS_MEAN),GetString(MM_STATISTICS_MEDIAN)},
       getFunc = function() return MasterMerchant.systemSavedVariables.defaultStatistics end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.defaultStatistics = value end,
+      disabled = function() return not MasterMerchant.systemSavedVariables.trimOutliers end,
     },
     -- should we trim off decimals?
     [18] = {

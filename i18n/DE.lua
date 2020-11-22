@@ -250,3 +250,7 @@ ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_TIP", "Will calculate 3.5% of total sale
 
 ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_NAME", "Use Tooltip Days Range")
 ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_TIP", "Use the Tooltip Default Days Range when displaying the MM price on the inventory grid.")
+
+ZO_CreateStringId("MM_STATISTICS_MEAN", "Mean")
+ZO_CreateStringId("MM_STATISTICS_AVERAGE", "Average")
+ZO_CreateStringId("MM_STATISTICS_MEDIAN", "Median")
