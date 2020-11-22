@@ -303,19 +303,40 @@ function MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean)
   return standardDeviation
 end
 
+local function dataPresent(itemID, itemIndex, daysRange)
+  local found, present = false
+  if MasterMerchant.itemAverageLookupTable[itemID] then
+    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex] then
+      found = true
+    end
+  end
+  if found then
+    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange] then
+      present = true
+    end
+  end
+  return present
+end
+
 -- Computes the weighted moving average across available data
 function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clickable)
   -- 10000 for numDays is more or less like saying it is undefined
   local returnData = {['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = 10000, ['numItems'] = nil, ['craftCost'] = nil}
+  local timeCheck
+  local daysRange = 10000
+  local initMedian = 0 -- may not be selected
+  local standardDeviation = 1 -- because 1 gold or more
+  local hasSalesData = false
 
   -- make sure we have a list of sales to work with
   if self.salesData[itemID] and self.salesData[itemID][itemIndex] and self.salesData[itemID][itemIndex]['sales'] and #self.salesData[itemID][itemIndex]['sales'] > 0 then
+    hasSalesData = true
 
     local list = self.salesData[itemID][itemIndex]['sales']
 
     local lowerBlacklist = self:ActiveSettings().blacklist and self:ActiveSettings().blacklist:lower() or ""
 
-    local timeCheck, daysRange = self:TimeCheck()
+    timeCheck, daysRange = self:TimeCheck()
 
     if timeCheck == -1 then return returnData end
 
@@ -327,7 +348,6 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     local newestTime = nil
     local daysHistory = 0
     local medianTable = {}
-    local initMedian = 0 -- may not be selected
     --[[TODO: what is goBack
 
     if no sales were found do it again but don't worry about
@@ -370,35 +390,45 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     ZO_CreateStringId("MM_STATISTICS_MEDIAN", "Median")
     MasterMerchant.systemSavedVariables.defaultStatistics
     MasterMerchant.systemSavedVariables.trimOutliers
+    MasterMerchant.dm("Debug", daysRange)
     ]]--
 
-    if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
-      -- determine the median
-      table.sort( medianTable )
+    local lookupDataFound = dataPresent(itemID, itemIndex, daysRange)
 
-      -- If we have an even number of table elements or odd.
-      if math.fmod(#medianTable,2) == 0 then
-        -- assign mean value of middle two elements
-        initMedian = ( medianTable[#medianTable/2] + medianTable[(#medianTable/2)+1] ) / 2
-      else
-        -- assign middle element
-        initMedian = medianTable[math.ceil(#medianTable/2)]
+    if not lookupDataFound then
+      if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
+        -- determine the median
+        table.sort( medianTable )
+
+        -- If we have an even number of table elements or odd.
+        if math.fmod(#medianTable,2) == 0 then
+          -- assign mean value of middle two elements
+          initMedian = ( medianTable[#medianTable/2] + medianTable[(#medianTable/2)+1] ) / 2
+        else
+          -- assign middle element
+          initMedian = medianTable[math.ceil(#medianTable/2)]
+        end
       end
+    else
+      initMedian = MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange].median
     end
 
     --[[ Determine the standard deviation, which requires the mean
     we do not need this if we are not going to trim the outliers
     ]]--
-    local standardDeviation = 1 -- because 1 gold or more
-    if MasterMerchant.systemSavedVariables.trimOutliers then
-      if not goBack then
-        standardDeviation = MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
+    if not lookupDataFound then
+      if MasterMerchant.systemSavedVariables.trimOutliers then
+        if not goBack then
+          standardDeviation = MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
+        end
+        if goBack and MasterMerchant.systemSavedVariables.useDefaultDaysRange then
+          standardDeviation = MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
+        elseif goBack then
+          standardDeviation = MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean, timeCheck)
+        end
       end
-      if goBack and MasterMerchant.systemSavedVariables.useDefaultDaysRange then
-        standardDeviation = MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
-      elseif goBack then
-        standardDeviation = MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean, timeCheck)
-      end
+    else
+      standardDeviation = MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange].deviation
     end
 
     local priceDeterminant
@@ -495,6 +525,18 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                     ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
     end
+  end
+  if hasSalesData then
+    if MasterMerchant.itemAverageLookupTable[itemID] == nil then MasterMerchant.itemAverageLookupTable[itemID] = {} end
+    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex] == nil then
+      MasterMerchant.itemAverageLookupTable[itemID][itemIndex] = {}
+    end
+    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange] == nil then
+      MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange] = {}
+    end
+    MasterMerchant.itemAverageLookupTable[itemID][itemIndex] = {
+      [daysRange] = { ['deviation'] = standardDeviation, ['median'] = initMedian, }
+    }
   end
   return returnData
 end

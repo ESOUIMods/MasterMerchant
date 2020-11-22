@@ -51,6 +51,7 @@ MasterMerchant.eventCount[MasterMerchant.currentGuildID] = 0 -- added 8-25
 MasterMerchant.guildMemberInfo = { } -- added 10-17
 MasterMerchant.LibHistoireListener = { } -- added for debug on 10-31
 MasterMerchant.LibHistoireRefreshed = false -- added 8-25
+MasterMerchant.itemAverageLookupTable = { } -- added 11-21
 
 if LibDebugLogger then
   local logger = LibDebugLogger.Create(MasterMerchant.name)
