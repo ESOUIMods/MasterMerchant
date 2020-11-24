@@ -303,15 +303,15 @@ function MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean)
   return standardDeviation
 end
 
-local function dataPresent(itemID, itemIndex, daysRange)
+local function dataPresent(theIID, itemIndex, daysRange)
   local found, present = false
-  if MasterMerchant.itemAverageLookupTable[itemID] then
-    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex] then
+  if MasterMerchant.itemAverageLookupTable[theIID] then
+    if MasterMerchant.itemAverageLookupTable[theIID][itemIndex] then
       found = true
     end
   end
   if found then
-    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange] then
+    if MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysRange] then
       present = true
     end
   end
@@ -319,23 +319,31 @@ local function dataPresent(itemID, itemIndex, daysRange)
 end
 
 -- Computes the weighted moving average across available data
-function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clickable)
+function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
   -- 10000 for numDays is more or less like saying it is undefined
   local returnData = {['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = 10000, ['numItems'] = nil, ['craftCost'] = nil}
-  local timeCheck
-  local daysRange = 10000
+  --[[TODO why is there a days range of 10000. I get that it kinda means
+  all days but the daysHistory seems to be the actual number to be using.
+  For example when you press SHIFT or CTRL then daysHistory and daysRange
+  are the same. However, when you do not modify the data, then daysRange
+  is 10000 and daysHistory is however many days you have.
+  ]]--
   local initMedian = 0 -- may not be selected
   local standardDeviation = 1 -- because 1 gold or more
   local hasSalesData = false
+  local legitSales = 0
+  local daysHistory = 0
 
   -- make sure we have a list of sales to work with
-  if self.salesData[itemID] and self.salesData[itemID][itemIndex] and self.salesData[itemID][itemIndex]['sales'] and #self.salesData[itemID][itemIndex]['sales'] > 0 then
+  if self.salesData[theIID] and self.salesData[theIID][itemIndex] and self.salesData[theIID][itemIndex]['sales'] and #self.salesData[theIID][itemIndex]['sales'] > 0 then
     hasSalesData = true
 
-    local list = self.salesData[itemID][itemIndex]['sales']
+    local list = self.salesData[theIID][itemIndex]['sales']
 
     local lowerBlacklist = self:ActiveSettings().blacklist and self:ActiveSettings().blacklist:lower() or ""
 
+    local timeCheck
+    local daysRange = 10000
     timeCheck, daysRange = self:TimeCheck()
 
     if timeCheck == -1 then return returnData end
@@ -346,7 +354,6 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     local initMean = 0
     local oldestTime = nil
     local newestTime = nil
-    local daysHistory = 0
     local medianTable = {}
     --[[TODO: what is goBack
 
@@ -377,6 +384,10 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     -- 10000 for numDays is more or less like saying it is undefined
     --[[TODO: how is daysRange used here. This could be this way if
         the first loop returned no sales but the second loop did
+    
+    TODO:2 Figure out what this does considering the above comment when
+    daysRange might be 10000 but daysHistory is about how much history
+    you have. Might be because of oldestTime.
     ]]--
     if (daysRange == 10000) then
       daysHistory = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
@@ -393,7 +404,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     MasterMerchant.dm("Debug", daysRange)
     ]]--
 
-    local lookupDataFound = dataPresent(itemID, itemIndex, daysRange)
+    local lookupDataFound = dataPresent(theIID, itemIndex, daysRange)
 
     if not lookupDataFound then
       if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
@@ -410,7 +421,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
         end
       end
     else
-      initMedian = MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange].median
+      initMedian = MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory].median
     end
 
     --[[ Determine the standard deviation, which requires the mean
@@ -428,7 +439,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
         end
       end
     else
-      standardDeviation = MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange].deviation
+      standardDeviation = MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory].deviation
     end
 
     local priceDeterminant
@@ -438,7 +449,6 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     local avgPrice = 0
     local countSold = 0
     local weigtedCountSold = 0
-    local legitSales = 0
     local salesPoints = {}
     local rangeDeviation = (3 * standardDeviation)
     local weightValue = 0
@@ -497,13 +507,7 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
           rather then actually click anything
           ]]--
           if clickable then
-            local stringPrice = '';
-            if self:ActiveSettings().trimDecimals then
-              stringPrice = string.format('%.0f', item.price/item.quant)
-            else
-              stringPrice = string.format('%.2f', item.price/item.quant)
-            end
-            stringPrice = self.LocalizedNumber(stringPrice)
+            local stringPrice = self.LocalizedNumber(individualSale)
             if item.quant == 1 then
               tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
                 string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)),  item.buyer, stringPrice)
@@ -526,31 +530,29 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
                     ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
     end
   end
-  if hasSalesData then
-    if MasterMerchant.itemAverageLookupTable[itemID] == nil then MasterMerchant.itemAverageLookupTable[itemID] = {} end
-    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex] == nil then
-      MasterMerchant.itemAverageLookupTable[itemID][itemIndex] = {}
+  if hasSalesData and (legitSales >= 1) then
+    if MasterMerchant.itemAverageLookupTable[theIID] == nil then MasterMerchant.itemAverageLookupTable[theIID] = {} end
+    if MasterMerchant.itemAverageLookupTable[theIID][itemIndex] == nil then
+      MasterMerchant.itemAverageLookupTable[theIID][itemIndex] = {}
     end
-    if MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange] == nil then
-      MasterMerchant.itemAverageLookupTable[itemID][itemIndex][daysRange] = {}
+    if MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory] == nil then
+      MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory] = {}
     end
-    MasterMerchant.itemAverageLookupTable[itemID][itemIndex] = {
-      [daysRange] = { ['deviation'] = standardDeviation, ['median'] = initMedian, }
-    }
+    MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory] = { ['deviation'] = standardDeviation, ['median'] = initMedian, }
   end
   return returnData
 end
 
 function MasterMerchant:itemStats(itemLink, clickable)
-  local itemID = GetItemLinkItemId(itemLink)
+  local theIID = GetItemLinkItemId(itemLink)
   local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
-  return MasterMerchant:toolTipStats(itemID, itemIndex, nil, nil, clickable)
+  return MasterMerchant:toolTipStats(theIID, itemIndex, nil, nil, clickable)
 end
 
 function MasterMerchant:itemHasSales(itemLink)
-  local itemID = GetItemLinkItemId(itemLink)
+  local theIID = GetItemLinkItemId(itemLink)
   local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
-  return self.salesData[itemID] and self.salesData[itemID][itemIndex] and self.salesData[itemID][itemIndex]['sales'] and #self.salesData[itemID][itemIndex]['sales'] > 0
+  return self.salesData[theIID] and self.salesData[theIID][itemIndex] and self.salesData[theIID][itemIndex]['sales'] and #self.salesData[theIID][itemIndex]['sales'] > 0
 end
 
 function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
@@ -564,18 +566,9 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     else
       tipFormat = GetString(MM_TIP_FORMAT_MULTI)
     end
-    local avePriceString = '';
-    if (tipStats['avgPrice'] > 100) and self:ActiveSettings().trimDecimals then
-      avePriceString = string.format('%.0f', tipStats['avgPrice'])
-      --tipFormat = string.gsub(tipFormat, '.2f', '.0f')
-    else
-      avePriceString = string.format('%.2f', tipStats['avgPrice'])
-    end
-    avePriceString = self.LocalizedNumber(avePriceString)
+    local avePriceString = self.LocalizedNumber(tipStats['avgPrice'])
     tipFormat = string.gsub(tipFormat, '.2f', 's')
     tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
-
-    if not chatText then tipFormat = tipFormat .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
     local salesString = zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales'])
     if tipStats['numSales'] ~= tipStats['numItems'] then
       salesString = salesString .. zo_strformat(GetString(MM_PRICETIP_ITEMS), tipStats['numItems'])
@@ -737,16 +730,7 @@ function MasterMerchant:itemCraftPriceTip(itemLink, chatText)
     local cost = self:itemCraftPrice(itemLink)
     if cost then
       craftTip = "Craft Cost: %s"
-
-      if (cost > 100) and self:ActiveSettings().trimDecimals then
-        craftTipString = string.format('%.0f', cost)
-      else
-        craftTipString = string.format('%.2f', cost)
-      end
-      craftTipString = self.LocalizedNumber(craftTipString)
-
-      if not chatText then craftTip = craftTip .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
-
+      local craftTipString = self.LocalizedNumber(cost)
       return string.format(craftTip, craftTipString)
     else
       return nil
@@ -1440,9 +1424,10 @@ function MasterMerchant:LibAddonInit()
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_TIP),
           min = 1,
           max = 24 * 31,
-          getFunc = function() return self:ActiveSettings().customTimeframe end,
-          setFunc = function(value) self:ActiveSettings().customTimeframe = value
-            self:ActiveSettings().customTimeframeText = self:ActiveSettings().customTimeframe .. ' ' .. self:ActiveSettings().customTimeframeType
+          getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframe end,
+          setFunc = function(value) MasterMerchant.systemSavedVariables.customTimeframe = value
+            MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
+            MasterMerchant:BuildTimeChoicesDropdown()
           end,
         },
         -- shift time range
@@ -1451,9 +1436,10 @@ function MasterMerchant:LibAddonInit()
           name = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_SCALE_TIP),
           choices = {GetString(MM_CUSTOM_TIMEFRAME_HOURS),GetString(MM_CUSTOM_TIMEFRAME_DAYS),GetString(MM_CUSTOM_TIMEFRAME_WEEKS),GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS)},
-          getFunc = function() return self:ActiveSettings().customTimeframeType end,
-          setFunc = function(value) self:ActiveSettings().customTimeframeType = value
-            self:ActiveSettings().customTimeframeText = self:ActiveSettings().customTimeframe .. ' ' .. self:ActiveSettings().customTimeframeType
+          getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframeType end,
+          setFunc = function(value) MasterMerchant.systemSavedVariables.customTimeframeType = value
+            MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
+            MasterMerchant:BuildTimeChoicesDropdown()
           end,
         },
       },
@@ -2408,6 +2394,37 @@ function MasterMerchant:ExportSalesData()
 
 end
 
+-- We only have to refresh scroll list data if the window is actually visible; methods
+-- to show these windows refresh data before display
+function MasterMerchant:RefreshMasterMerchantWindow()
+  local currentView = self:ActiveSettings().viewSize
+  if currentView == ITEMS then
+    if not MasterMerchantWindow:IsHidden() and not self.isScanning then
+      self.scrollList:RefreshData()
+    else
+      self.listIsDirty[ITEMS] = true
+    end
+    self.listIsDirty[GUILDS] = true
+    self.listIsDirty[LISTINGS] = true
+  elseif currentView == GUILDS then
+    if not MasterMerchantGuildWindow:IsHidden() and not self.isScanning then
+      self.guildScrollList:RefreshData()
+    else
+      self.listIsDirty[GUILDS] = true
+    end
+    self.listIsDirty[ITEMS] = true
+    self.listIsDirty[LISTINGS] = true
+  else
+    if not MasterMerchantListingWindow:IsHidden() and not self.isScanning then
+      self.listingScrollList:RefreshData()
+    else
+      self.listIsDirty[LISTINGS] = true
+    end
+    self.listIsDirty[ITEMS] = true
+    self.listIsDirty[GUILDS] = true
+  end
+end
+
 -----------------------------------------------------------------------
 
 -- Called after store scans complete, re-creates indexes if need be,
@@ -2561,33 +2578,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
   --if self.isFirstScan and doAlert then MasterMerchantStatsWindowSlider:SetValue(15) end
   --self.isFirstScan = false
 
-  -- We only have to refresh scroll list data if the window is actually visible; methods
-  -- to show these windows refresh data before display
-  if settingsToUse.viewSize == ITEMS then
-    if not MasterMerchantWindow:IsHidden() and not self.isScanning then
-      self.scrollList:RefreshData()
-    else
-      self.listIsDirty[ITEMS] = true
-    end
-    self.listIsDirty[GUILDS] = true
-    self.listIsDirty[LISTINGS] = true
-  elseif settingsToUse.viewSize == GUILDS then
-    if not MasterMerchantGuildWindow:IsHidden() and not self.isScanning then
-      self.guildScrollList:RefreshData()
-    else
-      self.listIsDirty[GUILDS] = true
-    end
-    self.listIsDirty[ITEMS] = true
-    self.listIsDirty[LISTINGS] = true
-  else
-    if not MasterMerchantListingWindow:IsHidden() and not self.isScanning then
-      self.listingScrollList:RefreshData()
-    else
-      self.listIsDirty[LISTINGS] = true
-    end
-    self.listIsDirty[ITEMS] = true
-    self.listIsDirty[GUILDS] = true
-  end
+  MasterMerchant:RefreshMasterMerchantWindow()
 end
 
 function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category)
@@ -2789,7 +2780,10 @@ function MasterMerchant:DoRefresh()
     MasterMerchant:SetupListener(guildID)
   end
   MasterMerchant.LibHistoireRefreshed = true
-  zo_callLater(function() self:setScanning(false) end, 60000 * 10) -- 10 minutes
+  zo_callLater(function() 
+    self:setScanning(false)
+    MasterMerchant:RefreshMasterMerchantWindow()
+  end, 60000 * 10) -- 10 minutes
 end
 
 function MasterMerchant:initGMTools()
@@ -2843,7 +2837,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
   if dealValue then
     if dealValue > -1 then
       if MasterMerchant:ActiveSettings().saucy then
-        sellingAdvice:SetText(string.format('%.0f', profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+        sellingAdvice:SetText(MasterMerchant.LocalizedNumber(profit))
       else
         sellingAdvice:SetText(string.format('%.2f', margin) .. '%')
       end
@@ -2912,7 +2906,7 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
     if dealValue then
       if dealValue > -1 then
         if MasterMerchant:ActiveSettings().saucy then
-          buyingAdvice:SetText(string.format('%.0f', profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+          buyingAdvice:SetText(MasterMerchant.LocalizedNumber(profit))
         else
           buyingAdvice:SetText(string.format('%.2f', margin) .. '%')
         end
@@ -2927,6 +2921,50 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
       buyingAdvice:SetHidden(true)
     end
     buyingAdvice = nil
+end
+
+function MasterMerchant:BuildTimeChoicesDropdown()
+  local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantRosterTimeChooser)
+  local settingsToUse = MasterMerchant:ActiveSettings()
+  timeDropdown:ClearItems()
+
+  settingsToUse.rankIndexRoster = settingsToUse.rankIndexRoster or 1
+
+  local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateRosterWindow(1) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 1 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_3DAY), function() self:UpdateRosterWindow(2) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_3DAY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateRosterWindow(3) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 3 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateRosterWindow(4) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 4 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateRosterWindow(5) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 5 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateRosterWindow(8) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 8 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateRosterWindow(6) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 6 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_28DAY), function() self:UpdateRosterWindow(7) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_28DAY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateRosterWindow(9) end)
+  timeDropdown:AddItem(timeEntry)
+  if settingsToUse.rankIndexRoster == 9 then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
 end
 
 --/script ZO_SharedRightBackground:SetWidth(1088)
@@ -2963,7 +3001,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+          return MasterMerchant.LocalizedNumber(value)
       end
     }
   })
@@ -2997,7 +3035,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+          return MasterMerchant.LocalizedNumber(value)
       end
     }
   })
@@ -3031,7 +3069,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+          return MasterMerchant.LocalizedNumber(value)
       end
     }
   })
@@ -3087,46 +3125,7 @@ function MasterMerchant:InitRosterChanges()
 
   MasterMerchant.UI_GuildTime.m_comboBox:SetSortsItems(false)
 
-  local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantRosterTimeChooser)
-  timeDropdown:ClearItems()
-
-  settingsToUse.rankIndexRoster = settingsToUse.rankIndexRoster or 1
-
-  local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateRosterWindow(1) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 1 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_3DAY), function() self:UpdateRosterWindow(2) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_3DAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateRosterWindow(3) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 3 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateRosterWindow(4) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 4 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateRosterWindow(5) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 5 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateRosterWindow(8) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 8 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateRosterWindow(6) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 6 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_28DAY), function() self:UpdateRosterWindow(7) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_28DAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(settingsToUse.customTimeframeText, function() self:UpdateRosterWindow(9) end)
-  timeDropdown:AddItem(timeEntry)
-  if settingsToUse.rankIndexRoster == 9 then timeDropdown:SetSelectedItem(settingsToUse.customTimeframeText) end
+  MasterMerchant:BuildTimeChoicesDropdown()
 
 end
 
@@ -3492,6 +3491,11 @@ function MasterMerchant:Initialize()
 
   local systemDefault =
   {
+    customTimeframe = 90,
+    customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS),
+    --[[you can assign this as the default but it needs to be a global var
+    customTimeframeText = tostring(90) .. ' ' .. GetString(MM_CUSTOM_TIMEFRAME_DAYS),
+    ]]--
     minimalIndexing = false,
     eventIndex = {},
     eventCount = {},
@@ -3523,8 +3527,25 @@ function MasterMerchant:Initialize()
     systemDefault["lastReceivedEventID"][guildID] = "0"
   end
   -- Populate savedVariables
+  --[[TODO
+  self.oldSavedVariables = ZO_SavedVars:NewAccountWide("MM00DataSavedVariables", 1, nil, {})
+  self.savedVariables = ZO_SavedVars:NewAccountWide("MM00DataSavedVariables", 1, nil, {}, nil, 'MasterMerchant')
+
+  The above two lines from one of the
+  ]]--
+  --[[TODO Pick one
+  self.savedVariables is used by the containers but with 'MasterMerchant' for the namespace
+  self.acctSavedVariables seems to be no longer used
+  self.systemSavedVariables is what is used when you are supposedly swaping between acoutwide
+  or not such as
+
+  example: self.acctSavedVariables.showChatAlerts = self.savedVariables.showChatAlerts
+  ]]--
   self.savedVariables = ZO_SavedVars:New('ShopkeeperSavedVars', 1, GetDisplayName(), Defaults)
-  -- self.acctSavedVariables.scanHistory is no longer used
+  --[[ self.acctSavedVariables.scanHistory is no longer used for self.acctSavedVariables.scanHistory
+  acording to the comment below but elf.acctSavedVariables is used when you are supposedly
+  swaping between acoutwide or not such as mentioned above
+  ]]--
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), acctDefaults)
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
 
@@ -3611,7 +3632,8 @@ function MasterMerchant:Initialize()
     MasterMerchant:ActiveSettings().customTimeframe = 2
     MasterMerchant:ActiveSettings().customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS)
   end
-  MasterMerchant:ActiveSettings().customTimeframeText = MasterMerchant:ActiveSettings().customTimeframe .. ' ' .. MasterMerchant:ActiveSettings().customTimeframeType
+  -- updated 11-22
+  MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
 
   if (MasterMerchant:ActiveSettings().blacklist == nil) then MasterMerchant:ActiveSettings().blacklist = '' end
 
@@ -3806,6 +3828,9 @@ function MasterMerchant:Initialize()
     LEQ:Add(function () self:InitScrollLists() end, 'InitScrollLists')
   end
 
+  --[[TODO fix this because it's a global var already, do I need it in the
+  saved vars
+  ]]--
   self.locale = MasterMerchant.systemSavedVariables.locale
 
   self:setupGuildColors()
@@ -3869,7 +3894,7 @@ function MasterMerchant:Initialize()
       local floorPrice = 0
       if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
       MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
-      MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1, slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+      MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1, slotId))))
       MasterMerchantPriceCalculator:SetHidden(false)
     else MasterMerchantPriceCalculator:SetHidden(true) end
   end)
@@ -4051,8 +4076,7 @@ function MasterMerchant:SwitchPrice(control, slot)
 
           local sellPriceControl = control:GetNamedChild("SellPrice")
           if (sellPriceControl) then
-            sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-            sellPrice = '|cEEEE33' .. sellPrice .. '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+            local sellPrice = self.LocalizedNumber(control.dataEntry.data.stackSellPrice)
             sellPriceControl:SetText(sellPrice)
 	        end
       else
@@ -4062,9 +4086,7 @@ function MasterMerchant:SwitchPrice(control, slot)
           end
           local sellPriceControl = control:GetNamedChild("SellPrice")
           if (sellPriceControl) then
-            sellPrice = string.format('%.0f', control.dataEntry.data.stackSellPrice)
-            sellPrice = MasterMerchant.LocalizedNumber(sellPrice)
-            sellPrice = sellPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+            local sellPrice = self.LocalizedNumber(control.dataEntry.data.stackSellPrice)
             sellPriceControl:SetText(sellPrice)
 	        end
       end

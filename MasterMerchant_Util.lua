@@ -262,30 +262,6 @@ function MasterMerchant:setScanning(start)
   end
 end
 
-function MasterMerchant:setScanningHistory(start, guildName)
-  MasterMerchant.isScanningHistory[guildName] = start
-  MasterMerchantResetButton:SetEnabled(not start)
-  MasterMerchantGuildResetButton:SetEnabled(not start)
-  MasterMerchantRefreshButton:SetEnabled(not start)
-  MasterMerchantGuildRefreshButton:SetEnabled(not start)
-
-  if not start then
-    MasterMerchantWindowLoadingIcon.animation:Stop()
-    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
-    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
-  end
-
-  MasterMerchantWindowLoadingIcon:SetHidden(not start)
-  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
-  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
-
-  if start then
-    MasterMerchantWindowLoadingIcon.animation:PlayForward()
-    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
-    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
-  end
-end
-
 function MasterMerchant:setScanningParallel(start, guildName)
   self.isScanningParallel[guildName] = start
   MasterMerchantResetButton:SetEnabled(not start)
@@ -569,31 +545,27 @@ function MasterMerchant:addToHistoryTables(theEvent)
   end
 
   -- set lookuptable to nil more or less
-  if MasterMerchant.itemAverageLookupTable[itemID] == nil then
-    MasterMerchant.itemAverageLookupTable[itemID] = {}
+  if MasterMerchant.itemAverageLookupTable[theIID] == nil then
+    MasterMerchant.itemAverageLookupTable[theIID] = {}
   end
-  if MasterMerchant.itemAverageLookupTable[itemID][itemIndex] == nil then
-    MasterMerchant.itemAverageLookupTable[itemID][itemIndex] = {}
+  if MasterMerchant.itemAverageLookupTable[theIID][itemIndex] == nil then
+    MasterMerchant.itemAverageLookupTable[theIID][itemIndex] = {}
   end
-  MasterMerchant.itemAverageLookupTable[itemID][itemIndex] = { }
+  MasterMerchant.itemAverageLookupTable[theIID][itemIndex] = { }
 
   return true
 end
 
--- Inserts a comma or period as appropriate every 3 numbers and returns
 -- the result as a string.
 function MasterMerchant.LocalizedNumber(numberValue)
   if not numberValue then return '0' end
-
-  local stringPrice = numberValue
-  local subString = '%1' .. GetString(SK_THOUSANDS_SEP) ..'%2'
-
-  -- Insert thousands separators for the price
-  while true do
-    stringPrice, k = string.gsub(stringPrice, '^(-?%d+)(%d%d%d)', subString)
-    if (k == 0) then break end
+  local stringPrice
+  if (numberValue > 100) and MasterMerchant:ActiveSettings().trimDecimals then
+    stringPrice = string.format('%.0f', numberValue)
+  else
+    stringPrice = string.format('%.2f', numberValue)
   end
-
+  local stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON)
   return stringPrice
 end
 
