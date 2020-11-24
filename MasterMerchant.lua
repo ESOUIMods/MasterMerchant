@@ -384,7 +384,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     -- 10000 for numDays is more or less like saying it is undefined
     --[[TODO: how is daysRange used here. This could be this way if
         the first loop returned no sales but the second loop did
-    
+
     TODO:2 Figure out what this does considering the above comment when
     daysRange might be 10000 but daysHistory is about how much history
     you have. Might be because of oldestTime.
@@ -2522,7 +2522,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
           -- German word order differs so argument order also needs to be changed
           -- Also due to plurality differences in German, need to differentiate
           -- single item sold vs. multiple of an item sold.
-          if MasterMerchant.systemSavedVariables.locale == 'de' then
+          if MasterMerchant.locale == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
                 string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink),
@@ -2541,7 +2541,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
         -- Chat alert
         if settingsToUse.showChatAlerts then
-          if MasterMerchant.systemSavedVariables.locale == 'de' then
+          if MasterMerchant.locale == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
                                     theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
@@ -2780,7 +2780,7 @@ function MasterMerchant:DoRefresh()
     MasterMerchant:SetupListener(guildID)
   end
   MasterMerchant.LibHistoireRefreshed = true
-  zo_callLater(function() 
+  zo_callLater(function()
     self:setScanning(false)
     MasterMerchant:RefreshMasterMerchantWindow()
   end, 60000 * 10) -- 10 minutes
@@ -3512,7 +3512,6 @@ function MasterMerchant:Initialize()
     trimOutliers = false,
     useDefaultDaysRange = false,
     itemIDConvertedToString = false,
-    locale = GetCVar('Language.2'),
     defaultStatistics = GetString(MM_STATISTICS_MEDIAN),
   }
 
@@ -3827,11 +3826,6 @@ function MasterMerchant:Initialize()
     LEQ:Add(function () self:indexHistoryTables() end, 'indexHistoryTables')
     LEQ:Add(function () self:InitScrollLists() end, 'InitScrollLists')
   end
-
-  --[[TODO fix this because it's a global var already, do I need it in the
-  saved vars
-  ]]--
-  self.locale = MasterMerchant.systemSavedVariables.locale
 
   self:setupGuildColors()
 
