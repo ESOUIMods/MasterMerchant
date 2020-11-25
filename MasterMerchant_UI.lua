@@ -1353,7 +1353,8 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
         end
         local xLow = MasterMerchant.LocalizedNumber(graphInfo.low)
         local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high)
-        graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high)
+        local xPrice = MasterMerchant.LocalizedNumber(avePrice)
+        graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice)
         if self:ActiveSettings().displaySalesDetails then
           for _, point in ipairs(graphInfo.points) do
               graph.points:AddPoint(point[1], point[2], point[3], point[4])
@@ -1363,8 +1364,6 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
               graph.points:AddPoint(point[1], point[2], point[3], nil)
           end
         end
-        local xPrice = MasterMerchant.LocalizedNumber(avePrice)
-        graph.points:AddYLabel(xPrice, avePrice)
 
       end
     end

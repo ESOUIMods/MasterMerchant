@@ -557,7 +557,7 @@ function MasterMerchant:addToHistoryTables(theEvent)
 end
 
 -- the result as a string.
-function MasterMerchant.LocalizedNumber(numberValue)
+function MasterMerchant.LocalizedNumber(numberValue, chatText)
   if not numberValue then return '0' end
   local stringPrice
   if (numberValue > 100) and MasterMerchant:ActiveSettings().trimDecimals then
@@ -565,7 +565,11 @@ function MasterMerchant.LocalizedNumber(numberValue)
   else
     stringPrice = string.format('%.2f', numberValue)
   end
-  local stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON)
+  if not chatText then
+    stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON)
+  else
+    stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_NAME)
+  end
   return stringPrice
 end
 

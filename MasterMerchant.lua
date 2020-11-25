@@ -566,7 +566,7 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     else
       tipFormat = GetString(MM_TIP_FORMAT_MULTI)
     end
-    local avePriceString = self.LocalizedNumber(tipStats['avgPrice'])
+    local avePriceString = self.LocalizedNumber(tipStats['avgPrice'], chatText)
     tipFormat = string.gsub(tipFormat, '.2f', 's')
     tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
     local salesString = zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales'])
@@ -730,7 +730,7 @@ function MasterMerchant:itemCraftPriceTip(itemLink, chatText)
     local cost = self:itemCraftPrice(itemLink)
     if cost then
       craftTip = "Craft Cost: %s"
-      local craftTipString = self.LocalizedNumber(cost)
+      local craftTipString = self.LocalizedNumber(cost, chatText)
       return string.format(craftTip, craftTipString)
     else
       return nil
