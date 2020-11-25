@@ -2629,9 +2629,6 @@ function MasterMerchant:ProcessGuildHistoryResponse(eventCode, guildID, category
         end
       end
 
-      if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
-        GuildSalesAssistant:InsertEvent(theEvent)
-      end
     end
   end
 
@@ -3806,11 +3803,6 @@ function MasterMerchant:Initialize()
   self.systemSavedVariables.dataLocations = self.systemSavedVariables.dataLocations or {}
   self.systemSavedVariables.dataLocations[GetWorldName()] = true
 
-  if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
-      GuildSalesAssistant:InitializeMM()
-      GuildSalesAssistant:LoadInitialData(self.salesData)
-  end
-
   -- New, added 9/26
   self:InitRosterChanges()
 
@@ -4160,9 +4152,6 @@ function MasterMerchant:TruncateHistory()
     MasterMerchant.v(4, 'Trimming: ' .. GetTimeStamp() - extraData.start .. ' seconds to trim:')
     MasterMerchant.v(4, '  ' .. extraData.deleteCount .. ' old records removed.')
 
-    if GuildSalesAssistant and GuildSalesAssistant.MasterMerchantEdition then
-      GuildSalesAssistant:TrimHistory(extraData.epochBack)
-    end
   end
 
   if not self.isScanning then
