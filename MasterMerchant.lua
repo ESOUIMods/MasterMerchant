@@ -1527,8 +1527,28 @@ function MasterMerchant:LibAddonInit()
       name = GetString(MM_GUILD_ROSTER_OPTIONS_NAME),
       tooltip = GetString(MM_GUILD_ROSTER_OPTIONS_TIP),
       controls = {
-        -- guild roster options
+        -- should we display info on guild roster?
         [1] = {
+          type = 'checkbox',
+          name = GetString(SK_ROSTER_INFO_NAME),
+          tooltip = GetString(SK_ROSTER_INFO_TIP),
+          getFunc = function() return MasterMerchant.systemSavedVariables.diplayGuildInfo end,
+          setFunc = function(value)
+
+            MasterMerchant.systemSavedVariables.diplayGuildInfo = value
+
+            if self.UI_GuildTime then
+              self.UI_GuildTime:SetHidden( not value )
+            end
+
+            for key,column in pairs(self.guild_columns) do
+              column:IsDisabled( not value )
+            end
+
+          end,
+        },
+        -- guild roster options
+        [2] = {
           type = 'checkbox',
           name = GetString(MM_PURCHASES_COLUMN_NAME),
           tooltip = GetString(MM_PURCHASES_COLUMN_TIP),
@@ -1536,7 +1556,7 @@ function MasterMerchant:LibAddonInit()
           setFunc = function(value) MasterMerchant.systemSavedVariables.diplayPurchasesInfo = value end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
         },
-        [2] = {
+        [3] = {
           type = 'checkbox',
           name = GetString(MM_SALES_COLUMN_NAME),
           tooltip = GetString(MM_SALES_COLUMN_TIP),
@@ -1544,7 +1564,7 @@ function MasterMerchant:LibAddonInit()
           setFunc = function(value) MasterMerchant.systemSavedVariables.diplaySalesInfo = value end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
         },
-        [3] = {
+        [4] = {
           type = 'checkbox',
           name = GetString(MM_TAXES_COLUMN_NAME),
           tooltip = GetString(MM_TAXES_COLUMN_TIP),
@@ -1552,7 +1572,7 @@ function MasterMerchant:LibAddonInit()
           setFunc = function(value) MasterMerchant.systemSavedVariables.diplayTaxesInfo = value end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
         },
-        [4] = {
+        [5] = {
           type = 'checkbox',
           name = GetString(MM_COUNT_COLUMN_NAME),
           tooltip = GetString(MM_COUNT_COLUMN_TIP),
@@ -1752,25 +1772,13 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.showAmountTaxes end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
     },
-    -- should we display info on guild roster?
+    -- should we display a Min Profit Filter in AGS?
     [23] = {
       type = 'checkbox',
-      name = GetString(SK_ROSTER_INFO_NAME),
-      tooltip = GetString(SK_ROSTER_INFO_TIP),
-      getFunc = function() return MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-      setFunc = function(value)
-
-        MasterMerchant.systemSavedVariables.diplayGuildInfo = value
-
-        if self.UI_GuildTime then
-          self.UI_GuildTime:SetHidden( not value )
-        end
-
-        for key,column in pairs(self.guild_columns) do
-          column:IsDisabled( not value )
-        end
-
-      end,
+      name = GetString(MM_MIN_PROFIT_FILTER_NAME),
+      tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
+      getFunc = function() return self:ActiveSettings().minProfitFilter end,
+      setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
     },
     -- should we display profit instead of margin?
     [24] = {
@@ -1780,16 +1788,8 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return self:ActiveSettings().saucy end,
       setFunc = function(value) self:ActiveSettings().saucy = value end,
     },
-    -- should we display a Min Profit Filter in AGS?
-    [25] = {
-      type = 'checkbox',
-      name = GetString(MM_MIN_PROFIT_FILTER_NAME),
-      tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
-      getFunc = function() return self:ActiveSettings().minProfitFilter end,
-      setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
-    },
     -- should we auto advance to the next page?
-    [26] = {
+    [25] = {
       type = 'checkbox',
       name = GetString(MM_AUTO_ADVANCE_NAME),
       tooltip = GetString(MM_AUTO_ADVANCE_TIP),
@@ -1797,7 +1797,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().autoNext = value end,
     },
     -- should we display the item listed message?
-    [27] = {
+    [26] = {
       type = 'checkbox',
       name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
       tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
@@ -1805,7 +1805,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
     },
     -- Font to use
-    [28] = {
+    [27] = {
       type = 'dropdown',
       name = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
@@ -1820,7 +1820,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- Verbose MM Messages
-    [29] = {
+    [28] = {
       type = 'slider',
       name = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
@@ -1834,7 +1834,7 @@ function MasterMerchant:LibAddonInit()
                 end,
     },
     -- Skip Indexing?
-    [30] = {
+    [29] = {
       type = 'checkbox',
       name = GetString(MM_SKIP_INDEX_NAME),
       tooltip = GetString(MM_SKIP_INDEX_TIP),
@@ -1842,7 +1842,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.minimalIndexing = value end,
     },
     -- Make all settings account-wide (or not)
-    [31] = {
+    [30] = {
       type = 'checkbox',
       name = GetString(SK_ACCOUNT_WIDE_NAME),
       tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
@@ -3363,7 +3363,7 @@ function MasterMerchant:ReIndexSales(otherData)
   --[[ added 11-21-2020 because this could be used for something
   else in the future
   ]]--
-  if (GetAPIVersion() >= 100015) then return end
+  --if (GetAPIVersion() >= 100015) then return end
 
   local needToReindex = false
   local needToAddDescription = false
@@ -3380,7 +3380,7 @@ function MasterMerchant:ReIndexSales(otherData)
       break
     end
   end
-  if needToReindex then
+  if needToReindex or not MasterMerchant.systemSavedVariables.reindexWrits then
     --MasterMerchant.dm("Debug", "needToReindex")
     local tempSales = otherData.savedVariables.SalesData
     otherData.savedVariables.SalesData = {}
@@ -3633,6 +3633,7 @@ function MasterMerchant:Initialize()
     trimOutliers = false,
     useDefaultDaysRange = false,
     itemIDConvertedToString = false,
+    reindexWrits = false,
     defaultStatistics = GetString(MM_STATISTICS_MEDIAN),
   }
 
@@ -3886,25 +3887,26 @@ function MasterMerchant:Initialize()
     MasterMerchant.systemSavedVariables.itemIDConvertedToString = true
   end
 
-  -- Check for and reindex if the item structure has changed
-  --[[This is obsolete until needed for future expansion
-  self:ReIndexSales(MM00Data)
-  self:ReIndexSales(MM01Data)
-  self:ReIndexSales(MM02Data)
-  self:ReIndexSales(MM03Data)
-  self:ReIndexSales(MM04Data)
-  self:ReIndexSales(MM05Data)
-  self:ReIndexSales(MM06Data)
-  self:ReIndexSales(MM07Data)
-  self:ReIndexSales(MM08Data)
-  self:ReIndexSales(MM09Data)
-  self:ReIndexSales(MM10Data)
-  self:ReIndexSales(MM11Data)
-  self:ReIndexSales(MM12Data)
-  self:ReIndexSales(MM13Data)
-  self:ReIndexSales(MM14Data)
-  self:ReIndexSales(MM15Data)
-  ]]--
+  -- Update indexs because of Writs
+  if not MasterMerchant.systemSavedVariables.reindexWrits then
+    self:ReIndexSales(MM00Data)
+    self:ReIndexSales(MM01Data)
+    self:ReIndexSales(MM02Data)
+    self:ReIndexSales(MM03Data)
+    self:ReIndexSales(MM04Data)
+    self:ReIndexSales(MM05Data)
+    self:ReIndexSales(MM06Data)
+    self:ReIndexSales(MM07Data)
+    self:ReIndexSales(MM08Data)
+    self:ReIndexSales(MM09Data)
+    self:ReIndexSales(MM10Data)
+    self:ReIndexSales(MM11Data)
+    self:ReIndexSales(MM12Data)
+    self:ReIndexSales(MM13Data)
+    self:ReIndexSales(MM14Data)
+    self:ReIndexSales(MM15Data)
+    MasterMerchant.systemSavedVariables.reindexWrits = true
+  end
 
   -- Bring seperate lists together we can still access the sales history all together
   self:ReferenceSales(MM00Data)
