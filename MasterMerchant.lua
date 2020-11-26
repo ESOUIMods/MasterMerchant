@@ -206,6 +206,25 @@ function MasterMerchant:TimeCheck()
     return GetTimeStamp() - (86400 * daysRange), daysRange
 end
 
+function MasterMerchant:UseSaleDaysRange(item, timeCheck)
+  if item.timestamp > timeCheck and
+    (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+    (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+    (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+      return true
+  end
+  return false
+end
+
+function MasterMerchant:UseSaleAllSales(item)
+  if (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
+    (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
+    (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+      return true
+  end
+  return false
+end
+
 function MasterMerchant:FindMeanDaysRange(list, timeCheck)
   local lowerBlacklist = self:ActiveSettings().blacklist and self:ActiveSettings().blacklist:lower() or ""
   local initSum = 0
@@ -215,10 +234,7 @@ function MasterMerchant:FindMeanDaysRange(list, timeCheck)
   local oldestTime = nil
   local newestTime = nil
   for i, item in pairs(list) do
-    if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-      (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-      (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-      (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+    if MasterMerchant:UseSaleDaysRange(item, timeCheck) then
         if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
         if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
         local individualSale = item.price / item.quant
@@ -240,10 +256,7 @@ function MasterMerchant:FindMeanAllSales(list)
   local oldestTime = nil
   local newestTime = nil
   for i, item in pairs(list) do
-    if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and
-      (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-      (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-      (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
+    if MasterMerchant:UseSaleAllSales(item) then
         if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
         if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
         local individualSale = item.price / item.quant
@@ -254,6 +267,40 @@ function MasterMerchant:FindMeanAllSales(list)
   end
   initMean = (initSum / initCount)
   return initCount, initMean, medianTable, oldestTime, newestTime
+end
+
+function MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
+  -- 1 for 1 piece of gold, since you can not sell anything for 0 gold or have a 0 devation in my opinion
+  local standardDeviation = 1
+  local deviationSum = 0
+  if initCount > 1 then
+    for i, item in pairs(list) do
+      if MasterMerchant:UseSaleDaysRange(item, timeCheck) then
+          local individualSale = item.price / item.quant
+          local virtualMean = individualSale - initMean
+          deviationSum = deviationSum + (virtualMean * virtualMean)
+      end
+    end
+    standardDeviation = math.sqrt(deviationSum / (initCount-1))
+  end
+  return standardDeviation
+end
+
+function MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean)
+  -- 1 for 1 piece of gold, since you can not sell anything for 0 gold or have a 0 devation in my opinion
+  local standardDeviation = 1
+  local deviationSum = 0
+  if initCount > 1 then
+    for i, item in pairs(list) do
+      if MasterMerchant:UseSaleAllSales(item) then
+          local individualSale = item.price / item.quant
+          local virtualMean = individualSale - initMean
+          deviationSum = deviationSum + (virtualMean * virtualMean)
+      end
+    end
+    standardDeviation = math.sqrt(deviationSum / (initCount-1))
+  end
+  return standardDeviation
 end
 
 -- Computes the weighted moving average across available data
@@ -278,20 +325,9 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     local initMean = 0
     local oldestTime = nil
     local newestTime = nil
-    local lowPrice = nil
-    local highPrice = nil
     local daysHistory = 0
-    local virtualMean = 0
-    local deviationSum = 0
     local medianTable = {}
-    local medianTableCount = 0
-    local initMedian = 0
-    local standardDeviation = 0
-    local isOutlier = false
-    local priceDeterminant = nil
-    if not goBack then
-      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
-    end
+    local initMedian = 0 -- may not be selected
     --[[TODO: what is goBack
 
     if no sales were found do it again but don't worry about
@@ -303,6 +339,9 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
     which is used when a player changes there account name.
     goBack is also used in SwitchPrice, and GetItemLinePrice
     ]]--
+    if not goBack then
+      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
+    end
     if goBack and MasterMerchant.systemSavedVariables.useDefaultDaysRange then
       initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
     elseif goBack then
@@ -325,149 +364,136 @@ function MasterMerchant:toolTipStats(itemID, itemIndex, skipDots, goBack, clicka
       daysHistory = daysRange
     end
 
-    if MasterMerchant.systemSavedVariables.trimOutliers then
+    --[[
+    ZO_CreateStringId("MM_STATISTICS_MEAN", "Mean")
+    ZO_CreateStringId("MM_STATISTICS_AVERAGE", "Average")
+    ZO_CreateStringId("MM_STATISTICS_MEDIAN", "Median")
+    MasterMerchant.systemSavedVariables.defaultStatistics
+    MasterMerchant.systemSavedVariables.trimOutliers
+    ]]--
+
+    if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
       -- determine the median
-      medianTableCount = #medianTable
       table.sort( medianTable )
 
       -- If we have an even number of table elements or odd.
-      if math.fmod(medianTableCount,2) == 0 then
+      if math.fmod(#medianTable,2) == 0 then
         -- assign mean value of middle two elements
-        initMedian = ( medianTable[medianTableCount/2] + medianTable[(medianTableCount/2)+1] ) / 2
+        initMedian = ( medianTable[#medianTable/2] + medianTable[(#medianTable/2)+1] ) / 2
       else
         -- assign middle element
-        initMedian = medianTable[math.ceil(medianTableCount/2)]
+        initMedian = medianTable[math.ceil(#medianTable/2)]
       end
-      priceDeterminant = initMedian
-    else
-      priceDeterminant = initMean
     end
 
-    -- determine the standard deviation, which requires the mean
-    if initCount > 1 then
-      for i, item in pairs(list) do
-        if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-          (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-          (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-            local individualSale = item.price / item.quant
-            virtualMean = individualSale - initMean
-            deviationSum = deviationSum + (virtualMean * virtualMean)
-        end
+    --[[ Determine the standard deviation, which requires the mean
+    we do not need this if we are not going to trim the outliers
+    ]]--
+    local standardDeviation = 1 -- because 1 gold or more
+    if MasterMerchant.systemSavedVariables.trimOutliers then
+      if not goBack then
+        standardDeviation = MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
       end
-      standardDeviation = math.sqrt(deviationSum / (initCount-1))
-    else
-      standardDeviation = 0
+      if goBack and MasterMerchant.systemSavedVariables.useDefaultDaysRange then
+        standardDeviation = MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
+      elseif goBack then
+        standardDeviation = MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean, timeCheck)
+      end
     end
 
+    local priceDeterminant
     local timeInterval = newestTime - oldestTime
+    local lowPrice = nil
+    local highPrice = nil
     local avgPrice = 0
     local countSold = 0
     local weigtedCountSold = 0
     local legitSales = 0
     local salesPoints = {}
-    -- If all sales data covers less than a day, we'll just do a plain average, nothing to weight
-    if timeInterval < 86400 then
-      -- IPAIRS
-      for i, item in pairs(list) do
-        local individualSale = item.price / item.quant
-        local isOutlier
-        local highRange
-        local lowRange
-        if priceDeterminant - (3 * standardDeviation) <= 1 then lowRange = 1 else lowRange = priceDeterminant - (3 * standardDeviation) end
-        if priceDeterminant + (3 * standardDeviation) <= 2 then highRange = 2 else highRange = priceDeterminant + (3 * standardDeviation) end
-        if (individualSale >= lowRange and individualSale <= highRange) then isOutlier = false else isOutlier = true end
-        if not MasterMerchant.systemSavedVariables.trimOutliers or not isOutlier then
-          if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-            (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-            (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-            (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-            avgPrice = avgPrice + item.price
-            countSold = countSold + item.quant
-            legitSales = legitSales + 1
-            if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min( lowPrice, individualSale ) end
-            if highPrice == nil then highPrice = individualSale else highPrice = math.max( highPrice, individualSale ) end
-            if not skipDots then
-              local tooltip = nil
-              if clickable then
-                local stringPrice = '';
-                if self:ActiveSettings().trimDecimals then
-                  stringPrice = string.format('%.0f', item.price/item.quant)
-                else
-                  stringPrice = string.format('%.2f', item.price/item.quant)
-                end
-                stringPrice = self.LocalizedNumber(stringPrice)
-                if item.quant == 1 then
-                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                    string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.buyer, stringPrice)
-                else
-                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                    string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
-                end
-              end -- clickable
-              table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
-            end -- skip dots
-          end
-        end -- end outlier
-      end
-      avgPrice = avgPrice / countSold
-      if legitSales >= 1 then
-      returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays']= daysHistory, ['numItems'] = countSold,
-                    ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
-      end
-    -- For a weighted average, the latest data gets a weighting of X, where X is the number of
-    -- days the data covers, thus making newest data worth more.
+    local rangeDeviation = (3 * standardDeviation)
+    local weightValue = 0
+    local dayInterval = 0
+    local lowRange = 1
+    local highRange = 2
+    local isOutlier = false
+    if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
+      priceDeterminant = initMedian
     else
-      local dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
-      -- IPAIRS
-      for i, item in pairs(list) do
-        local individualSale = item.price / item.quant
-        local isOutlier
-        local highRange
-        local lowRange
-        if priceDeterminant - (3 * standardDeviation) <= 1 then lowRange = 1 else lowRange = priceDeterminant - (3 * standardDeviation) end
-        if priceDeterminant + (3 * standardDeviation) <= 2 then highRange = 2 else highRange = priceDeterminant + (3 * standardDeviation) end
-        if (individualSale >= lowRange and individualSale <= highRange) then isOutlier = false else isOutlier = true end
-        if not MasterMerchant.systemSavedVariables.trimOutliers or not isOutlier then
-          if ((type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') and item.timestamp > timeCheck) and
-            (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
-            (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
-            (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-            local weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
-            avgPrice = avgPrice + (item.price * weightValue)
-            countSold = countSold + item.quant
-            weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
-            legitSales = legitSales + 1
-            if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min( lowPrice, individualSale ) end
-            if highPrice == nil then highPrice = individualSale else highPrice = math.max( highPrice, individualSale ) end
-            if not skipDots then
-              local tooltip = nil
-              if clickable then
-                local stringPrice = '';
-                if self:ActiveSettings().trimDecimals then
-                  stringPrice = string.format('%.0f', item.price/item.quant)
-                else
-                  stringPrice = string.format('%.2f', item.price/item.quant)
-                end
-                stringPrice = self.LocalizedNumber(stringPrice)
-                if item.quant == 1 then
-                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                    string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)),  item.buyer, stringPrice)
-                else
-                  tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                    string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
-                end
-              end
-              table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
-            end -- end skip dots
-          end
-        end -- end outlier
+      priceDeterminant = initMean
+    end
+    if priceDeterminant - rangeDeviation > 1 then lowRange = priceDeterminant - rangeDeviation end
+    if priceDeterminant + rangeDeviation > 2 then highRange = priceDeterminant + rangeDeviation end
+    if timeInterval > 86400 then
+      dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
+    end
+    -- start loop
+    for i, item in pairs(list) do
+      -- set outlier to false
+      isOutlier = false
+      -- set usesaleitem to false
+      local usesaleitem = false
+      -- get whether or not to use the item
+      if not goback then
+        usesaleitem = MasterMerchant:UseSaleDaysRange(item, timeCheck)
       end
+      if goBack and MasterMerchant.systemSavedVariables.useDefaultDaysRange then
+        usesaleitem = MasterMerchant:UseSaleDaysRange(item, timeCheck)
+      elseif goBack then
+        usesaleitem = MasterMerchant:UseSaleAllSales(item)
+      end
+      -- get individualSale
+      local individualSale = item.price / item.quant
+      -- determine if it is an outlier, if toggle is on
+      if MasterMerchant.systemSavedVariables.trimOutliers and (individualSale < lowRange or individualSale > highRange) then
+        -- within range
+        isOutlier = true
+      end
+      if usesaleitem and not isOutlier then
+          -- process this sals
+        countSold = countSold + item.quant
+        if timeInterval > 86400 then
+            weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
+            avgPrice = avgPrice + (item.price * weightValue)
+            weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
+        else
+            avgPrice = avgPrice + item.price
+        end
+        legitSales = legitSales + 1
+        if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min( lowPrice, individualSale ) end
+        if highPrice == nil then highPrice = individualSale else highPrice = math.max( highPrice, individualSale ) end
+        if not skipDots then
+          local tooltip = nil
+          --[[ clickable probably means to add the tooltip to the dot
+          rather then actually click anything
+          ]]--
+          if clickable then
+            local stringPrice = '';
+            if self:ActiveSettings().trimDecimals then
+              stringPrice = string.format('%.0f', item.price/item.quant)
+            else
+              stringPrice = string.format('%.2f', item.price/item.quant)
+            end
+            stringPrice = self.LocalizedNumber(stringPrice)
+            if item.quant == 1 then
+              tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)),  item.buyer, stringPrice)
+            else
+              tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
+            end
+          end -- clickable
+          table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
+        end -- end skip dots
+      end
+    end -- end new loop
+    if timeInterval > 86400 then
       avgPrice = avgPrice / weigtedCountSold
-      if legitSales >= 1 then
+    else
+      avgPrice = avgPrice / countSold
+    end
+    if legitSales >= 1 then
       returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                     ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
-      end
     end
   end
   return returnData
@@ -1537,8 +1563,18 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliers end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimOutliers = value end,
     },
-    -- should we trim off decimals?
+    -- which price statistic should we use?
     [17] = {
+      type = 'dropdown',
+      name = GetString(MM_CUSTOM_STATISTICS_RANGE_NAME),
+      tooltip = GetString(MM_CUSTOM_STATISTICS_RANGE_TIP),
+      choices = {GetString(MM_STATISTICS_MEAN),GetString(MM_STATISTICS_MEDIAN)},
+      getFunc = function() return MasterMerchant.systemSavedVariables.defaultStatistics end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.defaultStatistics = value end,
+      disabled = function() return not MasterMerchant.systemSavedVariables.trimOutliers end,
+    },
+    -- should we trim off decimals?
+    [18] = {
       type = 'checkbox',
       name = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
@@ -1546,7 +1582,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().trimDecimals = value end,
     },
     -- should we replace inventory values?
-    [18] = {
+    [19] = {
       type = 'checkbox',
       name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
@@ -1554,7 +1590,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().replaceInventoryValues = value end,
     },
     -- should we use the default days range for the tooltips?
-    [19] = {
+    [20] = {
       type = 'checkbox',
       name = GetString(MM_DEFAULT_PRICESWAP_TIME_NAME),
       tooltip = GetString(MM_DEFAULT_PRICESWAP_TIME_TIP),
@@ -1562,7 +1598,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useDefaultDaysRange = value end,
     },
     -- should we add taxes to the export?
-    [20] = {
+    [21] = {
       type = 'checkbox',
       name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -1570,7 +1606,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
     },
     -- should we display info on guild roster?
-    [21] = {
+    [22] = {
       type = 'checkbox',
       name = GetString(SK_ROSTER_INFO_NAME),
       tooltip = GetString(SK_ROSTER_INFO_TIP),
@@ -1590,7 +1626,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- should we display profit instead of margin?
-    [22] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -1598,7 +1634,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().saucy = value end,
     },
     -- should we display a Min Profit Filter in AGS?
-    [23] = {
+    [24] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1606,7 +1642,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().minProfitFilter = value end,
     },
     -- should we auto advance to the next page?
-    [24] = {
+    [25] = {
       type = 'checkbox',
       name = GetString(MM_AUTO_ADVANCE_NAME),
       tooltip = GetString(MM_AUTO_ADVANCE_TIP),
@@ -1614,7 +1650,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().autoNext = value end,
     },
     -- should we display the item listed message?
-    [25] = {
+    [26] = {
       type = 'checkbox',
       name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
       tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
@@ -1622,7 +1658,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) self:ActiveSettings().displayListingMessage = value end,
     },
     -- Font to use
-    [26] = {
+    [27] = {
       type = 'dropdown',
       name = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
@@ -1637,7 +1673,7 @@ function MasterMerchant:LibAddonInit()
       end,
     },
     -- Verbose MM Messages
-    [27] = {
+    [28] = {
       type = 'slider',
       name = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
@@ -1651,7 +1687,7 @@ function MasterMerchant:LibAddonInit()
                 end,
     },
     -- Skip Indexing?
-    [28] = {
+    [29] = {
       type = 'checkbox',
       name = GetString(MM_SKIP_INDEX_NAME),
       tooltip = GetString(MM_SKIP_INDEX_TIP),
@@ -1659,7 +1695,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.minimalIndexing = value end,
     },
     -- Make all settings account-wide (or not)
-    [29] = {
+    [30] = {
       type = 'checkbox',
       name = GetString(SK_ACCOUNT_WIDE_NAME),
       tooltip = GetString(SK_ACCOUNT_WIDE_TIP),
@@ -2427,7 +2463,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
           -- German word order differs so argument order also needs to be changed
           -- Also due to plurality differences in German, need to differentiate
           -- single item sold vs. multiple of an item sold.
-          if self.locale == 'de' then
+          if MasterMerchant.systemSavedVariables.locale == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
                 string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink),
@@ -2446,7 +2482,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
         -- Chat alert
         if settingsToUse.showChatAlerts then
-          if self.locale == 'de' then
+          if MasterMerchant.systemSavedVariables.locale == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
                                     theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
@@ -3106,24 +3142,16 @@ function MasterMerchant:DoReset()
   self:ScanStoresParallel(true)
 end
 
+--[[TODO Use this to convert even IDs to strings]]--
 function MasterMerchant:AdjustItems(otherData)
-  if not (otherData.savedVariables.ItemsConverted or false) then
-    local somethingConverted = false
-    for k, v in pairs(otherData.savedVariables.SalesData) do
-        for j, dataList in pairs(v) do
-            for i = 1, #dataList.sales, 1 do
-                dataList.sales[i].itemLink = self:UpdateItemLink(dataList.sales[i].itemLink)
-                somethingConverted = true
-            end
+  for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
+      for field, itemIndexData in pairs(itemIndex) do
+        for sale, saleData in pairs(itemIndexData['sales']) do
+          if type(saleData.id) ~= 'string' then
+            saleData.id = tostring(saleData.id)
+          end
         end
-    end
-    otherData.savedVariables.ItemsConverted = true
-    if somethingConverted then
-      EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
-        ReloadUI('ingame')
-      end)
-      error(otherData.name .. ' converted.  Please /reloadui to convert the next file...')
-    end
+      end
   end
 end
 
@@ -3161,21 +3189,41 @@ function MasterMerchant:ReferenceSales(otherData)
   end
 end
 
+-- TODO Check This
 function MasterMerchant:ReIndexSales(otherData)
+  --[[This uses the first itemIndex ["50:16:4:7:0"] found
+  if it does not have 4 colons, then the data needs to be
+  updated. As if there was a time when the itemIndex was
+  shorter.
+
+  It also looks to see if there is an itemDesc and
+  itemAdderText for the first item in the database. If not
+  found then the next step would be to add those fields.
+
+  This is no longer needed
+  ]]--
+  --[[ added 11-21-2020 because this could be used for something
+  else in the future
+  ]]--
+  if (GetAPIVersion() >= 100015) then return end
+
   local needToReindex = false
   local needToAddDescription = false
+  local needToAdditemAdderText = false
   for _, v in pairs(otherData.savedVariables.SalesData) do
     if v then
       for j, dataList in pairs(v) do
-        local _, count = string.gsub(j, ':', ':')
+        local key, count = string.gsub(j, ':', ':')
         needToReindex = (count ~= 4)
         needToAddDescription = (dataList['itemDesc'] == nil)
+        needToAdditemAdderText = (dataList['itemAdderText'] == nil)
         break
       end
       break
     end
   end
   if needToReindex then
+    --MasterMerchant.dm("Debug", "needToReindex")
     local tempSales = otherData.savedVariables.SalesData
     otherData.savedVariables.SalesData = {}
 
@@ -3200,15 +3248,31 @@ function MasterMerchant:ReIndexSales(otherData)
         end
       end
     end
-  elseif needToAddDescription then
+  end
+  if needToAddDescription then
+    --MasterMerchant.dm("Debug", "needToAddDescription")
+    -- spin through and split Item Description into a seperate string
+    for _, v in pairs(otherData.savedVariables.SalesData) do
+      for _, dataList in pairs(v) do
+        _, item = next(dataList['sales'], nil)
+        dataList['itemDesc'] = GetItemLinkName(item.itemLink)
+      end
+    end
+  end
+  if needToAdditemAdderText then
+    --MasterMerchant.dm("Debug", "needToAdditemAdderText")
     -- spin through and split Item Description into a seperate string
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
         _, item = next(dataList['sales'], nil)
         dataList['itemAdderText'] = self.addedSearchToItem(item.itemLink)
-        dataList['itemDesc'] = GetItemLinkName(item.itemLink)
       end
     end
+  end
+  --[[It appears that after champion ranks were introduced there was the need
+  to add a description of the item and add things like cp160 purple  epic.
+  ]]--
+  --[[
   elseif (not self.systemSavedVariables.switchedToChampionRanks) and (GetAPIVersion() >= 100015) then
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
@@ -3218,6 +3282,7 @@ function MasterMerchant:ReIndexSales(otherData)
     end
   end
   self.systemSavedVariables.switchedToChampionRanks = (GetAPIVersion() >= 100015)
+  ]]--
 end
 
 function MasterMerchant.SetupPendingPost(self)
@@ -3400,6 +3465,9 @@ function MasterMerchant:Initialize()
     showAmountTaxes = false,
     trimOutliers = false,
     useDefaultDaysRange = false,
+    itemIDConvertedToString = false,
+    locale = GetCVar('Language.2'),
+    defaultStatistics = GetString(MM_STATISTICS_MEDIAN),
   }
 
   for i = 1, GetNumGuilds() do
@@ -3613,8 +3681,8 @@ function MasterMerchant:Initialize()
     self.acctSavedVariables.SalesData = nil
   end
 
-  -- Covert each data file as needed
-  if GetAPIVersion() == 100011 then
+  -- Convert event IDs to string if not converted
+  if not MasterMerchant.systemSavedVariables.itemIDConvertedToString then
     self:AdjustItems(MM00Data)
     self:AdjustItems(MM01Data)
     self:AdjustItems(MM02Data)
@@ -3631,9 +3699,11 @@ function MasterMerchant:Initialize()
     self:AdjustItems(MM13Data)
     self:AdjustItems(MM14Data)
     self:AdjustItems(MM15Data)
+    MasterMerchant.systemSavedVariables.itemIDConvertedToString = true
   end
 
   -- Check for and reindex if the item structure has changed
+  --[[This is obsolete until needed for future expansion
   self:ReIndexSales(MM00Data)
   self:ReIndexSales(MM01Data)
   self:ReIndexSales(MM02Data)
@@ -3650,6 +3720,7 @@ function MasterMerchant:Initialize()
   self:ReIndexSales(MM13Data)
   self:ReIndexSales(MM14Data)
   self:ReIndexSales(MM15Data)
+  ]]--
 
   -- Bring seperate lists together we can still access the sales history all together
   self:ReferenceSales(MM00Data)
@@ -3693,13 +3764,7 @@ function MasterMerchant:Initialize()
     LEQ:Add(function () self:InitScrollLists() end, 'InitScrollLists')
   end
 
-  -- We'll grab their locale now, it's really only used for a couple things as
-  -- most localization is handled by the i18n/$(language).lua files
-  -- Defaults to English because bias, that's why. :P
-  self.locale = GetCVar('Language.2')
-  if self.locale ~= 'en' and self.locale ~= 'de' and self.locale ~= 'fr' then
-    self.locale = 'en'
-  end
+  self.locale = MasterMerchant.systemSavedVariables.locale
 
   self:setupGuildColors()
 
@@ -3982,7 +4047,7 @@ function MasterMerchant:TruncateHistory()
 
     local salesCount = MasterMerchant.NonContiguousNonNilCount(versiondata['sales'])
     for saleid, saledata in MasterMerchant.spairs(versiondata['sales'], function(a, b) return MasterMerchant.CleanTimestamp(a) < MasterMerchant.CleanTimestamp(b) end) do
-      if MasterMerchant.useSalesHistory then
+      if MasterMerchant.systemSavedVariables.useSalesHistory then
         if ( saledata['timestamp'] < extraData.epochBack
             or saledata['timestamp'] == nil
             or type(saledata['timestamp']) ~= 'number'
@@ -4051,7 +4116,7 @@ end
 
 function MasterMerchant:InitItemHistory()
 
-  MasterMerchant.v(5, 'Starting Guild and Item total initialization')
+  MasterMerchant.v(3, 'Starting Guild and Item total initialization')
 
   local extradata = {}
 
@@ -4091,14 +4156,16 @@ function MasterMerchant:InitItemHistory()
           self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild)
           local guild = self.guildItems[saledata.guild]
           local _, firstsaledata = next(versiondata.sales, nil)
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, MasterMerchant.concat(versiondata.itemDesc, versiondata.itemAdderText))
+          local seatchData = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
         end
 
         if (extradata.doMyItems and string.lower(saledata.seller) == extradata.playerName) then
           self.myItems[saledata.guild] = self.myItems[saledata.guild] or MMGuild:new(saledata.guild)
           local guild = self.myItems[saledata.guild]
           local _, firstsaledata = next(versiondata.sales, nil)
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, MasterMerchant.concat(versiondata.itemDesc, versiondata.itemAdderText))
+          local seatchData = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
         end
 
         if (extradata.doGuildSales) then
@@ -4142,12 +4209,9 @@ function MasterMerchant:InitItemHistory()
         end
       end
 
-      -- Set up guild roster info
-      -- self:InitRosterChanges()
-
       self:setScanning(false)
 
-      MasterMerchant.v(5, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
+      MasterMerchant.v(3, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
     end
 
     if not self.isScanning then

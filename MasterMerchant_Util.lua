@@ -24,6 +24,36 @@ function MasterMerchant.v(level, ...)
   return false
 end
 
+function MasterMerchant:ssup(inputTable, numElements)
+  for _, gapVal in ipairs(MasterMerchant.shellGaps) do
+    for i = gapVal + 1, numElements do
+      local tableVal = inputTable[i]
+      for j = i - gapVal, 1, -gapVal do
+        local testVal = inputTable[j]
+        if not (tableVal < testVal) then break end
+        inputTable[i] = testVal; i = j
+      end
+      inputTable[i] = tableVal
+    end
+  end
+  return inputTable
+end
+
+function MasterMerchant:ssdown(inputTable, numElements)
+  for _, gapVal in ipairs(MasterMerchant.shellGaps) do
+    for i = gapVal + 1, numElements do
+      local tableVal = inputTable[i]
+      for j = i - gapVal, 1, -gapVal do
+        local testVal = inputTable[j]
+        if not (tableVal > testVal) then break end
+        inputTable[i] = testVal; i = j
+      end
+      inputTable[i] = tableVal
+    end
+  end
+  return inputTable
+end
+
 -- Lua's table.sort function uses quicksort.  Here I implement
 -- Shellsort in Lua for better memory efficiency.
 -- (http://en.wikipedia.org/wiki/Shellsort)
@@ -41,8 +71,6 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
       inputTable[i] = tableVal
     end
   end
-
-  -- Don't really *need* to do this but for consistency's sake...
   return inputTable
 end
 
@@ -316,7 +344,7 @@ function MasterMerchant:indexHistoryTables()
     local searchText
     if MasterMerchant.systemSavedVariables.minimalIndexing then
       if playerName == tolower(soldItem['seller']) then
-        searchText = MasterMerchant.PlayerSpecialText
+        searchText = tolower(MasterMerchant.PlayerSpecialText)
       else
         searchText = ''
       end
@@ -378,12 +406,7 @@ function MasterMerchant:CheckForDuplicate(itemLink, eventID)
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
-      if type(v.id) == "number" then
-        if tostring(v.id) == eventID then
-          dupe = true
-          break
-        end
-      elseif v.id == eventID then
+      if v.id == eventID then
         dupe = true
         break
       end
