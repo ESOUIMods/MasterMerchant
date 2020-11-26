@@ -24,13 +24,12 @@ function MM_Graph:New(control, pointTemplate, labelTemplate)
 end
 
 function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yEndLabelText,
-                             xStartValue, xEndValue, yStartValue, yEndValue, xPriceText, xPriceValue)
+                             xStartValue, xEndValue, yStartValue, yEndValue)
 
     self.xStartValue = xStartValue
     self.xEndValue = xEndValue
     self.yStartValue = yStartValue
     self.yEndValue = yEndValue
-    self.xPriceValue = xPriceValue
 
     self:Clear();
 
@@ -41,18 +40,11 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
     self.xEndLabel = self.labelPool:AcquireObject()
     self.yStartLabel = self.labelPool:AcquireObject()
     self.yEndLabel = self.labelPool:AcquireObject()
-    self.xPriceLabel = self.labelPool:AcquireObject()
-    self.xPriceLabel:SetHidden(true)
-
-    self.marker = self.control:GetNamedChild('Marker')
-    self.marker:SetHidden(true)
 
     self.xStartLabel:ClearAnchors()
     self.xEndLabel:ClearAnchors()
     self.yStartLabel:ClearAnchors()
     self.yEndLabel:ClearAnchors()
-    self.xPriceLabel:ClearAnchors()
-    self.marker:ClearAnchors()
 
     local x, y = self.control:GetDimensions()
     local top = self.paddingY
@@ -66,11 +58,7 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
     self.yEndLabel:SetAnchor(LEFT, self.control, BOTTOMLEFT, self.paddingX, -(bottom + self.ySize))
     self.yEndLabel:SetText(yEndLabelText)
 
-    self.xPriceValue = ((self.xPriceValue - self.yStartValue) / (self.yEndValue - self.yStartValue)) * self.ySize
-
-    self.xPriceLabel:SetText(xPriceText)
-
-    local left = math.max(self.xPriceLabel:GetTextWidth(),self.yStartLabel:GetTextWidth(),self.yEndLabel:GetTextWidth()) + self.paddingX + 5
+    local left = math.max(self.yStartLabel:GetTextWidth(),self.yEndLabel:GetTextWidth()) + self.paddingX + 5
 
     self.xStartLabel:SetAnchor(BOTTOM, self.control, BOTTOMLEFT, left, -self.paddingY)
     self.xStartLabel:SetText(xStartLabelText)
@@ -96,11 +84,8 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
     grid:SetAnchor(BOTTOMLEFT, self.control, BOTTOMLEFT, left, -bottom )
     grid:SetAnchor(TOPRIGHT, self.control, BOTTOMLEFT, left + self.xSize, -(bottom + self.ySize))
 
-    self.xPriceLabel:SetAnchor(RIGHT, self.grid, BOTTOMLEFT, -5, -self.xPriceValue)
-    self.marker:SetAnchor(BOTTOMLEFT, self.grid, BOTTOMLEFT, 0, -(self.xPriceValue-1) )
-    self.marker:SetAnchor(TOPRIGHT, self.grid, BOTTOMRIGHT, 0, -self.xPriceValue )
-    self.xPriceLabel:SetHidden(false)
-    self.marker:SetHidden(false)
+    self.marker = self.control:GetNamedChild('Marker')
+    self.marker:SetHidden(true)
 
     self.textAdjustmentY = self.xStartLabel:GetFontHeight() / 4
 end
