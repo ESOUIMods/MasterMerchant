@@ -150,12 +150,15 @@ MMGuild = {
 
       o.twoStart = o.oneStart - 86400 -- yesterday
 
-      o.threeStart = weekCutoff - 7 * 86400  -- Tuesday Aug 18
-      o.threeEnd = weekCutoff -- Tuesday flip Aug 25
+      -- This Week
+      o.threeStart = weekCutoff - 7 * 86400 -- GetGuildKioskCycleTimes() minus 7 days
+      o.threeEnd = weekCutoff -- GetGuildKioskCycleTimes()
 
+      -- Last Week
       o.fourStart = o.threeStart - 7 * 86400 -- last week Tuesday flip
       o.fourEnd = o.threeStart -- last week end
 
+      -- Previous Week
       o.fiveStart = o.fourStart - 7 * 86400
       o.fiveEnd = o.fourStart -- prior week end
 
