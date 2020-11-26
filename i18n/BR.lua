@@ -256,3 +256,18 @@ ZO_CreateStringId("MM_CUSTOM_STATISTICS_RANGE_TIP", "Custom Statistics Range, ei
 ZO_CreateStringId("MM_STATISTICS_MEAN", "Mean")
 ZO_CreateStringId("MM_STATISTICS_AVERAGE", "Average")
 ZO_CreateStringId("MM_STATISTICS_MEDIAN", "Median")
+
+ZO_CreateStringId("MM_GUILD_ROSTER_OPTIONS_NAME", "Guild Roster Options")
+ZO_CreateStringId("MM_GUILD_ROSTER_OPTIONS_TIP", "Enable and disable the different guild roster columns. (Requires until next update of LibGuild Roster)")
+
+ZO_CreateStringId("MM_PURCHASES_COLUMN_NAME", "Enable Purchases Column")
+ZO_CreateStringId("MM_PURCHASES_COLUMN_TIP", "Display Purchases on guild roster.")
+
+ZO_CreateStringId("MM_SALES_COLUMN_NAME", "Enable Sales Column")
+ZO_CreateStringId("MM_SALES_COLUMN_TIP", "Display Sales on guild roster.")
+
+ZO_CreateStringId("MM_TAXES_COLUMN_NAME", "Enable Taxes Column")
+ZO_CreateStringId("MM_TAXES_COLUMN_TIP", "Display Taxes on guild roster.")
+
+ZO_CreateStringId("MM_COUNT_COLUMN_NAME", "Enable Count Column")
+ZO_CreateStringId("MM_COUNT_COLUMN_TIP", "Display Count on guild roster.")
