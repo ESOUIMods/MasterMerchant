@@ -1621,8 +1621,8 @@ function MasterMerchant:LibAddonInit()
       type = 'checkbox',
       name = GetString(SK_SHOW_GRAPH_NAME),
       tooltip = GetString(SK_SHOW_GRAPH_TIP),
-      getFunc = function() return self:ActiveSettings().showGraph end,
-      setFunc = function(value) self:ActiveSettings().showGraph = value end,
+      getFunc = function() return MasterMerchant.systemSavedVariables.showGraph end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.showGraph = value end,
     },
   -- Whether or not to show tooltips on the graph points
     [13] = {
@@ -3438,7 +3438,6 @@ function MasterMerchant:Initialize()
     ['feedbackWinLeft'] = 720,
     ['feedbackWinTop'] = 420,
     ['windowFont'] = 'ProseAntique',
-    ['historyDepth'] = 30,
     ['scanFreq'] = 300,
     ['showAnnounceAlerts'] = true,
     ['showCyroAlerts'] = true,
@@ -3501,7 +3500,6 @@ function MasterMerchant:Initialize()
     ['feedbackWinLeft'] = 720,
     ['feedbackWinTop'] = 420,
     ['windowFont'] = 'ProseAntique',
-    ['historyDepth'] = 30,
     ['scanFreq'] = 300,
     ['showAnnounceAlerts'] = true,
     ['showCyroAlerts'] = true,
@@ -3704,10 +3702,6 @@ function MasterMerchant:Initialize()
   if (MasterMerchant:ActiveSettings().blacklist == nil) then MasterMerchant:ActiveSettings().blacklist = '' end
 
   -- Move the historyDepth variable to a system wide area
-  if MasterMerchant.systemSavedVariables.historyDepth == nil then
-    MasterMerchant.systemSavedVariables.historyDepth = 30
-  end
-
   if self.acctSavedVariables.historyDepth then
     MasterMerchant.systemSavedVariables.historyDepth = math.max( MasterMerchant.systemSavedVariables.historyDepth, self.acctSavedVariables.historyDepth )
     self.acctSavedVariables.historyDepth = nil

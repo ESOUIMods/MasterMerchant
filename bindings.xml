@@ -16,6 +16,9 @@
       <Action name="MasterMerchant_STATS_TOGGLE">
         <Down>MasterMerchant.ToggleMasterMerchantStatsWindow()</Down>
       </Action>
+      <Action name="MasterMerchant_GRAPH_TOGGLE">
+        <Down>MasterMerchant.ToggleMasterMerchantPricingHistoryGraph()</Down>
+      </Action>
     </Category>
   </Layer>
 </Bindings>

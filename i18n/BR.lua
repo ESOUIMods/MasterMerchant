@@ -129,6 +129,7 @@ ZO_CreateStringId("SK_PRICETIP_MULTDAY", "Preço do Master Merchant (%s, %d dias
 -- Keybindings
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "Mostra/Esconde Janela Principal")
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_STATS_TOGGLE", "Mostra/Esconde janela de Estatisticas")
+ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_GRAPH_TOGGLE", "Show/Hide Pricing History Graph")
 
 -- New values
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Preço M.M. (%s, %d dia): %.2f")

@@ -1149,7 +1149,7 @@ function MasterMerchant:remStatsItemTooltip()
 
 function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
-  if not (self:ActiveSettings().showPricing or self:ActiveSettings().showGraph or self:ActiveSettings().showCraftCost) then return end
+  if not (self:ActiveSettings().showPricing or MasterMerchant.systemSavedVariables.showGraph or self:ActiveSettings().showCraftCost) then return end
 
   local tipLine, avePrice, graphInfo = self:itemPriceTip(itemLink, false, clickable)
   local craftCostLine = self:itemCraftPriceTip(itemLink, false)
@@ -1324,7 +1324,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     end
 
-    if self:ActiveSettings().showGraph then
+    if MasterMerchant.systemSavedVariables.showGraph then
 
       if not tooltip.graphPool then
           tooltip.graphPool = ZO_ControlPool:New('MasterMerchantGraph', tooltip, 'Graph')
@@ -1438,7 +1438,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
 
   -- Make sure we don't double-add stats (or double-calculate them if they bring
   -- up the same link twice) since we have to call this on Update rather than Show
-  if (not (self:ActiveSettings().showPricing or self:ActiveSettings().showGraph or self:ActiveSettings().showCraftCost))
+  if (not (self:ActiveSettings().showPricing or MasterMerchant.systemSavedVariables.showGraph or self:ActiveSettings().showCraftCost))
    or Popup.lastLink == nil
    or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then -- thanks Garkin
     return
@@ -1487,7 +1487,7 @@ function MasterMerchant:addStatsItemTooltip()
   -- Make sure we don't double-add stats or try to add them to nothing
   -- Since we call this on Update rather than Show it gets called a lot
   -- even after the tip appears
-  if (not (self:ActiveSettings().showPricing or self:ActiveSettings().showGraph or self:ActiveSettings().showCraftCost))
+  if (not (self:ActiveSettings().showPricing or MasterMerchant.systemSavedVariables.showGraph or self:ActiveSettings().showCraftCost))
      or (not skMoc or not skMoc:GetParent())
      or (skMoc == self.tippingControl and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
     return
@@ -1763,6 +1763,11 @@ end
 function MasterMerchant.ToggleMasterMerchantStatsWindow()
   if MasterMerchantStatsWindow:IsHidden() then MasterMerchant:UpdateStatsWindow('SK_STATS_TOTAL') end
   MasterMerchantStatsWindow:SetHidden(not MasterMerchantStatsWindow:IsHidden())
+end
+
+-- Set the visibility status of the stats window to the opposite of its current status
+function MasterMerchant.ToggleMasterMerchantPricingHistoryGraph()
+  MasterMerchant.systemSavedVariables.showGraph = not MasterMerchant.systemSavedVariables.showGraph
 end
 
 -- Switch between all sales and your sales
