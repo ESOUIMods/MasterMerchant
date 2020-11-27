@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.3.6'
+MasterMerchant.version = '3.3.7'
 MasterMerchant.locale = GetCVar('Language.2')
 MasterMerchant.viewMode = 'self'
 MasterMerchant.isScanning = false
