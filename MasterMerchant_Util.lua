@@ -561,20 +561,20 @@ function MasterMerchant:addToHistoryTables(theEvent)
   return true
 end
 
--- Inserts a comma or period as appropriate every 3 numbers and returns
 -- the result as a string.
-function MasterMerchant.LocalizedNumber(numberValue)
+function MasterMerchant.LocalizedNumber(numberValue, chatText)
   if not numberValue then return '0' end
-
-  local stringPrice = numberValue
-  local subString = '%1' .. GetString(SK_THOUSANDS_SEP) ..'%2'
-
-  -- Insert thousands separators for the price
-  while true do
-    stringPrice, k = string.gsub(stringPrice, '^(-?%d+)(%d%d%d)', subString)
-    if (k == 0) then break end
+  local stringPrice
+  if (numberValue > 100) and MasterMerchant:ActiveSettings().trimDecimals then
+    stringPrice = string.format('%.0f', numberValue)
+  else
+    stringPrice = string.format('%.2f', numberValue)
   end
-
+  if not chatText then
+    stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON)
+  else
+    stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_NAME)
+  end
   return stringPrice
 end
 

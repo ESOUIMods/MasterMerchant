@@ -202,6 +202,7 @@ function MasterMerchant:TimeCheck()
     if range == GetString(MM_RANGE_NONE) then return -1, -1 end
     if range == GetString(MM_RANGE_FOCUS1) then daysRange = self:ActiveSettings().focus1 end
     if range == GetString(MM_RANGE_FOCUS2) then daysRange = self:ActiveSettings().focus2 end
+    if range == GetString(MM_RANGE_FOCUS3) then daysRange = self:ActiveSettings().focus3 end
 
     return GetTimeStamp() - (86400 * daysRange), daysRange
 end
@@ -506,13 +507,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
           rather then actually click anything
           ]]--
           if clickable then
-            local stringPrice = '';
-            if self:ActiveSettings().trimDecimals then
-              stringPrice = string.format('%.0f', item.price/item.quant)
-            else
-              stringPrice = string.format('%.2f', item.price/item.quant)
-            end
-            stringPrice = self.LocalizedNumber(stringPrice)
+            local stringPrice = self.LocalizedNumber(individualSale)
             if item.quant == 1 then
               tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
                 string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)),  item.buyer, stringPrice)
@@ -571,18 +566,9 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     else
       tipFormat = GetString(MM_TIP_FORMAT_MULTI)
     end
-    local avePriceString = '';
-    if (tipStats['avgPrice'] > 100) and self:ActiveSettings().trimDecimals then
-      avePriceString = string.format('%.0f', tipStats['avgPrice'])
-      --tipFormat = string.gsub(tipFormat, '.2f', '.0f')
-    else
-      avePriceString = string.format('%.2f', tipStats['avgPrice'])
-    end
-    avePriceString = self.LocalizedNumber(avePriceString)
+    local avePriceString = self.LocalizedNumber(tipStats['avgPrice'], chatText)
     tipFormat = string.gsub(tipFormat, '.2f', 's')
     tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
-
-    if not chatText then tipFormat = tipFormat .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
     local salesString = zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales'])
     if tipStats['numSales'] ~= tipStats['numItems'] then
       salesString = salesString .. zo_strformat(GetString(MM_PRICETIP_ITEMS), tipStats['numItems'])
@@ -744,16 +730,7 @@ function MasterMerchant:itemCraftPriceTip(itemLink, chatText)
     local cost = self:itemCraftPrice(itemLink)
     if cost then
       craftTip = "Craft Cost: %s"
-
-      if (cost > 100) and self:ActiveSettings().trimDecimals then
-        craftTipString = string.format('%.0f', cost)
-      else
-        craftTipString = string.format('%.2f', cost)
-      end
-      craftTipString = self.LocalizedNumber(craftTipString)
-
-      if not chatText then craftTip = craftTip .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
-
+      local craftTipString = self.LocalizedNumber(cost, chatText)
       return string.format(craftTip, craftTipString)
     else
       return nil
@@ -1387,43 +1364,52 @@ function MasterMerchant:LibAddonInit()
           getFunc = function() return self:ActiveSettings().focus2 end,
           setFunc = function(value) self:ActiveSettings().focus2 = value end,
         },
-        -- default time range
         [3] = {
+          type = 'slider',
+          name = GetString(MM_DAYS_FOCUS_THREE_NAME),
+          tooltip = GetString(MM_DAYS_FOCUS_THREE_TIP),
+          min = 1,
+          max = 90,
+          getFunc = function() return self:ActiveSettings().focus3 end,
+          setFunc = function(value) self:ActiveSettings().focus3 = value end,
+        },
+        -- default time range
+        [4] = {
           type = 'dropdown',
           name = GetString(MM_DEFAULT_TIME_NAME),
           tooltip = GetString(MM_DEFAULT_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
           getFunc = function() return self:ActiveSettings().defaultDays end,
           setFunc = function(value) self:ActiveSettings().defaultDays = value end,
         },
         -- shift time range
-        [4] = {
+        [5] = {
           type = 'dropdown',
           name = GetString(MM_SHIFT_TIME_NAME),
           tooltip = GetString(MM_SHIFT_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
           getFunc = function() return self:ActiveSettings().shiftDays end,
           setFunc = function(value) self:ActiveSettings().shiftDays = value end,
         },
         -- ctrl time range
-        [5] = {
+        [6] = {
           type = 'dropdown',
           name = GetString(MM_CTRL_TIME_NAME),
           tooltip = GetString(MM_CTRL_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
           getFunc = function() return self:ActiveSettings().ctrlDays end,
           setFunc = function(value) self:ActiveSettings().ctrlDays = value end,
         },
         -- ctrl-shift time range
-        [6] = {
+        [7] = {
           type = 'dropdown',
           name = GetString(MM_CTRLSHIFT_TIME_NAME),
           tooltip = GetString(MM_CTRLSHIFT_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_NONE)},
+          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
           getFunc = function() return self:ActiveSettings().ctrlShiftDays end,
           setFunc = function(value) self:ActiveSettings().ctrlShiftDays = value end,
         },
-        [7] = {
+        [8] = {
           type = 'slider',
           name = GetString(MM_NO_DATA_DEAL_NAME),
           tooltip = GetString(MM_NO_DATA_DEAL_TIP),
@@ -1433,7 +1419,7 @@ function MasterMerchant:LibAddonInit()
           setFunc = function(value) self:ActiveSettings().noSalesInfoDeal = value end,
         },
         -- blacklisted players and guilds
-        [8] = {
+        [9] = {
           type = 'editbox',
           name = GetString(MM_BLACKLIST_NAME),
           tooltip = GetString(MM_BLACKLIST_TIP),
@@ -1441,7 +1427,7 @@ function MasterMerchant:LibAddonInit()
           setFunc = function(value) self:ActiveSettings().blacklist = value end,
         },
         -- customTimeframe
-        [9] = {
+        [10] = {
           type = 'slider',
           name = GetString(MM_CUSTOM_TIMEFRAME_NAME),
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_TIP),
@@ -1450,11 +1436,12 @@ function MasterMerchant:LibAddonInit()
           getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframe end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.customTimeframe = value
             MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
-            MasterMerchant:BuildTimeChoicesDropdown()
+            MasterMerchant:BuildRosterTimeDropdown()
+            MasterMerchant:BuildGuiTimeDropdown()
           end,
         },
         -- shift time range
-        [10] = {
+        [11] = {
           type = 'dropdown',
           name = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_SCALE_TIP),
@@ -1462,7 +1449,8 @@ function MasterMerchant:LibAddonInit()
           getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframeType end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.customTimeframeType = value
             MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
-            MasterMerchant:BuildTimeChoicesDropdown()
+            MasterMerchant:BuildRosterTimeDropdown()
+            MasterMerchant:BuildGuiTimeDropdown()
           end,
         },
       },
@@ -1825,6 +1813,7 @@ function MasterMerchant:LibAddonInit()
           self.acctSavedVariables.diplayGuildInfo = self.savedVariables.diplayGuildInfo
           self.acctSavedVariables.focus1 = self.savedVariables.focus1
           self.acctSavedVariables.focus2 = self.savedVariables.focus2
+          self.acctSavedVariables.focus3 = self.savedVariables.focus3
           self.acctSavedVariables.defaultDays = self.savedVariables.defaultDays
           self.acctSavedVariables.shiftDays = self.savedVariables.shiftDays
           self.acctSavedVariables.ctrlDays = self.savedVariables.ctrlDays
@@ -1869,6 +1858,7 @@ function MasterMerchant:LibAddonInit()
           self.savedVariables.diplayGuildInfo = self.acctSavedVariables.diplayGuildInfo
           self.savedVariables.focus1 = self.acctSavedVariables.focus1
           self.savedVariables.focus2 = self.acctSavedVariables.focus2
+          self.savedVariables.focus3 = self.acctSavedVariables.focus3
           self.savedVariables.defaultDays = self.acctSavedVariables.defaultDays
           self.savedVariables.shiftDays = self.acctSavedVariables.shiftDays
           self.savedVariables.ctrlDays = self.acctSavedVariables.ctrlDays
@@ -2899,7 +2889,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
   if dealValue then
     if dealValue > -1 then
       if MasterMerchant:ActiveSettings().saucy then
-        sellingAdvice:SetText(string.format('%.0f', profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+        sellingAdvice:SetText(MasterMerchant.LocalizedNumber(profit))
       else
         sellingAdvice:SetText(string.format('%.2f', margin) .. '%')
       end
@@ -2968,7 +2958,7 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
     if dealValue then
       if dealValue > -1 then
         if MasterMerchant:ActiveSettings().saucy then
-          buyingAdvice:SetText(string.format('%.0f', profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+          buyingAdvice:SetText(MasterMerchant.LocalizedNumber(profit))
         else
           buyingAdvice:SetText(string.format('%.2f', margin) .. '%')
         end
@@ -2985,7 +2975,7 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
     buyingAdvice = nil
 end
 
-function MasterMerchant:BuildTimeChoicesDropdown()
+function MasterMerchant:BuildRosterTimeDropdown()
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantRosterTimeChooser)
   local settingsToUse = MasterMerchant:ActiveSettings()
   timeDropdown:ClearItems()
@@ -3063,7 +3053,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+          return MasterMerchant.LocalizedNumber(value)
       end
     }
   })
@@ -3097,7 +3087,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+          return MasterMerchant.LocalizedNumber(value)
       end
     }
   })
@@ -3131,7 +3121,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+          return MasterMerchant.LocalizedNumber(value)
       end
     }
   })
@@ -3187,7 +3177,7 @@ function MasterMerchant:InitRosterChanges()
 
   MasterMerchant.UI_GuildTime.m_comboBox:SetSortsItems(false)
 
-  MasterMerchant:BuildTimeChoicesDropdown()
+  MasterMerchant:BuildRosterTimeDropdown()
 
 end
 
@@ -3474,6 +3464,7 @@ function MasterMerchant:Initialize()
     ['noSalesInfoDeal'] = 2,
     ['focus1'] = 10,
     ['focus2'] = 3,
+    ['focus3'] = 30,
     ['blacklist'] = '',
     ['defaultDays'] = GetString(MM_RANGE_ALL),
     ['shiftDays'] = GetString(MM_RANGE_FOCUS1),
@@ -3536,11 +3527,12 @@ function MasterMerchant:Initialize()
     ['noSalesInfoDeal'] = 2,
     ['focus1'] = 10,
     ['focus2'] = 3,
+    ['focus3'] = 30,
     ['blacklist'] = '',
     ['defaultDays'] = GetString(MM_RANGE_ALL),
     ['shiftDays'] = GetString(MM_RANGE_FOCUS1),
     ['ctrlDays'] = GetString(MM_RANGE_FOCUS2),
-    ['ctrlShiftDays'] = GetString(MM_RANGE_NONE),
+    ['ctrlShiftDays'] = GetString(MM_RANGE_FOCUS3),
     ['saucy'] = false,
     ['autoNext'] = false,
     ['displayListingMessage'] = false,
@@ -3554,6 +3546,7 @@ function MasterMerchant:Initialize()
 
   local systemDefault =
   {
+    viewSize = ITEMS,
     customTimeframe = 90,
     customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS),
     --[[you can assign this as the default but it needs to be a global var
@@ -3594,7 +3587,7 @@ function MasterMerchant:Initialize()
     systemDefault["lastReceivedEventID"][guildID] = "0"
   end
   -- Populate savedVariables
-  --[[TODO
+  --[[TODO address saved vars
   self.oldSavedVariables = ZO_SavedVars:NewAccountWide("MM00DataSavedVariables", 1, nil, {})
   self.savedVariables = ZO_SavedVars:NewAccountWide("MM00DataSavedVariables", 1, nil, {}, nil, 'MasterMerchant')
 
@@ -3689,10 +3682,16 @@ function MasterMerchant:Initialize()
   if (MasterMerchant:ActiveSettings().focus1 == nil) then
       MasterMerchant:ActiveSettings().focus1 = 10
       MasterMerchant:ActiveSettings().focus2 = 3
+      MasterMerchant:ActiveSettings().focus3 = 30
       MasterMerchant:ActiveSettings().defaultDays = GetString(MM_RANGE_ALL)
       MasterMerchant:ActiveSettings().shiftDays = GetString(MM_RANGE_FOCUS1)
       MasterMerchant:ActiveSettings().ctrlDays = GetString(MM_RANGE_FOCUS2)
-      MasterMerchant:ActiveSettings().ctrlShiftDays = GetString(MM_RANGE_NONE)
+      MasterMerchant:ActiveSettings().ctrlShiftDays = GetString(MM_RANGE_FOCUS3)
+  end
+
+  if (MasterMerchant:ActiveSettings().focus3 == nil) then
+      MasterMerchant:ActiveSettings().focus3 = 30
+      MasterMerchant:ActiveSettings().ctrlShiftDays = GetString(MM_RANGE_FOCUS3)
   end
 
   if (MasterMerchant:ActiveSettings().customTimeframe == nil or MasterMerchant:ActiveSettings().customTimeframeType == nil) then
@@ -3953,7 +3952,7 @@ function MasterMerchant:Initialize()
       local floorPrice = 0
       if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
       MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
-      MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1, slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+      MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1, slotId))))
       MasterMerchantPriceCalculator:SetHidden(false)
     else MasterMerchantPriceCalculator:SetHidden(true) end
   end)
@@ -4136,7 +4135,7 @@ function MasterMerchant:SwitchPrice(control, slot)
           local sellPriceControl = control:GetNamedChild("SellPrice")
           if (sellPriceControl) then
             sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-            sellPrice = '|cEEEE33' .. sellPrice .. '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+            sellPrice = string.gsub(sellPrice, '|cffffff', '|cEEEE33')
             sellPriceControl:SetText(sellPrice)
 	        end
       else
@@ -4146,9 +4145,8 @@ function MasterMerchant:SwitchPrice(control, slot)
           end
           local sellPriceControl = control:GetNamedChild("SellPrice")
           if (sellPriceControl) then
-            sellPrice = string.format('%.0f', control.dataEntry.data.stackSellPrice)
-            sellPrice = MasterMerchant.LocalizedNumber(sellPrice)
-            sellPrice = sellPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+            sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
+            sellPrice = string.gsub(sellPrice, '|cffffff', '|cEEEE33')
             sellPriceControl:SetText(sellPrice)
 	        end
       end

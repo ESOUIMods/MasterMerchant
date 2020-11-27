@@ -56,11 +56,16 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", 		"Показывает число по�
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", 		"Граф истории цен")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", 			"Включает график истории цен предмета в подсказке к нему.")
 -- Main window
-ZO_CreateStringId("SK_VIEW_ALL_SALES", 	 		"Вся инфо")
-ZO_CreateStringId("SK_VIEW_YOUR_SALES", 		"Ваша инфо")
-ZO_CreateStringId("SK_ALL_SALES_TITLE", 		"Вся информация")
-ZO_CreateStringId("SK_YOUR_SALES_TITLE", 		"Ваша информация")
-ZO_CreateStringId("SK_GUILD_SALES_TITLE", 	"Ранги в гильдии")
+-- buttons to toggle personal and guild sales
+ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")
+ZO_CreateStringId("SK_VIEW_YOUR_SALES", "Show Personal Sales")
+-- window title viewMode - Personal sales
+ZO_CreateStringId("SK_SELF_SALES_TITLE", "Personal Sales")
+-- window title viewSize - All sales
+ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
+--  window titles - Both
+ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
+ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seler's Report")
 
 ZO_CreateStringId("SK_SHOW_UNIT", 					"Цена за штуку")
 ZO_CreateStringId("SK_SHOW_TOTAL", 					"Общая цена")
@@ -186,6 +191,7 @@ ZO_CreateStringId("MM_CTRLSHIFT_TIME_TIP", 		"Число дней истории
 ZO_CreateStringId("MM_RANGE_ALL", 						"Все")
 ZO_CreateStringId("MM_RANGE_FOCUS1", 					"Вариант 1")
 ZO_CreateStringId("MM_RANGE_FOCUS2", 					"Вариант 2")
+ZO_CreateStringId("MM_RANGE_FOCUS3", 					"Вариант 3")
 ZO_CreateStringId("MM_RANGE_NONE", 						"Нет")
 ZO_CreateStringId("MM_BLACKLIST_NAME", 				"Черный список игроков и гильдий")
 ZO_CreateStringId("MM_BLACKLIST_TIP", 				"Списиок имен игроков и гильдий, которые вы хотите исключить из подсчета цен аддоном MM.")
@@ -222,8 +228,8 @@ ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP",		"Отображать в о
 ZO_CreateStringId("SK_PER_CHANGE_COLUMN",			"Налоги")
 ZO_CreateStringId("SK_PER_CHANGE_TIP",				"Доход гильдии за счет налога с Ваших продаж.")
 ZO_CreateStringId("MM_POPUP_ITEM_DATA",				"Popup Item Data")
-ZO_CreateStringId("MM_GRAPH_TIP",							"В %s %s продан %s x %d to %s за %s|t16:16:EsoUI/Art/currency/currency_gold.dds|t каждый.")
-ZO_CreateStringId("MM_GRAPH_TIP_SINGLE",			"В %s %s продан %s to %s за %s|t16:16:EsoUI/Art/currency/currency_gold.dds|t.")
+ZO_CreateStringId("MM_GRAPH_TIP",							"В %s %s продан %s x %d to %s за %s каждый.")
+ZO_CreateStringId("MM_GRAPH_TIP_SINGLE",			"В %s %s продан %s to %s за %s.")
 ZO_CreateStringId("MM_NO_DATA_DEAL_NAME",			"Рейтинг товара без истории")
 ZO_CreateStringId("MM_NO_DATA_DEAL_TIP",			"Рейтинг сделки для товара без истории продаж.")
 ZO_CreateStringId("MM_GRAPH_INFO_NAME",				"Подсказ.для точек графика")
@@ -246,9 +252,11 @@ ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when tri
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_NAME", "Add Taxes Sales Rank Export")
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_TIP", "Will calculate 3.5% of total sales as the amount of Taxes for a user when using /mm export.")
 
-
 ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_NAME", "Use Tooltip Days Range")
 ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_TIP", "Use the Tooltip Default Days Range when displaying the MM price on the inventory grid.")
+
+ZO_CreateStringId("MM_CUSTOM_STATISTICS_RANGE_NAME", "Custom Statistics Range")
+ZO_CreateStringId("MM_CUSTOM_STATISTICS_RANGE_TIP", "Custom Statistics Range, either mean or median.")
 
 ZO_CreateStringId("MM_STATISTICS_MEAN", "Mean")
 ZO_CreateStringId("MM_STATISTICS_AVERAGE", "Average")
@@ -268,3 +276,6 @@ ZO_CreateStringId("MM_TAXES_COLUMN_TIP", "Display Taxes on guild roster.")
 
 ZO_CreateStringId("MM_COUNT_COLUMN_NAME", "Enable Count Column")
 ZO_CreateStringId("MM_COUNT_COLUMN_TIP", "Display Count on guild roster.")
+
+ZO_CreateStringId("MM_DAYS_FOCUS_THREE_NAME", "Focus 3 Days")
+ZO_CreateStringId("MM_DAYS_FOCUS_THREE_TIP", "Number of days sales to focus on.")

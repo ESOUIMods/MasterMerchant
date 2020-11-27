@@ -56,11 +56,16 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "MMウィンドウで選択した概算�
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "価格履歴グラフを表示")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "価格履歴グラフをアイテムツールチップに含めます。")
 -- Main window
-ZO_CreateStringId("SK_VIEW_ALL_SALES", "全ての情報を表示")
-ZO_CreateStringId("SK_VIEW_YOUR_SALES", "自分の情報を表示")
-ZO_CreateStringId("SK_ALL_SALES_TITLE", "全ての情報")
-ZO_CreateStringId("SK_YOUR_SALES_TITLE", "自分の情報")
-ZO_CreateStringId("SK_GUILD_SALES_TITLE", "ギルドランク")
+-- buttons to toggle personal and guild sales
+ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")
+ZO_CreateStringId("SK_VIEW_YOUR_SALES", "Show Personal Sales")
+-- window title viewMode - Personal sales
+ZO_CreateStringId("SK_SELF_SALES_TITLE", "Personal Sales")
+-- window title viewSize - All sales
+ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
+--  window titles - Both
+ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
+ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seler's Report")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "単価を表示")
 ZO_CreateStringId("SK_SHOW_TOTAL", "合計価格を表示")
@@ -186,6 +191,7 @@ ZO_CreateStringId("MM_CTRLSHIFT_TIME_TIP", "<Ctrl-Shift>押下時、何日間の
 ZO_CreateStringId("MM_RANGE_ALL", "全て")
 ZO_CreateStringId("MM_RANGE_FOCUS1", "集中1")
 ZO_CreateStringId("MM_RANGE_FOCUS2", "集中2")
+ZO_CreateStringId("MM_RANGE_FOCUS3", "集中3")
 ZO_CreateStringId("MM_RANGE_NONE", "なし")
 ZO_CreateStringId("MM_BLACKLIST_NAME", "プレイヤーとギルドのブラックリスト")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "MMが計算時、無視したいプレイヤーとギルドの名前のリストです。")
@@ -222,8 +228,8 @@ ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "ギルドストアの販売
 ZO_CreateStringId("SK_PER_CHANGE_COLUMN", "税")
 ZO_CreateStringId("SK_PER_CHANGE_TIP", "セールスで生成されたギルドのゴールド。")
 ZO_CreateStringId("MM_POPUP_ITEM_DATA", "アイテムデータをポップアップ")
-ZO_CreateStringId("MM_GRAPH_TIP", "%s %sで%sを%d個%sに、各%s|t16:16:EsoUI/Art/currency/currency_gold.dds|tで販売しました。")
-ZO_CreateStringId("MM_GRAPH_TIP_SINGLE", "%s %sで%sを%sに、%s|t16:16:EsoUI/Art/currency/currency_gold.dds|tで販売しました。")
+ZO_CreateStringId("MM_GRAPH_TIP", "%s %sで%sを%d個%sに、各%sで販売しました。")
+ZO_CreateStringId("MM_GRAPH_TIP_SINGLE", "%s %sで%sを%sに、%sで販売しました。")
 ZO_CreateStringId("MM_NO_DATA_DEAL_NAME", "取引レートのデータなし")
 ZO_CreateStringId("MM_NO_DATA_DEAL_TIP", "セールス履歴のないアイテムの取引レート。")
 ZO_CreateStringId("MM_GRAPH_INFO_NAME", "グラフポイントにヒント")
@@ -246,9 +252,11 @@ ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when tri
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_NAME", "Add Taxes Sales Rank Export")
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_TIP", "Will calculate 3.5% of total sales as the amount of Taxes for a user when using /mm export.")
 
-
 ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_NAME", "Use Tooltip Days Range")
 ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_TIP", "Use the Tooltip Default Days Range when displaying the MM price on the inventory grid.")
+
+ZO_CreateStringId("MM_CUSTOM_STATISTICS_RANGE_NAME", "Custom Statistics Range")
+ZO_CreateStringId("MM_CUSTOM_STATISTICS_RANGE_TIP", "Custom Statistics Range, either mean or median.")
 
 ZO_CreateStringId("MM_STATISTICS_MEAN", "Mean")
 ZO_CreateStringId("MM_STATISTICS_AVERAGE", "Average")
@@ -268,3 +276,6 @@ ZO_CreateStringId("MM_TAXES_COLUMN_TIP", "Display Taxes on guild roster.")
 
 ZO_CreateStringId("MM_COUNT_COLUMN_NAME", "Enable Count Column")
 ZO_CreateStringId("MM_COUNT_COLUMN_TIP", "Display Count on guild roster.")
+
+ZO_CreateStringId("MM_DAYS_FOCUS_THREE_NAME", "Focus 3 Days")
+ZO_CreateStringId("MM_DAYS_FOCUS_THREE_TIP", "Number of days sales to focus on.")

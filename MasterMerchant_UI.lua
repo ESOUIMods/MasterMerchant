@@ -294,7 +294,7 @@ function MMScrollList:SetupSalesRow(control, data)
   local stringPrice = MasterMerchant.LocalizedNumber(dispPrice)
 
   -- Finally, set the price
-  control.price:SetText(stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+  control.price:SetText(stringPrice)
 
   ZO_SortFilterList.SetupRow(self, control, data)
 end
@@ -375,13 +375,13 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   -- Sales Cell
   local sales = data[3] or 0
   local stringSales = MasterMerchant.LocalizedNumber(sales)
-  control.sales:SetText(stringSales .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+  control.sales:SetText(stringSales)
 
   -- Tax Cell
   --local taxAmount = math.floor((sales * GetTradingHouseCutPercentage() / 200))
   local taxAmount = data[8]
   local stringTax = MasterMerchant.LocalizedNumber(taxAmount)
-  control.tax:SetText(stringTax .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+  control.tax:SetText(stringTax)
 
   -- Count Cell
 
@@ -508,7 +508,7 @@ function MMScrollList:SetupListingsRow(control, data)
   local stringPrice = MasterMerchant.LocalizedNumber(dispPrice)
 
   -- Finally, set the price
-  control.price:SetText(stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+  control.price:SetText(stringPrice)
 
   ZO_SortFilterList.SetupRow(self, control, data)
 end
@@ -1127,7 +1127,7 @@ end
 function MasterMerchant:updateCalc()
   local stackSize = string.match(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
   local totalPrice = math.floor(tonumber(MasterMerchantPriceCalculatorUnitCostAmount:GetText()) * tonumber(stackSize))
-  MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+  MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice))
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
 end
 
@@ -1347,15 +1347,14 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
         if not graph.points then
           graph.points = MM_Graph:New(graph)
         end
-        local format = (self:ActiveSettings().trimDecimals and '%.0f') or '%.2f'
         if graphInfo.low == graphInfo.high then
             graphInfo.low = avePrice * 0.85
             graphInfo.high = avePrice * 1.15
         end
-
-        local xLow = string.format(format, graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        local xHigh = string.format(format, graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high)
+        local xLow = MasterMerchant.LocalizedNumber(graphInfo.low)
+        local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high)
+        local xPrice = MasterMerchant.LocalizedNumber(avePrice)
+        graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice)
         if self:ActiveSettings().displaySalesDetails then
           for _, point in ipairs(graphInfo.points) do
               graph.points:AddPoint(point[1], point[2], point[3], point[4])
@@ -1365,8 +1364,6 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
               graph.points:AddPoint(point[1], point[2], point[3], nil)
           end
         end
-        local xPrice = string.format(format, avePrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        graph.points:AddYLabel(xPrice, avePrice)
 
       end
     end
@@ -1622,6 +1619,8 @@ end
 
 -- Switch Sales window to display buyer or seller
 function MasterMerchant:ToggleBuyerSeller()
+  --[[TODO Make this also change the title of the window
+  ]]--
   local settingsToUse = MasterMerchant:ActiveSettings()
   if settingsToUse.viewSize == 'full' then
     if settingsToUse.viewBuyerSeller == 'buyer' then
@@ -1768,20 +1767,33 @@ end
 
 -- Switch between all sales and your sales
 function MasterMerchant:SwitchViewMode()
+  -- /script MasterMerchant.dm("Debug", MasterMerchant:ActiveSettings().viewSize)
+  -- /script MasterMerchant.dm("Debug", MasterMerchant.viewMode)
+  -- default is self
+  --[[ MasterMerchant.viewMode
+  when viewMode is 'self': then you are viewing personal sales
+  when viewMode if 'all': you are viewing guild sales
+  ]]--
+
   if self.viewMode == 'self' then
+    -- switching to All Guild Sales
     MasterMerchantSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
-    MasterMerchantWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - ' .. GetString(SK_ALL_SALES_TITLE))
+    MasterMerchantWindowTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
     MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
-    MasterMerchantGuildWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - ' .. GetString(SK_GUILD_SALES_TITLE))
+    MasterMerchantGuildWindowTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.viewMode = 'all'
   else
     MasterMerchantSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
-    MasterMerchantWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - '.. GetString(SK_YOUR_SALES_TITLE))
+    MasterMerchantWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
     MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
-    MasterMerchantGuildWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - ' .. GetString(SK_GUILD_SALES_TITLE))
+    MasterMerchantGuildWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.viewMode = 'self'
   end
 
+  --[[
+  when viewsize is 'half': then you are viewing the seller information
+  when viewsize if 'full': you are viewing the item information
+  ]]--
   if MasterMerchant:ActiveSettings().viewSize == 'full' then
     self.scrollList:RefreshFilters()
     ZO_Scroll_ResetToTop(self.scrollList.list)
@@ -1818,42 +1830,10 @@ function MasterMerchant.OnStatsSliderMoved(self, sliderLevel, eventReason)
   MasterMerchant:UpdateStatsWindow(selectedGuild)
 end
 
--- Set up the labels and tooltips from translation files and do a couple other UI
--- setup routines
-function MasterMerchant:SetupMasterMerchantWindow()
-  local settingsToUse = self:ActiveSettings()
-  -- MasterMerchant button in guild store screen
-  local reopenMasterMerchant = CreateControlFromVirtual('MasterMerchantReopenButton', ZO_TradingHouseBrowseItemsLeftPane, 'ZO_DefaultButton')
-  reopenMasterMerchant:SetAnchor(TOP, ZO_TradingHouseBrowseItemsLeftPane, BOTTOM, 0, 10)
-  reopenMasterMerchant:SetWidth(200)
-  reopenMasterMerchant:SetText(GetString(MM_APP_NAME))
-  reopenMasterMerchant:SetHandler('OnClicked', self.ToggleMasterMerchantWindow)
-  local skCalc = CreateControlFromVirtual('MasterMerchantPriceCalculator', ZO_TradingHousePostItemPane, 'MasterMerchantPriceCalc')
-  skCalc:SetAnchor(BOTTOM, reopenMasterMerchant, TOP, 0, -4)
-
-  -- MasterMerchant button in mail screen
-  local MasterMerchantMail = CreateControlFromVirtual('MasterMerchantMailButton', ZO_MailInbox, 'ZO_DefaultButton')
-  MasterMerchantMail:SetAnchor(TOPLEFT, ZO_MailInbox, TOPLEFT, 100, 4)
-  MasterMerchantMail:SetWidth(200)
-  MasterMerchantMail:SetText(GetString(MM_APP_NAME))
-  MasterMerchantMail:SetHandler('OnClicked', self.ToggleMasterMerchantWindow)
-
-  -- Stats dropdown choice box
-  local MasterMerchantStatsGuild = CreateControlFromVirtual('MasterMerchantStatsGuildChooser', MasterMerchantStatsWindow, 'MasterMerchantStatsGuildDropdown')
-  MasterMerchantStatsGuild:SetDimensions(270,25)
-  MasterMerchantStatsGuild:SetAnchor(LEFT, MasterMerchantStatsWindowGuildChooserLabel, RIGHT, 5, 0)
-  MasterMerchantStatsGuild.m_comboBox:SetSortsItems(false)
-
-   -- Guild Time dropdown choice box
-  local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantGuildTimeChooser', MasterMerchantGuildWindow, 'MasterMerchantStatsGuildDropdown')
-  MasterMerchantGuildTime:SetDimensions(180,25)
-  MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildSwitchViewButton, RIGHT, 5, 0)
-  MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
-
+function MasterMerchant:BuildGuiTimeDropdown()
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantGuildTimeChooser)
+  local settingsToUse = self:ActiveSettings()
   timeDropdown:ClearItems()
-
-  settingsToUse.rankIndex = settingsToUse.rankIndex or 1
 
   local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateGuildWindow(1) end)
   timeDropdown:AddItem(timeEntry)
@@ -1887,10 +1867,46 @@ function MasterMerchant:SetupMasterMerchantWindow()
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_28DAY)) end
 
-  -- TODO see if I have to rebuild this also
   timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateGuildWindow(9) end)
   timeDropdown:AddItem(timeEntry)
   if settingsToUse.rankIndex == 9 then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
+end
+
+-- Set up the labels and tooltips from translation files and do a couple other UI
+-- setup routines
+function MasterMerchant:SetupMasterMerchantWindow()
+  local settingsToUse = self:ActiveSettings()
+  -- MasterMerchant button in guild store screen
+  local reopenMasterMerchant = CreateControlFromVirtual('MasterMerchantReopenButton', ZO_TradingHouseBrowseItemsLeftPane, 'ZO_DefaultButton')
+  reopenMasterMerchant:SetAnchor(TOP, ZO_TradingHouseBrowseItemsLeftPane, BOTTOM, 0, 10)
+  reopenMasterMerchant:SetWidth(200)
+  reopenMasterMerchant:SetText(GetString(MM_APP_NAME))
+  reopenMasterMerchant:SetHandler('OnClicked', self.ToggleMasterMerchantWindow)
+  local skCalc = CreateControlFromVirtual('MasterMerchantPriceCalculator', ZO_TradingHousePostItemPane, 'MasterMerchantPriceCalc')
+  skCalc:SetAnchor(BOTTOM, reopenMasterMerchant, TOP, 0, -4)
+
+  -- MasterMerchant button in mail screen
+  local MasterMerchantMail = CreateControlFromVirtual('MasterMerchantMailButton', ZO_MailInbox, 'ZO_DefaultButton')
+  MasterMerchantMail:SetAnchor(TOPLEFT, ZO_MailInbox, TOPLEFT, 100, 4)
+  MasterMerchantMail:SetWidth(200)
+  MasterMerchantMail:SetText(GetString(MM_APP_NAME))
+  MasterMerchantMail:SetHandler('OnClicked', self.ToggleMasterMerchantWindow)
+
+  -- Stats dropdown choice box
+  local MasterMerchantStatsGuild = CreateControlFromVirtual('MasterMerchantStatsGuildChooser', MasterMerchantStatsWindow, 'MasterMerchantStatsGuildDropdown')
+  MasterMerchantStatsGuild:SetDimensions(270,25)
+  MasterMerchantStatsGuild:SetAnchor(LEFT, MasterMerchantStatsWindowGuildChooserLabel, RIGHT, 5, 0)
+  MasterMerchantStatsGuild.m_comboBox:SetSortsItems(false)
+
+   -- Guild Time dropdown choice box
+  local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantGuildTimeChooser', MasterMerchantGuildWindow, 'MasterMerchantStatsGuildDropdown')
+  MasterMerchantGuildTime:SetDimensions(180,25)
+  MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildSwitchViewButton, RIGHT, 5, 0)
+  MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
+
+  settingsToUse.rankIndex = settingsToUse.rankIndex or 1
+
+  MasterMerchant:BuildGuiTimeDropdown()
 
   -- Set sort column headers and search label from translation
   local fontString = 'ZoFontGameLargeBold'
@@ -1973,8 +1989,12 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
 
   -- Set second half of window title from translation
-  MasterMerchantWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - ' .. GetString(SK_YOUR_SALES_TITLE))
-  MasterMerchantGuildWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - ' .. GetString(SK_GUILD_SALES_TITLE))
+  --[[TODO setup master merchant window title
+  WindowTitle - Item Info
+  GuildWindowTitle - Seller Info
+  ]]--
+  MasterMerchantWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
+  MasterMerchantGuildWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
 
   -- And set the stats window title and slider label from translation
   MasterMerchantStatsWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - ' .. GetString(SK_STATS_TITLE))
