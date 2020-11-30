@@ -82,7 +82,7 @@ function MasterMerchant.DealCalc(setPrice, salesCount, purchasePrice, stackCount
     end
   else
     -- No sales seen
-    deal = MasterMerchant:ActiveSettings().noSalesInfoDeal
+    deal = MasterMerchant.systemSavedVariables.noSalesInfoDeal
   end
 
   return deal, margin, profit

@@ -12,7 +12,7 @@ function MasterMerchant:initAGSIntegration()
     function(...)
       AwesomeGuildStore:RegisterFilter(DealFilter:New())
       AwesomeGuildStore:RegisterFilterFragment( DealFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_FILTER))
-      if self:ActiveSettings().minProfitFilter then
+      if MasterMerchant.systemSavedVariables.minProfitFilter then
         AwesomeGuildStore:RegisterFilter(ProfitFilter:New())
         AwesomeGuildStore:RegisterFilterFragment( AwesomeGuildStore.class.PriceRangeFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_SELECTOR))
       end

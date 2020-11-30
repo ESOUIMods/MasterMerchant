@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.4.0'
+MasterMerchant.version = '3.4.1'
 MasterMerchant.locale = GetCVar('Language.2')
 -- default is self
 MasterMerchant.viewMode = 'self'
@@ -39,20 +39,13 @@ MasterMerchant.verboseLevel = 4
 MasterMerchant.lastInputVar = { } -- debug var
 MasterMerchant.isScanningHistory = { } -- added for debug on 8-21
 MasterMerchant.isInitialized = false -- added 8-25 used
-MasterMerchant.eventIndex = { } -- added 8-25
-MasterMerchant.oldestEvent = { } -- added 8-25
-MasterMerchant.eventCount = { } -- added 8-25
-MasterMerchant.currentGuildID = 0 -- added 8-25
--- hack as defaults to prevent nil index error
-MasterMerchant.eventIndex[MasterMerchant.currentGuildID] = 0 -- added 8-25
-MasterMerchant.oldestEvent[MasterMerchant.currentGuildID] = 0 -- added 8-25
-MasterMerchant.eventCount[MasterMerchant.currentGuildID] = 0 -- added 8-25
 MasterMerchant.guildMemberInfo = { } -- added 10-17 used as lookup
 MasterMerchant.LibHistoireListener = { } -- added for debug on 10-31
 MasterMerchant.LibHistoireRefreshed = false -- added 8-25
 MasterMerchant.itemAverageLookupTable = { } -- added 11-21 used as lookup for tooltips
 MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
 MasterMerchant.isUsingGamepad = GetGamepadType() > 0 -- added 11-24
+MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
 
 if LibDebugLogger then
   local logger = LibDebugLogger.Create(MasterMerchant.name)

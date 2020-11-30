@@ -166,27 +166,27 @@ MMGuild = {
       o.sevenStart = dayCutoff - 30 * 86400 -- last 30 days
       o.eightStart = dayCutoff - 7 * 86400 -- last 7 days
 
-      if MasterMerchant:ActiveSettings().customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_HOURS) then
-        o.nineStart = GetTimeStamp() - MasterMerchant:ActiveSettings().customTimeframe * 3600 -- last x hours
+      if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_HOURS) then
+        o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 3600 -- last x hours
         o.nineEnd = GetTimeStamp() + 7 * 86400
       end
-      if MasterMerchant:ActiveSettings().customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_DAYS) then
-        o.nineStart = GetTimeStamp() - MasterMerchant:ActiveSettings().customTimeframe * 86400 -- last x days
+      if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_DAYS) then
+        o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 -- last x days
         o.nineEnd = GetTimeStamp() + 7 * 86400
       end
-      if MasterMerchant:ActiveSettings().customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_WEEKS) then
-        o.nineStart = GetTimeStamp() - MasterMerchant:ActiveSettings().customTimeframe * 86400 * 7 -- last x weeks
+      if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_WEEKS) then
+        o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 * 7 -- last x weeks
         o.nineEnd = GetTimeStamp() + 7 * 86400
       end
-      if MasterMerchant:ActiveSettings().customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) then
-        o.nineStart = weekCutoff - MasterMerchant:ActiveSettings().customTimeframe * 86400 * 7 -- last x full guild weeks
+      if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) then
+        o.nineStart = weekCutoff - MasterMerchant.systemSavedVariables.customTimeframe * 86400 * 7 -- last x full guild weeks
         o.nineEnd = weekCutoff
       end
       if o.nineStart == nil then
         -- Default custom timeframe to Last 3 days if it's undefined
-        MasterMerchant:ActiveSettings().customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS)
-        MasterMerchant:ActiveSettings().customTimeframe = 3
-        o.nineStart = GetTimeStamp() - MasterMerchant:ActiveSettings().customTimeframe * 86400 -- last x days
+        MasterMerchant.systemSavedVariables.customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS)
+        MasterMerchant.systemSavedVariables.customTimeframe = 3
+        o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 -- last x days
         o.nineEnd = GetTimeStamp() + 7 * 86400
       end
 

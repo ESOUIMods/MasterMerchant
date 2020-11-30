@@ -97,6 +97,27 @@ function MasterMerchant.spairs(t, order)
   end
 end
 
+function MasterMerchant:is_empty_or_nil(t)
+    if not t then return true end
+    if type(t) == "table" then
+        if next(t) == nil then
+            return true
+        else
+            return false
+        end
+    elseif type(t) == "string" then
+        if t == nil then
+            return true
+        elseif t == "" then
+            return true
+        else
+            return false
+        end
+    elseif type(t) == "nil" then
+        return true
+    end
+end
+
 function MasterMerchant.hashString(name)
   local hash = 0
   for c in string.gmatch(name, '.') do
@@ -565,7 +586,7 @@ end
 function MasterMerchant.LocalizedNumber(numberValue, chatText)
   if not numberValue then return '0' end
   local stringPrice
-  if (numberValue > 100) and MasterMerchant:ActiveSettings().trimDecimals then
+  if (numberValue > 100) and MasterMerchant.systemSavedVariables.trimDecimals then
     stringPrice = string.format('%.0f', numberValue)
   else
     stringPrice = string.format('%.2f', numberValue)
@@ -626,7 +647,7 @@ function MasterMerchant:ActiveSettings()
 end
 
 function MasterMerchant:ActiveWindow()
-  return ((self:ActiveSettings().viewSize == 'full' and MasterMerchantWindow) or MasterMerchantGuildWindow)
+  return ((MasterMerchant.systemSavedVariables.viewSize == 'full' and MasterMerchantWindow) or MasterMerchantGuildWindow)
 end
 
 -- A utility function to grab all the keys of the sound table
