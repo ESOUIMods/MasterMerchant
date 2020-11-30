@@ -1452,7 +1452,7 @@ function MasterMerchant:LibAddonInit()
             if self.UI_GuildTime then
               self.UI_GuildTime:SetHidden( not value )
             end
-            
+
             for key,column in pairs(self.guild_columns) do
               column:IsDisabled( not value )
             end
@@ -1466,8 +1466,8 @@ function MasterMerchant:LibAddonInit()
           name = GetString(MM_PURCHASES_COLUMN_NAME),
           tooltip = GetString(MM_PURCHASES_COLUMN_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.diplayPurchasesInfo end,
-          setFunc = function(value) 
-            MasterMerchant.systemSavedVariables.diplayPurchasesInfo = value 
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.diplayPurchasesInfo = value
             MasterMerchant.guild_columns['bought']:IsDisabled( not value )
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
@@ -1478,8 +1478,8 @@ function MasterMerchant:LibAddonInit()
           name = GetString(MM_SALES_COLUMN_NAME),
           tooltip = GetString(MM_SALES_COLUMN_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.diplaySalesInfo end,
-          setFunc = function(value) 
-            MasterMerchant.systemSavedVariables.diplaySalesInfo = value 
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.diplaySalesInfo = value
             MasterMerchant.guild_columns['sold']:IsDisabled( not value )
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
@@ -1490,8 +1490,8 @@ function MasterMerchant:LibAddonInit()
           name = GetString(MM_TAXES_COLUMN_NAME),
           tooltip = GetString(MM_TAXES_COLUMN_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.diplayTaxesInfo end,
-          setFunc = function(value) 
-            MasterMerchant.systemSavedVariables.diplayTaxesInfo = value 
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.diplayTaxesInfo = value
             MasterMerchant.guild_columns['per']:IsDisabled( not value )
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
@@ -1502,8 +1502,8 @@ function MasterMerchant:LibAddonInit()
           name = GetString(MM_COUNT_COLUMN_NAME),
           tooltip = GetString(MM_COUNT_COLUMN_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.diplayCountInfo end,
-          setFunc = function(value) 
-            MasterMerchant.systemSavedVariables.diplayCountInfo = value 
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.diplayCountInfo = value
             MasterMerchant.guild_columns['count']:IsDisabled( not value )
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
@@ -2801,40 +2801,6 @@ end
 
 --/script ZO_SharedRightBackground:SetWidth(1088)
 function MasterMerchant:InitRosterChanges()
-  -- LibGuildRoster adding the Bought Column
-  MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({
-    key = 'MM_Bought',
-    disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayPurchasesInfo,
-    width = 110,
-    header = {
-      title = GetString(SK_PURCHASES_COLUMN),
-      align = TEXT_ALIGN_RIGHT
-    },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function( guildId, data, index )
-
-        local amountBought = 0
-
-        if MasterMerchant.guildPurchases and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName] and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
-
-           amountBought = MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
-
-        end
-
-        return amountBought
-
-      end,
-      format = function( value )
-          return MasterMerchant.LocalizedNumber(value)
-      end
-    }
-  })
-
   -- LibGuildRoster adding the Sold Column
   MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({
     key = 'MM_Sold',
@@ -2869,11 +2835,45 @@ function MasterMerchant:InitRosterChanges()
     }
   })
 
+  -- LibGuildRoster adding the Bought Column
+  MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({
+    key = 'MM_Bought',
+    disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayPurchasesInfo,
+    width = 110,
+    header = {
+      title = GetString(SK_PURCHASES_COLUMN),
+      align = TEXT_ALIGN_RIGHT
+    },
+    row = {
+      align = TEXT_ALIGN_RIGHT,
+      data = function( guildId, data, index )
+
+        local amountBought = 0
+
+        if MasterMerchant.guildPurchases and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName] and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
+           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
+
+           amountBought = MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
+
+        end
+
+        return amountBought
+
+      end,
+      format = function( value )
+          return MasterMerchant.LocalizedNumber(value)
+      end
+    }
+  })
+
   -- LibGuildRoster adding the Tax Column
   MasterMerchant.guild_columns['per'] = LibGuildRoster:AddColumn({
     key = 'MM_PerChg',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayTaxesInfo,
-    width = 70,
+    width = 90,
     header = {
       title = GetString(SK_PER_CHANGE_COLUMN),
       align = TEXT_ALIGN_RIGHT,
@@ -2907,7 +2907,7 @@ function MasterMerchant:InitRosterChanges()
   MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({
     key = 'MM_Count',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayCountInfo,
-    width = 80,
+    width = 70,
     header = {
       title = GetString(SK_COUNT_COLUMN),
       align = TEXT_ALIGN_RIGHT

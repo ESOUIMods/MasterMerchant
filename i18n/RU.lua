@@ -280,3 +280,15 @@ ZO_CreateStringId("MM_COUNT_COLUMN_TIP", "Display Count on guild roster.")
 
 ZO_CreateStringId("MM_DAYS_FOCUS_THREE_NAME", "Focus 3 Days")
 ZO_CreateStringId("MM_DAYS_FOCUS_THREE_TIP", "Number of days sales to focus on.")
+
+ZO_CreateStringId("MM_DEBUG_LOGGER_NAME", "Activate Custom Debug Logging")
+ZO_CreateStringId("MM_DEBUG_LOGGER_TIP", "Activate the optional debug logging with LibDebugLogger when requested.")
+
+ZO_CreateStringId("MM_DATA_MANAGEMENT_NAME", "Data Management Options")
+ZO_CreateStringId("MASTER_MERCHANT_WINDOW_NAME", "Master Merchant Window Options")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Other Tooltip Options")
+ZO_CreateStringId("GUILD_STORE_OPTIONS", "Guild Store Options")
+ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Debug Options")
+ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Guild Master Options")
+ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventory Options")
+
