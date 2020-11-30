@@ -1163,7 +1163,7 @@ function MasterMerchant:LibAddonInit()
       type = "header",
       name = GetString(MASTER_MERCHANT_WINDOW_NAME),
       width = "full",
-      helpUrl = "https://esouimods.github.io/3-master_merchant.html#MasterMerchantWindow",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#MastermerchantWindowOptions",
     },
     -- Open main window with mailbox scenes
     [2] = {
@@ -1240,6 +1240,7 @@ function MasterMerchant:LibAddonInit()
       type = 'submenu',
       name = GetString(SK_ALERT_OPTIONS_NAME),
       tooltip = GetString(SK_ALERT_OPTIONS_TIP),
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#AlertOptions",
       controls = {
         -- On-Screen Alerts
         [1] = {
@@ -1314,6 +1315,7 @@ function MasterMerchant:LibAddonInit()
       type = 'submenu',
       name = GetString(MM_CALC_OPTIONS_NAME),
       tooltip = GetString(MM_CALC_OPTIONS_TIP),
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#CalculationDisplayOptions",
       controls = {
         -- On-Screen Alerts
         [1] = {
@@ -1466,20 +1468,7 @@ function MasterMerchant:LibAddonInit()
           end,
           default = MasterMerchant.systemDefault.diplayGuildInfo,
         },
-        -- guild roster options
         [2] = {
-          type = 'checkbox',
-          name = GetString(MM_PURCHASES_COLUMN_NAME),
-          tooltip = GetString(MM_PURCHASES_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplayPurchasesInfo end,
-          setFunc = function(value)
-            MasterMerchant.systemSavedVariables.diplayPurchasesInfo = value
-            MasterMerchant.guild_columns['bought']:IsDisabled( not value )
-          end,
-          disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplayPurchasesInfo,
-        },
-        [3] = {
           type = 'checkbox',
           name = GetString(MM_SALES_COLUMN_NAME),
           tooltip = GetString(MM_SALES_COLUMN_TIP),
@@ -1490,6 +1479,19 @@ function MasterMerchant:LibAddonInit()
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
           default = MasterMerchant.systemDefault.diplaySalesInfo,
+        },
+        -- guild roster options
+        [3] = {
+          type = 'checkbox',
+          name = GetString(MM_PURCHASES_COLUMN_NAME),
+          tooltip = GetString(MM_PURCHASES_COLUMN_TIP),
+          getFunc = function() return MasterMerchant.systemSavedVariables.diplayPurchasesInfo end,
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.diplayPurchasesInfo = value
+            MasterMerchant.guild_columns['bought']:IsDisabled( not value )
+          end,
+          disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
+          default = MasterMerchant.systemDefault.diplayPurchasesInfo,
         },
         [4] = {
           type = 'checkbox',
@@ -1581,6 +1583,7 @@ function MasterMerchant:LibAddonInit()
       type = "header",
       name = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
       width = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#OtherTooltipOptions",
     },
     ---------------------------------------------
     -- Whether or not to show the pricing graph in tooltips
@@ -1661,6 +1664,7 @@ function MasterMerchant:LibAddonInit()
       type = "header",
       name = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
       width = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
     },
     -- should we replace inventory values?
     [25] = {
@@ -1684,6 +1688,7 @@ function MasterMerchant:LibAddonInit()
       type = "header",
       name = GetString(GUILD_STORE_OPTIONS),
       width = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
     -- Should we show the stack price calculator?
     [28] = {
@@ -1740,6 +1745,7 @@ function MasterMerchant:LibAddonInit()
       type = "header",
       name = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
     },
     -- Verbose MM Messages
     [35] = {
