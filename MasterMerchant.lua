@@ -37,10 +37,10 @@ MasterMerchant.oneYearInSeconds = MasterMerchant.oneDayInSeconds * 365
 ------------------------------
 
 function MasterMerchant.CenterScreenAnnounce_AddMessage(eventId, category, ...)
-    local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(category)
-    messageParams:ConvertOldParams(...)
-    messageParams:SetLifespanMS(3500)
-    CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
+  local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(category)
+  messageParams:ConvertOldParams(...)
+  messageParams:SetLifespanMS(3500)
+  CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
 end
 
 function MasterMerchant:setupGuildColors()
@@ -51,32 +51,32 @@ function MasterMerchant:setupGuildColors()
     local nextGuildName = GetGuildName(nextGuildID)
     if nextGuildName ~= "" or nextGuildName ~= nil then
       local r, g, b = GetChatCategoryColor(CHAT_CHANNEL_GUILD_1 - 3 + nextGuild)
-      self.guildColor[nextGuildName] = {r, g, b};
+      self.guildColor[nextGuildName] = { r, g, b };
     else
-      self.guildColor[nextGuildName] = {255, 255, 255};
+      self.guildColor[nextGuildName] = { 255, 255, 255 };
     end
   end
 end
 
 function MasterMerchant:TimeCheck()
-    -- setup focus info
-    local range = MasterMerchant.systemSavedVariables.defaultDays
-    if IsControlKeyDown() and IsShiftKeyDown() then
-      range = MasterMerchant.systemSavedVariables.ctrlShiftDays
-    elseif IsControlKeyDown() then
-      range = MasterMerchant.systemSavedVariables.ctrlDays
-    elseif IsShiftKeyDown() then
-      range = MasterMerchant.systemSavedVariables.shiftDays
-    end
+  -- setup focus info
+  local range = MasterMerchant.systemSavedVariables.defaultDays
+  if IsControlKeyDown() and IsShiftKeyDown() then
+    range = MasterMerchant.systemSavedVariables.ctrlShiftDays
+  elseif IsControlKeyDown() then
+    range = MasterMerchant.systemSavedVariables.ctrlDays
+  elseif IsShiftKeyDown() then
+    range = MasterMerchant.systemSavedVariables.shiftDays
+  end
 
   -- 10000 for numDays is more or less like saying it is undefined
-    local daysRange = 10000
-    if range == GetString(MM_RANGE_NONE) then return -1, -1 end
-    if range == GetString(MM_RANGE_FOCUS1) then daysRange = MasterMerchant.systemSavedVariables.focus1 end
-    if range == GetString(MM_RANGE_FOCUS2) then daysRange = MasterMerchant.systemSavedVariables.focus2 end
-    if range == GetString(MM_RANGE_FOCUS3) then daysRange = MasterMerchant.systemSavedVariables.focus3 end
+  local daysRange = 10000
+  if range == GetString(MM_RANGE_NONE) then return -1, -1 end
+  if range == GetString(MM_RANGE_FOCUS1) then daysRange = MasterMerchant.systemSavedVariables.focus1 end
+  if range == GetString(MM_RANGE_FOCUS2) then daysRange = MasterMerchant.systemSavedVariables.focus2 end
+  if range == GetString(MM_RANGE_FOCUS3) then daysRange = MasterMerchant.systemSavedVariables.focus3 end
 
-    return GetTimeStamp() - (86400 * daysRange), daysRange
+  return GetTimeStamp() - (86400 * daysRange), daysRange
 end
 
 function MasterMerchant:UseSaleDaysRange(item, timeCheck)
@@ -85,7 +85,7 @@ function MasterMerchant:UseSaleDaysRange(item, timeCheck)
     (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
     (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
     (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-      return true
+    return true
   end
   return false
 end
@@ -95,7 +95,7 @@ function MasterMerchant:UseSaleAllSales(item)
   if (not zo_plainstrfind(lowerBlacklist, item.buyer:lower())) and
     (not zo_plainstrfind(lowerBlacklist, item.seller:lower())) and
     (not zo_plainstrfind(lowerBlacklist, item.guild:lower())) then
-      return true
+    return true
   end
   return false
 end
@@ -109,12 +109,12 @@ function MasterMerchant:FindMeanDaysRange(list, timeCheck)
   local newestTime = nil
   for i, item in pairs(list) do
     if MasterMerchant:UseSaleDaysRange(item, timeCheck) then
-        if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-        if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-        local individualSale = item.price / item.quant
-        initSum = initSum + item.price
-        initCount = initCount + item.quant
-        table.insert( medianTable, individualSale )
+      if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+      if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+      local individualSale = item.price / item.quant
+      initSum = initSum + item.price
+      initCount = initCount + item.quant
+      table.insert(medianTable, individualSale)
     end
   end
   initMean = (initSum / initCount)
@@ -131,12 +131,12 @@ function MasterMerchant:FindMeanAllSales(list)
   local newestTime = nil
   for i, item in pairs(list) do
     if MasterMerchant:UseSaleAllSales(item) then
-        if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-        if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-        local individualSale = item.price / item.quant
-        initSum = initSum + item.price
-        initCount = initCount + item.quant
-        table.insert( medianTable, individualSale )
+      if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+      if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+      local individualSale = item.price / item.quant
+      initSum = initSum + item.price
+      initCount = initCount + item.quant
+      table.insert(medianTable, individualSale)
     end
   end
   initMean = (initSum / initCount)
@@ -150,12 +150,12 @@ function MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean
   if initCount > 1 then
     for i, item in pairs(list) do
       if MasterMerchant:UseSaleDaysRange(item, timeCheck) then
-          local individualSale = item.price / item.quant
-          local virtualMean = individualSale - initMean
-          deviationSum = deviationSum + (virtualMean * virtualMean)
+        local individualSale = item.price / item.quant
+        local virtualMean = individualSale - initMean
+        deviationSum = deviationSum + (virtualMean * virtualMean)
       end
     end
-    standardDeviation = math.sqrt(deviationSum / (initCount-1))
+    standardDeviation = math.sqrt(deviationSum / (initCount - 1))
   end
   return standardDeviation
 end
@@ -167,12 +167,12 @@ function MasterMerchant:FindStandardDeviationAllSales(list, initCount, initMean)
   if initCount > 1 then
     for i, item in pairs(list) do
       if MasterMerchant:UseSaleAllSales(item) then
-          local individualSale = item.price / item.quant
-          local virtualMean = individualSale - initMean
-          deviationSum = deviationSum + (virtualMean * virtualMean)
+        local individualSale = item.price / item.quant
+        local virtualMean = individualSale - initMean
+        deviationSum = deviationSum + (virtualMean * virtualMean)
       end
     end
-    standardDeviation = math.sqrt(deviationSum / (initCount-1))
+    standardDeviation = math.sqrt(deviationSum / (initCount - 1))
   end
   return standardDeviation
 end
@@ -195,7 +195,7 @@ end
 -- Computes the weighted moving average across available data
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
   -- 10000 for numDays is more or less like saying it is undefined
-  local returnData = {['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = 10000, ['numItems'] = nil, ['craftCost'] = nil}
+  local returnData = { ['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = 10000, ['numItems'] = nil, ['craftCost'] = nil }
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
   For example when you press SHIFT or CTRL then daysHistory and daysRange
@@ -281,15 +281,15 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     if not lookupDataFound then
       if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
         -- determine the median
-        table.sort( medianTable )
+        table.sort(medianTable)
 
         -- If we have an even number of table elements or odd.
-        if math.fmod(#medianTable,2) == 0 then
+        if math.fmod(#medianTable, 2) == 0 then
           -- assign mean value of middle two elements
-          initMedian = ( medianTable[#medianTable/2] + medianTable[(#medianTable/2)+1] ) / 2
+          initMedian = (medianTable[#medianTable / 2] + medianTable[(#medianTable / 2) + 1]) / 2
         else
           -- assign middle element
-          initMedian = medianTable[math.ceil(#medianTable/2)]
+          initMedian = medianTable[math.ceil(#medianTable / 2)]
         end
       end
     else
@@ -361,18 +361,18 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
         isOutlier = true
       end
       if usesaleitem and not isOutlier then
-          -- process this sals
+        -- process this sals
         countSold = countSold + item.quant
         if timeInterval > 86400 then
-            weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
-            avgPrice = avgPrice + (item.price * weightValue)
-            weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
+          weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
+          avgPrice = avgPrice + (item.price * weightValue)
+          weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
         else
-            avgPrice = avgPrice + item.price
+          avgPrice = avgPrice + item.price
         end
         legitSales = legitSales + 1
-        if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min( lowPrice, individualSale ) end
-        if highPrice == nil then highPrice = individualSale else highPrice = math.max( highPrice, individualSale ) end
+        if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min(lowPrice, individualSale) end
+        if highPrice == nil then highPrice = individualSale else highPrice = math.max(highPrice, individualSale) end
         if not skipDots then
           local tooltip = nil
           --[[ clickable probably means to add the tooltip to the dot
@@ -381,14 +381,18 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
           if clickable then
             local stringPrice = self.LocalizedNumber(individualSale)
             if item.quant == 1 then
-              tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                string.format( GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)),  item.buyer, stringPrice)
+              tooltip = zo_strformat(GetString(SK_TIME_DAYS),
+                math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                string.format(GetString(MM_GRAPH_TIP_SINGLE), item.guild, item.seller,
+                  zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.buyer, stringPrice)
             else
-              tooltip = zo_strformat(GetString(SK_TIME_DAYS), math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
-                string.format( GetString(MM_GRAPH_TIP), item.guild, item.seller, zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
+              tooltip = zo_strformat(GetString(SK_TIME_DAYS),
+                math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+                string.format(GetString(MM_GRAPH_TIP), item.guild, item.seller,
+                  zo_strformat('<<t:1>>', GetItemLinkName(item.itemLink)), item.quant, item.buyer, stringPrice)
             end
           end -- clickable
-          table.insert(salesPoints, {item.timestamp, individualSale, self.guildColor[item.guild], tooltip})
+          table.insert(salesPoints, { item.timestamp, individualSale, self.guildColor[item.guild], tooltip })
         end -- end skip dots
       end
     end -- end new loop
@@ -398,8 +402,8 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
       avgPrice = avgPrice / countSold
     end
     if legitSales >= 1 then
-      returnData = {['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                    ['graphInfo'] = {['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints}}
+      returnData = { ['avgPrice']  = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                     ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
     end
   end
   if hasSalesData and (legitSales >= 1) then
@@ -448,227 +452,228 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     if tipStats['numSales'] ~= tipStats['numItems'] then
       salesString = salesString .. zo_strformat(GetString(MM_PRICETIP_ITEMS), tipStats['numItems'])
     end
-    return string.format(tipFormat, salesString, tipStats['numDays'], avePriceString), tipStats['avgPrice'], tipStats['graphInfo']
+    return string.format(tipFormat, salesString, tipStats['numDays'],
+      avePriceString), tipStats['avgPrice'], tipStats['graphInfo']
     --return string.format(tipFormat, zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales']), tipStats['numDays'], tipStats['avgPrice']), tipStats['avgPrice'], tipStats['graphInfo']
   else
     return nil, tipStats['numDays'], nil
   end
 end
 
-function  MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
-    local numIngredients = GetItemLinkRecipeNumIngredients(itemLink)
-    if numIngredients > 0 then
-        return numIngredients
+function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
+  local numIngredients = GetItemLinkRecipeNumIngredients(itemLink)
+  if numIngredients > 0 then
+    return numIngredients
+  end
+
+  -- Clear player crafted flag and switch to H0 and see if this is an item resulting from a fixed recipe.
+  local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
+  if MasterMerchant.recipeData[switchItemLink] then
+    return GetItemLinkRecipeNumIngredients(MasterMerchant.recipeData[switchItemLink])
+  end
+
+
+  --switch to MM pricing Item style
+  local mmStyleLink = string.match(switchItemLink, '|H.-:item:(.-):')
+  if mmStyleLink then
+    mmStyleLink = mmStyleLink .. ':' .. MasterMerchant.makeIndexFromLink(switchItemLink)
+    if MasterMerchant.virtualRecipe[mmStyleLink] then
+      return #MasterMerchant.virtualRecipe[mmStyleLink]
     end
+  end
 
-    -- Clear player crafted flag and switch to H0 and see if this is an item resulting from a fixed recipe.
-    local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h','0:0:0:0:0:0|h'), '|H1:', '|H0:')
-    if MasterMerchant.recipeData[switchItemLink] then
-        return GetItemLinkRecipeNumIngredients(MasterMerchant.recipeData[switchItemLink])
-    end
-
-
-    --switch to MM pricing Item style
-    local mmStyleLink = string.match(switchItemLink, '|H.-:item:(.-):')
-    if mmStyleLink then
-        mmStyleLink = mmStyleLink .. ':' .. MasterMerchant.makeIndexFromLink(switchItemLink)
-        if MasterMerchant.virtualRecipe[mmStyleLink] then
-          return #MasterMerchant.virtualRecipe[mmStyleLink]
-        end
-    end
-
-    --[[
-    -- See if it's a craftable thingy: potion, armor, weapon
-    local itemType, specializedItemType = GetItemLinkItemType('itemLink')
+  --[[
+  -- See if it's a craftable thingy: potion, armor, weapon
+  local itemType, specializedItemType = GetItemLinkItemType('itemLink')
 
 
-    --]]
+  --]]
 
-    --[[
-	local itemType = GetItemLinkItemType(itemLink)
-  	local equipType = GetItemLinkEquipType(itemLink)
-	local weaponType = GetItemLinkWeaponType(itemLink)
-	local armorType = GetItemLinkArmorType(itemLink)
-	local trait = GetItemLinkTraitInfo(itemLink)
-	local quality = GetItemLinkQuality(itemLink)
-	local level = GetItemLinkRequiredLevel(itemLink)
+  --[[
+local itemType = GetItemLinkItemType(itemLink)
+  local equipType = GetItemLinkEquipType(itemLink)
+local weaponType = GetItemLinkWeaponType(itemLink)
+local armorType = GetItemLinkArmorType(itemLink)
+local trait = GetItemLinkTraitInfo(itemLink)
+local quality = GetItemLinkQuality(itemLink)
+local level = GetItemLinkRequiredLevel(itemLink)
 
 
-    --]]
-    return 0
+  --]]
+  return 0
 end
 
+function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
+  local ingLink = GetItemLinkRecipeIngredientItemLink(itemLink, i)
+  if ingLink ~= '' then
+    local _, _, numRequired = GetItemLinkRecipeIngredientInfo(itemLink, i)
+    return ingLink, numRequired
+  end
 
-function  MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
-    local ingLink = GetItemLinkRecipeIngredientItemLink(itemLink, i)
-    if ingLink ~= '' then
-        local _, _, numRequired = GetItemLinkRecipeIngredientInfo(itemLink, i)
-        return ingLink, numRequired
+  local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
+  if MasterMerchant.recipeData[switchItemLink] then
+    return MasterMerchant.GetItemLinkRecipeIngredientInfo(MasterMerchant.recipeData[switchItemLink], i)
+  end
+
+  local mmStyleLink = string.match(switchItemLink, '|H.-:item:(.-):')
+  if mmStyleLink then
+    mmStyleLink = mmStyleLink .. ':' .. MasterMerchant.makeIndexFromLink(switchItemLink)
+    if MasterMerchant.virtualRecipe[mmStyleLink] then
+      return MasterMerchant.virtualRecipe[mmStyleLink][i].item, MasterMerchant.virtualRecipe[mmStyleLink][i].required
     end
+  end
 
-    local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h','0:0:0:0:0:0|h'), '|H1:', '|H0:')
-    if MasterMerchant.recipeData[switchItemLink] then
-        return MasterMerchant.GetItemLinkRecipeIngredientInfo(MasterMerchant.recipeData[switchItemLink], i)
-    end
+  return nil, nil
 
-    local mmStyleLink = string.match(switchItemLink, '|H.-:item:(.-):')
-    if mmStyleLink then
-        mmStyleLink = mmStyleLink .. ':' .. MasterMerchant.makeIndexFromLink(switchItemLink)
-        if MasterMerchant.virtualRecipe[mmStyleLink] then
-            return MasterMerchant.virtualRecipe[mmStyleLink][i].item, MasterMerchant.virtualRecipe[mmStyleLink][i].required
-        end
-    end
+  --[[
+  -- See if it's something for which we've built a recipe
+  local itemType, specializedItemType = GetItemLinkItemType('itemLink')
 
-    return nil, nil
+  -- script /d(GetItemLinkRequiredLevel('
 
-    --[[
-    -- See if it's something for which we've built a recipe
-    local itemType, specializedItemType = GetItemLinkItemType('itemLink')
+  -- Glyph |H1:item:5365:145:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+  -- /script d(GetItemLinkItemType('|H1:item:5365:145:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h'))
+  if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
+      if i == 3 then
+          -- Aspect : Quality / Color
+          return MasterMerchant.AspectRunes[GetItemLinkQuality(itemLink)], 1
+      end
+      local level = GetItemLinkRequiredLevel(itemLink)
+      local cp = GetItemLinkRequiredChampionPoints(itemLink)
 
-    -- script /d(GetItemLinkRequiredLevel('
-
-    -- Glyph |H1:item:5365:145:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
-    -- /script d(GetItemLinkItemType('|H1:item:5365:145:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h'))
-    if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
-        if i == 3 then
-            -- Aspect : Quality / Color
-            return MasterMerchant.AspectRunes[GetItemLinkQuality(itemLink)], 1
-        end
-        local level = GetItemLinkRequiredLevel(itemLink)
-        local cp = GetItemLinkRequiredChampionPoints(itemLink)
-
-        if i == 1 then
-            -- Potency : Level & Positive/Negative
-        end
-        if i == 2 then
-            -- Essence : Attibute
-        end
-    end
-    --]]
+      if i == 1 then
+          -- Potency : Level & Positive/Negative
+      end
+      if i == 2 then
+          -- Essence : Attibute
+      end
+  end
+  --]]
 end
 
 function MasterMerchant:itemCraftPrice(itemLink)
 
-    local itemType = GetItemLinkItemType(itemLink)
+  local itemType = GetItemLinkItemType(itemLink)
 
-    if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
+  if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
 
-        -- Potions/Posions aren't done yet
-        if true then
-          return nil
-        end
-
-        if not IsItemLinkCrafted(itemLink) then
-          return nil
-        end
-        local level = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)
-        local solvent = (itemType == ITEMTYPE_POTION and MasterMerchant.potionSolvents[level]) or MasterMerchant.poisonSolvents[level]
-        local ingLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', solvent)
-        local cost = MasterMerchant.GetItemLinePrice(ingLink)
-
-        --for i = 1, GetMaxTraits() do
-        --    local hasTraitAbility, traitAbilityDescription, traitCooldown, traitHasScaling, traitMinLevel, traitMaxLevel, traitIsChampionPoints = GetItemLinkTraitOnUseAbilityInfo(itemLink, i)
-        --    if(hasTraitAbility) then
-        --    end
-        --end
-        return cost / 4
-    end
-
-    local numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
-    if ((numIngredients or 0) == 0) then
-      -- Try to clean up item link by moving it to level 1
-      itemLink = itemLink:gsub(":0", ":1", 1)
-      numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
-    end
-    if ((numIngredients or 0) > 0) then
-      local cost = 0
-      for i = 1, numIngredients do
-        local ingLink, numRequired = MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
-        if ingLink then
-          cost = cost + (MasterMerchant.GetItemLinePrice(ingLink) * numRequired)
-        end
-      end
-
-      local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-      -- Food or Drink or Recipe Food/Drink
-      if ((itemType == ITEMTYPE_DRINK) or (itemType == ITEMTYPE_FOOD)
-          or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK))) then
-          cost = cost / 4
-      end
-      return cost
-	  else
+    -- Potions/Posions aren't done yet
+    if true then
       return nil
     end
+
+    if not IsItemLinkCrafted(itemLink) then
+      return nil
+    end
+    local level = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)
+    local solvent = (itemType == ITEMTYPE_POTION and MasterMerchant.potionSolvents[level]) or MasterMerchant.poisonSolvents[level]
+    local ingLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', solvent)
+    local cost = MasterMerchant.GetItemLinePrice(ingLink)
+
+    --for i = 1, GetMaxTraits() do
+    --    local hasTraitAbility, traitAbilityDescription, traitCooldown, traitHasScaling, traitMinLevel, traitMaxLevel, traitIsChampionPoints = GetItemLinkTraitOnUseAbilityInfo(itemLink, i)
+    --    if(hasTraitAbility) then
+    --    end
+    --end
+    return cost / 4
+  end
+
+  local numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
+  if ((numIngredients or 0) == 0) then
+    -- Try to clean up item link by moving it to level 1
+    itemLink = itemLink:gsub(":0", ":1", 1)
+    numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
+  end
+  if ((numIngredients or 0) > 0) then
+    local cost = 0
+    for i = 1, numIngredients do
+      local ingLink, numRequired = MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
+      if ingLink then
+        cost = cost + (MasterMerchant.GetItemLinePrice(ingLink) * numRequired)
+      end
+    end
+
+    local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+    -- Food or Drink or Recipe Food/Drink
+    if ((itemType == ITEMTYPE_DRINK) or (itemType == ITEMTYPE_FOOD)
+      or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK))) then
+      cost = cost / 4
+    end
+    return cost
+  else
+    return nil
+  end
 end
 
 function MasterMerchant:itemCraftPriceTip(itemLink, chatText)
-    local cost = self:itemCraftPrice(itemLink)
-    if cost then
-      craftTip = "Craft Cost: %s"
-      local craftTipString = self.LocalizedNumber(cost)
-      -- chatText
-      if not chatText then craftTip = craftTip .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+  local cost = self:itemCraftPrice(itemLink)
+  if cost then
+    craftTip = "Craft Cost: %s"
+    local craftTipString = self.LocalizedNumber(cost)
+    -- chatText
+    if not chatText then craftTip = craftTip .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
 
-      return string.format(craftTip, craftTipString)
-    else
-      return nil
-    end
+    return string.format(craftTip, craftTipString)
+  else
+    return nil
+  end
 end
 
 function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
-        local checkTime = GetGameTimeMilliseconds()
-        local recNumber = startNumber - 1
-        local resultLink
-        local itemLink
-        while true do
-            recNumber = recNumber + 1
+  local checkTime = GetGameTimeMilliseconds()
+  local recNumber = startNumber - 1
+  local resultLink
+  local itemLink
+  while true do
+    recNumber = recNumber + 1
 
-            itemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', recNumber)
-            local itemType = GetItemLinkItemType(itemLink)
-            if itemType == ITEMTYPE_ENCHANTING_RUNE_ESSENCE then
-                table.insert(MasterMerchant.essenceRunes, recNumber)
-            elseif itemType == ITEMTYPE_ENCHANTING_RUNE_POTENCY then
-                table.insert(MasterMerchant.potencyRunes, recNumber)
-            elseif itemType == ITEMTYPE_ENCHANTING_RUNE_ASPECT then
-                table.insert(MasterMerchant.aspectRunes, recNumber)
-            elseif itemType == ITEMTYPE_POTION_BASE then
-                MasterMerchant.potionSolvents[GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)] = recNumber
-            elseif itemType == ITEMTYPE_POISON_BASE then
-                MasterMerchant.poisonSolvents[GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)] = recNumber
-            elseif itemType == ITEMTYPE_REAGENT then
-                --[[
-                MasterMerchant.reagents[recNumber] = {}
-                for i = 1, GetMaxTraits() do
-                    local _, traitName = GetItemLinkReagentTraitInfo(itemLink, i)
-                    table.insert(MasterMerchant.reagents[recNumber], traitName)
-                    -- If you get an error here, you don't know all the flower/rune traits....
-                    MasterMerchant.traits[traitName] = MasterMerchant.traits[traitName] or {}
-                    table.insert(MasterMerchant.traits[traitName], recNumber)
-                end
-                --]]
-            elseif itemType == ITEMTYPE_RECIPE then
-                resultLink = GetItemLinkRecipeResultItemLink(itemLink)
+    itemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', recNumber)
+    local itemType = GetItemLinkItemType(itemLink)
+    if itemType == ITEMTYPE_ENCHANTING_RUNE_ESSENCE then
+      table.insert(MasterMerchant.essenceRunes, recNumber)
+    elseif itemType == ITEMTYPE_ENCHANTING_RUNE_POTENCY then
+      table.insert(MasterMerchant.potencyRunes, recNumber)
+    elseif itemType == ITEMTYPE_ENCHANTING_RUNE_ASPECT then
+      table.insert(MasterMerchant.aspectRunes, recNumber)
+    elseif itemType == ITEMTYPE_POTION_BASE then
+      MasterMerchant.potionSolvents[GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)] = recNumber
+    elseif itemType == ITEMTYPE_POISON_BASE then
+      MasterMerchant.poisonSolvents[GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)] = recNumber
+    elseif itemType == ITEMTYPE_REAGENT then
+      --[[
+      MasterMerchant.reagents[recNumber] = {}
+      for i = 1, GetMaxTraits() do
+          local _, traitName = GetItemLinkReagentTraitInfo(itemLink, i)
+          table.insert(MasterMerchant.reagents[recNumber], traitName)
+          -- If you get an error here, you don't know all the flower/rune traits....
+          MasterMerchant.traits[traitName] = MasterMerchant.traits[traitName] or {}
+          table.insert(MasterMerchant.traits[traitName], recNumber)
+      end
+      --]]
+    elseif itemType == ITEMTYPE_RECIPE then
+      resultLink = GetItemLinkRecipeResultItemLink(itemLink)
 
-                if (resultLink ~= "") then
-                    MasterMerchant.recipeData[resultLink] = itemLink
-                    MasterMerchant.recipeCount = MasterMerchant.recipeCount + 1
-                    --DEBUG
-                    --d(MasterMerchant.recipeCount .. ') ' .. itemLink .. ' --> ' .. resultLink  .. ' ('  .. recNumber .. ')')
-                end
-            end
+      if (resultLink ~= "") then
+        MasterMerchant.recipeData[resultLink] = itemLink
+        MasterMerchant.recipeCount = MasterMerchant.recipeCount + 1
+        --DEBUG
+        --d(MasterMerchant.recipeCount .. ') ' .. itemLink .. ' --> ' .. resultLink  .. ' ('  .. recNumber .. ')')
+      end
+    end
 
-            if (recNumber >= endNumber) then
-                MasterMerchant.v(5, '|cFFFF00Recipes Initialized -- Found information on ' .. MasterMerchant.recipeCount .. ' recipes.|r')
-                MasterMerchant.systemSavedVariables.recipeData = MasterMerchant.recipeData
-                break
-            end
+    if (recNumber >= endNumber) then
+      MasterMerchant.v(5,
+        '|cFFFF00Recipes Initialized -- Found information on ' .. MasterMerchant.recipeCount .. ' recipes.|r')
+      MasterMerchant.systemSavedVariables.recipeData = MasterMerchant.recipeData
+      break
+    end
 
-            if (GetGameTimeMilliseconds() - checkTime) > 20 then
-                local LEQ = LibExecutionQueue:new()
-                LEQ:ContinueWith(function () MasterMerchant.loadRecipesFrom(recNumber + 1, endNumber) end, 'Recipe Cont')
-                break
-            end
-        end
+    if (GetGameTimeMilliseconds() - checkTime) > 20 then
+      local LEQ = LibExecutionQueue:new()
+      LEQ:ContinueWith(function() MasterMerchant.loadRecipesFrom(recNumber + 1, endNumber) end, 'Recipe Cont')
+      break
+    end
+  end
 end
 
 --[[
@@ -711,79 +716,83 @@ end
 
 
 function MasterMerchant.setupRecipeInfo()
-    if not MasterMerchant.recipeData then
-        MasterMerchant.recipeData = {}
-        MasterMerchant.recipeCount = 0
+  if not MasterMerchant.recipeData then
+    MasterMerchant.recipeData = {}
+    MasterMerchant.recipeCount = 0
 
-        MasterMerchant.essenceRunes = {}
-        MasterMerchant.aspectRunes = {}
-        MasterMerchant.potencyRunes = {}
+    MasterMerchant.essenceRunes = {}
+    MasterMerchant.aspectRunes = {}
+    MasterMerchant.potencyRunes = {}
 
-        MasterMerchant.virtualRecipe = {}
-        MasterMerchant.virtualRecipeCount = 0
+    MasterMerchant.virtualRecipe = {}
+    MasterMerchant.virtualRecipeCount = 0
 
-        MasterMerchant.reagents = {}
-        MasterMerchant.traits = {}
-        MasterMerchant.potionSolvents = {}
-        MasterMerchant.poisonSolvents = {}
+    MasterMerchant.reagents = {}
+    MasterMerchant.traits = {}
+    MasterMerchant.potionSolvents = {}
+    MasterMerchant.poisonSolvents = {}
 
-        MasterMerchant.v(5, '|cFFFF00Searching Items|r')
-        local LEQ = LibExecutionQueue:new()
-        LEQ:Add(function () MasterMerchant.loadRecipesFrom(1, 450000) end, 'Search Items')
-        LEQ:Add(function () MasterMerchant.BuildEnchantingRecipes(1,1,0) end, 'Enchanting Recipes')
-        LEQ:Start()
-    end
+    MasterMerchant.v(5, '|cFFFF00Searching Items|r')
+    local LEQ = LibExecutionQueue:new()
+    LEQ:Add(function() MasterMerchant.loadRecipesFrom(1, 450000) end, 'Search Items')
+    LEQ:Add(function() MasterMerchant.BuildEnchantingRecipes(1, 1, 0) end, 'Enchanting Recipes')
+    LEQ:Start()
+  end
 end
 
 function MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect)
 
-        local checkTime = GetGameTimeMilliseconds()
+  local checkTime = GetGameTimeMilliseconds()
 
-        while true do
-            aspect = aspect + 1
-            if aspect > #MasterMerchant.aspectRunes then
-                aspect = 1
-                essence = essence + 1
-            end
-            if essence > #MasterMerchant.essenceRunes then
-                essence = 1
-                potency = potency + 1
-            end
-            if potency > #MasterMerchant.potencyRunes then
-                d('|cFFFF00Glyphs Initialized -- Created information on ' .. MasterMerchant.virtualRecipeCount .. ' glyphs.|r')
-                MasterMerchant.systemSavedVariables.virtualRecipe = MasterMerchant.virtualRecipe
-                break
-            end
+  while true do
+    aspect = aspect + 1
+    if aspect > #MasterMerchant.aspectRunes then
+      aspect = 1
+      essence = essence + 1
+    end
+    if essence > #MasterMerchant.essenceRunes then
+      essence = 1
+      potency = potency + 1
+    end
+    if potency > #MasterMerchant.potencyRunes then
+      d('|cFFFF00Glyphs Initialized -- Created information on ' .. MasterMerchant.virtualRecipeCount .. ' glyphs.|r')
+      MasterMerchant.systemSavedVariables.virtualRecipe = MasterMerchant.virtualRecipe
+      break
+    end
 
-            MasterMerchant.virtualRecipeCount = MasterMerchant.virtualRecipeCount + 1
-            -- Make Glyph
-            local potencyNum = MasterMerchant.potencyRunes[potency]
-            local essenceNum = MasterMerchant.essenceRunes[essence]
-            local aspectNum = MasterMerchant.aspectRunes[aspect]
+    MasterMerchant.virtualRecipeCount = MasterMerchant.virtualRecipeCount + 1
+    -- Make Glyph
+    local potencyNum = MasterMerchant.potencyRunes[potency]
+    local essenceNum = MasterMerchant.essenceRunes[essence]
+    local aspectNum = MasterMerchant.aspectRunes[aspect]
 
-            local glyph = GetEnchantingResultingItemLink(5, potencyNum, 5, essenceNum, 5, aspectNum)
-            --d(glyph)
-            --d(potencyNum .. '.' .. essenceNum .. '.' .. aspectNum)
-            if (glyph ~= '') then
-                local mmGlyph = string.match(glyph, '|H.-:item:(.-):') .. ':' .. MasterMerchant.makeIndexFromLink(glyph)
+    local glyph = GetEnchantingResultingItemLink(5, potencyNum, 5, essenceNum, 5, aspectNum)
+    --d(glyph)
+    --d(potencyNum .. '.' .. essenceNum .. '.' .. aspectNum)
+    if (glyph ~= '') then
+      local mmGlyph = string.match(glyph, '|H.-:item:(.-):') .. ':' .. MasterMerchant.makeIndexFromLink(glyph)
 
-                MasterMerchant.virtualRecipe[mmGlyph] = {
-                    [1] = {['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', potencyNum), ['required'] = 1},
-                    [2] = {['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', essenceNum), ['required'] = 1},
-                    [3] = {['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', aspectNum), ['required'] = 1}
-                }
-            end
+      MasterMerchant.virtualRecipe[mmGlyph] = {
+        [1] = { ['item']            = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
+          potencyNum), ['required'] = 1 },
+        [2] = { ['item']            = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
+          essenceNum), ['required'] = 1 },
+        [3] = { ['item']           = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
+          aspectNum), ['required'] = 1 }
+      }
+    end
 
-            --DEBUG
-            --d(glyph)
-            --d(MasterMerchant.virtualRecipe[glyph])
+    --DEBUG
+    --d(glyph)
+    --d(MasterMerchant.virtualRecipe[glyph])
 
-            if (GetGameTimeMilliseconds() - checkTime) > 20 then
-                local LEQ = LibExecutionQueue:new()
-                LEQ:ContinueWith(function () MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect) end, 'Enchanting Recipes Cont')
-                break
-            end
-        end
+    if (GetGameTimeMilliseconds() - checkTime) > 20 then
+      local LEQ = LibExecutionQueue:new()
+      LEQ:ContinueWith(function() MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect) end,
+        'Enchanting Recipes Cont')
+      break
+    end
+  end
 end
 
 -- Copyright (c) 2014 Matthew Miller (Mattmillus)
@@ -838,8 +847,8 @@ end
 
 -- Adjusted Per AssemblerManiac request 2019-2-20
 function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, ...)
-	if button == MOUSE_BUTTON_INDEX_RIGHT and linkType == ITEM_LINK_TYPE and type(link) == 'string' and	#link > 0 and	link ~= '' then
-		zo_callLater(function()
+  if button == MOUSE_BUTTON_INDEX_RIGHT and linkType == ITEM_LINK_TYPE and type(link) == 'string' and #link > 0 and link ~= '' then
+    zo_callLater(function()
       if MasterMerchant:itemCraftPrice(link) then
         AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
       end
@@ -850,76 +859,78 @@ function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, 
 end
 
 function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFunction, scene)
-    if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
+  if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
 
-        local link = linkFunction()
+    local link = linkFunction()
 
-        if (link ~= "" and string.match(link, '|H.-:item:(.-):')) then
-            ClearMenu()
+    if (link ~= "" and string.match(link, '|H.-:item:(.-):')) then
+      ClearMenu()
 
-            AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
-            AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
-            AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT), function() ZO_LinkHandler_InsertLink(zo_strformat(SI_TOOLTIP_ITEM_NAME, link)) end)
+      AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
+      AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT),
+        function() ZO_LinkHandler_InsertLink(zo_strformat(SI_TOOLTIP_ITEM_NAME, link)) end)
 
-            ShowMenu(scene)
-        end
+      ShowMenu(scene)
     end
+  end
 end
 
 function MasterMerchant.myProvisionerOnTooltipMouseUp(control, button, upInside)
-    MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
-    function ()
-        local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
-        return ZO_LinkHandler_CreateChatLink(GetRecipeResultItemLink, recipeListIndex, recipeIndex)
+  MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
+    function()
+      local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
+      return ZO_LinkHandler_CreateChatLink(GetRecipeResultItemLink, recipeListIndex, recipeIndex)
     end,
     PROVISIONER
-    )
+  )
 end
 PROVISIONER.resultTooltip:SetHandler("OnMouseUp", MasterMerchant.myProvisionerOnTooltipMouseUp)
 PROVISIONER.resultTooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp", MasterMerchant.myProvisionerOnTooltipMouseUp)
 
 function MasterMerchant.myAlchemyOnTooltipMouseUp(control, button, upInside)
-    MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
-    function ()
-        return ZO_LinkHandler_CreateChatLink(GetAlchemyResultingItemLink, ALCHEMY:GetAllCraftingBagAndSlots())
+  MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
+    function()
+      return ZO_LinkHandler_CreateChatLink(GetAlchemyResultingItemLink, ALCHEMY:GetAllCraftingBagAndSlots())
     end,
     ALCHEMY
-    )
+  )
 end
 ALCHEMY.tooltip:SetHandler("OnMouseUp", MasterMerchant.myAlchemyOnTooltipMouseUp)
 ALCHEMY.tooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp", MasterMerchant.myAlchemyOnTooltipMouseUp)
 
-
 function MasterMerchant.mySmithingOnTooltipMouseUp(control, button, upInside)
-    MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
-    function ()
-        return ZO_LinkHandler_CreateChatLink(GetSmithingPatternResultLink, SMITHING.creationPanel:GetSelectedPatternIndex(), SMITHING.creationPanel:GetSelectedMaterialIndex(),
-          SMITHING.creationPanel:GetSelectedMaterialQuantity(), SMITHING.creationPanel:GetSelectedItemStyleId(), SMITHING.creationPanel:GetSelectedTraitIndex())
+  MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
+    function()
+      return ZO_LinkHandler_CreateChatLink(GetSmithingPatternResultLink,
+        SMITHING.creationPanel:GetSelectedPatternIndex(), SMITHING.creationPanel:GetSelectedMaterialIndex(),
+        SMITHING.creationPanel:GetSelectedMaterialQuantity(), SMITHING.creationPanel:GetSelectedItemStyleId(),
+        SMITHING.creationPanel:GetSelectedTraitIndex())
     end,
     SMITHING.creationPanel
-    )
+  )
 end
 SMITHING.creationPanel.resultTooltip:SetHandler("OnMouseUp", MasterMerchant.mySmithingOnTooltipMouseUp)
-SMITHING.creationPanel.resultTooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp", MasterMerchant.mySmithingOnTooltipMouseUp)
+SMITHING.creationPanel.resultTooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp",
+  MasterMerchant.mySmithingOnTooltipMouseUp)
 
 function MasterMerchant.myEnchantingOnTooltipMouseUp(control, button, upInside)
-    MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
-    function ()
-        return ZO_LinkHandler_CreateChatLink(GetEnchantingResultingItemLink, ENCHANTING:GetAllCraftingBagAndSlots())
+  MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
+    function()
+      return ZO_LinkHandler_CreateChatLink(GetEnchantingResultingItemLink, ENCHANTING:GetAllCraftingBagAndSlots())
     end,
     ENCHANTING
-    )
+  )
 end
 ENCHANTING.resultTooltip:SetHandler("OnMouseUp", MasterMerchant.myEnchantingOnTooltipMouseUp)
 ENCHANTING.resultTooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp", MasterMerchant.myEnchantingOnTooltipMouseUp)
-
-
 
 function MasterMerchant:my_NameHandler_OnLinkMouseUp(player, button, control)
   if (type(player) == 'string' and #player > 0) then
     if (button == 2 and player ~= '') then
       ClearMenu()
-      AddMenuItem(GetString(SI_SOCIAL_LIST_SEND_MESSAGE), function() StartChatInput(nil, CHAT_CHANNEL_WHISPER, player) end)
+      AddMenuItem(GetString(SI_SOCIAL_LIST_SEND_MESSAGE),
+        function() StartChatInput(nil, CHAT_CHANNEL_WHISPER, player) end)
       AddMenuItem(GetString(SI_SOCIAL_MENU_SEND_MAIL), function() MAIL_SEND:ComposeMailTo(player) end)
       ShowMenu(control)
     end
@@ -940,8 +951,10 @@ function MasterMerchant.PostPendingItem(self)
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
       local selectedGuildId = GetSelectedTradingHouseGuildId()
-      MasterMerchant.v(2, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
-        zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice, GetGuildName(selectedGuildId)))
+      MasterMerchant.v(2,
+        string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
+          zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
+          GetGuildName(selectedGuildId)))
     end
   end
 end
@@ -957,8 +970,8 @@ MasterMerchant.CustomDealCalc = {
     local profit = -1
     if (setPrice) then
       local unitPrice = purchasePrice / stackCount
-      profit =(setPrice - unitPrice) * stackCount
-      margin = tonumber(string.format('%.2f',(((setPrice * .92) - unitPrice) / unitPrice) * 100))
+      profit = (setPrice - unitPrice) * stackCount
+      margin = tonumber(string.format('%.2f', (((setPrice * .92) - unitPrice) / unitPrice) * 100))
 
       if (margin >= 100) then
         deal = 5
@@ -984,32 +997,33 @@ MasterMerchant.CustomDealCalc = {
 
 MasterMerchant.CustomDealCalc['@freakyfreak'] = MasterMerchant.CustomDealCalc['@Causa']
 
-
 function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
-    local st = ZO_InventorySlot_GetType(inventorySlot)
-    link = nil
-    if st == SLOT_TYPE_ITEM or st == SLOT_TYPE_EQUIPMENT or st == SLOT_TYPE_BANK_ITEM or st == SLOT_TYPE_GUILD_BANK_ITEM or
-       st == SLOT_TYPE_TRADING_HOUSE_POST_ITEM or st == SLOT_TYPE_REPAIR or st == SLOT_TYPE_CRAFTING_COMPONENT or st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or
-       st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or st == SLOT_TYPE_CRAFT_BAG_ITEM then
-        local bag, index = ZO_Inventory_GetBagAndIndex(inventorySlot)
-        link = GetItemLink(bag, index)
-    end
-    if st == SLOT_TYPE_TRADING_HOUSE_ITEM_RESULT then
-        link = GetTradingHouseSearchResultItemLink(ZO_Inventory_GetSlotIndex(inventorySlot))
-    end
-    if st == SLOT_TYPE_TRADING_HOUSE_ITEM_LISTING then
-        link = GetTradingHouseListingItemLink(ZO_Inventory_GetSlotIndex(inventorySlot), linkStyle)
-    end
-    if (link and string.match(link, '|H.-:item:(.-):')) then
-		zo_callLater(function()
-            if MasterMerchant:itemCraftPrice(link) then
-               AddMenuItem("Craft Cost to Chat", function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
-            end
-            AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
-            AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(link) end, MENU_ADD_OPTION_LABEL)
-            ShowMenu(self)
-        end, 50)
-    end
+  local st = ZO_InventorySlot_GetType(inventorySlot)
+  link = nil
+  if st == SLOT_TYPE_ITEM or st == SLOT_TYPE_EQUIPMENT or st == SLOT_TYPE_BANK_ITEM or st == SLOT_TYPE_GUILD_BANK_ITEM or
+    st == SLOT_TYPE_TRADING_HOUSE_POST_ITEM or st == SLOT_TYPE_REPAIR or st == SLOT_TYPE_CRAFTING_COMPONENT or st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or
+    st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or st == SLOT_TYPE_CRAFT_BAG_ITEM then
+    local bag, index = ZO_Inventory_GetBagAndIndex(inventorySlot)
+    link = GetItemLink(bag, index)
+  end
+  if st == SLOT_TYPE_TRADING_HOUSE_ITEM_RESULT then
+    link = GetTradingHouseSearchResultItemLink(ZO_Inventory_GetSlotIndex(inventorySlot))
+  end
+  if st == SLOT_TYPE_TRADING_HOUSE_ITEM_LISTING then
+    link = GetTradingHouseListingItemLink(ZO_Inventory_GetSlotIndex(inventorySlot), linkStyle)
+  end
+  if (link and string.match(link, '|H.-:item:(.-):')) then
+    zo_callLater(function()
+      if MasterMerchant:itemCraftPrice(link) then
+        AddMenuItem("Craft Cost to Chat", function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
+      end
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end,
+        MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(link) end,
+        MENU_ADD_OPTION_LABEL)
+      ShowMenu(self)
+    end, 50)
+  end
 end
 
 -- Calculate some stats based on the player's sales
@@ -1018,19 +1032,20 @@ function MasterMerchant:SalesStats(statsDays)
   -- Initialize some values as we'll be using accumulation in the loop
   -- SK_STATS_TOTAL is a key for the overall stats as a guild is unlikely
   -- to be named that, except maybe just to mess with me :D
-  local itemsSold = {['SK_STATS_TOTAL'] = 0}
-  local goldMade = {['SK_STATS_TOTAL'] = 0}
-  local largestSingle = {['SK_STATS_TOTAL'] = {0, nil}}
+  local itemsSold = { ['SK_STATS_TOTAL'] = 0 }
+  local goldMade = { ['SK_STATS_TOTAL'] = 0 }
+  local largestSingle = { ['SK_STATS_TOTAL'] = { 0, nil } }
   local oldestTime = 0
   local newestTime = 0
   local overallOldestTime = 0
-  local kioskSales = {['SK_STATS_TOTAL'] = 0}
+  local kioskSales = { ['SK_STATS_TOTAL'] = 0 }
 
   -- Set up the guild chooser, with the all guilds/overall option first
   --(other guilds will be added below)
   local guildDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantStatsGuildChooser)
   guildDropdown:ClearItems()
-  local allGuilds = guildDropdown:CreateItemEntry(GetString(SK_STATS_ALL_GUILDS), function() self:UpdateStatsWindow('SK_STATS_TOTAL') end)
+  local allGuilds = guildDropdown:CreateItemEntry(GetString(SK_STATS_ALL_GUILDS),
+    function() self:UpdateStatsWindow('SK_STATS_TOTAL') end)
   guildDropdown:AddItem(allGuilds)
 
   -- 86,400 seconds in a day; this will be the epoch time statsDays ago
@@ -1080,9 +1095,9 @@ function MasterMerchant:SalesStats(statsDays)
         if newestTime == 0 or theItem.timestamp > newestTime then newestTime = theItem.timestamp end
 
         -- Largest single sale
-        if theItem.price > largestSingle['SK_STATS_TOTAL'][1] then largestSingle['SK_STATS_TOTAL'] = {theItem.price, theItem.itemLink} end
+        if theItem.price > largestSingle['SK_STATS_TOTAL'][1] then largestSingle['SK_STATS_TOTAL'] = { theItem.price, theItem.itemLink } end
         if largestSingle[theItem.guild] == nil or theItem.price > largestSingle[theItem.guild][1] then
-          largestSingle[theItem.guild] = {theItem.price, theItem.itemLink}
+          largestSingle[theItem.guild] = { theItem.price, theItem.itemLink }
         end
       end
       -- Check to see if we need to update the overall oldest time (used to set slider range)
@@ -1115,7 +1130,8 @@ function MasterMerchant:SalesStats(statsDays)
     end
 
     if theGuildName ~= 'SK_STATS_TOTAL' then
-      local guildEntry = guildDropdown:CreateItemEntry(theGuildName, function() self:UpdateStatsWindow(theGuildName) end)
+      local guildEntry = guildDropdown:CreateItemEntry(theGuildName,
+        function() self:UpdateStatsWindow(theGuildName) end)
       guildDropdown:AddItem(guildEntry)
     end
 
@@ -1129,12 +1145,12 @@ function MasterMerchant:SalesStats(statsDays)
   end
 
   -- Return the statistical data in a convenient table
-  return { numSold = itemsSold,
-           numDays = dayWindow,
-           totalDays = overallDayWindow,
-           totalGold = goldMade,
-           avgGold = goldPerDay,
-           biggestSale = largestSingle,
+  return { numSold      = itemsSold,
+           numDays      = dayWindow,
+           totalDays    = overallDayWindow,
+           totalGold    = goldMade,
+           avgGold      = goldPerDay,
+           biggestSale  = largestSingle,
            kioskPercent = kioskPercentage, }
 end
 
@@ -1145,30 +1161,30 @@ MasterMerchant.UI_GuildTime = nil
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
   local panelData = {
-    type = 'panel',
-    name = 'Master Merchant',
-    displayName = GetString(MM_APP_NAME),
-    author = GetString(MM_APP_AUTHOR),
-    version = self.version,
-    website = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
-    feedback = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
-    donation = "https://sharlikran.github.io/",
-    registerForRefresh = true,
+    type                = 'panel',
+    name                = 'Master Merchant',
+    displayName         = GetString(MM_APP_NAME),
+    author              = GetString(MM_APP_AUTHOR),
+    version             = self.version,
+    website             = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
+    feedback            = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
+    donation            = "https://sharlikran.github.io/",
+    registerForRefresh  = true,
     registerForDefaults = true,
   }
   LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
 
   local optionsData = {
-    [1] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_WINDOW_NAME),
-      width = "full",
+    [1]  = {
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_WINDOW_NAME),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MastermerchantWindowOptions",
     },
     -- Open main window with mailbox scenes
-    [2] = {
-      type = 'checkbox',
-      name = GetString(SK_OPEN_MAIL_NAME),
+    [2]  = {
+      type    = 'checkbox',
+      name    = GetString(SK_OPEN_MAIL_NAME),
       tooltip = GetString(SK_OPEN_MAIL_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithMail end,
       setFunc = function(value)
@@ -1187,9 +1203,9 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.openWithMail,
     },
     -- Open main window with trading house scene
-    [3] = {
-      type = 'checkbox',
-      name = GetString(SK_OPEN_STORE_NAME),
+    [3]  = {
+      type    = 'checkbox',
+      name    = GetString(SK_OPEN_STORE_NAME),
       tooltip = GetString(SK_OPEN_STORE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithStore end,
       setFunc = function(value)
@@ -1206,9 +1222,9 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.openWithStore,
     },
     -- Show full sale price or post-tax price
-    [4] = {
-      type = 'checkbox',
-      name = GetString(SK_FULL_SALE_NAME),
+    [4]  = {
+      type    = 'checkbox',
+      name    = GetString(SK_FULL_SALE_NAME),
       tooltip = GetString(SK_FULL_SALE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showFullPrice end,
       setFunc = function(value)
@@ -1220,9 +1236,9 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showFullPrice,
     },
     -- Font to use
-    [5] = {
-      type = 'dropdown',
-      name = GetString(SK_WINDOW_FONT_NAME),
+    [5]  = {
+      type    = 'dropdown',
+      name    = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
       choices = LMP:List(LMP.MediaType.FONT),
       getFunc = function() return MasterMerchant.systemSavedVariables.windowFont end,
@@ -1236,24 +1252,24 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.windowFont,
     },
     -- Sound and Alert options
-    [6] = {
-      type = 'submenu',
-      name = GetString(SK_ALERT_OPTIONS_NAME),
-      tooltip = GetString(SK_ALERT_OPTIONS_TIP),
-      helpUrl = "https://esouimods.github.io/3-master_merchant.html#AlertOptions",
+    [6]  = {
+      type     = 'submenu',
+      name     = GetString(SK_ALERT_OPTIONS_NAME),
+      tooltip  = GetString(SK_ALERT_OPTIONS_TIP),
+      helpUrl  = "https://esouimods.github.io/3-master_merchant.html#AlertOptions",
       controls = {
         -- On-Screen Alerts
         [1] = {
-          type = 'checkbox',
-          name = GetString(SK_ALERT_ANNOUNCE_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ALERT_ANNOUNCE_NAME),
           tooltip = GetString(SK_ALERT_ANNOUNCE_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showAnnounceAlerts end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showAnnounceAlerts = value end,
           default = MasterMerchant.systemDefault.showAnnounceAlerts,
         },
         [2] = {
-          type = 'checkbox',
-          name = GetString(SK_ALERT_CYRODIIL_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ALERT_CYRODIIL_NAME),
           tooltip = GetString(SK_ALERT_CYRODIIL_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showCyroAlerts end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showCyroAlerts = value end,
@@ -1261,8 +1277,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Chat Alerts
         [3] = {
-          type = 'checkbox',
-          name = GetString(SK_ALERT_CHAT_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ALERT_CHAT_NAME),
           tooltip = GetString(SK_ALERT_CHAT_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showChatAlerts end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showChatAlerts = value end,
@@ -1270,8 +1286,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Sound to use for alerts
         [4] = {
-          type = 'dropdown',
-          name = GetString(SK_ALERT_TYPE_NAME),
+          type    = 'dropdown',
+          name    = GetString(SK_ALERT_TYPE_NAME),
           tooltip = GetString(SK_ALERT_TYPE_TIP),
           choices = self:SoundKeys(),
           getFunc = function() return self:SearchSounds(MasterMerchant.systemSavedVariables.alertSoundName) end,
@@ -1283,8 +1299,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Whether or not to show multiple alerts for multiple sales
         [5] = {
-          type = 'checkbox',
-          name = GetString(SK_MULT_ALERT_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_MULT_ALERT_NAME),
           tooltip = GetString(SK_MULT_ALERT_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showMultiple end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showMultiple = value end,
@@ -1292,8 +1308,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Offline sales report
         [6] = {
-          type = 'checkbox',
-          name = GetString(SK_OFFLINE_SALES_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_OFFLINE_SALES_NAME),
           tooltip = GetString(SK_OFFLINE_SALES_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.offlineSales end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.offlineSales = value end,
@@ -1301,8 +1317,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- should we display the item listed message?
         [7] = {
-          type = 'checkbox',
-          name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
+          type    = 'checkbox',
+          name    = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
           tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.displayListingMessage end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.displayListingMessage = value end,
@@ -1311,114 +1327,115 @@ function MasterMerchant:LibAddonInit()
       },
     },
     -- Tip display and calculation options
-    [7] = {
-      type = 'submenu',
-      name = GetString(MM_CALC_OPTIONS_NAME),
-      tooltip = GetString(MM_CALC_OPTIONS_TIP),
-      helpUrl = "https://esouimods.github.io/3-master_merchant.html#CalculationDisplayOptions",
+    [7]  = {
+      type     = 'submenu',
+      name     = GetString(MM_CALC_OPTIONS_NAME),
+      tooltip  = GetString(MM_CALC_OPTIONS_TIP),
+      helpUrl  = "https://esouimods.github.io/3-master_merchant.html#CalculationDisplayOptions",
       controls = {
         -- On-Screen Alerts
-        [1] = {
-          type = 'slider',
-          name = GetString(MM_DAYS_FOCUS_ONE_NAME),
+        [1]  = {
+          type    = 'slider',
+          name    = GetString(MM_DAYS_FOCUS_ONE_NAME),
           tooltip = GetString(MM_DAYS_FOCUS_ONE_TIP),
-          min = 1,
-          max = 90,
+          min     = 1,
+          max     = 90,
           getFunc = function() return MasterMerchant.systemSavedVariables.focus1 end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.focus1 = value end,
           default = MasterMerchant.systemDefault.focus1,
         },
-        [2] = {
-          type = 'slider',
-          name = GetString(MM_DAYS_FOCUS_TWO_NAME),
+        [2]  = {
+          type    = 'slider',
+          name    = GetString(MM_DAYS_FOCUS_TWO_NAME),
           tooltip = GetString(MM_DAYS_FOCUS_TWO_TIP),
-          min = 1,
-          max = 90,
+          min     = 1,
+          max     = 90,
           getFunc = function() return MasterMerchant.systemSavedVariables.focus2 end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.focus2 = value end,
           default = MasterMerchant.systemDefault.focus2,
         },
-        [3] = {
-          type = 'slider',
-          name = GetString(MM_DAYS_FOCUS_THREE_NAME),
+        [3]  = {
+          type    = 'slider',
+          name    = GetString(MM_DAYS_FOCUS_THREE_NAME),
           tooltip = GetString(MM_DAYS_FOCUS_THREE_TIP),
-          min = 1,
-          max = 90,
+          min     = 1,
+          max     = 90,
           getFunc = function() return MasterMerchant.systemSavedVariables.focus3 end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.focus3 = value end,
           default = MasterMerchant.systemDefault.focus3,
         },
         -- default time range
-        [4] = {
-          type = 'dropdown',
-          name = GetString(MM_DEFAULT_TIME_NAME),
+        [4]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_DEFAULT_TIME_NAME),
           tooltip = GetString(MM_DEFAULT_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
+          choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.defaultDays end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.defaultDays = value end,
           default = MasterMerchant.systemDefault.defaultDays,
         },
         -- shift time range
-        [5] = {
-          type = 'dropdown',
-          name = GetString(MM_SHIFT_TIME_NAME),
+        [5]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_SHIFT_TIME_NAME),
           tooltip = GetString(MM_SHIFT_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
+          choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.shiftDays end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.shiftDays = value end,
           default = MasterMerchant.systemDefault.shiftDays,
         },
         -- ctrl time range
-        [6] = {
-          type = 'dropdown',
-          name = GetString(MM_CTRL_TIME_NAME),
+        [6]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_CTRL_TIME_NAME),
           tooltip = GetString(MM_CTRL_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
+          choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.ctrlDays end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.ctrlDays = value end,
           default = MasterMerchant.systemDefault.ctrlDays,
         },
         -- ctrl-shift time range
-        [7] = {
-          type = 'dropdown',
-          name = GetString(MM_CTRLSHIFT_TIME_NAME),
+        [7]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_CTRLSHIFT_TIME_NAME),
           tooltip = GetString(MM_CTRLSHIFT_TIME_TIP),
-          choices = {GetString(MM_RANGE_ALL),GetString(MM_RANGE_FOCUS1),GetString(MM_RANGE_FOCUS2),GetString(MM_RANGE_FOCUS3),GetString(MM_RANGE_NONE)},
+          choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.ctrlShiftDays end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.ctrlShiftDays = value end,
           default = MasterMerchant.systemDefault.ctrlShiftDays,
         },
-        [8] = {
-          type = 'slider',
-          name = GetString(MM_NO_DATA_DEAL_NAME),
+        [8]  = {
+          type    = 'slider',
+          name    = GetString(MM_NO_DATA_DEAL_NAME),
           tooltip = GetString(MM_NO_DATA_DEAL_TIP),
-          min = 0,
-          max = 5,
+          min     = 0,
+          max     = 5,
           getFunc = function() return MasterMerchant.systemSavedVariables.noSalesInfoDeal end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.noSalesInfoDeal = value end,
           default = MasterMerchant.systemDefault.noSalesInfoDeal,
         },
         -- blacklisted players and guilds
-        [9] = {
-          type = 'editbox',
-          name = GetString(MM_BLACKLIST_NAME),
-          tooltip = GetString(MM_BLACKLIST_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.blacklist end,
-          setFunc = function(value) MasterMerchant.systemSavedVariables.blacklist = value end,
-          default = MasterMerchant.systemDefault.blacklist,
+        [9]  = {
+          type        = 'editbox',
+          name        = GetString(MM_BLACKLIST_NAME),
+          tooltip     = GetString(MM_BLACKLIST_TIP),
+          getFunc     = function() return MasterMerchant.systemSavedVariables.blacklist end,
+          setFunc     = function(value) MasterMerchant.systemSavedVariables.blacklist = value end,
+          default     = MasterMerchant.systemDefault.blacklist,
           isMultiline = true,
-          textType = TEXT_TYPE_ALL,
-          width = "full"
+          textType    = TEXT_TYPE_ALL,
+          width       = "full"
         },
         -- customTimeframe
         [10] = {
-          type = 'slider',
-          name = GetString(MM_CUSTOM_TIMEFRAME_NAME),
+          type    = 'slider',
+          name    = GetString(MM_CUSTOM_TIMEFRAME_NAME),
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_TIP),
-          min = 1,
-          max = 24 * 31,
+          min     = 1,
+          max     = 24 * 31,
           getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframe end,
-          setFunc = function(value) MasterMerchant.systemSavedVariables.customTimeframe = value
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.customTimeframe = value
             MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
             MasterMerchant:BuildRosterTimeDropdown()
             MasterMerchant:BuildGuiTimeDropdown()
@@ -1427,12 +1444,13 @@ function MasterMerchant:LibAddonInit()
         },
         -- shift time range
         [11] = {
-          type = 'dropdown',
-          name = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
+          type    = 'dropdown',
+          name    = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_SCALE_TIP),
-          choices = {GetString(MM_CUSTOM_TIMEFRAME_HOURS),GetString(MM_CUSTOM_TIMEFRAME_DAYS),GetString(MM_CUSTOM_TIMEFRAME_WEEKS),GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS)},
+          choices = { GetString(MM_CUSTOM_TIMEFRAME_HOURS), GetString(MM_CUSTOM_TIMEFRAME_DAYS), GetString(MM_CUSTOM_TIMEFRAME_WEEKS), GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) },
           getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframeType end,
-          setFunc = function(value) MasterMerchant.systemSavedVariables.customTimeframeType = value
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.customTimeframeType = value
             MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
             MasterMerchant:BuildRosterTimeDropdown()
             MasterMerchant:BuildGuiTimeDropdown()
@@ -1442,15 +1460,15 @@ function MasterMerchant:LibAddonInit()
       },
     },
     -- guild roster menu
-    [8] = {
-      type = 'submenu',
-      name = GetString(MM_GUILD_ROSTER_OPTIONS_NAME),
-      tooltip = GetString(MM_GUILD_ROSTER_OPTIONS_TIP),
+    [8]  = {
+      type     = 'submenu',
+      name     = GetString(MM_GUILD_ROSTER_OPTIONS_NAME),
+      tooltip  = GetString(MM_GUILD_ROSTER_OPTIONS_TIP),
       controls = {
         -- should we display info on guild roster?
         [1] = {
-          type = 'checkbox',
-          name = GetString(SK_ROSTER_INFO_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ROSTER_INFO_NAME),
           tooltip = GetString(SK_ROSTER_INFO_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.diplayGuildInfo end,
           setFunc = function(value)
@@ -1458,78 +1476,78 @@ function MasterMerchant:LibAddonInit()
             MasterMerchant.systemSavedVariables.diplayGuildInfo = value
 
             if self.UI_GuildTime then
-              self.UI_GuildTime:SetHidden( not value )
+              self.UI_GuildTime:SetHidden(not value)
             end
 
-            for key,column in pairs(self.guild_columns) do
-              column:IsDisabled( not value )
+            for key, column in pairs(self.guild_columns) do
+              column:IsDisabled(not value)
             end
 
           end,
           default = MasterMerchant.systemDefault.diplayGuildInfo,
         },
         [2] = {
-          type = 'checkbox',
-          name = GetString(MM_SALES_COLUMN_NAME),
-          tooltip = GetString(MM_SALES_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplaySalesInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_SALES_COLUMN_NAME),
+          tooltip  = GetString(MM_SALES_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplaySalesInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplaySalesInfo = value
-            MasterMerchant.guild_columns['sold']:IsDisabled( not value )
+            MasterMerchant.guild_columns['sold']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplaySalesInfo,
+          default  = MasterMerchant.systemDefault.diplaySalesInfo,
         },
         -- guild roster options
         [3] = {
-          type = 'checkbox',
-          name = GetString(MM_PURCHASES_COLUMN_NAME),
-          tooltip = GetString(MM_PURCHASES_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplayPurchasesInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_PURCHASES_COLUMN_NAME),
+          tooltip  = GetString(MM_PURCHASES_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplayPurchasesInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplayPurchasesInfo = value
-            MasterMerchant.guild_columns['bought']:IsDisabled( not value )
+            MasterMerchant.guild_columns['bought']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplayPurchasesInfo,
+          default  = MasterMerchant.systemDefault.diplayPurchasesInfo,
         },
         [4] = {
-          type = 'checkbox',
-          name = GetString(MM_TAXES_COLUMN_NAME),
-          tooltip = GetString(MM_TAXES_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplayTaxesInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_TAXES_COLUMN_NAME),
+          tooltip  = GetString(MM_TAXES_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplayTaxesInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplayTaxesInfo = value
-            MasterMerchant.guild_columns['per']:IsDisabled( not value )
+            MasterMerchant.guild_columns['per']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplayTaxesInfo,
+          default  = MasterMerchant.systemDefault.diplayTaxesInfo,
         },
         [5] = {
-          type = 'checkbox',
-          name = GetString(MM_COUNT_COLUMN_NAME),
-          tooltip = GetString(MM_COUNT_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplayCountInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_COUNT_COLUMN_NAME),
+          tooltip  = GetString(MM_COUNT_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplayCountInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplayCountInfo = value
-            MasterMerchant.guild_columns['count']:IsDisabled( not value )
+            MasterMerchant.guild_columns['count']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplayCountInfo,
+          default  = MasterMerchant.systemDefault.diplayCountInfo,
         },
       },
     },
     -- 9 -------------------------------------------
-    [9] = {
-      type = "header",
-      name = GetString(MM_DATA_MANAGEMENT_NAME),
-      width = "full",
+    [9]  = {
+      type    = "header",
+      name    = GetString(MM_DATA_MANAGEMENT_NAME),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#DataManagementOptions",
     },
     -- use size of sales history only
     [10] = {
-      type = 'checkbox',
-      name = GetString(MM_DAYS_ONLY_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_DAYS_ONLY_NAME),
       tooltip = GetString(MM_DAYS_ONLY_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.useSalesHistory = value end,
@@ -1537,59 +1555,59 @@ function MasterMerchant:LibAddonInit()
     },
     -- Size of sales history
     [11] = {
-      type = 'slider',
-      name = GetString(SK_HISTORY_DEPTH_NAME),
+      type    = 'slider',
+      name    = GetString(SK_HISTORY_DEPTH_NAME),
       tooltip = GetString(SK_HISTORY_DEPTH_TIP),
-      min = 1,
-      max = 365,
+      min     = 1,
+      max     = 365,
       getFunc = function() return MasterMerchant.systemSavedVariables.historyDepth end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.historyDepth = value end,
       default = MasterMerchant.systemDefault.historyDepth,
     },
     -- Min Number of Items before Purge
     [12] = {
-      type = 'slider',
-      name = GetString(MM_MIN_ITEM_COUNT_NAME),
-      tooltip = GetString(MM_MIN_ITEM_COUNT_TIP),
-      min = 0,
-      max = 100,
-      getFunc = function() return MasterMerchant.systemSavedVariables.minItemCount end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.minItemCount = value end,
-			disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
-      default = MasterMerchant.systemDefault.minItemCount,
+      type     = 'slider',
+      name     = GetString(MM_MIN_ITEM_COUNT_NAME),
+      tooltip  = GetString(MM_MIN_ITEM_COUNT_TIP),
+      min      = 0,
+      max      = 100,
+      getFunc  = function() return MasterMerchant.systemSavedVariables.minItemCount end,
+      setFunc  = function(value) MasterMerchant.systemSavedVariables.minItemCount = value end,
+      disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
+      default  = MasterMerchant.systemDefault.minItemCount,
     },
     -- Max number of Items
     [13] = {
-      type = 'slider',
-      name = GetString(MM_MAX_ITEM_COUNT_NAME),
-      tooltip = GetString(MM_MAX_ITEM_COUNT_TIP),
-      min = 100,
-      max = 10000,
-      getFunc = function() return MasterMerchant.systemSavedVariables.maxItemCount end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.maxItemCount = value end,
-			disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
-      default = MasterMerchant.systemDefault.maxItemCount,
+      type     = 'slider',
+      name     = GetString(MM_MAX_ITEM_COUNT_NAME),
+      tooltip  = GetString(MM_MAX_ITEM_COUNT_TIP),
+      min      = 100,
+      max      = 10000,
+      getFunc  = function() return MasterMerchant.systemSavedVariables.maxItemCount end,
+      setFunc  = function(value) MasterMerchant.systemSavedVariables.maxItemCount = value end,
+      disabled = function() return MasterMerchant.systemSavedVariables.useSalesHistory end,
+      default  = MasterMerchant.systemDefault.maxItemCount,
     },
     -- Skip Indexing?
     [14] = {
-      type = 'checkbox',
-      name = GetString(MM_SKIP_INDEX_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_SKIP_INDEX_NAME),
       tooltip = GetString(MM_SKIP_INDEX_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.minimalIndexing end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.minimalIndexing = value end,
       default = MasterMerchant.systemDefault.minimalIndexing,
     },
     [15] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#OtherTooltipOptions",
     },
     ---------------------------------------------
     -- Whether or not to show the pricing graph in tooltips
     [16] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_GRAPH_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_GRAPH_NAME),
       tooltip = GetString(SK_SHOW_GRAPH_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showGraph end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showGraph = value end,
@@ -1597,17 +1615,17 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the pricing data in tooltips
     [17] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_PRICING_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_PRICING_NAME),
       tooltip = GetString(SK_SHOW_PRICING_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showPricing end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showPricing = value end,
       default = MasterMerchant.systemDefault.showPricing,
     },
-  -- Whether or not to show tooltips on the graph points
+    -- Whether or not to show tooltips on the graph points
     [18] = {
-      type = 'checkbox',
-      name = GetString(MM_GRAPH_INFO_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_GRAPH_INFO_NAME),
       tooltip = GetString(MM_GRAPH_INFO_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.displaySalesDetails end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.displaySalesDetails = value end,
@@ -1615,8 +1633,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the crafting costs data in tooltips
     [19] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_CRAFT_COST_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_CRAFT_COST_NAME),
       tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showCraftCost end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showCraftCost = value end,
@@ -1624,8 +1642,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the quality/level adjustment buttons
     [20] = {
-      type = 'checkbox',
-      name = GetString(MM_LEVEL_QUALITY_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_LEVEL_QUALITY_NAME),
       tooltip = GetString(MM_LEVEL_QUALITY_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.displayItemAnalysisButtons end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.displayItemAnalysisButtons = value end,
@@ -1633,8 +1651,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we trim outliers prices?
     [21] = {
-      type = 'checkbox',
-      name = GetString(SK_TRIM_OUTLIERS_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliers end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimOutliers = value end,
@@ -1642,34 +1660,34 @@ function MasterMerchant:LibAddonInit()
     },
     -- which price statistic should we use?
     [22] = {
-      type = 'dropdown',
-      name = GetString(MM_CUSTOM_STATISTICS_RANGE_NAME),
-      tooltip = GetString(MM_CUSTOM_STATISTICS_RANGE_TIP),
-      choices = {GetString(MM_STATISTICS_MEAN),GetString(MM_STATISTICS_MEDIAN)},
-      getFunc = function() return MasterMerchant.systemSavedVariables.defaultStatistics end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.defaultStatistics = value end,
+      type     = 'dropdown',
+      name     = GetString(MM_CUSTOM_STATISTICS_RANGE_NAME),
+      tooltip  = GetString(MM_CUSTOM_STATISTICS_RANGE_TIP),
+      choices  = { GetString(MM_STATISTICS_MEAN), GetString(MM_STATISTICS_MEDIAN) },
+      getFunc  = function() return MasterMerchant.systemSavedVariables.defaultStatistics end,
+      setFunc  = function(value) MasterMerchant.systemSavedVariables.defaultStatistics = value end,
       disabled = function() return not MasterMerchant.systemSavedVariables.trimOutliers end,
-      default = MasterMerchant.systemDefault.defaultStatistics,
+      default  = MasterMerchant.systemDefault.defaultStatistics,
     },
     -- should we trim off decimals?
     [23] = {
-      type = 'checkbox',
-      name = GetString(SK_TRIM_DECIMALS_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.trimDecimals end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimDecimals = value end,
       default = MasterMerchant.systemDefault.trimDecimals,
     },
     [24] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
     },
     -- should we replace inventory values?
     [25] = {
-      type = 'checkbox',
-      name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.replaceInventoryValues end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.replaceInventoryValues = value end,
@@ -1677,23 +1695,23 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we use the default days range for the tooltips?
     [26] = {
-      type = 'checkbox',
-      name = GetString(MM_DEFAULT_PRICESWAP_TIME_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_DEFAULT_PRICESWAP_TIME_NAME),
       tooltip = GetString(MM_DEFAULT_PRICESWAP_TIME_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.useDefaultDaysRange end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.useDefaultDaysRange = value end,
       default = MasterMerchant.systemDefault.useDefaultDaysRange,
     },
     [27] = {
-      type = "header",
-      name = GetString(GUILD_STORE_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(GUILD_STORE_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
     -- Should we show the stack price calculator?
     [28] = {
-      type = 'checkbox',
-      name = GetString(SK_CALC_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showCalc end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showCalc = value end,
@@ -1701,8 +1719,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we display a Min Profit Filter in AGS?
     [29] = {
-      type = 'checkbox',
-      name = GetString(MM_MIN_PROFIT_FILTER_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.minProfitFilter end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.minProfitFilter = value end,
@@ -1710,8 +1728,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we display profit instead of margin?
     [30] = {
-      type = 'checkbox',
-      name = GetString(MM_SAUCY_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.saucy end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
@@ -1719,52 +1737,52 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we auto advance to the next page?
     [31] = {
-      type = 'checkbox',
-      name = GetString(MM_AUTO_ADVANCE_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_AUTO_ADVANCE_NAME),
       tooltip = GetString(MM_AUTO_ADVANCE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.autoNext end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.autoNext = value end,
       default = MasterMerchant.systemDefault.autoNext,
     },
     [32] = {
-      type = "header",
-      name = GetString(GUILD_MASTER_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(GUILD_MASTER_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#ExportSalesReport",
     },
     -- should we add taxes to the export?
     [33] = {
-      type = 'checkbox',
-      name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showAmountTaxes end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
     [34] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
     },
     -- Verbose MM Messages
     [35] = {
-      type = 'slider',
-      name = GetString(MM_VERBOSE_NAME),
+      type    = 'slider',
+      name    = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
-      min = 1,
-      max = 7,
+      min     = 1,
+      max     = 7,
       getFunc = function() return MasterMerchant.systemSavedVariables.verbose end,
       setFunc = function(value)
-                  MasterMerchant.systemSavedVariables.verbose = value
-                  MasterMerchant.systemSavedVariables.verbose = value
-                  MasterMerchant.verboseLevel = value
-                end,
+        MasterMerchant.systemSavedVariables.verbose = value
+        MasterMerchant.systemSavedVariables.verbose = value
+        MasterMerchant.verboseLevel = value
+      end,
       default = MasterMerchant.systemDefault.verbose,
     },
     [36] = {
-      type = 'checkbox',
-      name = GetString(MM_DEBUG_LOGGER_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.useLibDebugLogger end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
@@ -1775,8 +1793,6 @@ function MasterMerchant:LibAddonInit()
   -- And make the options panel
   LAM:RegisterOptionControls('MasterMerchantOptions', optionsData)
 end
-
-
 
 function MasterMerchant:PurgeDups()
 
@@ -1828,10 +1844,13 @@ function MasterMerchant:PurgeDups()
       self.guildSales = nil
       self.guildItems = nil
       self.myItems = {}
-      LEQ:Add(function () self:InitItemHistory() end, 'InitItemHistory')
-      LEQ:Add(function () self:indexHistoryTables() end, 'indexHistoryTables')
+      LEQ:Add(function() self:InitItemHistory() end, 'InitItemHistory')
+      LEQ:Add(function() self:indexHistoryTables() end, 'indexHistoryTables')
     end
-    LEQ:Add(function () self:setScanning(false); MasterMerchant.v(5, 'Reindexing Complete.') end, 'LetScanningContinue')
+    LEQ:Add(function()
+      self:setScanning(false);
+      MasterMerchant.v(5, 'Reindexing Complete.')
+    end, 'LetScanningContinue')
     LEQ:Start()
   end
 end
@@ -1854,7 +1873,7 @@ function MasterMerchant.NonContiguousNonNilCount(tableObject)
 
   for _, v in pairs(tableObject)
   do
-      if v ~= nil then count = count + 1 end
+    if v ~= nil then count = count + 1 end
   end
 
   return count
@@ -1863,16 +1882,16 @@ end
 function MasterMerchant:checkForDoubles()
 
   local dataList = {
-    [0] = MM00Data.savedVariables.SalesData,
-    [1] = MM01Data.savedVariables.SalesData,
-    [2] = MM02Data.savedVariables.SalesData,
-    [3] = MM03Data.savedVariables.SalesData,
-    [4] = MM04Data.savedVariables.SalesData,
-    [5] = MM05Data.savedVariables.SalesData,
-    [6] = MM06Data.savedVariables.SalesData,
-    [7] = MM07Data.savedVariables.SalesData,
-    [8] = MM08Data.savedVariables.SalesData,
-    [9] = MM09Data.savedVariables.SalesData,
+    [0]  = MM00Data.savedVariables.SalesData,
+    [1]  = MM01Data.savedVariables.SalesData,
+    [2]  = MM02Data.savedVariables.SalesData,
+    [3]  = MM03Data.savedVariables.SalesData,
+    [4]  = MM04Data.savedVariables.SalesData,
+    [5]  = MM05Data.savedVariables.SalesData,
+    [6]  = MM06Data.savedVariables.SalesData,
+    [7]  = MM07Data.savedVariables.SalesData,
+    [8]  = MM08Data.savedVariables.SalesData,
+    [9]  = MM09Data.savedVariables.SalesData,
     [10] = MM10Data.savedVariables.SalesData,
     [11] = MM11Data.savedVariables.SalesData,
     [12] = MM12Data.savedVariables.SalesData,
@@ -1881,10 +1900,10 @@ function MasterMerchant:checkForDoubles()
     [15] = MM15Data.savedVariables.SalesData
   }
 
-  for i = 0,14,1 do
+  for i = 0, 14, 1 do
     for itemid, versionlist in pairs(dataList[i]) do
       for versionid, _ in pairs(versionlist) do
-        for j = i+1,15,1 do
+        for j = i + 1, 15, 1 do
           if dataList[j][itemid] and dataList[j][itemid][versionid] then
             MasterMerchant.v(5, itemid .. '/' .. versionid .. ' is in ' .. i .. ' and ' .. j .. '.')
           end
@@ -1946,7 +1965,8 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function () self:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+            LEQ:ContinueWith(function() self:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc,
+              extraData) end, nil)
             return
           end
         end
@@ -1963,7 +1983,8 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (MasterMerchant.NonContiguousNonNilCount(versiondata['sales']) < 1) or (not string.match(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (MasterMerchant.NonContiguousNonNilCount(versiondata['sales']) < 1) or (not string.match(tostring(versionid),
+        "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount = (extraData.versionCount or 0) + 1
         versionlist[versionid] = nil
         extraData.versionRemoved = true
@@ -1975,7 +1996,8 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function () self:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+        LEQ:ContinueWith(function() self:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc,
+          extraData) end, nil)
         return
       end
     end
@@ -2042,10 +2064,10 @@ function MasterMerchant:CleanOutBad()
       or saledata['id'] == nil
       -- or type(saledata['id']) ~= 'number'
       or (not string.match(tostring(saledata['itemLink']), '|H.-:item:(.-):')) then
-        -- Remove it
-        versiondata['sales'][saleid] = nil
-        extraData.deleteCount = extraData.deleteCount + 1
-        return
+      -- Remove it
+      versiondata['sales'][saleid] = nil
+      extraData.deleteCount = extraData.deleteCount + 1
+      return
     end
     local newid = GetItemLinkItemId(saledata['itemLink'])
     local newversion = MasterMerchant.makeIndexFromLink(saledata['itemLink'])
@@ -2055,52 +2077,52 @@ function MasterMerchant:CleanOutBad()
     end
     if ((newid ~= itemid) or (newversion ~= versionid)) then
       -- Move this records by inserting it another list and keep a count
-        --[[
-        local theEvent = {
-          buyer = p2,
-          guild = guildName,
-          itemName = p4,
-          quant = p3,
-          saleTime = eventTime,
-          salePrice = p5,
-          seller = p1,
-          kioskSale = false,
-          id = Id64ToString(eventId)
-        }
-        local newSalesItem =
-          {buyer = theEvent.buyer,
-          guild = theEvent.guild,
-          itemLink = theEvent.itemName,
-          quant = tonumber(theEvent.quant),
-          timestamp = tonumber(theEvent.saleTime),
-          price = tonumber(theEvent.salePrice),
-          seller = theEvent.seller,
-          wasKiosk = theEvent.kioskSale,
-          id = theEvent.id
-        }
-        [1] =
-        {
-          ["price"] = 120,
-          ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
-          ["id"] = 1353657539,
-          ["guild"] = "Unstable Unicorns",
-          ["buyer"] = "@Traeky",
-          ["quant"] = 1,
-          ["wasKiosk"] = true,
-          ["timestamp"] = 1597969403,
-          ["seller"] = "@cherrypick",
-        },
-        ]]--
+      --[[
       local theEvent = {
-        buyer = saledata.buyer,
-        guild = saledata.guild,
-        itemLink = saledata.itemLink,
-        quant = tonumber(saledata.quant),
+        buyer = p2,
+        guild = guildName,
+        itemName = p4,
+        quant = p3,
+        saleTime = eventTime,
+        salePrice = p5,
+        seller = p1,
+        kioskSale = false,
+        id = Id64ToString(eventId)
+      }
+      local newSalesItem =
+        {buyer = theEvent.buyer,
+        guild = theEvent.guild,
+        itemLink = theEvent.itemName,
+        quant = tonumber(theEvent.quant),
+        timestamp = tonumber(theEvent.saleTime),
+        price = tonumber(theEvent.salePrice),
+        seller = theEvent.seller,
+        wasKiosk = theEvent.kioskSale,
+        id = theEvent.id
+      }
+      [1] =
+      {
+        ["price"] = 120,
+        ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+        ["id"] = 1353657539,
+        ["guild"] = "Unstable Unicorns",
+        ["buyer"] = "@Traeky",
+        ["quant"] = 1,
+        ["wasKiosk"] = true,
+        ["timestamp"] = 1597969403,
+        ["seller"] = "@cherrypick",
+      },
+      ]]--
+      local theEvent = {
+        buyer     = saledata.buyer,
+        guild     = saledata.guild,
+        itemLink  = saledata.itemLink,
+        quant     = tonumber(saledata.quant),
         timestamp = tonumber(saledata.timestamp),
-        price = tonumber(saledata.price),
-        seller = saledata.seller,
-        wasKiosk = saledata.wasKiosk,
-        id = saledata.id
+        price     = tonumber(saledata.price),
+        seller    = saledata.seller,
+        wasKiosk  = saledata.wasKiosk,
+        id        = saledata.id
       }
       MasterMerchant:addToHistoryTables(theEvent)
       extraData.moveCount = extraData.moveCount + 1
@@ -2134,12 +2156,12 @@ function MasterMerchant:CleanOutBad()
     end
 
     MasterMerchant.v(2, 'Cleaning: ' .. GetTimeStamp() - extraData.start .. ' seconds to clean:')
-    MasterMerchant.v(2,  '  ' .. extraData.deleteCount - extraData.moveCount .. ' bad sales records removed')
-    MasterMerchant.v(2,  '  ' .. extraData.moveCount .. ' sales records re-indexed')
-    MasterMerchant.v(2,  '  ' .. extraData.versionCount .. ' bad item versions')
-    MasterMerchant.v(2,  '  ' .. extraData.idCount .. ' bad item IDs')
-    MasterMerchant.v(2,  '  ' .. extraData.muleIdCount .. ' bad mule item IDs')
-    MasterMerchant.v(2,  '  ' .. extraData.eventIdIsNumber .. ' events with numbers converted to strings')
+    MasterMerchant.v(2, '  ' .. extraData.deleteCount - extraData.moveCount .. ' bad sales records removed')
+    MasterMerchant.v(2, '  ' .. extraData.moveCount .. ' sales records re-indexed')
+    MasterMerchant.v(2, '  ' .. extraData.versionCount .. ' bad item versions')
+    MasterMerchant.v(2, '  ' .. extraData.idCount .. ' bad item IDs')
+    MasterMerchant.v(2, '  ' .. extraData.muleIdCount .. ' bad mule item IDs')
+    MasterMerchant.v(2, '  ' .. extraData.eventIdIsNumber .. ' events with numbers converted to strings')
 
     local LEQ = LibExecutionQueue:new()
     if extraData.deleteCount > 0 then
@@ -2151,12 +2173,12 @@ function MasterMerchant:CleanOutBad()
       self.guildSales = {}
       self.guildItems = {}
       self.myItems = {}
-      LEQ:Add(function () self:InitItemHistory() end, 'InitItemHistory')
-      LEQ:Add(function () self:indexHistoryTables() end, 'indexHistoryTables')
-      LEQ:Add(function () MasterMerchant.v(5, 'Reindexing Complete.') end, 'Done')
+      LEQ:Add(function() self:InitItemHistory() end, 'InitItemHistory')
+      LEQ:Add(function() self:indexHistoryTables() end, 'indexHistoryTables')
+      LEQ:Add(function() MasterMerchant.v(5, 'Reindexing Complete.') end, 'Done')
     end
 
-    LEQ:Add(function ()
+    LEQ:Add(function()
       self:setScanning(false)
     end, '')
     LEQ:Start()
@@ -2164,7 +2186,7 @@ function MasterMerchant:CleanOutBad()
   end
 
   if not self.isScanning then
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {} )
+    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
 end
@@ -2192,14 +2214,15 @@ function MasterMerchant:SlideSales(goback)
 
   local postfunc = function(extraData)
 
-    MasterMerchant.v(2, 'Sliding: ' .. GetTimeStamp() - extraData.start .. ' seconds to slide ' .. extraData.moveCount .. ' sales records to ' .. extraData.newName .. '.')
+    MasterMerchant.v(2,
+      'Sliding: ' .. GetTimeStamp() - extraData.start .. ' seconds to slide ' .. extraData.moveCount .. ' sales records to ' .. extraData.newName .. '.')
     self.SRIndex[MasterMerchant.PlayerSpecialText] = {}
     self:setScanning(false)
 
   end
 
   if not self.isScanning then
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {} )
+    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
 end
@@ -2214,22 +2237,26 @@ function MasterMerchant:SpecialMessage(force)
       daysCount = math.floor(daysCount)
 
       if rem == 0 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, "Objective_Complete",
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+          "Objective_Complete",
           string.format("Keep it up!!  You've made it %s complete days!!", daysCount))
       end
 
       if rem == 0.25 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, "Objective_Complete",
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+          "Objective_Complete",
           string.format("Working your way through day %s...", daysCount + 1))
       end
 
       if rem == 0.5 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, "Objective_Complete",
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+          "Objective_Complete",
           string.format("Day %s half way done!", daysCount + 1))
       end
 
       if rem == 0.75 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, "Objective_Complete",
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+          "Objective_Complete",
           string.format("Just a little more to go in day %s...", daysCount + 1))
       end
 
@@ -2250,49 +2277,49 @@ function MasterMerchant:ExportLastWeek()
     return
   end
 
-    local guildID = GetGuildId(guildNum)
-    local guildName = GetGuildName(guildID)
+  local guildID = GetGuildId(guildNum)
+  local guildName = GetGuildName(guildID)
 
-    MasterMerchant.v(2, guildName)
-    export[guildName] = {}
-    local list = export[guildName]
+  MasterMerchant.v(2, guildName)
+  export[guildName] = {}
+  local list = export[guildName]
 
-    local numGuildMembers = GetNumGuildMembers(guildID)
-    for guildMemberIndex = 1, numGuildMembers do
-        local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(guildID, guildMemberIndex)
-        local online = (status ~= PLAYER_STATUS_OFFLINE)
-        local rankId = GetGuildRankId(guildID, rankIndex)
+  local numGuildMembers = GetNumGuildMembers(guildID)
+  for guildMemberIndex = 1, numGuildMembers do
+    local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(guildID, guildMemberIndex)
+    local online = (status ~= PLAYER_STATUS_OFFLINE)
+    local rankId = GetGuildRankId(guildID, rankIndex)
 
-        local amountBought = 0
-        if MasterMerchant.guildPurchases and
-            MasterMerchant.guildPurchases[guildName] and
-            MasterMerchant.guildPurchases[guildName].sellers and
-            MasterMerchant.guildPurchases[guildName].sellers[displayName] and
-            MasterMerchant.guildPurchases[guildName].sellers[displayName].sales then
-            amountBought = MasterMerchant.guildPurchases[guildName].sellers[displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster] or 0
-        end
-
-        local amountSold = 0
-        if MasterMerchant.guildSales and
-            MasterMerchant.guildSales[guildName] and
-            MasterMerchant.guildSales[guildName].sellers and
-            MasterMerchant.guildSales[guildName].sellers[displayName] and
-            MasterMerchant.guildSales[guildName].sellers[displayName].sales then
-            amountSold = MasterMerchant.guildSales[guildName].sellers[displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster] or 0
-        end
-
-        -- sample [2] = "@Name&Sales&Purchases&Rank"
-        local amountTaxes = 0
-        amountTaxes = math.floor(amountSold * 0.035)
-        if MasterMerchant.systemSavedVariables.showAmountTaxes then
-          table.insert(list, displayName .. "&"  .. amountSold .. "&"  .. amountBought .. "&" .. amountTaxes .. "&" .. rankIndex)
-        else
-          table.insert(list, displayName .. "&"  .. amountSold .. "&"  .. amountBought .. "&" .. rankIndex)
-        end
+    local amountBought = 0
+    if MasterMerchant.guildPurchases and
+      MasterMerchant.guildPurchases[guildName] and
+      MasterMerchant.guildPurchases[guildName].sellers and
+      MasterMerchant.guildPurchases[guildName].sellers[displayName] and
+      MasterMerchant.guildPurchases[guildName].sellers[displayName].sales then
+      amountBought = MasterMerchant.guildPurchases[guildName].sellers[displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster] or 0
     end
 
-end
+    local amountSold = 0
+    if MasterMerchant.guildSales and
+      MasterMerchant.guildSales[guildName] and
+      MasterMerchant.guildSales[guildName].sellers and
+      MasterMerchant.guildSales[guildName].sellers[displayName] and
+      MasterMerchant.guildSales[guildName].sellers[displayName].sales then
+      amountSold = MasterMerchant.guildSales[guildName].sellers[displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster] or 0
+    end
 
+    -- sample [2] = "@Name&Sales&Purchases&Rank"
+    local amountTaxes = 0
+    amountTaxes = math.floor(amountSold * 0.035)
+    if MasterMerchant.systemSavedVariables.showAmountTaxes then
+      table.insert(list,
+        displayName .. "&" .. amountSold .. "&" .. amountBought .. "&" .. amountTaxes .. "&" .. rankIndex)
+    else
+      table.insert(list, displayName .. "&" .. amountSold .. "&" .. amountBought .. "&" .. rankIndex)
+    end
+  end
+
+end
 
 function MasterMerchant:ExportSalesData()
   local export = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, "SALES", {}, nil)
@@ -2318,21 +2345,21 @@ function MasterMerchant:ExportSalesData()
         for _, sale in pairs(dataList['sales']) do
           if sale.timestamp >= epochBack and (guildName == 'ALL' or guildName == sale.guild) then
             local itemDesc = dataList['itemDesc']
-            itemDesc = itemDesc:gsub("%^.*$","",1)
-            itemDesc = string.gsub(" "..itemDesc, "%s%l", string.upper):sub(2)
+            itemDesc = itemDesc:gsub("%^.*$", "", 1)
+            itemDesc = string.gsub(" " .. itemDesc, "%s%l", string.upper):sub(2)
 
             table.insert(list,
               sale.seller .. "&" ..
-              sale.buyer .. "&" ..
-              sale.itemLink .. "&" ..
-              sale.quant .. "&" ..
-              sale.timestamp .. "&" ..
-              tostring(sale.wasKiosk) .. "&" ..
-              sale.price .. "&" ..
-              sale.guild .. "&" ..
-              itemDesc .. "&" ..
-              dataList['itemAdderText']
-              )
+                sale.buyer .. "&" ..
+                sale.itemLink .. "&" ..
+                sale.quant .. "&" ..
+                sale.timestamp .. "&" ..
+                tostring(sale.wasKiosk) .. "&" ..
+                sale.price .. "&" ..
+                sale.guild .. "&" ..
+                itemDesc .. "&" ..
+                dataList['itemAdderText']
+            )
 
           end
         end
@@ -2399,42 +2426,42 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
     for i = 1, numAlerts do
       local theEvent = table.remove(MasterMerchant.alertQueue[guildName], 1)
       numSold = numSold + 1
-        --[[
-        local theEvent = {
-          buyer = p2,
-          guild = guildName,
-          itemName = p4,
-          quant = p3,
-          saleTime = eventTime,
-          salePrice = p5,
-          seller = p1,
-          kioskSale = false,
-          id = Id64ToString(eventId)
-        }
-        local newSalesItem =
-          {buyer = theEvent.buyer,
-          guild = theEvent.guild,
-          itemLink = theEvent.itemName,
-          quant = tonumber(theEvent.quant),
-          timestamp = tonumber(theEvent.saleTime),
-          price = tonumber(theEvent.salePrice),
-          seller = theEvent.seller,
-          wasKiosk = theEvent.kioskSale,
-          id = theEvent.id
-        }
-        [1] =
-        {
-          ["price"] = 120,
-          ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
-          ["id"] = 1353657539,
-          ["guild"] = "Unstable Unicorns",
-          ["buyer"] = "@Traeky",
-          ["quant"] = 1,
-          ["wasKiosk"] = true,
-          ["timestamp"] = 1597969403,
-          ["seller"] = "@cherrypick",
-        },
-        ]]--
+      --[[
+      local theEvent = {
+        buyer = p2,
+        guild = guildName,
+        itemName = p4,
+        quant = p3,
+        saleTime = eventTime,
+        salePrice = p5,
+        seller = p1,
+        kioskSale = false,
+        id = Id64ToString(eventId)
+      }
+      local newSalesItem =
+        {buyer = theEvent.buyer,
+        guild = theEvent.guild,
+        itemLink = theEvent.itemName,
+        quant = tonumber(theEvent.quant),
+        timestamp = tonumber(theEvent.saleTime),
+        price = tonumber(theEvent.salePrice),
+        seller = theEvent.seller,
+        wasKiosk = theEvent.kioskSale,
+        id = theEvent.id
+      }
+      [1] =
+      {
+        ["price"] = 120,
+        ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+        ["id"] = 1353657539,
+        ["guild"] = "Unstable Unicorns",
+        ["buyer"] = "@Traeky",
+        ["quant"] = 1,
+        ["wasKiosk"] = true,
+        ["timestamp"] = 1597969403,
+        ["seller"] = "@cherrypick",
+      },
+      ]]--
 
       -- Adjust the price if they want the post-cut prices instead
       local dispPrice = theEvent.price
@@ -2472,17 +2499,18 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
           if MasterMerchant.locale == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink),
-                              stringPrice, theEvent.guild, textTime) .. alertSuffix)
+                string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant,
+                  zo_strformat('<<t:1>>', theEvent.itemLink),
+                  stringPrice, theEvent.guild, textTime) .. alertSuffix)
             else
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR),zo_strformat('<<t:1>>', theEvent.itemLink),
-                              stringPrice, theEvent.guild, textTime) .. alertSuffix)
+                string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
+                  stringPrice, theEvent.guild, textTime) .. alertSuffix)
             end
           else
             MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
               string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
-                            theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
+                theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
           end
         end
 
@@ -2490,15 +2518,21 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
         if MasterMerchant.systemSavedVariables.showChatAlerts then
           if MasterMerchant.locale == 'de' then
             if theEvent.quant > 1 then
-              MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                                    theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
+              MasterMerchant.v(1,
+                string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
+                  theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
+                  self.TextTimeSince(theEvent.timestamp, true)))
             else
-              MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
-                                    zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
+              MasterMerchant.v(1,
+                string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
+                  zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
+                  self.TextTimeSince(theEvent.timestamp, true)))
             end
           else
-            MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                                  zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
+            MasterMerchant.v(1,
+              string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
+                zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
+                self.TextTimeSince(theEvent.timestamp, true)))
           end
         end
       end
@@ -2509,11 +2543,13 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
         local stringPrice = self.LocalizedNumber(totalGold)
 
         if MasterMerchant.systemSavedVariables.showAnnounceAlerts then
-          MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName,
+          MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+            MasterMerchant.systemSavedVariables.alertSoundName,
             string.format(GetString(SK_SALES_ALERT_GROUP_COLOR), numSold, stringPrice))
         else
-          MasterMerchant.v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)),
-                                numSold, stringPrice))
+          MasterMerchant.v(1,
+            string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)),
+              numSold, stringPrice))
         end
       end
     end
@@ -2577,7 +2613,7 @@ function MasterMerchant:ScanStoresParallel(doAlert)
   is called to start the entire process.
   ]]--
   MasterMerchant.v(2, 'LibHistoire Activated, listening for guild sales...')
-    -- do not start listening until mm is fully Initialized
+  -- do not start listening until mm is fully Initialized
   MasterMerchant.isInitialized = true -- moved in 3.2.7
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
@@ -2608,7 +2644,8 @@ function MasterMerchant:DoRefresh()
     return
   end
   if MasterMerchant.LibHistoireRefreshed then
-    MasterMerchant.v(2, 'LibHistoire can only be refreshed once per session. This will take a while and LibHistoire does not notify MM when it has completed.')
+    MasterMerchant.v(2,
+      'LibHistoire can only be refreshed once per session. This will take a while and LibHistoire does not notify MM when it has completed.')
     return
   end
   self:setScanning(true)
@@ -2648,11 +2685,11 @@ function MasterMerchant:initSellingAdvice()
 
     MasterMerchant.originalSellingSetupCallback = dataType.setupCallback
     if MasterMerchant.originalSellingSetupCallback then
-        dataType.setupCallback = function(...)
-            local row, data = ...
-            MasterMerchant.originalSellingSetupCallback(...)
-            zo_callLater(function() MasterMerchant.AddSellingAdvice(row, data) end, 1)
-        end
+      dataType.setupCallback = function(...)
+        local row, data = ...
+        MasterMerchant.originalSellingSetupCallback(...)
+        zo_callLater(function() MasterMerchant.AddSellingAdvice(row, data) end, 1)
+      end
     else
       MasterMerchant.v(5, GetString(MM_ADVICE_ERROR))
     end
@@ -2664,7 +2701,7 @@ end
 
 function MasterMerchant.AddSellingAdvice(rowControl, result)
   local sellingAdvice = rowControl:GetNamedChild('SellingAdvice')
-  if(not sellingAdvice) then
+  if (not sellingAdvice) then
     local controlName = rowControl:GetName() .. 'SellingAdvice'
     sellingAdvice = rowControl:CreateControl(controlName, CT_LABEL)
 
@@ -2688,7 +2725,11 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
       end
       -- TODO I think this colors the number in the guild store
       local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
-      if dealValue == 0 then r = 0.98; g = 0.01; b = 0.01; end
+      if dealValue == 0 then
+        r = 0.98;
+        g = 0.01;
+        b = 0.01;
+      end
       sellingAdvice:SetColor(r, g, b, 1)
       sellingAdvice:SetHidden(false)
     else
@@ -2699,7 +2740,6 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
   end
   sellingAdvice = nil
 end
-
 
 function MasterMerchant:initBuyingAdvice()
   if MasterMerchant.originalSetupCallback then return end
@@ -2725,49 +2765,53 @@ function MasterMerchant:initBuyingAdvice()
 end
 
 function MasterMerchant.AddBuyingAdvice(rowControl, result)
-    local buyingAdvice = rowControl:GetNamedChild('BuyingAdvice')
-		if(not buyingAdvice) then
-			local controlName = rowControl:GetName() .. 'BuyingAdvice'
-      buyingAdvice = rowControl:CreateControl(controlName, CT_LABEL)
+  local buyingAdvice = rowControl:GetNamedChild('BuyingAdvice')
+  if (not buyingAdvice) then
+    local controlName = rowControl:GetName() .. 'BuyingAdvice'
+    buyingAdvice = rowControl:CreateControl(controlName, CT_LABEL)
 
-      if (not AwesomeGuildStore) then
-        local anchorControl = rowControl:GetNamedChild('SellPricePerUnit')
-        local _, point, relTo, relPoint, offsX, offsY = anchorControl:GetAnchor(0)
-        anchorControl:ClearAnchors()
-        anchorControl:SetAnchor(point, relTo, relPoint, offsX, offsY + 10)
-      end
-
-      local anchorControl = rowControl:GetNamedChild('TimeRemaining')
+    if (not AwesomeGuildStore) then
+      local anchorControl = rowControl:GetNamedChild('SellPricePerUnit')
       local _, point, relTo, relPoint, offsX, offsY = anchorControl:GetAnchor(0)
       anchorControl:ClearAnchors()
-      anchorControl:SetAnchor(point, relTo, relPoint, offsX, offsY - 10)
-			buyingAdvice:SetAnchor(TOPLEFT, anchorControl, BOTTOMLEFT, 0, 0)
-			buyingAdvice:SetFont('/esoui/common/fonts/univers67.otf|14|soft-shadow-thin')
-	  end
+      anchorControl:SetAnchor(point, relTo, relPoint, offsX, offsY + 10)
+    end
 
-    local index = result.slotIndex
-	  if(AwesomeGuildStore) then index = result.itemUniqueId end
-    local itemLink = GetTradingHouseSearchResultItemLink(index)
-    local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
-    if dealValue then
-      if dealValue > -1 then
-        if MasterMerchant.systemSavedVariables.saucy then
-          buyingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
-        else
-          buyingAdvice:SetText(string.format('%.2f', margin) .. '%')
-        end
-        -- TODO I think this colors the number in the guild store
-        local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
-        if dealValue == 0 then r = 0.98; g = 0.01; b = 0.01; end
-        buyingAdvice:SetColor(r, g, b, 1)
-        buyingAdvice:SetHidden(false)
+    local anchorControl = rowControl:GetNamedChild('TimeRemaining')
+    local _, point, relTo, relPoint, offsX, offsY = anchorControl:GetAnchor(0)
+    anchorControl:ClearAnchors()
+    anchorControl:SetAnchor(point, relTo, relPoint, offsX, offsY - 10)
+    buyingAdvice:SetAnchor(TOPLEFT, anchorControl, BOTTOMLEFT, 0, 0)
+    buyingAdvice:SetFont('/esoui/common/fonts/univers67.otf|14|soft-shadow-thin')
+  end
+
+  local index = result.slotIndex
+  if (AwesomeGuildStore) then index = result.itemUniqueId end
+  local itemLink = GetTradingHouseSearchResultItemLink(index)
+  local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
+  if dealValue then
+    if dealValue > -1 then
+      if MasterMerchant.systemSavedVariables.saucy then
+        buyingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
       else
-        buyingAdvice:SetHidden(true)
+        buyingAdvice:SetText(string.format('%.2f', margin) .. '%')
       end
+      -- TODO I think this colors the number in the guild store
+      local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
+      if dealValue == 0 then
+        r = 0.98;
+        g = 0.01;
+        b = 0.01;
+      end
+      buyingAdvice:SetColor(r, g, b, 1)
+      buyingAdvice:SetHidden(false)
     else
       buyingAdvice:SetHidden(true)
     end
-    buyingAdvice = nil
+  else
+    buyingAdvice:SetHidden(true)
+  end
+  buyingAdvice = nil
 end
 
 function MasterMerchant:BuildRosterTimeDropdown()
@@ -2808,7 +2852,8 @@ function MasterMerchant:BuildRosterTimeDropdown()
   timeDropdown:AddItem(timeEntry)
   if MasterMerchant.systemSavedVariables.rankIndexRoster == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_28DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateRosterWindow(9) end)
+  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText,
+    function() self:UpdateRosterWindow(9) end)
   timeDropdown:AddItem(timeEntry)
   if MasterMerchant.systemSavedVariables.rankIndexRoster == 9 then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
 end
@@ -2817,16 +2862,16 @@ end
 function MasterMerchant:InitRosterChanges()
   -- LibGuildRoster adding the Sold Column
   MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({
-    key = 'MM_Sold',
+    key      = 'MM_Sold',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplaySalesInfo,
-    width = 110,
-    header = {
+    width    = 110,
+    header   = {
       title = GetString(SK_SALES_COLUMN),
       align = TEXT_ALIGN_RIGHT
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function( guildId, data, index )
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local amountSold = 0
 
@@ -2843,59 +2888,59 @@ function MasterMerchant:InitRosterChanges()
         return amountSold
 
       end,
-      format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+      format = function(value)
+        return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
 
   -- LibGuildRoster adding the Bought Column
   MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({
-    key = 'MM_Bought',
+    key      = 'MM_Bought',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayPurchasesInfo,
-    width = 110,
-    header = {
+    width    = 110,
+    header   = {
       title = GetString(SK_PURCHASES_COLUMN),
       align = TEXT_ALIGN_RIGHT
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function( guildId, data, index )
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local amountBought = 0
 
         if MasterMerchant.guildPurchases and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName] and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
-           MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
+          MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName] and
+          MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers and
+          MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
+          MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
 
-           amountBought = MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
+          amountBought = MasterMerchant.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
 
         end
 
         return amountBought
 
       end,
-      format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+      format = function(value)
+        return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
 
   -- LibGuildRoster adding the Tax Column
   MasterMerchant.guild_columns['per'] = LibGuildRoster:AddColumn({
-    key = 'MM_PerChg',
+    key      = 'MM_PerChg',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayTaxesInfo,
-    width = 90,
-    header = {
-      title = GetString(SK_PER_CHANGE_COLUMN),
-      align = TEXT_ALIGN_RIGHT,
+    width    = 90,
+    header   = {
+      title   = GetString(SK_PER_CHANGE_COLUMN),
+      align   = TEXT_ALIGN_RIGHT,
       tooltip = GetString(SK_PER_CHANGE_TIP)
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function( guildId, data, index )
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local amountSold = 0
 
@@ -2911,24 +2956,24 @@ function MasterMerchant:InitRosterChanges()
         return math.floor(amountSold * 0.035)
 
       end,
-      format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+      format = function(value)
+        return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
 
   -- LibGuildRoster adding the Count Column
   MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({
-    key = 'MM_Count',
+    key      = 'MM_Count',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayCountInfo,
-    width = 70,
-    header = {
+    width    = 70,
+    header   = {
       title = GetString(SK_COUNT_COLUMN),
       align = TEXT_ALIGN_RIGHT
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function( guildId, data, index )
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local saleCount = 0
 
@@ -2945,19 +2990,20 @@ function MasterMerchant:InitRosterChanges()
         return saleCount
 
       end,
-      format = function( value )
-          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+      format = function(value)
+        return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
 
-   -- Guild Time dropdown choice box
-  MasterMerchant.UI_GuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
+  -- Guild Time dropdown choice box
+  MasterMerchant.UI_GuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster,
+    'MasterMerchantStatsGuildDropdown')
 
   -- Placing Guild Time dropdown at the bottom of the Count Column when it has been generated
   LibGuildRoster:OnRosterReady(function()
     MasterMerchant.UI_GuildTime:SetAnchor(TOP, MasterMerchant.guild_columns['count']:GetHeader(), BOTTOMRIGHT, -80, 570)
-    MasterMerchant.UI_GuildTime:SetDimensions(180,25)
+    MasterMerchant.UI_GuildTime:SetDimensions(180, 25)
 
     -- Don't render the dropdown this cycle if the settings have columns disabled
     if not MasterMerchant.systemSavedVariables.diplayGuildInfo then
@@ -3016,13 +3062,13 @@ end
 --[[TODO Use this to convert even IDs to strings]]--
 function MasterMerchant:AdjustItems(otherData)
   for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
-      for field, itemIndexData in pairs(itemIndex) do
-        for sale, saleData in pairs(itemIndexData['sales']) do
-          if type(saleData.id) ~= 'string' then
-            saleData.id = tostring(saleData.id)
-          end
+    for field, itemIndexData in pairs(itemIndex) do
+      for sale, saleData in pairs(itemIndexData['sales']) do
+        if type(saleData.id) ~= 'string' then
+          saleData.id = tostring(saleData.id)
         end
       end
+    end
   end
 end
 
@@ -3109,10 +3155,10 @@ function MasterMerchant:ReIndexSales(otherData)
               table.insert(otherData.savedVariables.SalesData[k][itemIndex]['sales'], item)
             else
               otherData.savedVariables.SalesData[k][itemIndex] = {
-                ['itemIcon'] = dataList.itemIcon,
+                ['itemIcon']      = dataList.itemIcon,
                 ['itemAdderText'] = self.addedSearchToItem(item.itemLink),
-                ['sales'] = {item},
-                ['itemDesc'] = GetItemLinkName(item.itemLink)
+                ['sales']         = { item },
+                ['itemDesc']      = GetItemLinkName(item.itemLink)
               }
             end
           end
@@ -3157,24 +3203,24 @@ function MasterMerchant:ReIndexSales(otherData)
 end
 
 function MasterMerchant.SetupPendingPost(self)
-	OriginalSetupPendingPost(self)
+  OriginalSetupPendingPost(self)
 
-	if (self.pendingItemSlot) then
-		local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
-		local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
+  if (self.pendingItemSlot) then
+    local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
+    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
 
     local theIID = GetItemLinkItemId(itemLink)
     local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
 
     if MasterMerchant.systemSavedVariables.pricingData and MasterMerchant.systemSavedVariables.pricingData[theIID] and MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] then
-			self:SetPendingPostPrice(math.floor(MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] * stackCount))
-		else
+      self:SetPendingPostPrice(math.floor(MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] * stackCount))
+    else
       local tipStats = MasterMerchant:itemStats(itemLink)
       if (tipStats.avgPrice) then
         self:SetPendingPostPrice(math.floor(tipStats.avgPrice * stackCount))
       end
-		end
-	end
+    end
+  end
 end
 
 --[[ register event monitor
@@ -3201,81 +3247,80 @@ function MasterMerchant:Initialize()
   -- SavedVar defaults
   old_defaults = {}
 
-  local systemDefault =
-  {
+  local systemDefault = {
     -- old settings
-    newestItem = {},
-    showChatAlerts = false,
-    showMultiple = true,
-    openWithMail = true,
-    openWithStore = true,
-    showFullPrice = true,
-    winLeft = 30,
-    winTop = 85,
-    guildWinLeft = 30,
-    guildWinTop = 85,
-    statsWinLeft = 720,
-    statsWinTop = 820,
-    feedbackWinLeft = 720,
-    feedbackWinTop = 420,
-    windowFont = 'ProseAntique',
-    showAnnounceAlerts = true,
-    showCyroAlerts = true,
-    alertSoundName = 'Book_Acquired',
-    showUnitPrice = false,
-    viewSize = ITEMS,
-    offlineSales = true,
-    showPricing = true,
-    showCraftCost = true,
-    showGraph = true,
-    showCalc = true,
-    rankIndex = 1,
-    rankIndexRoster = 1,
-    viewBuyerSeller = 'buyer',
-    viewGuildBuyerSeller = 'seller',
-    trimOutliers = false,
-    trimDecimals = false,
-    replaceInventoryValues = false,
-    delayInit = true,
-    displaySalesDetails = false,
+    newestItem                 = {},
+    showChatAlerts             = false,
+    showMultiple               = true,
+    openWithMail               = true,
+    openWithStore              = true,
+    showFullPrice              = true,
+    winLeft                    = 30,
+    winTop                     = 85,
+    guildWinLeft               = 30,
+    guildWinTop                = 85,
+    statsWinLeft               = 720,
+    statsWinTop                = 820,
+    feedbackWinLeft            = 720,
+    feedbackWinTop             = 420,
+    windowFont                 = 'ProseAntique',
+    showAnnounceAlerts         = true,
+    showCyroAlerts             = true,
+    alertSoundName             = 'Book_Acquired',
+    showUnitPrice              = false,
+    viewSize                   = ITEMS,
+    offlineSales               = true,
+    showPricing                = true,
+    showCraftCost              = true,
+    showGraph                  = true,
+    showCalc                   = true,
+    rankIndex                  = 1,
+    rankIndexRoster            = 1,
+    viewBuyerSeller            = 'buyer',
+    viewGuildBuyerSeller       = 'seller',
+    trimOutliers               = false,
+    trimDecimals               = false,
+    replaceInventoryValues     = false,
+    delayInit                  = true,
+    displaySalesDetails        = false,
     displayItemAnalysisButtons = false,
-    noSalesInfoDeal = 2,
-    focus1 = 10,
-    focus2 = 3,
-    focus3 = 30,
-    blacklist = '',
-    defaultDays = GetString(MM_RANGE_ALL),
-    shiftDays = GetString(MM_RANGE_FOCUS1),
-    ctrlDays = GetString(MM_RANGE_FOCUS2),
-    ctrlShiftDays = GetString(MM_RANGE_FOCUS3),
-    saucy = false,
-    autoNext = false,
-    displayListingMessage = false,
-    verbose = 4,
+    noSalesInfoDeal            = 2,
+    focus1                     = 10,
+    focus2                     = 3,
+    focus3                     = 30,
+    blacklist                  = '',
+    defaultDays                = GetString(MM_RANGE_ALL),
+    shiftDays                  = GetString(MM_RANGE_FOCUS1),
+    ctrlDays                   = GetString(MM_RANGE_FOCUS2),
+    ctrlShiftDays              = GetString(MM_RANGE_FOCUS3),
+    saucy                      = false,
+    autoNext                   = false,
+    displayListingMessage      = false,
+    verbose                    = 4,
     -- settingsToUse
-    viewSize = ITEMS,
-    customTimeframe = 90,
-    customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS),
+    viewSize                   = ITEMS,
+    customTimeframe            = 90,
+    customTimeframeType        = GetString(MM_CUSTOM_TIMEFRAME_DAYS),
     --[[you can assign this as the default but it needs to be a global var
     customTimeframeText = tostring(90) .. ' ' .. GetString(MM_CUSTOM_TIMEFRAME_DAYS),
     ]]--
-    minimalIndexing = false,
-    useSalesHistory = false,
-    historyDepth = 30,
-    minItemCount = 20,
-    maxItemCount = 5000,
-    diplayGuildInfo = false,
-    diplayPurchasesInfo = true,
-    diplaySalesInfo = true,
-    diplayTaxesInfo = true,
-    diplayCountInfo = true,
-    lastReceivedEventID = {},
-    showAmountTaxes = false,
-    useDefaultDaysRange = false,
-    itemIDConvertedToString = false,
-    reindexWrits = false,
-    defaultStatistics = GetString(MM_STATISTICS_MEDIAN),
-    useLibDebugLogger = false, -- added 11-28
+    minimalIndexing            = false,
+    useSalesHistory            = false,
+    historyDepth               = 30,
+    minItemCount               = 20,
+    maxItemCount               = 5000,
+    diplayGuildInfo            = false,
+    diplayPurchasesInfo        = true,
+    diplaySalesInfo            = true,
+    diplayTaxesInfo            = true,
+    diplayCountInfo            = true,
+    lastReceivedEventID        = {},
+    showAmountTaxes            = false,
+    useDefaultDaysRange        = false,
+    itemIDConvertedToString    = false,
+    reindexWrits               = false,
+    defaultStatistics          = GetString(MM_STATISTICS_MEDIAN),
+    useLibDebugLogger          = false, -- added 11-28
   }
 
   for i = 1, GetNumGuilds() do
@@ -3307,7 +3352,8 @@ function MasterMerchant:Initialize()
   swaping between acoutwide or not such as mentioned above
   ]]--
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), old_defaults)
-  self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
+  self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil,
+    'MasterMerchant')
 
   self.currentGuildID = GetGuildId(1) or 0
 
@@ -3322,31 +3368,37 @@ function MasterMerchant:Initialize()
   ]]--
   -- History Depth
   if self.acctSavedVariables.historyDepth then
-    MasterMerchant.systemSavedVariables.historyDepth = math.max( MasterMerchant.systemSavedVariables.historyDepth, self.acctSavedVariables.historyDepth )
+    MasterMerchant.systemSavedVariables.historyDepth = math.max(MasterMerchant.systemSavedVariables.historyDepth,
+      self.acctSavedVariables.historyDepth)
     self.acctSavedVariables.historyDepth = nil
   end
   if self.savedVariables.historyDepth then
-    MasterMerchant.systemSavedVariables.historyDepth = math.max( MasterMerchant.systemSavedVariables.historyDepth, self.savedVariables.historyDepth )
+    MasterMerchant.systemSavedVariables.historyDepth = math.max(MasterMerchant.systemSavedVariables.historyDepth,
+      self.savedVariables.historyDepth)
     self.savedVariables.historyDepth = nil
   end
 
   -- Min Count
   if self.acctSavedVariables.minItemCount then
-    MasterMerchant.systemSavedVariables.minItemCount = math.max( MasterMerchant.systemSavedVariables.minItemCount, self.acctSavedVariables.minItemCount )
+    MasterMerchant.systemSavedVariables.minItemCount = math.max(MasterMerchant.systemSavedVariables.minItemCount,
+      self.acctSavedVariables.minItemCount)
     self.acctSavedVariables.minItemCount = nil
   end
   if self.savedVariables.minItemCount then
-    MasterMerchant.systemSavedVariables.minItemCount = math.max( MasterMerchant.systemSavedVariables.minItemCount, self.savedVariables.minItemCount )
+    MasterMerchant.systemSavedVariables.minItemCount = math.max(MasterMerchant.systemSavedVariables.minItemCount,
+      self.savedVariables.minItemCount)
     self.savedVariables.minItemCount = nil
   end
 
   -- Max Count
   if self.acctSavedVariables.maxItemCount then
-    MasterMerchant.systemSavedVariables.maxItemCount = math.max( MasterMerchant.systemSavedVariables.maxItemCount, self.acctSavedVariables.maxItemCount )
+    MasterMerchant.systemSavedVariables.maxItemCount = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
+      self.acctSavedVariables.maxItemCount)
     self.acctSavedVariables.maxItemCount = nil
   end
   if self.savedVariables.maxItemCount then
-    MasterMerchant.systemSavedVariables.maxItemCount = math.max( MasterMerchant.systemSavedVariables.maxItemCount, self.savedVariables.maxItemCount )
+    MasterMerchant.systemSavedVariables.maxItemCount = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
+      self.savedVariables.maxItemCount)
     self.savedVariables.maxItemCount = nil
   end
 
@@ -3365,22 +3417,22 @@ function MasterMerchant:Initialize()
   -- Move the old single addon sales history to the multi addon sales history
   if self.acctSavedVariables.SalesData then
     local action = {
-      [0] = function (k, v) MM00Data.savedVariables.SalesData[k] = v end,
-      [1] = function (k, v) MM01Data.savedVariables.SalesData[k] = v end,
-      [2] = function (k, v) MM02Data.savedVariables.SalesData[k] = v end,
-      [3] = function (k, v) MM03Data.savedVariables.SalesData[k] = v end,
-      [4] = function (k, v) MM04Data.savedVariables.SalesData[k] = v end,
-      [5] = function (k, v) MM05Data.savedVariables.SalesData[k] = v end,
-      [6] = function (k, v) MM06Data.savedVariables.SalesData[k] = v end,
-      [7] = function (k, v) MM07Data.savedVariables.SalesData[k] = v end,
-      [8] = function (k, v) MM08Data.savedVariables.SalesData[k] = v end,
-      [9] = function (k, v) MM09Data.savedVariables.SalesData[k] = v end,
-      [10] = function (k, v) MM10Data.savedVariables.SalesData[k] = v end,
-      [11] = function (k, v) MM11Data.savedVariables.SalesData[k] = v end,
-      [12] = function (k, v) MM12Data.savedVariables.SalesData[k] = v end,
-      [13] = function (k, v) MM13Data.savedVariables.SalesData[k] = v end,
-      [14] = function (k, v) MM14Data.savedVariables.SalesData[k] = v end,
-      [15] = function (k, v) MM15Data.savedVariables.SalesData[k] = v end
+      [0]  = function(k, v) MM00Data.savedVariables.SalesData[k] = v end,
+      [1]  = function(k, v) MM01Data.savedVariables.SalesData[k] = v end,
+      [2]  = function(k, v) MM02Data.savedVariables.SalesData[k] = v end,
+      [3]  = function(k, v) MM03Data.savedVariables.SalesData[k] = v end,
+      [4]  = function(k, v) MM04Data.savedVariables.SalesData[k] = v end,
+      [5]  = function(k, v) MM05Data.savedVariables.SalesData[k] = v end,
+      [6]  = function(k, v) MM06Data.savedVariables.SalesData[k] = v end,
+      [7]  = function(k, v) MM07Data.savedVariables.SalesData[k] = v end,
+      [8]  = function(k, v) MM08Data.savedVariables.SalesData[k] = v end,
+      [9]  = function(k, v) MM09Data.savedVariables.SalesData[k] = v end,
+      [10] = function(k, v) MM10Data.savedVariables.SalesData[k] = v end,
+      [11] = function(k, v) MM11Data.savedVariables.SalesData[k] = v end,
+      [12] = function(k, v) MM12Data.savedVariables.SalesData[k] = v end,
+      [13] = function(k, v) MM13Data.savedVariables.SalesData[k] = v end,
+      [14] = function(k, v) MM14Data.savedVariables.SalesData[k] = v end,
+      [15] = function(k, v) MM15Data.savedVariables.SalesData[k] = v end
     }
 
     for k, v in pairs(self.acctSavedVariables.SalesData) do
@@ -3469,10 +3521,10 @@ function MasterMerchant:Initialize()
   else
     -- Queue them for later
     local LEQ = LibExecutionQueue:new()
-    LEQ:Add(function () self:TruncateHistory() end, 'TruncateHistory')
-    LEQ:Add(function () self:InitItemHistory() end, 'InitItemHistory')
-    LEQ:Add(function () self:indexHistoryTables() end, 'indexHistoryTables')
-    LEQ:Add(function () self:InitScrollLists() end, 'InitScrollLists')
+    LEQ:Add(function() self:TruncateHistory() end, 'TruncateHistory')
+    LEQ:Add(function() self:InitItemHistory() end, 'InitItemHistory')
+    LEQ:Add(function() self:indexHistoryTables() end, 'indexHistoryTables')
+    LEQ:Add(function() self:InitScrollLists() end, 'InitScrollLists')
   end
 
   self:setupGuildColors()
@@ -3489,10 +3541,11 @@ function MasterMerchant:Initialize()
 
   LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, self.LinkHandler_OnLinkMouseUp)
 
-  ZO_PreHook('ZO_InventorySlot_ShowContextMenu', function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
+  ZO_PreHook('ZO_InventorySlot_ShowContextMenu',
+    function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
 
   local theFragment = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.uiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
-    if MasterMerchant.systemSavedVariables.openWithMail then
+  if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:AddFragment(theFragment)
     MAIL_SEND_SCENE:AddFragment(theFragment)
   end
@@ -3525,22 +3578,24 @@ function MasterMerchant:Initialize()
     MasterMerchantFeedback:SetHidden(true)
   end)
 
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_PENDING_ITEM_UPDATE, function (eventCode, slotId, isPending)
-    if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
-      local theLink = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
-      local theIID = GetItemLinkItemId(theLink)
-      local theIData = self.makeIndexFromLink(theLink)
-      local postedStats = self:toolTipStats(theIID, theIData)
-      MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
-      local floorPrice = 0
-      if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
-      MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
-      MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1, slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
-      MasterMerchantPriceCalculator:SetHidden(false)
-    else MasterMerchantPriceCalculator:SetHidden(true) end
-  end)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_PENDING_ITEM_UPDATE,
+    function(eventCode, slotId, isPending)
+      if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
+        local theLink = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
+        local theIID = GetItemLinkItemId(theLink)
+        local theIData = self.makeIndexFromLink(theLink)
+        local postedStats = self:toolTipStats(theIID, theIData)
+        MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
+        local floorPrice = 0
+        if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
+        MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
+        MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1,
+          slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+        MasterMerchantPriceCalculator:SetHidden(false)
+      else MasterMerchantPriceCalculator:SetHidden(true) end
+    end)
 
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_RESPONSE_RECEIVED, function (_, responseType, result)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_RESPONSE_RECEIVED, function(_, responseType, result)
     if responseType == TRADING_HOUSE_RESULT_POST_PENDING and result == TRADING_HOUSE_RESULT_SUCCESS then MasterMerchantPriceCalculator:SetHidden(true) end
     -- Set up guild store buying advice
     self:initBuyingAdvice()
@@ -3550,30 +3605,33 @@ function MasterMerchant:Initialize()
   -- I could do this with action layer pop/push, but it's kind've a pain
   -- when it's just these I want to hook
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_BANK, function() self:ActiveWindow():SetHidden(true) end)
---    MasterMerchantWindow:SetHidden(true)
---    MasterMerchantGuildWindow:SetHidden(true)
---  end)
+  --    MasterMerchantWindow:SetHidden(true)
+  --    MasterMerchantGuildWindow:SetHidden(true)
+  --  end)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_GUILD_BANK, function() self:ActiveWindow():SetHidden(true) end)
---    MasterMerchantWindow:SetHidden(true)
---    MasterMerchantGuildWindow:SetHidden(true)
---  end)
+  --    MasterMerchantWindow:SetHidden(true)
+  --    MasterMerchantGuildWindow:SetHidden(true)
+  --  end)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_STORE, function() self:ActiveWindow():SetHidden(true) end)
---    MasterMerchantWindow:SetHidden(true)
---    MasterMerchantGuildWindow:SetHidden(true)
---  end)
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_END_CRAFTING_STATION_INTERACT, function() self:ActiveWindow():SetHidden(true) end)
---    MasterMerchantWindow:SetHidden(true)
---    MasterMerchantGuildWindow:SetHidden(true)
---  end)
+  --    MasterMerchantWindow:SetHidden(true)
+  --    MasterMerchantGuildWindow:SetHidden(true)
+  --  end)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_END_CRAFTING_STATION_INTERACT,
+    function() self:ActiveWindow():SetHidden(true) end)
+  --    MasterMerchantWindow:SetHidden(true)
+  --    MasterMerchantGuildWindow:SetHidden(true)
+  --  end)
 
   -- We'll add stats to tooltips for items we have data for, if desired
   ZO_PreHookHandler(PopupTooltip, 'OnUpdate', function() self:addStatsPopupTooltip(PopupTooltip) end)
-	ZO_PreHookHandler(PopupTooltip, 'OnHide', function() self:remStatsPopupTooltip(PopupTooltip) end)
+  ZO_PreHookHandler(PopupTooltip, 'OnHide', function() self:remStatsPopupTooltip(PopupTooltip) end)
   ZO_PreHookHandler(ItemTooltip, 'OnUpdate', function() self:addStatsItemTooltip() end)
   ZO_PreHookHandler(ItemTooltip, 'OnHide', function() self:remStatsItemTooltip() end)
 
-  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnUpdate', function() self:addStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
-  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnHide', function() self:remStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
+  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnUpdate',
+    function() self:addStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
+  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnHide',
+    function() self:remStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
 
   if TRADING_HOUSE then
     OriginalSetupPendingPost = TRADING_HOUSE.SetupPendingPost
@@ -3588,31 +3646,31 @@ function MasterMerchant:Initialize()
   self:initPurchaseTracking()
 
   --Watch inventory listings
-  for _,i in pairs(PLAYER_INVENTORY.inventories) do
-		local listView = i.listView
-		if listView and listView.dataTypes and listView.dataTypes[1] then
-			local originalCall = listView.dataTypes[1].setupCallback
+  for _, i in pairs(PLAYER_INVENTORY.inventories) do
+    local listView = i.listView
+    if listView and listView.dataTypes and listView.dataTypes[1] then
+      local originalCall = listView.dataTypes[1].setupCallback
 
-			listView.dataTypes[1].setupCallback = function(control, slot)
-				originalCall(control, slot)
+      listView.dataTypes[1].setupCallback = function(control, slot)
+        originalCall(control, slot)
         self:SwitchPrice(control, slot)
-			end
-		end
-	end
+      end
+    end
+  end
 
   -- Watch Decon list
   local originalCall = ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback
-	ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback = function(control, slot)
-		originalCall(control, slot)
-		self:SwitchPrice(control, slot)
-	end
+  ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback = function(control, slot)
+    originalCall(control, slot)
+    self:SwitchPrice(control, slot)
+  end
 
   -- Right, we're all set up, so wait for the player activated event
   -- and then do an initial (deep) scan in case it's been a while since the player
   -- logged on, then use RegisterForUpdate to set up a timed scan.
-  EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_DeepScan", EVENT_PLAYER_ACTIVATED, function()
+  EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_DeepScan", EVENT_PLAYER_ACTIVATED, function()
 
-    EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_DeepScan", EVENT_PLAYER_ACTIVATED )
+    EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name .. "_DeepScan", EVENT_PLAYER_ACTIVATED)
 
     --[[self:playSounds()
     local mmPlaySound = PlaySound
@@ -3631,35 +3689,37 @@ function MasterMerchant:Initialize()
     if false and MasterMerchant.systemSavedVariables.autoNext then
 
       local localRunInitialSetup = TRADING_HOUSE.RunInitialSetup
-      TRADING_HOUSE.RunInitialSetup = function (self, ...)
+      TRADING_HOUSE.RunInitialSetup = function(self, ...)
         localRunInitialSetup(self, ...)
 
         local localOriginalPrevious = TRADING_HOUSE.m_search.SearchPreviousPage
-        TRADING_HOUSE.m_search.SearchPreviousPage = function (self, ...)
+        TRADING_HOUSE.m_search.SearchPreviousPage = function(self, ...)
           MasterMerchant.lastDirection = -1
           localOriginalPrevious(self, ...)
         end
 
         local localOriginalNext = TRADING_HOUSE.m_search.SearchNextPage
-        TRADING_HOUSE.m_search.SearchNextPage = function (self, ...)
+        TRADING_HOUSE.m_search.SearchNextPage = function(self, ...)
           MasterMerchant.lastDirection = 1
           localOriginalNext(self, ...)
         end
 
         local localDoSearch = TRADING_HOUSE.m_search.DoSearch
-        TRADING_HOUSE.m_search.DoSearch = function (self, ...)
+        TRADING_HOUSE.m_search.DoSearch = function(self, ...)
           MasterMerchant.lastDirection = 1
           localDoSearch(self, ...)
         end
 
         local originalOnSearchCooldownUpdate = TRADING_HOUSE.OnSearchCooldownUpdate
-        TRADING_HOUSE.OnSearchCooldownUpdate = function (self, ...)
+        TRADING_HOUSE.OnSearchCooldownUpdate = function(self, ...)
           originalOnSearchCooldownUpdate(self, ...)
           if GetTradingHouseCooldownRemaining() == 0 then
-            if zo_plainstrfind(self.m_resultCount:GetText(), '(0)') and self.m_search:HasNextPage() and (MasterMerchant.lastDirection == 1) then
+            if zo_plainstrfind(self.m_resultCount:GetText(),
+              '(0)') and self.m_search:HasNextPage() and (MasterMerchant.lastDirection == 1) then
               self.m_search:SearchNextPage()
             end
-            if zo_plainstrfind(self.m_resultCount:GetText(), '(0)') and self.m_search:HasPreviousPage() and (MasterMerchant.lastDirection == -1) then
+            if zo_plainstrfind(self.m_resultCount:GetText(),
+              '(0)') and self.m_search:HasPreviousPage() and (MasterMerchant.lastDirection == -1) then
               MasterMerchant.lastDirection = 0
               self.m_search:SearchPreviousPage()
             end
@@ -3668,18 +3728,18 @@ function MasterMerchant:Initialize()
       end
     end
 
-  if not self.systemSavedVariables.delayInit then
+    if not self.systemSavedVariables.delayInit then
       -- The others were already done...
       self:InitScrollLists()
-  else
-    -- Queue them for later
-    -- Finish the init after the player has loaded....
-    zo_callLater(function()
+    else
+      -- Queue them for later
+      -- Finish the init after the player has loaded....
+      zo_callLater(function()
         MasterMerchant.v(1, "|cFFFF00Master Merchant Initializing...|r")
         local LEQ = LibExecutionQueue:new()
         LEQ:Start()
-    end, 10)
-  end
+      end, 10)
+    end
 
   end)
 end
@@ -3687,52 +3747,53 @@ end
 function MasterMerchant:SwitchPrice(control, slot)
   if MasterMerchant.systemSavedVariables.replaceInventoryValues then
     local bagId = control.dataEntry.data.bagId
-	  local slotIndex = control.dataEntry.data.slotIndex
-	  local itemLink = bagId and GetItemLink(bagId, slotIndex) or GetItemLink(slotIndex)
+    local slotIndex = control.dataEntry.data.slotIndex
+    local itemLink = bagId and GetItemLink(bagId, slotIndex) or GetItemLink(slotIndex)
 
     if itemLink then
       local theIID = GetItemLinkItemId(itemLink)
       local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
       local tipStats = MasterMerchant:toolTipStats(theIID, itemIndex, true, true)
       if tipStats.avgPrice then
-          --[[
-          if control.dataEntry.data.rawName == "Fortified Nirncrux" then
-          MasterMerchant.ShowChildren(control, 20)
-          --d(control.dataEntry.data.rawName)
-          d(control.dataEntry.data.bagId)
-          d(control.dataEntry.data.slotIndex)
-          d(control.dataEntry.data.statPrice)
-          d(control.dataEntry.data.sellPrice)
-          d(control.dataEntry.data.stackSellPrice)
-          --d(control.dataEntry.data)
-          end
-          --]]
-          if not control.dataEntry.data.mmOriginalPrice then
-            control.dataEntry.data.mmOriginalPrice = control.dataEntry.data.sellPrice
-            control.dataEntry.data.mmOriginalStackPrice = control.dataEntry.data.stackSellPrice
-          end
+        --[[
+        if control.dataEntry.data.rawName == "Fortified Nirncrux" then
+        MasterMerchant.ShowChildren(control, 20)
+        --d(control.dataEntry.data.rawName)
+        d(control.dataEntry.data.bagId)
+        d(control.dataEntry.data.slotIndex)
+        d(control.dataEntry.data.statPrice)
+        d(control.dataEntry.data.sellPrice)
+        d(control.dataEntry.data.stackSellPrice)
+        --d(control.dataEntry.data)
+        end
+        --]]
+        if not control.dataEntry.data.mmOriginalPrice then
+          control.dataEntry.data.mmOriginalPrice = control.dataEntry.data.sellPrice
+          control.dataEntry.data.mmOriginalStackPrice = control.dataEntry.data.stackSellPrice
+        end
 
-          control.dataEntry.data.mmPrice = tonumber(string.format('%.0f',tipStats.avgPrice))
-          control.dataEntry.data.stackSellPrice = tonumber(string.format('%.0f',tipStats.avgPrice * control.dataEntry.data.stackCount))
-          control.dataEntry.data.sellPrice = control.dataEntry.data.mmPrice
+        control.dataEntry.data.mmPrice = tonumber(string.format('%.0f', tipStats.avgPrice))
+        control.dataEntry.data.stackSellPrice = tonumber(string.format('%.0f',
+          tipStats.avgPrice * control.dataEntry.data.stackCount))
+        control.dataEntry.data.sellPrice = control.dataEntry.data.mmPrice
 
-          local sellPriceControl = control:GetNamedChild("SellPrice")
-          if (sellPriceControl) then
-            sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-            sellPrice = '|cEEEE33' .. sellPrice .. '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-            sellPriceControl:SetText(sellPrice)
-	        end
+        local sellPriceControl = control:GetNamedChild("SellPrice")
+        if (sellPriceControl) then
+          sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
+          sellPrice = '|cEEEE33' .. sellPrice .. '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+          sellPriceControl:SetText(sellPrice)
+        end
       else
-          if control.dataEntry.data.mmOriginalPrice then
-            control.dataEntry.data.sellPrice = control.dataEntry.data.mmOriginalPrice
-            control.dataEntry.data.stackSellPrice = control.dataEntry.data.mmOriginalStackPrice
-          end
-          local sellPriceControl = control:GetNamedChild("SellPrice")
-          if (sellPriceControl) then
-            sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-            sellPrice = sellPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-            sellPriceControl:SetText(sellPrice)
-	        end
+        if control.dataEntry.data.mmOriginalPrice then
+          control.dataEntry.data.sellPrice = control.dataEntry.data.mmOriginalPrice
+          control.dataEntry.data.stackSellPrice = control.dataEntry.data.mmOriginalStackPrice
+        end
+        local sellPriceControl = control:GetNamedChild("SellPrice")
+        if (sellPriceControl) then
+          sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
+          sellPrice = sellPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+          sellPriceControl:SetText(sellPrice)
+        end
       end
     end
   end
@@ -3754,28 +3815,29 @@ function MasterMerchant:TruncateHistory()
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
 
     local salesCount = MasterMerchant.NonContiguousNonNilCount(versiondata['sales'])
-    for saleid, saledata in MasterMerchant.spairs(versiondata['sales'], function(a, b) return MasterMerchant.CleanTimestamp(a) < MasterMerchant.CleanTimestamp(b) end) do
+    for saleid, saledata in MasterMerchant.spairs(versiondata['sales'],
+      function(a, b) return MasterMerchant.CleanTimestamp(a) < MasterMerchant.CleanTimestamp(b) end) do
       if MasterMerchant.systemSavedVariables.useSalesHistory then
-        if ( saledata['timestamp'] < extraData.epochBack
-            or saledata['timestamp'] == nil
-            or type(saledata['timestamp']) ~= 'number'
-          ) then
-            -- Remove it by setting it to nil
-            versiondata['sales'][saleid] = nil
-            extraData.deleteCount = extraData.deleteCount + 1
-            salesCount = salesCount - 1
+        if (saledata['timestamp'] < extraData.epochBack
+          or saledata['timestamp'] == nil
+          or type(saledata['timestamp']) ~= 'number'
+        ) then
+          -- Remove it by setting it to nil
+          versiondata['sales'][saleid] = nil
+          extraData.deleteCount = extraData.deleteCount + 1
+          salesCount = salesCount - 1
         end
       else
         if salesCount > MasterMerchant.systemSavedVariables.minItemCount and
-          ( salesCount > MasterMerchant.systemSavedVariables.maxItemCount
+          (salesCount > MasterMerchant.systemSavedVariables.maxItemCount
             or saledata['timestamp'] == nil
             or type(saledata['timestamp']) ~= 'number'
             or saledata['timestamp'] < extraData.epochBack
           ) then
-            -- Remove it by setting it to nil
-            versiondata['sales'][saleid] = nil
-            extraData.deleteCount = extraData.deleteCount + 1
-            salesCount = salesCount - 1
+          -- Remove it by setting it to nil
+          versiondata['sales'][saleid] = nil
+          extraData.deleteCount = extraData.deleteCount + 1
+          salesCount = salesCount - 1
         end
       end
     end
@@ -3806,18 +3868,16 @@ function MasterMerchant:TruncateHistory()
     end
     self:setScanning(false)
 
-
     MasterMerchant.v(4, 'Trimming: ' .. GetTimeStamp() - extraData.start .. ' seconds to trim:')
     MasterMerchant.v(4, '  ' .. extraData.deleteCount .. ' old records removed.')
 
   end
 
   if not self.isScanning then
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {} )
+    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
 end
-
 
 function MasterMerchant:InitItemHistory()
 
@@ -3862,7 +3922,8 @@ function MasterMerchant:InitItemHistory()
           local guild = self.guildItems[saledata.guild]
           local _, firstsaledata = next(versiondata.sales, nil)
           local seatchData = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
+            seatchData)
         end
 
         if (extradata.doMyItems and string.lower(saledata.seller) == extradata.playerName) then
@@ -3870,7 +3931,8 @@ function MasterMerchant:InitItemHistory()
           local guild = self.myItems[saledata.guild]
           local _, firstsaledata = next(versiondata.sales, nil)
           local seatchData = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
+            seatchData)
         end
 
         if (extradata.doGuildSales) then
@@ -3882,7 +3944,8 @@ function MasterMerchant:InitItemHistory()
         if (extradata.doGuildPurchases) then
           self.guildPurchases[saledata.guild] = self.guildPurchases[saledata.guild] or MMGuild:new(saledata.guild)
           local guild = self.guildPurchases[saledata.guild]
-          guild:addSaleByDate(saledata.buyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
+          guild:addSaleByDate(saledata.buyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk,
+            false)
         end
       end
       return false
@@ -3916,150 +3979,152 @@ function MasterMerchant:InitItemHistory()
 
       self:setScanning(false)
 
-      MasterMerchant.v(3, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
+      MasterMerchant.v(3,
+        'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
     end
 
     if not self.isScanning then
-      self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata )
+      self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata)
     end
 
   end
- end
+end
 
 function MasterMerchant:SetupListener(guildID)
-    -- listener
-    MasterMerchant.LibHistoireListener[guildID] = LGH:CreateGuildHistoryListener(guildID, GUILD_HISTORY_STORE)
-    local lastReceivedEventID
-    if MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] then
-      --MasterMerchant.dm("Info", string.format("MasterMerchant Saved Var: %s, GuildID: (%s)", MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID], guildID))
-      lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID])
-      --MasterMerchant.dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
-      MasterMerchant.LibHistoireListener[guildID]:SetAfterEventId(lastReceivedEventID)
-    end
-    MasterMerchant.LibHistoireListener[guildID]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
-      if eventType == GUILD_EVENT_ITEM_SOLD then
-        if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
-            MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = Id64ToString(eventId)
-            lastReceivedEventID = eventId
-        end
-        local guildName = GetGuildName(guildID)
-        local thePlayer = string.lower(GetDisplayName())
-        --[[
-        local theEvent = {
-          buyer = p2,
-          guild = guildName,
-          itemName = p4,
-          quant = p3,
-          saleTime = eventTime,
-          salePrice = p5,
-          seller = p1,
-          kioskSale = false,
-          id = Id64ToString(eventId)
-        }
-        local newSalesItem =
-          {buyer = theEvent.buyer,
-          guild = theEvent.guild,
-          itemLink = theEvent.itemName,
-          quant = tonumber(theEvent.quant),
-          timestamp = tonumber(theEvent.saleTime),
-          price = tonumber(theEvent.salePrice),
-          seller = theEvent.seller,
-          wasKiosk = theEvent.kioskSale,
-          id = theEvent.id
-        }
-        [1] =
-        {
-          ["price"] = 120,
-          ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
-          ["id"] = 1353657539,
-          ["guild"] = "Unstable Unicorns",
-          ["buyer"] = "@Traeky",
-          ["quant"] = 1,
-          ["wasKiosk"] = true,
-          ["timestamp"] = 1597969403,
-          ["seller"] = "@cherrypick",
-        },
-        ]]--
-        local theEvent = {
-            buyer = p2,
-            guild = guildName,
-            itemLink = p4,
-            quant = p3,
-            timestamp = eventTime,
-            price = p5,
-            seller = p1,
-            wasKiosk = false,
-            id = Id64ToString(eventId)
-        }
-        theEvent.wasKiosk = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
-
-        local isDuplicate = MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id)
-
-        if not isDuplicate then
-          MasterMerchant:addToHistoryTables(theEvent)
-        end
-        -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
-        if not isDuplicate and string.lower(theEvent.seller) == thePlayer then
-          --MasterMerchant.dm("Debug", "alertQueue updated")
-          table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
-        end
-        if not isDuplicate then
-          MasterMerchant:PostScanParallel(guildName, true)
-        end
+  -- listener
+  MasterMerchant.LibHistoireListener[guildID] = LGH:CreateGuildHistoryListener(guildID, GUILD_HISTORY_STORE)
+  local lastReceivedEventID
+  if MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] then
+    --MasterMerchant.dm("Info", string.format("MasterMerchant Saved Var: %s, GuildID: (%s)", MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID], guildID))
+    lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID])
+    --MasterMerchant.dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
+    MasterMerchant.LibHistoireListener[guildID]:SetAfterEventId(lastReceivedEventID)
+  end
+  MasterMerchant.LibHistoireListener[guildID]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
+    if eventType == GUILD_EVENT_ITEM_SOLD then
+      if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
+        MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = Id64ToString(eventId)
+        lastReceivedEventID = eventId
       end
-    end)
-    MasterMerchant.LibHistoireListener[guildID]:Start()
+      local guildName = GetGuildName(guildID)
+      local thePlayer = string.lower(GetDisplayName())
+      --[[
+      local theEvent = {
+        buyer = p2,
+        guild = guildName,
+        itemName = p4,
+        quant = p3,
+        saleTime = eventTime,
+        salePrice = p5,
+        seller = p1,
+        kioskSale = false,
+        id = Id64ToString(eventId)
+      }
+      local newSalesItem =
+        {buyer = theEvent.buyer,
+        guild = theEvent.guild,
+        itemLink = theEvent.itemName,
+        quant = tonumber(theEvent.quant),
+        timestamp = tonumber(theEvent.saleTime),
+        price = tonumber(theEvent.salePrice),
+        seller = theEvent.seller,
+        wasKiosk = theEvent.kioskSale,
+        id = theEvent.id
+      }
+      [1] =
+      {
+        ["price"] = 120,
+        ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+        ["id"] = 1353657539,
+        ["guild"] = "Unstable Unicorns",
+        ["buyer"] = "@Traeky",
+        ["quant"] = 1,
+        ["wasKiosk"] = true,
+        ["timestamp"] = 1597969403,
+        ["seller"] = "@cherrypick",
+      },
+      ]]--
+      local theEvent = {
+        buyer     = p2,
+        guild     = guildName,
+        itemLink  = p4,
+        quant     = p3,
+        timestamp = eventTime,
+        price     = p5,
+        seller    = p1,
+        wasKiosk  = false,
+        id        = Id64ToString(eventId)
+      }
+      theEvent.wasKiosk = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
+
+      local isDuplicate = MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id)
+
+      if not isDuplicate then
+        MasterMerchant:addToHistoryTables(theEvent)
+      end
+      -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
+      if not isDuplicate and string.lower(theEvent.seller) == thePlayer then
+        --MasterMerchant.dm("Debug", "alertQueue updated")
+        table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
+      end
+      if not isDuplicate then
+        MasterMerchant:PostScanParallel(guildName, true)
+      end
+    end
+  end)
+  MasterMerchant.LibHistoireListener[guildID]:Start()
 end
 
 function MasterMerchant:InitScrollLists()
 
-    self:SetupScrollLists()
+  self:SetupScrollLists()
 
-    local numGuilds = GetNumGuilds()
-    if numGuilds > 0 then
-      MasterMerchant.currentGuildID = GetGuildId(1) or 0
-      --MasterMerchant:UpdateControlData()
-      --MasterMerchant.dm("Debug", "MasterMerchant.currentGuildID: " .. MasterMerchant.currentGuildID)
-    else
-      -- used for event index on guild history tab
-      MasterMerchant.currentGuildID = 0
+  local numGuilds = GetNumGuilds()
+  if numGuilds > 0 then
+    MasterMerchant.currentGuildID = GetGuildId(1) or 0
+    --MasterMerchant:UpdateControlData()
+    --MasterMerchant.dm("Debug", "MasterMerchant.currentGuildID: " .. MasterMerchant.currentGuildID)
+  else
+    -- used for event index on guild history tab
+    MasterMerchant.currentGuildID = 0
+  end
+  for i = 1, numGuilds do
+    local guildID = GetGuildId(i)
+    local guildName = GetGuildName(guildID)
+    MasterMerchant.alertQueue[guildName] = {}
+    for m = 1, GetNumGuildMembers(guildID) do
+      local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildID, m)
+      if MasterMerchant.guildMemberInfo[guildID] == nil then MasterMerchant.guildMemberInfo[guildID] = {} end
+      MasterMerchant.guildMemberInfo[guildID][string.lower(guildMemInfo)] = true
     end
-    for i = 1, numGuilds do
-      local guildID = GetGuildId(i)
-      local guildName = GetGuildName(guildID)
-      MasterMerchant.alertQueue[guildName] = {}
-      for m = 1, GetNumGuildMembers(guildID) do
-        local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildID, m)
-        if MasterMerchant.guildMemberInfo[guildID] == nil then MasterMerchant.guildMemberInfo[guildID] = {} end
-        MasterMerchant.guildMemberInfo[guildID][string.lower(guildMemInfo)] = true
-      end
-    end
+  end
 
-    MasterMerchant.v(2, '|cFFFF00Master Merchant Initialized -- Holding information on ' .. self.totalRecords .. ' sales.|r')
+  MasterMerchant.v(2,
+    '|cFFFF00Master Merchant Initialized -- Holding information on ' .. self.totalRecords .. ' sales.|r')
 
-    self.isFirstScan = MasterMerchant.systemSavedVariables.offlineSales
-    if NonContiguousCount(self.salesData) > 0 then
-      self.veryFirstScan = false
-    else
-      -- most of this stuff was unused
-      self.veryFirstScan = true
+  self.isFirstScan = MasterMerchant.systemSavedVariables.offlineSales
+  if NonContiguousCount(self.salesData) > 0 then
+    self.veryFirstScan = false
+  else
+    -- most of this stuff was unused
+    self.veryFirstScan = true
 
-      MasterMerchant.v(2, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
-    end
-    self:ScanStoresParallel(true)
+    MasterMerchant.v(2, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
+  end
+  self:ScanStoresParallel(true)
 
-    -- MasterMerchant.isInitialized = true
-    -- CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function() MasterMerchant:NewGuildSelected() end)
+  -- MasterMerchant.isInitialized = true
+  -- CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function() MasterMerchant:NewGuildSelected() end)
 end
 
 local dealInfoCache = {}
 MasterMerchant.ClearDealInfoCache = function()
-	ZO_ClearTable(dealInfoCache)
+  ZO_ClearTable(dealInfoCache)
 end
 
 MasterMerchant.GetDealInfo = function(itemLink, purchasePrice, stackCount)
   local key = string.format("%s_%d_%d", itemLink, purchasePrice, stackCount)
-  if(not dealInfoCache[key]) then
+  if (not dealInfoCache[key]) then
     local setPrice = nil
     local salesCount = 0
     local theIID = GetItemLinkItemId(itemLink)
@@ -4069,7 +4134,7 @@ MasterMerchant.GetDealInfo = function(itemLink, purchasePrice, stackCount)
       setPrice = tipStats['avgPrice']
       salesCount = tipStats['numSales']
     end
-    dealInfoCache[key] = {MasterMerchant.DealCalc(setPrice, salesCount, purchasePrice, stackCount)}
+    dealInfoCache[key] = { MasterMerchant.DealCalc(setPrice, salesCount, purchasePrice, stackCount) }
   end
   return unpack(dealInfoCache[key])
 end
@@ -4117,24 +4182,24 @@ end
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 -- OTHER DEALINGS IN THE SOFTWARE.
 function MasterMerchant:RegisterFonts()
-   LMP:Register("font", "Arial Narrow",     [[MasterMerchant/Fonts/arialn.ttf]]  )
-   LMP:Register("font", "ESO Cartographer", [[MasterMerchant/Fonts/esocartographer-bold.otf]]  )
-   LMP:Register("font", "Fontin Bold",      [[MasterMerchant/Fonts/fontin_sans_b.otf]]  )
-   LMP:Register("font", "Fontin Italic",    [[MasterMerchant/Fonts/fontin_sans_i.otf]]  )
-   LMP:Register("font", "Fontin Regular",   [[MasterMerchant/Fonts/fontin_sans_r.otf]]  )
-   LMP:Register("font", "Fontin SmallCaps", [[MasterMerchant/Fonts/fontin_sans_sc.otf]]  )
+  LMP:Register("font", "Arial Narrow", [[MasterMerchant/Fonts/arialn.ttf]])
+  LMP:Register("font", "ESO Cartographer", [[MasterMerchant/Fonts/esocartographer-bold.otf]])
+  LMP:Register("font", "Fontin Bold", [[MasterMerchant/Fonts/fontin_sans_b.otf]])
+  LMP:Register("font", "Fontin Italic", [[MasterMerchant/Fonts/fontin_sans_i.otf]])
+  LMP:Register("font", "Fontin Regular", [[MasterMerchant/Fonts/fontin_sans_r.otf]])
+  LMP:Register("font", "Fontin SmallCaps", [[MasterMerchant/Fonts/fontin_sans_sc.otf]])
 end
 
 local function OnAddOnLoaded(eventCode, addOnName)
-   if addOnName:find('^ZO_') then return end
-   if addOnName == MasterMerchant.name then
-        MasterMerchant:Initialize()
-        -- Set up /mm as a slash command toggle for the main window
-        SLASH_COMMANDS['/mm'] = MasterMerchant.Slash
-   elseif addOnName == "AwesomeGuildStore" then
-     -- Set up AGS integration, if it's installed
-     MasterMerchant:initAGSIntegration()
-   end
+  if addOnName:find('^ZO_') then return end
+  if addOnName == MasterMerchant.name then
+    MasterMerchant:Initialize()
+    -- Set up /mm as a slash command toggle for the main window
+    SLASH_COMMANDS['/mm'] = MasterMerchant.Slash
+  elseif addOnName == "AwesomeGuildStore" then
+    -- Set up AGS integration, if it's installed
+    MasterMerchant:initAGSIntegration()
+  end
 end
 
 function MasterMerchant.Slash(allArgs)
@@ -4142,7 +4207,7 @@ function MasterMerchant.Slash(allArgs)
   local guildNumber = 0
   local hoursBack = 0
   local argNum = 0
-  for w in string.gmatch(allArgs,"%w+") do
+  for w in string.gmatch(allArgs, "%w+") do
     argNum = argNum + 1
     if argNum == 1 then args = w end
     if argNum == 2 then guildNumber = tonumber(w) end
@@ -4155,25 +4220,29 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant.v(1, "/mm dups  - scans your history to purge duplicate entries")
     MasterMerchant.v(1, "/mm clean - cleans out bad sales records (invalid information)")
     MasterMerchant.v(1, "/mm clearprices  - clears your historical listing prices")
-    MasterMerchant.v(1, "/mm invisible  - resets the MM window positions in case they are invisible (aka off the screen)")
+    MasterMerchant.v(1,
+      "/mm invisible  - resets the MM window positions in case they are invisible (aka off the screen)")
     MasterMerchant.v(1, "/mm export <Guild number>  - 'exports' last weeks sales/purchase totals for the guild")
     MasterMerchant.v(1, "/mm sales <Guild number>  - 'exports' sales activity data for your guild")
-    MasterMerchant.v(1, "/mm verbose <setting 1-6>  - sets MM message verbosity: 1 - Nearly Silent to 6 - Debugging Level Info.")
+    MasterMerchant.v(1,
+      "/mm verbose <setting 1-6>  - sets MM message verbosity: 1 - Nearly Silent to 6 - Debugging Level Info.")
 
     MasterMerchant.v(1, "/mm deal  - toggles deal display between margin % and profit in the guild stores")
     MasterMerchant.v(1, "/mm types  - list the item type filters that are available")
     MasterMerchant.v(1, "/mm traits  - list the item trait filters that are available")
     MasterMerchant.v(1, "/mm quality  - list the item quality filters that are available")
     MasterMerchant.v(1, "/mm equip  - list the item equipment type filters that are available")
-    MasterMerchant.v(1, "/mm slide  - relocates your sales records to a new @name (Ex. @kindredspiritgr to @kindredspiritgrSlid)  /mm slideback to reverse.")
+    MasterMerchant.v(1,
+      "/mm slide  - relocates your sales records to a new @name (Ex. @kindredspiritgr to @kindredspiritgrSlid)  /mm slideback to reverse.")
     return
   end
 
   if args == 'dups' or args == 'stilldups' then
     if MasterMerchant.isScanning then
-        if args == 'dups' then MasterMerchant.v(2, "Purging of duplicate sales records will begin when current scan completes.") end
-        zo_callLater(function() MasterMerchant.Slash('stilldups') end, 10000)
-        return
+      if args == 'dups' then MasterMerchant.v(2,
+        "Purging of duplicate sales records will begin when current scan completes.") end
+      zo_callLater(function() MasterMerchant.Slash('stilldups') end, 10000)
+      return
     end
     MasterMerchant.v(2, "Purging duplicates.")
     MasterMerchant:PurgeDups()
@@ -4181,9 +4250,10 @@ function MasterMerchant.Slash(allArgs)
   end
   if args == 'slide' or args == 'kindred' or args == 'stillslide' then
     if MasterMerchant.isScanning then
-        if args ~= 'stillslide' then MasterMerchant.v(2, "Sliding of your sales records will begin when current scan completes.") end
-        zo_callLater(function() MasterMerchant.Slash('stillslide') end, 10000)
-        return
+      if args ~= 'stillslide' then MasterMerchant.v(2,
+        "Sliding of your sales records will begin when current scan completes.") end
+      zo_callLater(function() MasterMerchant.Slash('stillslide') end, 10000)
+      return
     end
     MasterMerchant.v(2, "Sliding your sales.")
     MasterMerchant:SlideSales(false)
@@ -4192,9 +4262,10 @@ function MasterMerchant.Slash(allArgs)
 
   if args == 'slideback' or args == 'kindredback' or args == 'stillslideback' then
     if MasterMerchant.isScanning then
-        if args ~= 'stillslideback' then MasterMerchant.v(2, "Sliding of your sales records will begin when current scan completes.") end
-        zo_callLater(function() MasterMerchant.Slash('stillslideback') end, 10000)
-        return
+      if args ~= 'stillslideback' then MasterMerchant.v(2,
+        "Sliding of your sales records will begin when current scan completes.") end
+      zo_callLater(function() MasterMerchant.Slash('stillslideback') end, 10000)
+      return
     end
     MasterMerchant.v(2, "Sliding your sales.")
     MasterMerchant:SlideSales(true)
@@ -4275,9 +4346,10 @@ function MasterMerchant.Slash(allArgs)
 
   if args == 'clean' or args == 'stillclean' then
     if MasterMerchant.isScanning then
-        if args == 'clean' then MasterMerchant.v(2, "Cleaning out bad sales records will begin when current scan completes.") end
-        zo_callLater(function() MasterMerchant.Slash('stillclean') end, 10000)
-        return
+      if args == 'clean' then MasterMerchant.v(2,
+        "Cleaning out bad sales records will begin when current scan completes.") end
+      zo_callLater(function() MasterMerchant.Slash('stillclean') end, 10000)
+      return
     end
     MasterMerchant.v(2, "Cleaning Out Bad Records.")
     MasterMerchant:CleanOutBad()
@@ -4293,10 +4365,10 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
     MasterMerchantGuildWindow:ClearAnchors()
     MasterMerchantGuildWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
-    MasterMerchant.systemSavedVariables.winLeft=30
-    MasterMerchant.systemSavedVariables.guildWinLeft=30
-    MasterMerchant.systemSavedVariables.winTop=85
-    MasterMerchant.systemSavedVariables.guildWinTop=85
+    MasterMerchant.systemSavedVariables.winLeft = 30
+    MasterMerchant.systemSavedVariables.guildWinLeft = 30
+    MasterMerchant.systemSavedVariables.winTop = 85
+    MasterMerchant.systemSavedVariables.guildWinTop = 85
     MasterMerchant.v(2, "Your MM window positions have been reset.")
     return
   end

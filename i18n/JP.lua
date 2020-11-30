@@ -292,3 +292,5 @@ ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Debug Options")
 ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Guild Master Options")
 ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventory Options")
 
+ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
+

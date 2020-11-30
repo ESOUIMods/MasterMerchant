@@ -11,10 +11,10 @@ function MasterMerchant:initAGSIntegration()
   AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.AFTER_FILTER_SETUP,
     function(...)
       AwesomeGuildStore:RegisterFilter(DealFilter:New())
-      AwesomeGuildStore:RegisterFilterFragment( DealFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_FILTER))
+      AwesomeGuildStore:RegisterFilterFragment(DealFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_FILTER))
       if MasterMerchant.systemSavedVariables.minProfitFilter then
         AwesomeGuildStore:RegisterFilter(ProfitFilter:New())
-        AwesomeGuildStore:RegisterFilterFragment( AwesomeGuildStore.class.PriceRangeFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_SELECTOR))
+        AwesomeGuildStore:RegisterFilterFragment(AwesomeGuildStore.class.PriceRangeFilterFragment:New(FILTER_ID.MASTER_MERCHANT_DEAL_SELECTOR))
       end
     end
   )

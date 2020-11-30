@@ -31,7 +31,8 @@ function MasterMerchant:ssup(inputTable, numElements)
       for j = i - gapVal, 1, -gapVal do
         local testVal = inputTable[j]
         if not (tableVal < testVal) then break end
-        inputTable[i] = testVal; i = j
+        inputTable[i] = testVal;
+        i = j
       end
       inputTable[i] = tableVal
     end
@@ -46,7 +47,8 @@ function MasterMerchant:ssdown(inputTable, numElements)
       for j = i - gapVal, 1, -gapVal do
         local testVal = inputTable[j]
         if not (tableVal > testVal) then break end
-        inputTable[i] = testVal; i = j
+        inputTable[i] = testVal;
+        i = j
       end
       inputTable[i] = tableVal
     end
@@ -77,12 +79,12 @@ end
 function MasterMerchant.spairs(t, order)
   -- all the indexes
   local indexes = {}
-  for k in pairs(t) do indexes[#indexes+1] = k end
+  for k in pairs(t) do indexes[#indexes + 1] = k end
 
   -- if order function given, sort by it by passing the table's a, b values
   -- otherwise just sort by the index values
   if order then
-    table.sort(indexes, function(a,b) return order(t[a], t[b]) end)
+    table.sort(indexes, function(a, b) return order(t[a], t[b]) end)
   else
     table.sort(indexes)
   end
@@ -98,24 +100,24 @@ function MasterMerchant.spairs(t, order)
 end
 
 function MasterMerchant:is_empty_or_nil(t)
-    if not t then return true end
-    if type(t) == "table" then
-        if next(t) == nil then
-            return true
-        else
-            return false
-        end
-    elseif type(t) == "string" then
-        if t == nil then
-            return true
-        elseif t == "" then
-            return true
-        else
-            return false
-        end
-    elseif type(t) == "nil" then
-        return true
+  if not t then return true end
+  if type(t) == "table" then
+    if next(t) == nil then
+      return true
+    else
+      return false
     end
+  elseif type(t) == "string" then
+    if t == nil then
+      return true
+    elseif t == "" then
+      return true
+    else
+      return false
+    end
+  elseif type(t) == "nil" then
+    return true
+  end
 end
 
 function MasterMerchant.hashString(name)
@@ -126,48 +128,48 @@ function MasterMerchant.hashString(name)
   return hash % 16
 end
 
-function MasterMerchant.concat(a,...)
+function MasterMerchant.concat(a, ...)
   if a == nil and ... == nil then
     return ''
   elseif a == nil then
     return MasterMerchant.concat(...)
   else
     if type(a) == 'boolean' then
-        --d(tostring(a) .. ' ' .. MasterMerchant.concat(...))
+      --d(tostring(a) .. ' ' .. MasterMerchant.concat(...))
     end
     return tostring(a) .. ' ' .. MasterMerchant.concat(...)
   end
 end
 
 function MasterMerchant.ShowChildren(control, startNum, endNum)
-    local numChildren = math.min(control:GetNumChildren(), endNum)
-    local numStart = math.min(startNum, numChildren)
-    for i = numStart, numChildren do
-      local child = control:GetChild(i)
+  local numChildren = math.min(control:GetNumChildren(), endNum)
+  local numStart = math.min(startNum, numChildren)
+  for i = numStart, numChildren do
+    local child = control:GetChild(i)
 
-      if child and child.GetName and child.GetText then
-        d(i .. ') ' .. child:GetName() .. ' - ' .. child:GetText() )
-      elseif child and child.GetName then
-        d(i .. ') ' .. child:GetName())
-      elseif child and child.GetText then
-        d(i .. ') - ' .. child:GetText())
-      end
-      if child then
-        MasterMerchant.ShowChildren(child, 1, 100)
-      end
+    if child and child.GetName and child.GetText then
+      d(i .. ') ' .. child:GetName() .. ' - ' .. child:GetText())
+    elseif child and child.GetName then
+      d(i .. ') ' .. child:GetName())
+    elseif child and child.GetText then
+      d(i .. ') - ' .. child:GetText())
     end
+    if child then
+      MasterMerchant.ShowChildren(child, 1, 100)
+    end
+  end
 end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
-    if itemLink then
-	    local theIID = GetItemLinkItemId(itemLink)
-	    local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
-	    local tipStats = MasterMerchant:toolTipStats(theIID, itemIndex, true, true, false)
-	    if tipStats.avgPrice then
-		    return tipStats.avgPrice
-        end
+  if itemLink then
+    local theIID = GetItemLinkItemId(itemLink)
+    local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
+    local tipStats = MasterMerchant:toolTipStats(theIID, itemIndex, true, true, false)
+    if tipStats.avgPrice then
+      return tipStats.avgPrice
     end
-    return 0
+  end
+  return 0
 end
 
 -- The index consists of the item's required level, required vet
@@ -208,14 +210,14 @@ function MasterMerchant.addedSearchToItem(itemLink)
   local vrAdder = GetString(MM_CP_RANK_SEARCH)
 
   local adder = ''
-  if(requiredLevel > 0 or requiredVeteranRank > 0) then
-    if(requiredVeteranRank > 0) then
-      adder = vrAdder  .. string.format('%02d',requiredVeteranRank)
+  if (requiredLevel > 0 or requiredVeteranRank > 0) then
+    if (requiredVeteranRank > 0) then
+      adder = vrAdder .. string.format('%02d', requiredVeteranRank)
     else
-      adder = GetString(MM_REGULAR_RANK_SEARCH) .. string.format('%02d',requiredLevel)
+      adder = GetString(MM_REGULAR_RANK_SEARCH) .. string.format('%02d', requiredLevel)
     end
   else
-    adder = vrAdder  .. '00 ' .. GetString(MM_REGULAR_RANK_SEARCH) .. '00'
+    adder = vrAdder .. '00 ' .. GetString(MM_REGULAR_RANK_SEARCH) .. '00'
   end
 
   local itemQuality = GetItemLinkQuality(itemLink)
@@ -252,16 +254,16 @@ end
 
 function MasterMerchant:playSounds(lastIndex)
 
-    local index, value = next(SOUNDS, lastIndex)
-    if index then
-      d(index)
-      PlaySound(value)
+  local index, value = next(SOUNDS, lastIndex)
+  if index then
+    d(index)
+    PlaySound(value)
 
-      zo_callLater(function()
-        local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function () self:playSounds(index) end, nil)
-      end, 2000)
-    end
+    zo_callLater(function()
+      local LEQ = LibExecutionQueue:new()
+      LEQ:ContinueWith(function() self:playSounds(index) end, nil)
+    end, 2000)
+  end
 end
 
 function MasterMerchant:setScanning(start)
@@ -336,7 +338,7 @@ function MasterMerchant:indexHistoryTables()
   local tconcat = table.concat
   local tinsert = table.insert
   local tolower = string.lower
-  local temp = {'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', ''}
+  local temp = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
   local playerName = tolower(GetDisplayName())
 
   local loopfunc = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
@@ -370,7 +372,7 @@ function MasterMerchant:indexHistoryTables()
 
     -- Index each word
     local searchByWords = string.gmatch(searchText, '%S+')
-    local wordData = {numberID, itemData, itemIndex}
+    local wordData = { numberID, itemData, itemIndex }
     for i in searchByWords do
       if self.SRIndex[i] == nil then
         extraData.wordsIndexCount = extraData.wordsIndexCount + 1
@@ -391,7 +393,7 @@ function MasterMerchant:indexHistoryTables()
   end
 
   if not self.isScanning then
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {} )
+    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
 end
@@ -509,10 +511,10 @@ function MasterMerchant:addToHistoryTables(theEvent)
     searchItemDesc = GetItemLinkName(theEvent.itemLink)
     searchItemAdderText = self.addedSearchToItem(theEvent.itemLink)
     self.salesData[theIID][itemIndex] = {
-      itemIcon = GetItemLinkInfo(theEvent.itemLink),
+      itemIcon      = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
-      itemDesc = searchItemDesc,
-      sales = {theEvent}}
+      itemDesc      = searchItemDesc,
+      sales         = { theEvent } }
   end
 
   local guild
@@ -528,7 +530,8 @@ function MasterMerchant:addToHistoryTables(theEvent)
 
   guild = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildItems[theEvent.guild] = guild;
-  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
+    adderDescConcat)
 
   local playerName = string.lower(GetDisplayName())
   local isSelfSale = playerName == string.lower(theEvent.seller)
@@ -536,10 +539,11 @@ function MasterMerchant:addToHistoryTables(theEvent)
   if isSelfSale then
     guild = MasterMerchant.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
     MasterMerchant.myItems[theEvent.guild] = guild;
-    guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+    guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
+      adderDescConcat)
   end
 
-  local temp = {'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', ''}
+  local temp = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
   local searchText = ""
   if MasterMerchant.systemSavedVariables.minimalIndexing then
     if isSelfSale then
@@ -562,7 +566,7 @@ function MasterMerchant:addToHistoryTables(theEvent)
   end
 
   local searchByWords = string.gmatch(searchText, '%S+')
-  local wordData = {theIID, itemIndex, insertedIndex}
+  local wordData = { theIID, itemIndex, insertedIndex }
 
   -- Index each word
   for i in searchByWords do
@@ -594,7 +598,7 @@ function MasterMerchant.LocalizedNumber(numberValue, chatText)
   else
     stringPrice = string.format('%.2f', numberValue)
   end
-  local subString = '%1' .. GetString(SK_THOUSANDS_SEP) ..'%2'
+  local subString = '%1' .. GetString(SK_THOUSANDS_SEP) .. '%2'
   -- Insert thousands separators for the price
   while true do
     stringPrice, k = string.gsub(stringPrice, '^(-?%d+)(%d%d%d)', subString)
@@ -604,22 +608,22 @@ function MasterMerchant.LocalizedNumber(numberValue, chatText)
 end
 
 function MasterMerchant:UpdateItemLink(itemLink)
-    if GetAPIVersion() == 100011 then
-      local linkTable = { ZO_LinkHandler_ParseLink(itemLink) }
-      if #linkTable == 23 and linkTable[3] == ITEM_LINK_TYPE then
-          linkTable[24] = linkTable[23]
-          linkTable[23] = linkTable[22]
-          linkTable[22] = '0'
-          if linkTable[4] == '32311' then
-            itemLink = '|H1:collectible:34|hSkeleton Polymorph|h'
-          else
-            itemLink = ('|H%d:%s|h%s|h'):format(linkTable[2], table.concat(linkTable, ':', 3), '')
-            linkTable[1] = GetItemLinkName(itemLink)
-            itemLink = ("|H%d:%s|h%s|h"):format(linkTable[2], table.concat(linkTable, ':', 3), linkTable[1])
-          end
+  if GetAPIVersion() == 100011 then
+    local linkTable = { ZO_LinkHandler_ParseLink(itemLink) }
+    if #linkTable == 23 and linkTable[3] == ITEM_LINK_TYPE then
+      linkTable[24] = linkTable[23]
+      linkTable[23] = linkTable[22]
+      linkTable[22] = '0'
+      if linkTable[4] == '32311' then
+        itemLink = '|H1:collectible:34|hSkeleton Polymorph|h'
+      else
+        itemLink = ('|H%d:%s|h%s|h'):format(linkTable[2], table.concat(linkTable, ':', 3), '')
+        linkTable[1] = GetItemLinkName(itemLink)
+        itemLink = ("|H%d:%s|h%s|h"):format(linkTable[2], table.concat(linkTable, ':', 3), linkTable[1])
       end
     end
-    return itemLink
+  end
+  return itemLink
 end
 
 -- Create a textual representation of a time interval
@@ -629,7 +633,7 @@ function MasterMerchant.TextTimeSince(theTime, useLowercase)
   if secsSince < 864000 then
     return ZO_FormatDurationAgo(secsSince)
   else
-      return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / 86400.0))
+    return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / 86400.0))
   end
 end
 
@@ -647,7 +651,7 @@ end
 -- based on the allSettingsAccount option setting.
 function MasterMerchant:ActiveSettings()
   return ((self.acctSavedVariables.allSettingsAccount and self.acctSavedVariables) or
-          self.savedVariables)
+    self.savedVariables)
 end
 
 function MasterMerchant:ActiveWindow()
@@ -676,7 +680,7 @@ end
 
 -- Same as searchSounds, above, but compares names instead of sounds.
 function MasterMerchant:SearchSoundNames(name)
-  for _,theSound in ipairs(self.alertSounds) do
+  for _, theSound in ipairs(self.alertSounds) do
     if theSound.name == name then return theSound.sound end
   end
 end

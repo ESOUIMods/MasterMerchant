@@ -15,8 +15,8 @@ function MasterMerchant.DealCalc(setPrice, salesCount, purchasePrice, stackCount
   local profit = -1
   if (setPrice) then
     local unitPrice = purchasePrice / stackCount
-    profit =(setPrice - unitPrice) * stackCount
-    margin = tonumber(string.format('%.2f',((setPrice - unitPrice) / setPrice) * 100))
+    profit = (setPrice - unitPrice) * stackCount
+    margin = tonumber(string.format('%.2f', ((setPrice - unitPrice) / setPrice) * 100))
 
     margin = (margin or 0)
     profit = (profit or 0)
