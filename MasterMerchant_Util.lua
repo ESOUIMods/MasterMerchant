@@ -583,18 +583,22 @@ function MasterMerchant:addToHistoryTables(theEvent)
 end
 
 -- the result as a string.
+-- ||cffffff38||r
+-- ||u0:6%:currency:||u
+-- ||t80%:80%:/esoui/art/currency/gold_mipmap.dds||t
+-- '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
 function MasterMerchant.LocalizedNumber(numberValue, chatText)
   if not numberValue then return '0' end
-  local stringPrice
-  if (numberValue > 100) and MasterMerchant.systemSavedVariables.trimDecimals then
+  if (numberValue > 100) or MasterMerchant.systemSavedVariables.trimDecimals then
     stringPrice = string.format('%.0f', numberValue)
   else
     stringPrice = string.format('%.2f', numberValue)
   end
-  if not chatText then
-    stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON)
-  else
-    stringPrice = ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_NAME)
+  local subString = '%1' .. GetString(SK_THOUSANDS_SEP) ..'%2'
+  -- Insert thousands separators for the price
+  while true do
+    stringPrice, k = string.gsub(stringPrice, '^(-?%d+)(%d%d%d)', subString)
+    if (k == 0) then break end
   end
   return stringPrice
 end

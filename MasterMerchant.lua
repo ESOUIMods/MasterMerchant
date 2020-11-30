@@ -438,9 +438,12 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     else
       tipFormat = GetString(MM_TIP_FORMAT_MULTI)
     end
-    local avePriceString = self.LocalizedNumber(tipStats['avgPrice'], chatText)
+
+    local avePriceString = self.LocalizedNumber(tipStats['avgPrice'])
     tipFormat = string.gsub(tipFormat, '.2f', 's')
     tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
+    -- chatText
+    if not chatText then tipFormat = tipFormat .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
     local salesString = zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales'])
     if tipStats['numSales'] ~= tipStats['numItems'] then
       salesString = salesString .. zo_strformat(GetString(MM_PRICETIP_ITEMS), tipStats['numItems'])
@@ -602,7 +605,10 @@ function MasterMerchant:itemCraftPriceTip(itemLink, chatText)
     local cost = self:itemCraftPrice(itemLink)
     if cost then
       craftTip = "Craft Cost: %s"
-      local craftTipString = self.LocalizedNumber(cost, chatText)
+      local craftTipString = self.LocalizedNumber(cost)
+      -- chatText
+      if not chatText then craftTip = craftTip .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+
       return string.format(craftTip, craftTipString)
     else
       return nil
@@ -2670,10 +2676,11 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
   if dealValue then
     if dealValue > -1 then
       if MasterMerchant.systemSavedVariables.saucy then
-        sellingAdvice:SetText(MasterMerchant.LocalizedNumber(profit))
+        sellingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
       else
         sellingAdvice:SetText(string.format('%.2f', margin) .. '%')
       end
+      -- TODO I think this colors the number in the guild store
       local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
       if dealValue == 0 then r = 0.98; g = 0.01; b = 0.01; end
       sellingAdvice:SetColor(r, g, b, 1)
@@ -2739,10 +2746,11 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
     if dealValue then
       if dealValue > -1 then
         if MasterMerchant.systemSavedVariables.saucy then
-          buyingAdvice:SetText(MasterMerchant.LocalizedNumber(profit))
+          buyingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
         else
           buyingAdvice:SetText(string.format('%.2f', margin) .. '%')
         end
+        -- TODO I think this colors the number in the guild store
         local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
         if dealValue == 0 then r = 0.98; g = 0.01; b = 0.01; end
         buyingAdvice:SetColor(r, g, b, 1)
@@ -2830,7 +2838,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value)
+          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
@@ -2864,7 +2872,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value)
+          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
@@ -2898,7 +2906,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value)
+          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
@@ -2932,7 +2940,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function( value )
-          return MasterMerchant.LocalizedNumber(value)
+          return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
       end
     }
   })
@@ -3197,9 +3205,9 @@ function MasterMerchant:Initialize()
     openWithStore = true,
     showFullPrice = true,
     winLeft = 30,
-    winTop = 30,
+    winTop = 85,
     guildWinLeft = 30,
-    guildWinTop = 30,
+    guildWinTop = 85,
     statsWinLeft = 720,
     statsWinTop = 820,
     feedbackWinLeft = 720,
@@ -3521,7 +3529,7 @@ function MasterMerchant:Initialize()
       local floorPrice = 0
       if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
       MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
-      MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1, slotId))))
+      MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1, slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
       MasterMerchantPriceCalculator:SetHidden(false)
     else MasterMerchantPriceCalculator:SetHidden(true) end
   end)
@@ -3705,7 +3713,7 @@ function MasterMerchant:SwitchPrice(control, slot)
           local sellPriceControl = control:GetNamedChild("SellPrice")
           if (sellPriceControl) then
             sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-            sellPrice = string.gsub(sellPrice, '|cffffff', '|cEEEE33')
+            sellPrice = '|cEEEE33' .. sellPrice .. '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
             sellPriceControl:SetText(sellPrice)
 	        end
       else
@@ -3716,7 +3724,7 @@ function MasterMerchant:SwitchPrice(control, slot)
           local sellPriceControl = control:GetNamedChild("SellPrice")
           if (sellPriceControl) then
             sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-            sellPrice = string.gsub(sellPrice, '|cffffff', '|cEEEE33')
+            sellPrice = sellPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
             sellPriceControl:SetText(sellPrice)
 	        end
       end
@@ -4276,13 +4284,13 @@ function MasterMerchant.Slash(allArgs)
   end
   if args == 'invisible' then
     MasterMerchantWindow:ClearAnchors()
-    MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 30)
+    MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
     MasterMerchantGuildWindow:ClearAnchors()
-    MasterMerchantGuildWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 30)
+    MasterMerchantGuildWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
     MasterMerchant.systemSavedVariables.winLeft=30
     MasterMerchant.systemSavedVariables.guildWinLeft=30
-    MasterMerchant.systemSavedVariables.winTop=30
-    MasterMerchant.systemSavedVariables.guildWinTop=30
+    MasterMerchant.systemSavedVariables.winTop=85
+    MasterMerchant.systemSavedVariables.guildWinTop=85
     MasterMerchant.v(2, "Your MM window positions have been reset.")
     return
   end

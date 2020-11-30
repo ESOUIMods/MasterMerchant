@@ -314,7 +314,7 @@ function MMScrollList:SetupSalesRow(control, data)
   local stringPrice = MasterMerchant.LocalizedNumber(dispPrice)
 
   -- Finally, set the price
-  control.price:SetText(stringPrice)
+  control.price:SetText(stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   ZO_SortFilterList.SetupRow(self, control, data)
 end
@@ -404,13 +404,13 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   -- Sales Cell
   local sales = data[3] or 0
   local stringSales = MasterMerchant.LocalizedNumber(sales)
-  control.sales:SetText(stringSales)
+  control.sales:SetText(stringSales .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   -- Tax Cell
   --local taxAmount = math.floor((sales * GetTradingHouseCutPercentage() / 200))
   local taxAmount = data[8]
   local stringTax = MasterMerchant.LocalizedNumber(taxAmount)
-  control.tax:SetText(stringTax)
+  control.tax:SetText(stringTax .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   -- Count Cell
 
@@ -545,7 +545,7 @@ function MMScrollList:SetupListingsRow(control, data)
   local stringPrice = MasterMerchant.LocalizedNumber(dispPrice)
 
   -- Finally, set the price
-  control.price:SetText(stringPrice)
+  control.price:SetText(stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   ZO_SortFilterList.SetupRow(self, control, data)
 end
@@ -1160,7 +1160,7 @@ end
 function MasterMerchant:updateCalc()
   local stackSize = string.match(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
   local totalPrice = math.floor(tonumber(MasterMerchantPriceCalculatorUnitCostAmount:GetText()) * tonumber(stackSize))
-  MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice))
+  MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
 end
 
@@ -1384,9 +1384,9 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
             graphInfo.low = avePrice * 0.85
             graphInfo.high = avePrice * 1.15
         end
-        local xLow = MasterMerchant.LocalizedNumber(graphInfo.low)
-        local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high)
-        local xPrice = MasterMerchant.LocalizedNumber(avePrice)
+        local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        local xPrice = MasterMerchant.LocalizedNumber(avePrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice)
         if MasterMerchant.systemSavedVariables.displaySalesDetails then
           for _, point in ipairs(graphInfo.points) do
