@@ -1816,6 +1816,11 @@ function MasterMerchant.ToggleMasterMerchantWindow()
     MasterMerchantWindow:SetHidden(true)
     MasterMerchantGuildWindow:SetHidden(not MasterMerchantGuildWindow:IsHidden())
   end
+  if ShoppingList and not ShoppingListWindow:IsHidden() then
+    ShoppingListWindow:SetHidden(true)
+    MasterMerchantWindow:SetHidden(true)
+    MasterMerchantGuildWindow:SetHidden(true)
+  end
 end
 
 -- Set the visibility status of the feebback window to the opposite of its current status
