@@ -3686,7 +3686,10 @@ function MasterMerchant:Initialize()
     end
     --]]
 
-    if false and MasterMerchant.systemSavedVariables.autoNext then
+    if not AwesomeGuildStore and MasterMerchant.systemSavedVariables.autoNext then
+      MasterMerchant.v(1, "This is an old routine and it is not certain why it is here")
+      MasterMerchant.v(1, "Because MM 2.x scanned guild history to record sales.")
+      MasterMerchant.v(1, "Use with caution! Report how this works or its behaviour.")
 
       local localRunInitialSetup = TRADING_HOUSE.RunInitialSetup
       TRADING_HOUSE.RunInitialSetup = function(self, ...)
