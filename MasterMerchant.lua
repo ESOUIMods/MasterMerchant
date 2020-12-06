@@ -689,9 +689,12 @@ end
  ITEMTYPE_INGREDIENT
  ITEMTYPE_RECIPE
 
+ TRAIT
+ /script MasterMerchant.dm("Debug", GetString(ITEMTYPE_ADDITIVE))
+
  GetString("SI_ITEMTYPE", ITEMTYPE_FOOD)
  GetString("SI_SPECIALIZEDITEMTYPE", SPECIALIZED_ITEMTYPE_BLACKSMITHING_BOOSTER)
-
+ /script MasterMerchant.dm("Debug", GetString("SPECIALIZED_ITEMTYPE_", GetItemLinkItemType(|H0:item:68633:363:50:0:0:0:0:0:0:0:0:0:0:0:0:13:0:0:0:10000:0|h|h)))
  SPECIALIZED_ITEMTYPE_RECIPE_BLACKSMITHING_DIAGRAM_FURNISHING
 
  GetItemLinkItemType(itemLink)
@@ -710,7 +713,7 @@ end
 |H1:item:45844:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
 |H1:item:45850:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
 
---]]
+]]--
 -- LOAD RECIPES
 -- /script MasterMerchant.virtualRecipe = nil; MasterMerchant.recipeData = nil; MasterMerchant.setupRecipeInfo()
 
@@ -1735,23 +1738,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
       default = MasterMerchant.systemDefault.saucy,
     },
-    -- should we auto advance to the next page?
     [31] = {
-      type    = 'checkbox',
-      name    = GetString(MM_AUTO_ADVANCE_NAME),
-      tooltip = GetString(MM_AUTO_ADVANCE_TIP),
-      getFunc = function() return MasterMerchant.systemSavedVariables.autoNext end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.autoNext = value end,
-      default = MasterMerchant.systemDefault.autoNext,
-    },
-    [32] = {
       type    = "header",
       name    = GetString(GUILD_MASTER_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#ExportSalesReport",
     },
     -- should we add taxes to the export?
-    [33] = {
+    [32] = {
       type    = 'checkbox',
       name    = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -1759,14 +1753,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
-    [34] = {
+    [33] = {
       type    = "header",
       name    = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
     },
     -- Verbose MM Messages
-    [35] = {
+    [34] = {
       type    = 'slider',
       name    = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
@@ -1780,7 +1774,7 @@ function MasterMerchant:LibAddonInit()
       end,
       default = MasterMerchant.systemDefault.verbose,
     },
-    [36] = {
+    [35] = {
       type    = 'checkbox',
       name    = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
@@ -3041,7 +3035,6 @@ function MasterMerchant:DoReset()
   MM13Data.savedVariables.SalesData = {}
   MM14Data.savedVariables.SalesData = {}
   MM15Data.savedVariables.SalesData = {}
-  MM16Data.savedVariables.SalesData = {}
 
   self.guildPurchases = {}
   self.guildSales = {}
@@ -3139,7 +3132,7 @@ function MasterMerchant:ReIndexSales(otherData)
       break
     end
   end
-  if needToReindex or not MasterMerchant.systemSavedVariables.reindexWrits then
+  if needToReindex or not MasterMerchant.systemSavedVariables.needsReindex then
     --MasterMerchant.dm("Debug", "needToReindex")
     local tempSales = otherData.savedVariables.SalesData
     otherData.savedVariables.SalesData = {}
@@ -3176,7 +3169,7 @@ function MasterMerchant:ReIndexSales(otherData)
       end
     end
   end
-  if needToAdditemAdderText then
+  if needToAdditemAdderText or not MasterMerchant.systemSavedVariables.needsAdderText then
     --MasterMerchant.dm("Debug", "needToAdditemAdderText")
     -- spin through and split Item Description into a seperate string
     for _, v in pairs(otherData.savedVariables.SalesData) do
@@ -3294,7 +3287,6 @@ function MasterMerchant:Initialize()
     ctrlDays                   = GetString(MM_RANGE_FOCUS2),
     ctrlShiftDays              = GetString(MM_RANGE_FOCUS3),
     saucy                      = false,
-    autoNext                   = false,
     displayListingMessage      = false,
     verbose                    = 4,
     -- settingsToUse
@@ -3317,10 +3309,11 @@ function MasterMerchant:Initialize()
     lastReceivedEventID        = {},
     showAmountTaxes            = false,
     useDefaultDaysRange        = false,
-    itemIDConvertedToString    = false,
-    reindexWrits               = false,
+    itemIDConvertedToString    = false, -- this only converts id64 at this time
     defaultStatistics          = GetString(MM_STATISTICS_MEDIAN),
     useLibDebugLogger          = false, -- added 11-28
+    needsReindex               = false,
+    needsAdderText             = false,
   }
 
   for i = 1, GetNumGuilds() do
@@ -3352,8 +3345,7 @@ function MasterMerchant:Initialize()
   swaping between acoutwide or not such as mentioned above
   ]]--
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), old_defaults)
-  self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil,
-    'MasterMerchant')
+  self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
 
   self.currentGuildID = GetGuildId(1) or 0
 
@@ -3469,7 +3461,7 @@ function MasterMerchant:Initialize()
   end
 
   -- Update indexs because of Writs
-  if not MasterMerchant.systemSavedVariables.reindexWrits then
+  if not MasterMerchant.systemSavedVariables.needsReindex then
     self:ReIndexSales(MM00Data)
     self:ReIndexSales(MM01Data)
     self:ReIndexSales(MM02Data)
@@ -3486,7 +3478,8 @@ function MasterMerchant:Initialize()
     self:ReIndexSales(MM13Data)
     self:ReIndexSales(MM14Data)
     self:ReIndexSales(MM15Data)
-    MasterMerchant.systemSavedVariables.reindexWrits = true
+    MasterMerchant.systemSavedVariables.needsReindex = true
+    MasterMerchant.systemSavedVariables.needsAdderText = true
   end
 
   -- Bring seperate lists together we can still access the sales history all together
@@ -3506,7 +3499,6 @@ function MasterMerchant:Initialize()
   self:ReferenceSales(MM13Data)
   self:ReferenceSales(MM14Data)
   self:ReferenceSales(MM15Data)
-  self:ReferenceSales(MM16Data)
 
   self.systemSavedVariables.dataLocations = self.systemSavedVariables.dataLocations or {}
   self.systemSavedVariables.dataLocations[GetWorldName()] = true
@@ -3686,50 +3678,6 @@ function MasterMerchant:Initialize()
     end
     --]]
 
-    if not AwesomeGuildStore and MasterMerchant.systemSavedVariables.autoNext then
-      MasterMerchant.v(1, "This is an old routine and it is not certain why it is here")
-      MasterMerchant.v(1, "Because MM 2.x scanned guild history to record sales.")
-      MasterMerchant.v(1, "Use with caution! Report how this works or its behaviour.")
-
-      local localRunInitialSetup = TRADING_HOUSE.RunInitialSetup
-      TRADING_HOUSE.RunInitialSetup = function(self, ...)
-        localRunInitialSetup(self, ...)
-
-        local localOriginalPrevious = TRADING_HOUSE.m_search.SearchPreviousPage
-        TRADING_HOUSE.m_search.SearchPreviousPage = function(self, ...)
-          MasterMerchant.lastDirection = -1
-          localOriginalPrevious(self, ...)
-        end
-
-        local localOriginalNext = TRADING_HOUSE.m_search.SearchNextPage
-        TRADING_HOUSE.m_search.SearchNextPage = function(self, ...)
-          MasterMerchant.lastDirection = 1
-          localOriginalNext(self, ...)
-        end
-
-        local localDoSearch = TRADING_HOUSE.m_search.DoSearch
-        TRADING_HOUSE.m_search.DoSearch = function(self, ...)
-          MasterMerchant.lastDirection = 1
-          localDoSearch(self, ...)
-        end
-
-        local originalOnSearchCooldownUpdate = TRADING_HOUSE.OnSearchCooldownUpdate
-        TRADING_HOUSE.OnSearchCooldownUpdate = function(self, ...)
-          originalOnSearchCooldownUpdate(self, ...)
-          if GetTradingHouseCooldownRemaining() == 0 then
-            if zo_plainstrfind(self.m_resultCount:GetText(),
-              '(0)') and self.m_search:HasNextPage() and (MasterMerchant.lastDirection == 1) then
-              self.m_search:SearchNextPage()
-            end
-            if zo_plainstrfind(self.m_resultCount:GetText(),
-              '(0)') and self.m_search:HasPreviousPage() and (MasterMerchant.lastDirection == -1) then
-              MasterMerchant.lastDirection = 0
-              self.m_search:SearchPreviousPage()
-            end
-          end
-        end
-      end
-    end
 
     if not self.systemSavedVariables.delayInit then
       -- The others were already done...
@@ -3745,6 +3693,10 @@ function MasterMerchant:Initialize()
     end
 
   end)
+
+  MasterMerchant:BuildAccountNameLookup()
+  MasterMerchant:BuildItemLinkNameLookup()
+  MasterMerchant:BuildGuildNameLookup()
 end
 
 function MasterMerchant:SwitchPrice(control, slot)

@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.4.7'
+MasterMerchant.version = '3.4.8'
 MasterMerchant.locale = GetCVar('Language.2')
 -- default is self
 MasterMerchant.viewMode = 'self'
@@ -46,6 +46,9 @@ MasterMerchant.itemAverageLookupTable = { } -- added 11-21 used as lookup for to
 MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
 MasterMerchant.isUsingGamepad = GetGamepadType() > 0 -- added 11-24
 MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
+MasterMerchant.accountNameByIdLookup = {} -- added 12-2
+MasterMerchant.itemLinkNameByIdLookup = {} -- added 12-2
+MasterMerchant.guildNameByIdLookup = {} -- added 12-2
 
 if LibDebugLogger then
   local logger = LibDebugLogger.Create(MasterMerchant.name)

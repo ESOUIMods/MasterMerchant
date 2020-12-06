@@ -65,7 +65,7 @@ ZO_CreateStringId("SK_SELF_SALES_TITLE", "Personal Sales")
 ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
-ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seler's Report")
+ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Цена за штуку")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Общая цена")
@@ -154,6 +154,7 @@ ZO_CreateStringId("MM_COLOR_GREEN", "хорошее")
 ZO_CreateStringId("MM_COLOR_BLUE", "превосходное")
 ZO_CreateStringId("MM_COLOR_PURPLE", "эпическое")
 ZO_CreateStringId("MM_COLOR_GOLD", "легендарное")
+ZO_CreateStringId("MM_COLOR_ORANGE", "orange")
 ZO_CreateStringId("MM_PERCENT_CHAR", "%")
 ZO_CreateStringId("MM_ENTIRE_GUILD", "Вся гильдия")
 ZO_CreateStringId("MM_INDEX_TODAY", "Сегодня")
@@ -248,7 +249,7 @@ ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Минимальная индексац
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Индексы истории продаж пропускаются, чтобы сэкономить память, но поиск на экране MM намного медленнее.")
 
 ZO_CreateStringId("MM_DAYS_ONLY_NAME", "Use Sales History Size Only")
-ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when trimming sales history. This will ignore mix and max count.")
+ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when trimming sales history. This will ignore min and max count.")
 
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_NAME", "Add Taxes Sales Rank Export")
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_TIP", "Will calculate 3.5% of total sales as the amount of Taxes for a user when using /mm export.")

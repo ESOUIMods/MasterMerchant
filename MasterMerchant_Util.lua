@@ -196,6 +196,132 @@ function MasterMerchant.makeIndexFromLink(itemLink)
 
   return index
 end
+--[[
+  ["sales"] =
+  {
+      [1] =
+      {
+          ["itemLink"] = "|H0:item:68633:359:50:0:0:0:0:0:0:0:0:0:0:0:0:13:0:0:0:10000:0|h|h",
+          ["timestamp"] = 1604974613,
+          ["guild"] = "Unstable Unicorns",
+          ["buyer"] = "@misscastalot",
+          ["seller"] = "@thecloakgirl",
+          ["wasKiosk"] = true,
+          ["price"] = 500,
+          ["id"] = "1414605555",
+          ["quant"] = 1,
+      },
+  },
+  ["itemDesc"] = "Helm of the Pariah",
+  ["itemAdderText"] = "cp160 green  fine  set mark of the pariah  apparel  well-fitted  head ",
+  ["itemIcon"] = "/esoui/art/icons/gear_malacath_heavy_head_a.dds",
+
+  weapon
+  /script MasterMerchant.dm("Debug", GetNumTradingHouseSearchResultItemLinkAsFurniturePreviewVariations("|H0:item:68633:363:50:0:0:0:0:0:0:0:0:0:0:0:0:13:0:0:0:10000:0|h|h"))
+/script MasterMerchant.dm("Debug", GetItemLinkRequiredChampionPoints("|H0:item:167719:2:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:10000:0|h|h"))
+/script MasterMerchant.dm("Debug", GetItemLinkReagentTraitInfo("|H1:item:45839:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
+  armor
+
+  /script MasterMerchant.dm("Debug", zo_strformat("<<t:1>>", GetString("SI_ITEMFILTERTYPE", GetItemLinkFilterTypeInfo("|H1:item:167644:362:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:300:0|h|h"))))
+
+
+  SI_ITEMFILTERTYPE
+  /script adder = ""; adder = MasterMerchant.concat(adder, "weapon"); MasterMerchant.dm(adder)
+
+  What is Done:
+	Line 16112: * GetItemLinkItemType(*string* _itemLink_)
+	Line 16130: * GetItemLinkRequiredLevel(*string* _itemLink_)
+	Line 16133: * GetItemLinkRequiredChampionPoints(*string* _itemLink_)
+	Line 16214: * GetItemLinkDisplayQuality(*string* _itemLink_)
+	Line 16118: * GetItemLinkArmorType(*string* _itemLink_)
+	Line 15863: * GetItemLinkFilterTypeInfo(*string* _itemLink_)
+	Line 16181: * GetItemLinkSetInfo(*string* _itemLink_, *bool* _equipped_)
+	Line 16121: * GetItemLinkWeaponType(*string* _itemLink_)
+	Line 16226: * GetItemLinkEquipType(*string* _itemLink_)
+	Line 15966: * GetItemLinkTraitType(*string* _itemLink_)
+
+
+
+	Line 10252: * GetComparisonEquipSlotsFromItemLink(*string* _itemLink_)
+	Line 10278: * GetItemLinkInfo(*string* _itemLink_)
+	Line 11409: * GetItemTraitInformationFromItemLink(*string* _itemLink_)
+	Line 13353: * SetCustomerServiceTicketItemTargetByLink(*string* _itemLink_)
+	Line 15728: * GetLinkType(*string* _itemLink_)
+	Line 15963: * GetItemLinkTraitCategory(*string* _itemLink_)
+	Line 16103: * GetItemLinkName(*string* _itemLink_)
+	Line 16106: * GetItemLinkItemId(*string* _itemLink_)
+	Line 16109: * GetItemLinkIcon(*string* _itemLink_)
+	Line 16115: * GetItemLinkItemUseType(*string* _itemLink_)
+	Line 16124: * GetItemLinkWeaponPower(*string* _itemLink_)
+	Line 16127: * GetItemLinkArmorRating(*string* _itemLink_, *bool* _considerCondition_)
+	Line 16136: * GetItemLinkValue(*string* _itemLink_, *bool* _considerCondition_)
+	Line 16139: * GetItemLinkCondition(*string* _itemLink_)
+	Line 16145: * GetItemLinkMaxEnchantCharges(*string* _itemLink_)
+	Line 16148: * GetItemLinkNumEnchantCharges(*string* _itemLink_)
+	Line 16154: * GetItemLinkEnchantInfo(*string* _itemLink_)
+	Line 16157: * GetItemLinkDefaultEnchantId(*string* _itemLink_)
+	Line 16160: * GetItemLinkAppliedEnchantId(*string* _itemLink_)
+	Line 16163: * GetItemLinkFinalEnchantId(*string* _itemLink_)
+	Line 16172: * GetItemLinkOnUseAbilityInfo(*string* _itemLink_)
+	Line 16175: * GetItemLinkTraitOnUseAbilityInfo(*string* _itemLink_, *luaindex* _index_)
+	Line 16178: * GetItemLinkTraitInfo(*string* _itemLink_)
+	Line 16187: * GetItemLinkSetBonusInfo(*string* _itemLink_, *bool* _equipped_, *luaindex* _index_)
+	Line 16190: * GetItemLinkNumContainerSetIds(*string* _itemLink_)
+	Line 16193: * GetItemLinkContainerSetInfo(*string* _itemLink_, *luaindex* _containerSetIndex_)
+	Line 16196: * GetItemLinkContainerSetBonusInfo(*string* _itemLink_, *luaindex* _containerSetIndex_, *luaindex* _bonusIndex_)
+	Line 16199: * GetItemLinkFlavorText(*string* _itemLink_)
+	Line 16208: * GetItemLinkSiegeMaxHP(*string* _itemLink_)
+	Line 16211: * GetItemLinkFunctionalQuality(*string* _itemLink_)
+	Line 16217: * GetItemLinkSiegeType(*string* _itemLink_)
+	Line 16232: * GetItemLinkCraftingSkillType(*string* _itemLink_)
+	Line 16238: * GetItemLinkEnchantingRuneName(*string* _itemLink_)
+	Line 16241: * GetItemLinkEnchantingRuneClassification(*string* _itemLink_)
+	Line 16244: * GetItemLinkRequiredCraftingSkillRank(*string* _itemLink_)
+	Line 16250: * GetItemLinkBindType(*string* _itemLink_)
+	Line 16253: * GetItemLinkGlyphMinLevels(*string* _itemLink_)
+	Line 16262: * GetItemLinkFurnishingLimitType(*string* _itemLink_)
+	Line 16268: * GetItemLinkBookTitle(*string* _itemLink_)
+	Line 16286: * GetItemLinkRecipeResultItemLink(*string* _itemLink_, *[LinkStyle|#LinkStyle]* _linkStyle_)
+	Line 16289: * GetItemLinkRecipeNumIngredients(*string* _itemLink_)
+	Line 16292: * GetItemLinkRecipeIngredientInfo(*string* _itemLink_, *luaindex* _index_)
+	Line 16295: * GetItemLinkRecipeIngredientItemLink(*string* _itemLink_, *luaindex* _index_, *[LinkStyle|#LinkStyle]* _linkStyle_)
+	Line 16298: * GetItemLinkRecipeNumTradeskillRequirements(*string* _itemLink_)
+	Line 16301: * GetItemLinkRecipeTradeskillRequirement(*string* _itemLink_, *luaindex* _tradeskillIndex_)
+	Line 16304: * GetItemLinkRecipeQualityRequirement(*string* _itemLink_)
+	Line 16307: * GetItemLinkRecipeCraftingSkillType(*string* _itemLink_)
+	Line 16310: * GetItemLinkReagentTraitInfo(*string* _itemLink_, *luaindex* _index_)
+	Line 16313: * GetItemLinkItemStyle(*string* _itemLink_)
+	Line 16316: * GetItemLinkShowItemStyleInTooltip(*string* _itemLink_)
+	Line 16319: * GetItemLinkRefinedMaterialItemLink(*string* _itemLink_, *[LinkStyle|#LinkStyle]* _linkStyle_)
+	Line 16322: * GetItemLinkMaterialLevelDescription(*string* _itemLink_)
+	Line 16343: * GetItemLinkStacks(*string* _itemLink_)
+	Line 16349: * GetItemLinkDyeIds(*string* _itemLink_)
+	Line 16352: * GetItemLinkDyeStampId(*string* _itemLink_)
+	Line 16355: * GetItemLinkFurnitureDataId(*string* _itemLink_)
+	Line 16358: * GetItemLinkGrantedRecipeIndices(*string* _itemLink_)
+	Line 16364: * GetItemLinkOutfitStyleId(*string* _itemLink_)
+	Line 16367: * GetItemLinkTooltipRequiresCollectibleId(*string* _itemLink_)
+	Line 16376: * GetItemLinkCombinationId(*string* _itemLink_)
+	Line 16379: * GetItemLinkCombinationDescription(*string* _itemLink_)
+	Line 16382: * GetItemLinkTradingHouseItemSearchName(*string* _itemLink_)
+	Line 16385: * GetItemLinkContainerCollectibleId(*string* _itemLink_)
+	Line 16422: * GetItemLinkNumItemTags(*string* _itemLink_)
+	Line 16425: * GetItemLinkItemTagInfo(*string* _itemLink_, *luaindex* _itemTagIndex_)
+	Line 16484: * GetItemLinkSellInformation(*string* _itemLink_)
+	Line 17329: * GetNumTradingHouseSearchResultItemLinkAsFurniturePreviewVariations(*string* _itemLink_)
+	Line 17332: * GetTradingHouseSearchResultItemLinkAsFurniturePreviewVariationDisplayName(*string* _itemLink_, *luaindex* _variation_)
+  MasterMerchant.concat("weapon", "weapon")
+]]--
+
+local function is_in(search_value, search_table)
+    for k, v in pairs(search_table) do
+        if search_value == v then return true end
+        if type(search_value) == "string" then
+            if string.find(string.lower(v), string.lower(search_value)) then return true end
+        end
+    end
+    return false
+end
 
 -- Additional words tacked on to the item name for searching
 function MasterMerchant.addedSearchToItem(itemLink)
@@ -203,10 +329,10 @@ function MasterMerchant.addedSearchToItem(itemLink)
   local requiredLevel = 1
   local itemType = GetItemLinkItemType(itemLink)
   if itemType ~= ITEMTYPE_RECIPE then
-    requiredLevel = GetItemLinkRequiredLevel(itemLink)
+    requiredLevel = GetItemLinkRequiredLevel(itemLink) -- verified
   end
 
-  local requiredVeteranRank = GetItemLinkRequiredChampionPoints(itemLink)
+  local requiredVeteranRank = GetItemLinkRequiredChampionPoints(itemLink) -- verified
   local vrAdder = GetString(MM_CP_RANK_SEARCH)
 
   local adder = ''
@@ -220,35 +346,69 @@ function MasterMerchant.addedSearchToItem(itemLink)
     adder = vrAdder .. '00 ' .. GetString(MM_REGULAR_RANK_SEARCH) .. '00'
   end
 
-  local itemQuality = GetItemLinkQuality(itemLink)
-  if (itemQuality == ITEM_QUALITY_NORMAL) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_WHITE)) end
-  if (itemQuality == ITEM_QUALITY_MAGIC) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_GREEN)) end
-  if (itemQuality == ITEM_QUALITY_ARCANE) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_BLUE)) end
-  if (itemQuality == ITEM_QUALITY_ARTIFACT) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_PURPLE)) end
-  if (itemQuality == ITEM_QUALITY_LEGENDARY) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_GOLD)) end
+  -- adds green blue
+  local itemQuality = GetItemLinkDisplayQuality(itemLink) -- verified
+  if (itemQuality == ITEM_DISPLAY_QUALITY_NORMAL) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_WHITE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_MAGIC) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_GREEN)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_ARCANE) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_BLUE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_ARTIFACT) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_PURPLE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_LEGENDARY) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_GOLD)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_ORANGE)) end
 
-  adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMQUALITY", itemQuality)))
+  -- adds Mythic Legendary
+  adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMDISPLAYQUALITY", itemQuality))) -- verified
 
-  local isSetItem, setName = GetItemLinkSetInfo(itemLink)
-  if (isSetItem) then
-    adder = MasterMerchant.concat(adder, 'set', setName)
+  -- adds Heavy
+  local armorType = GetItemLinkArmorType(itemLink) -- verified
+  if (armorType ~= 0) then
+    adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ARMORTYPE", armorType)))
   end
 
-  local itemType = GetItemLinkItemType(itemLink)
+  -- adds Apparel
+  local filterType = GetItemLinkFilterTypeInfo(itemLink) -- verified
+  if (filterType ~= 0) then
+    adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMFILTERTYPE", filterType)))
+  end
+  -- declared above
+  -- local itemType = GetItemLinkItemType(itemLink) -- verified
   if (itemType ~= 0) then
     adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMTYPE", itemType)))
   end
 
-  local itemTrait = GetItemLinkTraitType(itemLink)
-  if (itemTrait ~= 0) then
-    adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMTRAITTYPE", itemTrait)))
+  -- adds Mark of the Pariah
+  local isSetItem, setName = GetItemLinkSetInfo(itemLink) -- verified
+  if (isSetItem) then
+    adder = MasterMerchant.concat(adder, 'set', setName)
   end
 
-  local itemEquip = GetItemLinkEquipType(itemLink)
+  -- adds Sword, Healing Staff
+  local weaponType = GetItemLinkWeaponType(itemLink) -- verified
+  if (weaponType ~= 0) then
+    adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_WEAPONTYPE", weaponType)))
+  end
+
+  -- adds chest two-handed
+  local itemEquip = GetItemLinkEquipType(itemLink) -- verified
   if (itemEquip ~= 0) then
     adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_EQUIPTYPE", itemEquip)))
   end
 
+  -- adds Precise
+  local itemTrait = GetItemLinkTraitType(itemLink) -- verified
+  if (itemTrait ~= 0) then
+    adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMTRAITTYPE", itemTrait)))
+  end
+
+  resultTable = {}
+  resultString = string.gmatch(adder, '%S+')
+  for word in resultString do
+      if next(resultTable) == nil then
+          table.insert(resultTable, word)
+      elseif not is_in(word, resultTable) then
+          table.insert(resultTable, " " .. word)
+      end
+  end
+  adder = table.concat(resultTable)
   return string.lower(adder)
 end
 
@@ -398,6 +558,56 @@ function MasterMerchant:indexHistoryTables()
 
 end
 
+function MasterMerchant:BuildAccountNameLookup()
+  if not MM16DataSavedVariables["AccountNames"] then MM16DataSavedVariables["AccountNames"] = {} end
+  for key, value in pairs(MM16DataSavedVariables["AccountNames"]) do
+    MasterMerchant.accountNameByIdLookup[value] = key
+  end
+end
+function MasterMerchant:BuildItemLinkNameLookup()
+  if not MM16DataSavedVariables["ItemLink"] then MM16DataSavedVariables["ItemLink"] = {} end
+  for key, value in pairs(MM16DataSavedVariables["ItemLink"]) do
+    MasterMerchant.itemLinkNameByIdLookup[value] = key
+  end
+end
+function MasterMerchant:BuildGuildNameLookup()
+  if not MM16DataSavedVariables["GuildNames"] then MM16DataSavedVariables["GuildNames"] = {} end
+  for key, value in pairs(MM16DataSavedVariables["GuildNames"]) do
+    MasterMerchant.guildNameByIdLookup[value] = key
+  end
+end
+
+--[[Set MM16Data.lua file to store information to be used to reduce
+the size of the saved vars.
+]]--
+local function setSalesTableData(key)
+  local savedVars = MM16DataSavedVariables
+  local lookupData = savedVars
+  lookupData[key] = {}
+  return lookupData[key]
+end
+
+function MasterMerchant:AddSalesTableData(key, value)
+  if not MM16DataSavedVariables[key] then
+    MM16DataSavedVariables[key] = setSalesTableData(key)
+  end
+  if not MM16DataSavedVariables[key][value] then
+    local index = MasterMerchant.NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
+    MM16DataSavedVariables[key][value] = index
+    if key == "AccountNames" then
+      MasterMerchant.accountNameByIdLookup[index] = value
+    end
+    if key == "ItemLink" then
+      MasterMerchant.itemLinkNameByIdLookup[index] = value
+    end
+    if key == "GuildNames" then
+      MasterMerchant.guildNameByIdLookup[index] = value
+    end
+    return index
+  end
+  return nil
+end
+
 function MasterMerchant:CheckForDuplicate(itemLink, eventID)
   local dupe = false
   --[[ we need to be able to calculate theIID and itemIndex
@@ -474,6 +684,12 @@ function MasterMerchant:addToHistoryTables(theEvent)
     ["seller"] = "@cherrypick",
   },
   ]]--
+
+  -- first add new data looks to their tables
+  local linkHash = MasterMerchant:AddSalesTableData("ItemLink", theEvent.itemLink)
+  local buyerHash = MasterMerchant:AddSalesTableData("AccountNames", theEvent.buyer)
+  local sellerHash = MasterMerchant:AddSalesTableData("AccountNames", theEvent.seller)
+  local guildHash = MasterMerchant:AddSalesTableData("GuildNames", theEvent.guild)
 
   --[[The quality effects itemIndex although the ID from the
   itemLink may be the same. We will keep them separate.

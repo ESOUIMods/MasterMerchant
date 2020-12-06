@@ -65,7 +65,7 @@ ZO_CreateStringId("SK_SELF_SALES_TITLE", "Personal Sales")
 ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
-ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seler's Report")
+ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Show Unit Price")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Show Total Price")
@@ -154,6 +154,7 @@ ZO_CreateStringId("MM_COLOR_GREEN", "green")
 ZO_CreateStringId("MM_COLOR_BLUE", "blue")
 ZO_CreateStringId("MM_COLOR_PURPLE", "purple")
 ZO_CreateStringId("MM_COLOR_GOLD", "gold")
+ZO_CreateStringId("MM_COLOR_ORANGE", "orange")
 ZO_CreateStringId("MM_PERCENT_CHAR", "%")
 ZO_CreateStringId("MM_ENTIRE_GUILD", "Entire Guild")
 ZO_CreateStringId("MM_INDEX_TODAY", "Today")
@@ -175,7 +176,7 @@ ZO_CreateStringId("MM_NOTHING", "Nothing")
 
 ZO_CreateStringId("MM_LISTING_ALERT", "You have listed %s x%d for %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t in %s.")
 
-ZO_CreateStringId("MM_CALC_OPTIONS_NAME", "Calculation Dispaly Options")
+ZO_CreateStringId("MM_CALC_OPTIONS_NAME", "Calculation Display Options")
 ZO_CreateStringId("MM_CALC_OPTIONS_TIP", "Customize Master Merchant calculation options that alter the History Graph.")
 ZO_CreateStringId("MM_DAYS_FOCUS_ONE_NAME", "Focus 1 Days")
 ZO_CreateStringId("MM_DAYS_FOCUS_ONE_TIP", "Number of days sales to focus on.")
@@ -293,4 +294,3 @@ ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Guild Master Options")
 ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventory Options")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
-
