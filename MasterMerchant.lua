@@ -2710,7 +2710,7 @@ end
 function MasterMerchant:initSellingAdvice()
   if MasterMerchant.originalSellingSetupCallback then return end
 
-  if TRADING_HOUSE then
+  if TRADING_HOUSE and TRADING_HOUSE.postedItemsList then
 
     local dataType = TRADING_HOUSE.postedItemsList.dataTypes[2]
 
@@ -2776,9 +2776,18 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
 end
 
 function MasterMerchant:initBuyingAdvice()
-  if MasterMerchant.originalSetupCallback then return end
+  --MasterMerchant.a_test_var = TRADING_HOUSE
+  --MasterMerchant.b_test_var = TRADING_HOUSE_GAMEPAD
+  --[[Keyboard Mode has a TRADING_HOUSE.searchResultsList
+  that is set to
+  ZO_TradingHouseBrowseItemsRightPaneSearchResults and
+  then from there, there is a
+  dataTypes[1].dataType.setupCallback.
 
-  if TRADING_HOUSE then
+  This does not exist in GamepadMode
+  ]]--
+  if MasterMerchant.originalSetupCallback then return end
+  if TRADING_HOUSE and TRADING_HOUSE.searchResultsList then
 
     local dataType = TRADING_HOUSE.searchResultsList.dataTypes[1]
 
@@ -3627,6 +3636,7 @@ function MasterMerchant:Initialize()
       else MasterMerchantPriceCalculator:SetHidden(true) end
     end)
 
+  --TODO see if this or something else can be used in Gamepad mode
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_RESPONSE_RECEIVED, function(_, responseType, result)
     if responseType == TRADING_HOUSE_RESULT_POST_PENDING and result == TRADING_HOUSE_RESULT_SUCCESS then MasterMerchantPriceCalculator:SetHidden(true) end
     -- Set up guild store buying advice
