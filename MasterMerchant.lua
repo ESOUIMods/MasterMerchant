@@ -551,6 +551,7 @@ function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
   --]]
 end
 
+-- TODO fix craft cost
 function MasterMerchant:itemCraftPrice(itemLink)
 
   local itemType = GetItemLinkItemType(itemLink)
@@ -849,6 +850,10 @@ function MasterMerchant:onItemActionPopupInfoLink(itemLink)
 end
 
 -- Adjusted Per AssemblerManiac request 2019-2-20
+--[[This function adds menu items to the master merchant window
+and somehow adds this to the tooltip as well when you don't
+really need it there.
+]]--
 function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, ...)
   if button == MOUSE_BUTTON_INDEX_RIGHT and linkType == ITEM_LINK_TYPE and type(link) == 'string' and #link > 0 and link ~= '' then
     zo_callLater(function()
@@ -856,11 +861,16 @@ function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, 
         AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
       end
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
+
       ShowMenu()
     end)
   end
 end
 
+--[[This function adds menu items to the popup of the item
+when you are at a crafting station
+]]--
 function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFunction, scene)
   if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
 
@@ -871,8 +881,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
 
       AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
-      AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT),
-        function() ZO_LinkHandler_InsertLink(zo_strformat(SI_TOOLTIP_ITEM_NAME, link)) end)
+      AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT), function() ZO_LinkHandler_InsertLink(zo_strformat(SI_TOOLTIP_ITEM_NAME, link)) end)
 
       ShowMenu(scene)
     end
@@ -1326,6 +1335,7 @@ function MasterMerchant:LibAddonInit()
           getFunc = function() return MasterMerchant.systemSavedVariables.displayListingMessage end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.displayListingMessage = value end,
           default = MasterMerchant.systemDefault.displayListingMessage,
+          disabled = function() return MasterMerchant.AwesomeGuildStoreDetected end,
         },
       },
     },
@@ -2630,6 +2640,29 @@ function MasterMerchant:ScanStoresParallel(doAlert)
   end
 end
 
+function MasterMerchant:CheckStatus()
+  local eventsProcessing = 0
+  for i = 1, GetNumGuilds() do
+    local guildID = GetGuildId(i)
+    local eventCount, processingSpeed, timeLeft = MasterMerchant.LibHistoireListener[guildID]:GetPendingEventMetrics()
+    eventsProcessing = math.max(eventsProcessing, eventCount)
+    if eventCount > 0 then
+      MasterMerchant.v(2, string.format("Events remaining: %s for %s and %s : %s", eventCount, GetGuildName(guildID), processingSpeed, timeLeft))
+    end
+  end
+  return eventsProcessing
+end
+
+function MasterMerchant:QueueCheckStatus()
+  local eventsRemaining = MasterMerchant:CheckStatus()
+  if eventsRemaining > 0 then
+    zo_callLater(function() MasterMerchant:QueueCheckStatus()
+    end, 10000) -- 2 minutes
+  else
+    self:setScanning(false)
+    MasterMerchant:RefreshMasterMerchantWindow()
+  end
+end
 
 -- Handle the refresh button - although there is no background scan so deduct 50
 function MasterMerchant:DoRefresh()
@@ -2656,10 +2689,14 @@ function MasterMerchant:DoRefresh()
     MasterMerchant:SetupListener(guildID)
   end
   MasterMerchant.LibHistoireRefreshed = true
+  -- Siri uncomment this
+  -- MasterMerchant:QueueCheckStatus()
+  -- >>>> Siri Delete this block
   zo_callLater(function()
     self:setScanning(false)
     MasterMerchant:RefreshMasterMerchantWindow()
   end, 60000 * 10) -- 10 minutes
+  -- Siri Delete this block <<<<
 end
 
 function MasterMerchant:initGMTools()
@@ -2718,6 +2755,9 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
         sellingAdvice:SetText(string.format('%.2f', margin) .. '%')
       end
       -- TODO I think this colors the number in the guild store
+      --[[
+      ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON, {color: someColorDef})
+      ]]--
       local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
       if dealValue == 0 then
         r = 0.98;

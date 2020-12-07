@@ -1540,6 +1540,22 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
   Popup.mmActiveTip = nil
 end
 
+local function GetTopControl(control)
+  local controlName = control:GetName()
+  MasterMerchant.v(7, controlName)
+  local count = 0
+  while control and control.GetParent ~= nil do
+      control = control:GetParent()
+      count = count + 1
+      if control and control.GetName then
+        controlName = control:GetName()
+        MasterMerchant.v(7, controlName)
+        if controlName == "GuiRoot" then break end
+        if count >= 3 then break end
+      end
+  end
+end
+
 -- ItemTooltips get used all over the place, we have to figure out
 -- who the control generating the tooltip is so we know
 -- how to grab the item data
@@ -1621,9 +1637,9 @@ function MasterMerchant:addStatsItemTooltip()
         itemLink = itemLabel:GetText()
       end
     else
-      --DEBUG
-      MasterMerchant.v(7, mocParent)
-      MasterMerchant.v(7, skMoc)
+      if MasterMerchant.systemSavedVariables.verbose == 7 then
+        GetTopControl(skMoc)
+      end
       --ZO_ListDialog1ListContents
       --ZO_SmithingTopLevelImprovementPanelSlotContainer
     end

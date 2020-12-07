@@ -11,13 +11,12 @@ function MasterMerchant.NewLink(itemLink, movement)
   if newValue.NewSubtype == nil then
     return nil
   else
-    return string.gsub(string.gsub(itemLink, '(|H.-:item:.-:)(%d-)(:.-)', '%1' .. newValue.NewSubtype .. '%3', 1),
-      '(|H.-:item:.-:.-:)(%d-)(:.-)', '%1' .. newValue.NewLevel .. '%3', 1)
+    return string.gsub(string.gsub(itemLink, '(|H.-:item:.-:)(%d-)(:.-)', '%1' .. newValue.NewSubtype .. '%3', 1), '(|H.-:item:.-:.-:)(%d-)(:.-)', '%1' .. newValue.NewLevel .. '%3', 1)
   end
 end
 
 function MasterMerchant.ItemCodeText(itemLink)
-  return string.gsub(string.gsub(itemLink, '|H', '--'), '|h', '--')
+  return string.gsub(string.gsub(itemLink, '|H', '--'), '|h', ':h')
 end
 
 function MasterMerchant.LevelUp(itemLink)

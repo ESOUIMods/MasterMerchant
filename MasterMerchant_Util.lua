@@ -172,12 +172,25 @@ function MasterMerchant.GetItemLinePrice(itemLink)
   return 0
 end
 
+local function GetLevelAndCPRequirementFromItemLink(itemLink)
+    local link = {ZO_LinkHandler_ParseLink(itemLink)}
+    return tonumber(link[5]), tonumber(link[6])
+end
+
+local function GetPotionPowerLevel(itemLink)
+    local CP, level = GetLevelAndCPRequirementFromItemLink(itemLink)
+    if level < 50 then
+        return level
+    end
+    return CP
+end
+
 -- The index consists of the item's required level, required vet
 -- level, quality, and trait(if any), separated by colons.
 function MasterMerchant.makeIndexFromLink(itemLink)
   --Standardize Level to 1 if the level is not relevent but is stored on some items (ex: recipes)
   local levelReq = 1
-  local itemType = GetItemLinkItemType(itemLink)
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   if itemType ~= ITEMTYPE_RECIPE then
     levelReq = GetItemLinkRequiredLevel(itemLink)
   end
@@ -191,7 +204,10 @@ function MasterMerchant.makeIndexFromLink(itemLink)
   else
     theLastNumber = string.match(itemLink, '|H.-:item:.-:(%d-)|h') or 0
   end
-
+  if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
+    local value = GetPotionPowerLevel(itemLink)
+    itemTrait = MasterMerchant.potionVarientTable[value] or "0"
+  end
   local index = levelReq .. ':' .. vetReq .. ':' .. itemQuality .. ':' .. itemTrait .. ':' .. theLastNumber
 
   return index
@@ -327,11 +343,12 @@ end
 function MasterMerchant.addedSearchToItem(itemLink)
   --Standardize Level to 1 if the level is not relevent but is stored on some items (ex: recipes)
   local requiredLevel = 1
-  local itemType = GetItemLinkItemType(itemLink)
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+  -- SI_ITEMTYPEDISPLAYCATEGORY21 RECIPE
   if itemType ~= ITEMTYPE_RECIPE then
     requiredLevel = GetItemLinkRequiredLevel(itemLink) -- verified
   end
-
+  -- SI_RECIPECRAFTINGSYSTEM is like Diagram
   local requiredVeteranRank = GetItemLinkRequiredChampionPoints(itemLink) -- verified
   local vrAdder = GetString(MM_CP_RANK_SEARCH)
 
@@ -373,6 +390,10 @@ function MasterMerchant.addedSearchToItem(itemLink)
   -- local itemType = GetItemLinkItemType(itemLink) -- verified
   if (itemType ~= 0) then
     adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMTYPE", itemType)))
+  end
+
+  if (specializedItemType ~= 0) then
+    adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType)))
   end
 
   -- adds Mark of the Pariah
