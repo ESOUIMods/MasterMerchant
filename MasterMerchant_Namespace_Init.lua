@@ -44,7 +44,7 @@ MasterMerchant.LibHistoireListener = { } -- added for debug on 10-31
 MasterMerchant.LibHistoireRefreshed = false -- added 8-25
 MasterMerchant.itemAverageLookupTable = { } -- added 11-21 used as lookup for tooltips
 MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
-MasterMerchant.isUsingGamepad = GetGamepadType() > 0 -- added 11-24
+MasterMerchant.isUsingGamepad = false -- added 11-24
 MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
 MasterMerchant.accountNameByIdLookup = {} -- added 12-2
 MasterMerchant.itemLinkNameByIdLookup = {} -- added 12-2
@@ -183,6 +183,18 @@ MasterMerchant.originalSetupCallback = nil
 MasterMerchant.originalSellingSetupCallback = nil
 MasterMerchant.originalRosterStatsCallback = nil
 MasterMerchant.originalRosterBuildMasterList = nil
+
+----------------------------------------
+----- Gamepad                      -----
+----------------------------------------
+
+ZO_GAMEPAD_ANCHOR_INSET_X = 0
+ZO_GAMEPAD_CONTAINER_INSET_X = 0
+GAMEPAD_QUADRANT1_LEFT = ZO_GAMEPAD_ANCHOR_INSET_X - ZO_GAMEPAD_CONTAINER_INSET_X
+
+----------------------------------------
+----- Setup                        -----
+----------------------------------------
 
 -- Gap values for Shell sort
 MasterMerchant.shellGaps = {

@@ -27,6 +27,19 @@
         <Texture name="$(parent)Marker" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
       </Controls>
     </Control>
+
+    <Control name="MM_ItemListRow_Gamepad" inherits="ZO_TradingHouse_ItemListRow_Gamepad" virtual="true" override="true">
+      <Controls>
+        <Label name="$(parent)UnitPrice" font="ZoFontGamepad27" text=" " horizontalAlignment="RIGHT" relativeTo="$(parent)Price" verticalAlignment="BOTTOM">
+          <Anchor point="TOPRIGHT" offsetY="40"/>
+        </Label>
+        <Label name="$(parent)BuyingAdvice" font="ZoFontGamepad27" text="0.00%" horizontalAlignment="RIGHT" relativeTo="$(parent)UnitPrice" verticalAlignment="BOTTOM">
+          <Anchor point="TOPRIGHT" offsetY="60"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Graph Label -->
     <Label name="MMGraphLabel" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true"
            color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="XXX">
       <OnLinkMouseUp>

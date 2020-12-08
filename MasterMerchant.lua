@@ -4160,6 +4160,23 @@ function ZO_InventorySlotActions:Show()
   Original_ZO_InventorySlotActions_Show(self)
 end
 
+function OnItemSelected()
+  local isPlayerViewingTrader = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.active
+  local selectedItem = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.selectedIndex
+  local searchData = ZO_TradingHouse_GamepadMaskContainerSellList.scrollList.dataList.itemData.searchData
+  local itemSelected = searchData[selectedItem]
+  local bagId = itemInventorySlot.bagId
+  local slotId = itemInventorySlot.slotId
+  local itemLink = GetItemLink(bagId, slotId)
+  << alter price on scroll list >>
+end
+
+function OnPlayerPreferredModeChanged(eventCode, gamepadPreferred)
+  MasterMerchant.isUsingGamepad = gamepadPreferred
+  --MasterMerchant.dm("Debug", MasterMerchant.isUsingGamepad)
+end
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_Gamepad_Mode", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, OnPlayerPreferredModeChanged)
+
 -------------------------------------------------------------------------------
 -- LMP - Removed Fonts v1.1
 -------------------------------------------------------------------------------
