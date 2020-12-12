@@ -1,13 +1,26 @@
-MM16Data = {}
-MM16Data.name = "MM16Data"
- 
-function MM16Data:Initialize()
-  if not MM16DataSavedVariables then MM16DataSavedVariables = {} end
+local libName, libVersion = "MM16Data", 100
+local lib = {}
+lib.libName = libName
+lib.defaults = {}
+
+local function Initialize()
+  lib.oldSavedVariables = ZO_SavedVars:NewAccountWide("MM16DataSavedVariables", 1, nil, {})
+  lib.savedVariables = ZO_SavedVars:NewAccountWide("MM16DataSavedVariables", 1, nil, {}, nil, 'MasterMerchant')
+  if (not lib.savedVariables.SalesData and lib.savedVariables and lib.oldSavedVariables.SalesData) then
+    lib.savedVariables.SalesData = lib.oldSavedVariables.SalesData
+    lib.savedVariables.ItemsConverted = (lib.savedVariables and lib.oldSavedVariables.ItemsConverted)
+    lib.oldSavedVariables.SalesData = nil
+    lib.oldSavedVariables.ItemsConverted = 'Moved'
+  end
+  if not lib.savedVariables.SalesData then lib.savedVariables.SalesData = {} end
 end
- 
-function MM16Data.OnAddOnLoaded(event, addonName)
-  if addonName == MM16Data.name then
-    MM16Data:Initialize()
+
+local function OnAddOnLoaded(eventCode, addonName)
+  if addonName == lib.libName then
+    Initialize()
   end
 end
-EVENT_MANAGER:RegisterForEvent(MM16Data.name, EVENT_ADD_ON_LOADED, MM16Data.OnAddOnLoaded)
+
+EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
+
+MM16Data = lib

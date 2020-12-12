@@ -1,11 +1,12 @@
 ## APIVersion: 100032 100033
 ## Title: Master Merchant Data File MM06Data
 ## Description: MM06Data Stores data for Master Merchant
-## Version 3.2.0
-## AddOnVersion: 320
+## Version 3.3.0
+## AddOnVersion: 330
 ## License: See license - distribution without license is prohibited!
 ## LastUpdated: Feb 2019
 ## SavedVariables: MM06DataSavedVariables
 ## DisableSavedVariablesAutoSaving: 1
+## IsLibrary: true
 
 MM06Data.lua
