@@ -1819,7 +1819,7 @@ function MasterMerchant:PurgeDups()
             if checking.id == nil then
               dup = true
             end
-            if eventArray[tonumber(checking.id)] then
+            if eventArray[checking.id] then
               dup = true
             end
             if dup then
@@ -1827,7 +1827,7 @@ function MasterMerchant:PurgeDups()
               count = count + 1
             else
               table.insert(newSales, checking)
-              eventArray[tonumber(checking.id)] = true
+              eventArray[checking.id] = true
             end
           end
           itemData['sales'] = newSales
@@ -2045,9 +2045,9 @@ function MasterMerchant:CleanOutBad()
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
-
-    saledata.itemDesc = nil
-    saledata.itemAdderText = nil
+    --saledata.itemDesc = nil
+    --saledata.itemAdderText = nil
+    local key, count = string.gsub(saledata['itemLink'], ':', ':')
 
     if saledata['timestamp'] == nil
       or type(saledata['timestamp']) ~= 'number'
@@ -2065,8 +2065,8 @@ function MasterMerchant:CleanOutBad()
       or string.sub(saledata['seller'], 1, 1) ~= '@'
       or saledata['itemLink'] == nil
       or type(saledata['itemLink']) ~= 'string'
+      or count ~= 22
       or saledata['id'] == nil
-      -- or type(saledata['id']) ~= 'number'
       or (not string.match(tostring(saledata['itemLink']), '|H.-:item:(.-):')) then
       -- Remove it
       versiondata['sales'][saleid] = nil
@@ -2121,12 +2121,12 @@ function MasterMerchant:CleanOutBad()
         buyer     = saledata.buyer,
         guild     = saledata.guild,
         itemLink  = saledata.itemLink,
-        quant     = tonumber(saledata.quant),
-        timestamp = tonumber(saledata.timestamp),
-        price     = tonumber(saledata.price),
+        quant     = saledata.quant,
+        timestamp = saledata.timestamp,
+        price     = saledata.price,
         seller    = saledata.seller,
         wasKiosk  = saledata.wasKiosk,
-        id        = saledata.id
+        id        = Id64ToString(saledata.id)
       }
       MasterMerchant:addToHistoryTables(theEvent)
       extraData.moveCount = extraData.moveCount + 1
@@ -2643,18 +2643,17 @@ end
 function MasterMerchant:CheckStatus()
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
+    local numEvents = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
     local eventCount, processingSpeed, timeLeft = MasterMerchant.LibHistoireListener[guildID]:GetPendingEventMetrics()
     -- first has the time been estimated
-    if timeLeft > -1 then MasterMerchant.timeEstimated[guildID] = true end
+    if timeLeft > -1 or numEvents < 1 then MasterMerchant.timeEstimated[guildID] = true end
     --[[ time has been estimated so that means the next
     time we hit -1 then there is nothing else to do
     ]]--
     if (timeLeft == -1 or timeLeft == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
-    --[[
     if eventCount > 0 and MasterMerchant.eventsNeedProcessing[guildID] then
       MasterMerchant.v(2, string.format("Events remaining: %s for %s and %s : %s", eventCount, GetGuildName(guildID), processingSpeed, timeLeft))
     end
-    ]]--
   end
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
@@ -2681,7 +2680,7 @@ function MasterMerchant:QueueCheckStatus()
   end
 end
 
--- Handle the refresh button - although there is no background scan so deduct 50
+-- Handle the refresh button
 function MasterMerchant:DoRefresh()
   if not MasterMerchant.isInitialized then
     MasterMerchant.v(2, 'Master Merchant is still initializing.')
@@ -3193,27 +3192,29 @@ function MasterMerchant:ReIndexSales(otherData)
       break
     end
   end
-  if needToReindex or not MasterMerchant.systemSavedVariables.needsReindex then
+  if needToReindex or not MasterMerchant.systemSavedVariables.shouldReindex then
     --MasterMerchant.dm("Debug", "needToReindex")
     local tempSales = otherData.savedVariables.SalesData
     otherData.savedVariables.SalesData = {}
 
     for k, v in pairs(tempSales) do
-      for j, dataList in pairs(v) do
-        -- IPAIRS
-        for i, item in pairs(dataList['sales']) do
-          if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') then
-            local itemIndex = self.makeIndexFromLink(item.itemLink)
+      if k ~= 0 then
+        for j, dataList in pairs(v) do
+          -- IPAIRS
+          for i, item in pairs(dataList['sales']) do
+            if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') then
+              local itemIndex = self.makeIndexFromLink(item.itemLink)
             if not otherData.savedVariables.SalesData[k] then otherData.savedVariables.SalesData[k] = {} end
             if otherData.savedVariables.SalesData[k][itemIndex] then
               table.insert(otherData.savedVariables.SalesData[k][itemIndex]['sales'], item)
             else
               otherData.savedVariables.SalesData[k][itemIndex] = {
-                ['itemIcon']      = dataList.itemIcon,
-                ['itemAdderText'] = self.addedSearchToItem(item.itemLink),
-                ['sales']         = { item },
-                ['itemDesc']      = GetItemLinkName(item.itemLink)
-              }
+                  ['itemIcon']      = dataList.itemIcon,
+                  ['itemAdderText'] = self.addedSearchToItem(item.itemLink),
+                  ['sales']         = { item },
+                  ['itemDesc']      = GetItemLinkName(item.itemLink)
+                }
+              end
             end
           end
         end
@@ -3230,7 +3231,7 @@ function MasterMerchant:ReIndexSales(otherData)
       end
     end
   end
-  if needToAdditemAdderText or not MasterMerchant.systemSavedVariables.needsAdderText then
+  if needToAdditemAdderText or not MasterMerchant.systemSavedVariables.shouldAdderText then
     --MasterMerchant.dm("Debug", "needToAdditemAdderText")
     -- spin through and split Item Description into a seperate string
     for _, v in pairs(otherData.savedVariables.SalesData) do
@@ -3373,8 +3374,8 @@ function MasterMerchant:Initialize()
     itemIDConvertedToString    = false, -- this only converts id64 at this time
     defaultStatistics          = GetString(MM_STATISTICS_MEDIAN),
     useLibDebugLogger          = false, -- added 11-28
-    needsReindex               = false,
-    needsAdderText             = false,
+    shouldReindex               = false,
+    shouldAdderText             = false,
   }
 
   for i = 1, GetNumGuilds() do
@@ -3522,7 +3523,7 @@ function MasterMerchant:Initialize()
   end
 
   -- Update indexs because of Writs
-  if not MasterMerchant.systemSavedVariables.needsReindex then
+  if not MasterMerchant.systemSavedVariables.shouldReindex then
     self:ReIndexSales(MM00Data)
     self:ReIndexSales(MM01Data)
     self:ReIndexSales(MM02Data)
@@ -3539,8 +3540,8 @@ function MasterMerchant:Initialize()
     self:ReIndexSales(MM13Data)
     self:ReIndexSales(MM14Data)
     self:ReIndexSales(MM15Data)
-    MasterMerchant.systemSavedVariables.needsReindex = true
-    MasterMerchant.systemSavedVariables.needsAdderText = true
+    MasterMerchant.systemSavedVariables.shouldReindex = true
+    MasterMerchant.systemSavedVariables.shouldAdderText = true
   end
 
   -- Bring seperate lists together we can still access the sales history all together
