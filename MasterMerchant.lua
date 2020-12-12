@@ -1816,6 +1816,7 @@ function MasterMerchant:PurgeDups()
           local dup
           newSales = {}
           for _, checking in pairs(itemData['sales']) do
+            local validLink = MasterMerchant:IsValidItemLink(checking.itemLink)
             dup = false
             if checking.id == nil then
               if MasterMerchant.systemSavedVariables.verbose == 7 then
@@ -1826,9 +1827,11 @@ function MasterMerchant:PurgeDups()
             if eventArray[checking.id] then
               if MasterMerchant.systemSavedVariables.verbose == 7 then
                 MasterMerchant.dm("Debug", 'Dupe found: ' .. checking.id .. ': ' .. checking.itemLink)
+                MasterMerchant:Expected(checking.id)
               end
               dup = true
             end
+            if not validLink then dup = true end
             if dup then
               -- Remove it by not putting it in the new list, but keep a count
               count = count + 1
@@ -2079,12 +2082,7 @@ function MasterMerchant:CleanOutBad()
     local theIID = GetItemLinkItemId(saledata['itemLink'])
     local itemIdMatch = tonumber(string.match(saledata['itemLink'], '|H.-:item:(.-):'))
     local itemlinkName = GetItemLinkName(saledata['itemLink'])
-    if saledata['itemLink'] == nil
-      or type(saledata['itemLink']) ~= 'string'
-      or count ~= 22
-      or not theIID
-      or itemIdMatch ~= theIID
-      or MasterMerchant:is_empty_or_nil(itemlinkName) then
+    if not MasterMerchant:IsValidItemLink(saledata['itemLink']) then
       -- Remove it
       versiondata['sales'][saleid] = nil
       extraData.badItemLinkCount = extraData.badItemLinkCount + 1
@@ -2211,6 +2209,8 @@ function MasterMerchant:CleanOutBad()
     self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
+  MasterMerchant.systemSavedVariables.shouldReindex = false
+  MasterMerchant.systemSavedVariables.shouldAdderText = false
 end
 
 function MasterMerchant:SlideSales(goback)
@@ -2582,8 +2582,6 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
   -- Set the stats slider past the max if this is brand new data
   --if self.isFirstScan and doAlert then MasterMerchantStatsWindowSlider:SetValue(15) end
   --self.isFirstScan = false
-
-  MasterMerchant:RefreshMasterMerchantWindow()
 end
 
 -- Scans all stores a player has access to in parallel.
@@ -4040,6 +4038,9 @@ function MasterMerchant:SetupListener(guildID)
   end
   MasterMerchant.LibHistoireListener[guildID]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
     if eventType == GUILD_EVENT_ITEM_SOLD then
+      local LEQ = LibExecutionQueue:new()
+      LEQ:Add(function() self:setScanning(true) end, 'setScanning')
+
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
         MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = Id64ToString(eventId)
         lastReceivedEventID = eventId
@@ -4095,10 +4096,10 @@ function MasterMerchant:SetupListener(guildID)
       }
       theEvent.wasKiosk = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
 
-      local isDuplicate = MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id)
+      LEQ:Add(function() MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id) end, 'CheckForDuplicate')
 
       if not isDuplicate then
-        MasterMerchant:addToHistoryTables(theEvent)
+        LEQ:Add(function() MasterMerchant:addToHistoryTables(theEvent) end, 'addToHistoryTables')
       end
       -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
       if not isDuplicate and string.lower(theEvent.seller) == thePlayer then
@@ -4106,8 +4107,11 @@ function MasterMerchant:SetupListener(guildID)
         table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
       end
       if not isDuplicate then
-        MasterMerchant:PostScanParallel(guildName, true)
+        LEQ:Add(function() MasterMerchant:PostScanParallel(guildName, true) end, 'PostScanParallel')
+        LEQ:Add(function() MasterMerchant:RefreshMasterMerchantWindow() end, 'RefreshMasterMerchantWindow')
       end
+      LEQ:Add(function() self:setScanning(false) end, 'setScanning')
+      LEQ:Start()
     end
   end)
   MasterMerchant.LibHistoireListener[guildID]:Start()

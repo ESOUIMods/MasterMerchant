@@ -629,6 +629,28 @@ function MasterMerchant:AddSalesTableData(key, value)
   return nil
 end
 
+function MasterMerchant:Expected(eventID)
+  for itemNumber, itemNumberData in pairs(self.salesData) do
+    for itemIndex, itemData in pairs(itemNumberData) do
+      if itemData['sales'] then
+        for _, checking in pairs(itemData['sales']) do
+          local checkIdString = checking.id
+          if type(checking.id) ~= 'string' then
+            checkIdString = tostring(checking.id)
+          end
+          if checkIdString == eventID then
+            local itemType, specializedItemType = GetItemLinkItemType(checking.itemLink)
+            MasterMerchant.dm("Debug", "Expected: " .. checking.itemLink .. " found in " .. itemIndex)
+            if (specializedItemType ~= 0) then
+              MasterMerchant.dm("Debug", MasterMerchant.concat("For", zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType))))
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 function MasterMerchant:IsValidItemLink(itemLink)
   local validLink = true
   local _, count = string.gsub(itemLink, ':', ':')
@@ -652,14 +674,20 @@ function MasterMerchant:CheckForDuplicate(itemLink, eventID)
     if not MasterMerchant:IsValidItemLink(itemLink) then
       MasterMerchant.dm("Warn", string.format("malformed itemLink for event %s",eventID))
       MasterMerchant.dm("Warn", itemLink)
-      --return
+      MasterMerchant:Expected(eventID)
+      dupe = true
     end
   else
     local key, count = string.gsub(itemLink, ':', ':')
-    if count ~= 22 then return end
+    if count ~= 22 then 
+      dupe = true
+    end
   end
   local theIID = GetItemLinkItemId(itemLink)
-  if theIID == nil or theIID == 0 then return end
+  if theIID == nil or theIID == 0 then 
+    dupe = true
+    return dupe
+  end
   local itemIndex = self.makeIndexFromLink(itemLink)
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
