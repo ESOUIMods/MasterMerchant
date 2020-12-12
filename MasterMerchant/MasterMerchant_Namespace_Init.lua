@@ -9,10 +9,10 @@
 -- |H0:item:126485:5:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h  -- database item
 -- |H0:item:57159:3:40:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
 
-MMScrollList = ZO_SortFilterList:Subclass()
-MMScrollList.defaults = { }
+MMScrollList                          = ZO_SortFilterList:Subclass()
+MMScrollList.defaults                 = { }
 -- Sort keys for the scroll lists
-MMScrollList.SORT_KEYS = {
+MMScrollList.SORT_KEYS                = {
   ['price']         = { isNumeric = true },
   ['time']          = { isNumeric = true },
   ['rank']          = { isNumeric = true },
@@ -24,33 +24,33 @@ MMScrollList.SORT_KEYS = {
   ['guildName']     = { isNumeric = false }
 }
 
-MasterMerchant = { }
-MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.5.05'
-MasterMerchant.locale = GetCVar('Language.2')
+MasterMerchant                        = { }
+MasterMerchant.name                   = 'MasterMerchant'
+MasterMerchant.version                = '3.5.05'
+MasterMerchant.locale                 = GetCVar('Language.2')
 -- default is self
-MasterMerchant.viewMode = 'self'
-MasterMerchant.isScanning = false
-MasterMerchant.isScanningParallel = { }
-MasterMerchant.salesData = { }
-MasterMerchant.eventsCache = { }
+MasterMerchant.viewMode               = 'self'
+MasterMerchant.isScanning             = false
+MasterMerchant.isScanningParallel     = { }
+MasterMerchant.salesData              = { }
+MasterMerchant.eventsCache            = { }
 -- MasterMerchant.lastHistoryRequest = { } unused now from ProcessGuildHistoryResponse
-MasterMerchant.verboseLevel = 4
-MasterMerchant.lastInputVar = { } -- debug var
-MasterMerchant.isScanningHistory = { } -- added for debug on 8-21
-MasterMerchant.isInitialized = false -- added 8-25 used
-MasterMerchant.guildMemberInfo = { } -- added 10-17 used as lookup
-MasterMerchant.LibHistoireListener = { } -- added for debug on 10-31
-MasterMerchant.LibHistoireRefreshed = false -- added 8-25
+MasterMerchant.verboseLevel           = 4
+MasterMerchant.lastInputVar           = { } -- debug var
+MasterMerchant.isScanningHistory      = { } -- added for debug on 8-21
+MasterMerchant.isInitialized          = false -- added 8-25 used
+MasterMerchant.guildMemberInfo        = { } -- added 10-17 used as lookup
+MasterMerchant.LibHistoireListener    = { } -- added for debug on 10-31
+MasterMerchant.LibHistoireRefreshed   = false -- added 8-25
 MasterMerchant.itemAverageLookupTable = { } -- added 11-21 used as lookup for tooltips
-MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
-MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
-MasterMerchant.accountNameByIdLookup = {} -- added 12-2
+MasterMerchant.customTimeframeText    = "" -- added 11-21 used as lookup for tooltips
+MasterMerchant.systemDefault          = {} -- added 11-26 placeholder for init routine
+MasterMerchant.accountNameByIdLookup  = {} -- added 12-2
 MasterMerchant.itemLinkNameByIdLookup = {} -- added 12-2
-MasterMerchant.guildNameByIdLookup = {} -- added 12-2
-MasterMerchant.eventsNeedProcessing = {}
-MasterMerchant.timeEstimated = {}
-MasterMerchant.purgeQueue = {}
+MasterMerchant.guildNameByIdLookup    = {} -- added 12-2
+MasterMerchant.eventsNeedProcessing   = {}
+MasterMerchant.timeEstimated          = {}
+MasterMerchant.purgeQueue             = {}
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
 else
@@ -64,17 +64,17 @@ local currencyFormatDealOptions = {
 }
 ]]--
 MasterMerchant.potionVarientTable = {
-  [0] = 0,
-  [1] = 0,
-  [3] = 1,
-  [10] = 2,
-  [19] = 2, -- level 19 pots I found
-  [20] = 3,
-  [24] = 3, -- level 24 pots I found
-  [30] = 4,
-  [39] = 4, -- level 39 pots I found
-  [40] = 5,
-  [44] = 5, -- level 44 pots I found
+  [0]   = 0,
+  [1]   = 0,
+  [3]   = 1,
+  [10]  = 2,
+  [19]  = 2, -- level 19 pots I found
+  [20]  = 3,
+  [24]  = 3, -- level 24 pots I found
+  [30]  = 4,
+  [39]  = 4, -- level 39 pots I found
+  [40]  = 5,
+  [44]  = 5, -- level 44 pots I found
   [125] = 6,
   [129] = 7,
   [134] = 8,
@@ -83,7 +83,7 @@ MasterMerchant.potionVarientTable = {
 }
 
 if LibDebugLogger then
-  local logger = LibDebugLogger.Create(MasterMerchant.name)
+  local logger          = LibDebugLogger.Create(MasterMerchant.name)
   MasterMerchant.logger = logger
 end
 local SDLV = DebugLogViewer
@@ -112,7 +112,7 @@ local function emit_message(log_type, text)
 end
 
 local function emit_table(log_type, t, indent, table_history)
-  indent = indent or "."
+  indent        = indent or "."
   table_history = table_history or {}
 
   for k, v in pairs(t) do
@@ -146,44 +146,44 @@ end
 -- We do 'lazy' updates on the scroll lists, this is used to
 -- mark whether we need to RefreshData() before showing
 -- ITEMS, GUILDS, LISTINGS
-MasterMerchant.listIsDirty = { ['full'] = false, ['guild'] = false, ['listing'] = false }
-MasterMerchant.scrollList = nil
-MasterMerchant.guildScrollList = nil
-MasterMerchant.listingsScrollList = nil
-MasterMerchant.calcInput = nil
+MasterMerchant.listIsDirty                   = { ['full'] = false, ['guild'] = false, ['listing'] = false }
+MasterMerchant.scrollList                    = nil
+MasterMerchant.guildScrollList               = nil
+MasterMerchant.listingsScrollList            = nil
+MasterMerchant.calcInput                     = nil
 
-MasterMerchant.guildSales = nil
-MasterMerchant.guildPurchases = nil
-MasterMerchant.guildItems = nil
-MasterMerchant.guildColor = { }
+MasterMerchant.guildSales                    = nil
+MasterMerchant.guildPurchases                = nil
+MasterMerchant.guildItems                    = nil
+MasterMerchant.guildColor                    = { }
 
 -- SRIndex is an inverted indexe of the ScanResults table
 -- Each key is a word found in one of the sales items' searched
 -- fields (buyer, guild, item name) and a table of the SalesData
 -- indexes that contain that word.
-MasterMerchant.SRIndex = { }
-MasterMerchant.PlayerSpecialText = 'hfdkkdfunlajjamdhsiwsuwj'
-MasterMerchant.numEvents = { }
-MasterMerchant.moreEventsRequested = { }
-MasterMerchant.alertQueue = { }
-MasterMerchant.addedEvents = { }
-MasterMerchant.lastUpdateTime = { }
-MasterMerchant.lastUpdateCount = { }
-MasterMerchant.lastNonDuplicate = { }
+MasterMerchant.SRIndex                       = { }
+MasterMerchant.PlayerSpecialText             = 'hfdkkdfunlajjamdhsiwsuwj'
+MasterMerchant.numEvents                     = { }
+MasterMerchant.moreEventsRequested           = { }
+MasterMerchant.alertQueue                    = { }
+MasterMerchant.addedEvents                   = { }
+MasterMerchant.lastUpdateTime                = { }
+MasterMerchant.lastUpdateCount               = { }
+MasterMerchant.lastNonDuplicate              = { }
 
-MasterMerchant.curSort = { 'time', 'desc' }
-MasterMerchant.curGuildSort = { 'rank', 'asc' }
-MasterMerchant.uiFragment = { }
-MasterMerchant.guildUiFragment = { }
-MasterMerchant.statsFragment = { }
-MasterMerchant.activeTip = nil
-MasterMerchant.tippingControl = nil
-MasterMerchant.isShiftPressed = nil
-MasterMerchant.isCtrlPressed = nil
+MasterMerchant.curSort                       = { 'time', 'desc' }
+MasterMerchant.curGuildSort                  = { 'rank', 'asc' }
+MasterMerchant.uiFragment                    = { }
+MasterMerchant.guildUiFragment               = { }
+MasterMerchant.statsFragment                 = { }
+MasterMerchant.activeTip                     = nil
+MasterMerchant.tippingControl                = nil
+MasterMerchant.isShiftPressed                = nil
+MasterMerchant.isCtrlPressed                 = nil
 
-MasterMerchant.originalSetupCallback = nil
-MasterMerchant.originalSellingSetupCallback = nil
-MasterMerchant.originalRosterStatsCallback = nil
+MasterMerchant.originalSetupCallback         = nil
+MasterMerchant.originalSellingSetupCallback  = nil
+MasterMerchant.originalRosterStatsCallback   = nil
 MasterMerchant.originalRosterBuildMasterList = nil
 
 ----------------------------------------
@@ -195,14 +195,14 @@ MasterMerchant.originalRosterBuildMasterList = nil
 ----------------------------------------
 
 -- Gap values for Shell sort
-MasterMerchant.shellGaps = {
+MasterMerchant.shellGaps                     = {
   1391376, 463792,
   198768, 86961, 33936, 13776, 4592,
   1968, 861, 336, 112, 48, 21, 7, 3, 1
 }
 
 -- Sound table for mapping readable names to sound names
-MasterMerchant.alertSounds = {
+MasterMerchant.alertSounds                   = {
   [1]  = { name = "None", sound = 'No_Sound' },
   [2]  = { name = "Add Guild Member", sound = 'GuildRoster_Added' },
   [3]  = { name = "Armor Glyph", sound = 'Enchanting_ArmorGlyph_Placed' },
@@ -238,7 +238,7 @@ MasterMerchant.alertSounds = {
   [33] = { name = "Synergy Ready", sound = 'Ability_Synergy_Ready_Sound' },
 }
 
-MasterMerchant.internalRecipeData = {
+MasterMerchant.internalRecipeData            = {
   [165797] = 1147,
   [116345] = 2614,
   [115612] = 281,
@@ -2932,13 +2932,13 @@ local function indexRecipes(t, index)
   return nil
 end
 
-local recipeMetatable = {
+local recipeMetatable     = {
   ["__index"] = indexRecipes,
 }
 MasterMerchant.recipeData = {}
 setmetatable(MasterMerchant.recipeData, recipeMetatable)
 
-local effectIds = { -- 1 == positive potency 2 == negative potency
+local effectIds  = { -- 1 == positive potency 2 == negative potency
   [43573]  = { 45831, 2 },
   [26580]  = { 45831, 1 },
   [45868]  = { 45832, 2 },
@@ -3009,12 +3009,12 @@ local qualityIds = {
 
 local function splitItem(t, index)
   local itemId, lvl, CPLVL, quality = string.match(index, "(%d+):(%d+):(%d+):(%d+)")
-  itemId = tonumber(itemId)
-  lvl = tonumber(lvl)
-  CPLVL = tonumber(CPLVL)
-  quality = tonumber(quality)
-  local combinedLvl = lvl + CPLVL
-  local essence = effectIds[itemId]
+  itemId                            = tonumber(itemId)
+  lvl                               = tonumber(lvl)
+  CPLVL                             = tonumber(CPLVL)
+  quality                           = tonumber(quality)
+  local combinedLvl                 = lvl + CPLVL
+  local essence                     = effectIds[itemId]
   if not essence then return end
   if not potencyIds[combinedLvl] then return end
   local potency = potencyIds[combinedLvl][essence[2]]

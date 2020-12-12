@@ -3,12 +3,12 @@
 -- Written February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
-specialDWCount = 0
+specialDWCount  = 0
 
-local mfloor = math.floor
+local mfloor    = math.floor
 local taxFactor = GetTradingHouseCutPercentage() / 200
 
-MMSeller = {
+MMSeller        = {
   guild        = {},
   sellerName   = '',
   sales        = {},
@@ -23,17 +23,17 @@ MMSeller = {
 function MMSeller:new(_guild, _name, _outsideBuyer, _searchText)
   o = {}   -- create object if user does not provide one
   setmetatable(o, self)
-  self.__index = self
+  self.__index   = self
 
-  o.guild = _guild
-  o.sellerName = _name
-  o.sales = {}
-  o.tax = {}
-  o.count = {}
-  o.stack = {}
-  o.rank = {}
+  o.guild        = _guild
+  o.sellerName   = _name
+  o.sales        = {}
+  o.tax          = {}
+  o.count        = {}
+  o.stack        = {}
+  o.rank         = {}
   o.outsideBuyer = _outsideBuyer
-  o.searchText = string.lower(_searchText or '')
+  o.searchText   = string.lower(_searchText or '')
   return o
 end
 
@@ -42,17 +42,17 @@ function MMSeller:addSale(rankIndex, amount, stack, sort, tax)
 
   if not self.sales[rankIndex] then
     self.sales[rankIndex] = 0
-    self.tax[rankIndex] = 0
+    self.tax[rankIndex]   = 0
     self.count[rankIndex] = 0
     self.stack[rankIndex] = 0
   end
 
   self.sales[rankIndex] = self.sales[rankIndex] + amount
-  self.tax[rankIndex] = self.tax[rankIndex] + (tax or mfloor(amount * taxFactor))  -- Guild gets half the Cut with decimals cut off.
+  self.tax[rankIndex]   = self.tax[rankIndex] + (tax or mfloor(amount * taxFactor))  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = self.count[rankIndex] + 1
   self.stack[rankIndex] = self.stack[rankIndex] + stack
 
-  local guildRanks = self.guild.ranks[rankIndex]
+  local guildRanks      = self.guild.ranks[rankIndex]
 
   if (not self.rank[rankIndex]) then
     -- add myself to the guild ranking list, then note my current place
@@ -68,21 +68,21 @@ end
 function MMSeller:sort(rankIndex, guildRanks)
   while ((self.rank[rankIndex] or 0) > 1) and (guildRanks[self.rank[rankIndex] - 1]) and ((self.sales[rankIndex] or 0) > (guildRanks[self.rank[rankIndex] - 1].sales[rankIndex] or 0)) do
 
-    local swapSeller = guildRanks[self.rank[rankIndex] - 1]
+    local swapSeller                       = guildRanks[self.rank[rankIndex] - 1]
 
-    local tempRank = swapSeller.rank[rankIndex]
-    swapSeller.rank[rankIndex] = self.rank[rankIndex]
-    self.rank[rankIndex] = tempRank
+    local tempRank                         = swapSeller.rank[rankIndex]
+    swapSeller.rank[rankIndex]             = self.rank[rankIndex]
+    self.rank[rankIndex]                   = tempRank
 
     -- Make sure guild lists point to the right sellers
-    guildRanks[self.rank[rankIndex]] = self
+    guildRanks[self.rank[rankIndex]]       = self
     guildRanks[swapSeller.rank[rankIndex]] = swapSeller
   end
 end
 
 function MMSeller:removeSale(rankIndex, amount, stack)
   self.sales[rankIndex] = (self.sales[rankIndex] or 0) - amount
-  self.tax[rankIndex] = (self.tax[rankIndex] or 0) - mfloor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
+  self.tax[rankIndex]   = (self.tax[rankIndex] or 0) - mfloor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = (self.count[rankIndex] or 0) - 1
   self.stack[rankIndex] = (self.stack[rankIndex] or 0) - stack
 end
@@ -121,72 +121,72 @@ function MMGuild:new(_name)
 
   o = {}   -- create object if user does not provide one
   setmetatable(o, self)
-  self.__index = self
+  self.__index        = self
 
-  o.guildName = _name
-  o.sellers = {}
-  o.ranks = {}
-  o.count = {}
-  o.stack = {}
-  o.sales = {}
-  o.tax = {}
-  o.kiosk_cycle = 0
-  o.week_start = 0
+  o.guildName         = _name
+  o.sellers           = {}
+  o.ranks             = {}
+  o.count             = {}
+  o.stack             = {}
+  o.sales             = {}
+  o.tax               = {}
+  o.kiosk_cycle       = 0
+  o.week_start        = 0
 
   -- Calc Guild Week Cutoff
   local _, weekCutoff = GetGuildKioskCycleTimes()
   if weekCutoff == 0 then
     -- guild system is down, do something about it
-    weekCutoff = guild_system_offline() -- do not subtract time because of while loop
-    o.week_start = weekCutoff -- this is 7 day back already
+    weekCutoff    = guild_system_offline() -- do not subtract time because of while loop
+    o.week_start  = weekCutoff -- this is 7 day back already
     o.kiosk_cycle = weekCutoff + (7 * 86400) -- add 7 days for when week would end
   end
 
   -- Calc Day Cutoff in Local Time
   local dayCutoff = GetTimeStamp() - GetSecondsSinceMidnight()
 
-  o.oneStart = dayCutoff -- Today
+  o.oneStart      = dayCutoff -- Today
 
-  o.twoStart = o.oneStart - 86400 -- yesterday
+  o.twoStart      = o.oneStart - 86400 -- yesterday
 
   -- This Week
-  o.threeStart = weekCutoff - 7 * 86400 -- GetGuildKioskCycleTimes() minus 7 days
-  o.threeEnd = weekCutoff -- GetGuildKioskCycleTimes()
+  o.threeStart    = weekCutoff - 7 * 86400 -- GetGuildKioskCycleTimes() minus 7 days
+  o.threeEnd      = weekCutoff -- GetGuildKioskCycleTimes()
 
   -- Last Week
-  o.fourStart = o.threeStart - 7 * 86400 -- last week Tuesday flip
-  o.fourEnd = o.threeStart -- last week end
+  o.fourStart     = o.threeStart - 7 * 86400 -- last week Tuesday flip
+  o.fourEnd       = o.threeStart -- last week end
 
   -- Previous Week
-  o.fiveStart = o.fourStart - 7 * 86400
-  o.fiveEnd = o.fourStart -- prior week end
+  o.fiveStart     = o.fourStart - 7 * 86400
+  o.fiveEnd       = o.fourStart -- prior week end
 
-  o.sixStart = dayCutoff - 10 * 86400 -- last 10 days
-  o.sevenStart = dayCutoff - 30 * 86400 -- last 30 days
-  o.eightStart = dayCutoff - 7 * 86400 -- last 7 days
+  o.sixStart      = dayCutoff - 10 * 86400 -- last 10 days
+  o.sevenStart    = dayCutoff - 30 * 86400 -- last 30 days
+  o.eightStart    = dayCutoff - 7 * 86400 -- last 7 days
 
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_HOURS) then
     o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 3600 -- last x hours
-    o.nineEnd = GetTimeStamp() + 7 * 86400
+    o.nineEnd   = GetTimeStamp() + 7 * 86400
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_DAYS) then
     o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 -- last x days
-    o.nineEnd = GetTimeStamp() + 7 * 86400
+    o.nineEnd   = GetTimeStamp() + 7 * 86400
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_WEEKS) then
     o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 * 7 -- last x weeks
-    o.nineEnd = GetTimeStamp() + 7 * 86400
+    o.nineEnd   = GetTimeStamp() + 7 * 86400
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) then
     o.nineStart = weekCutoff - MasterMerchant.systemSavedVariables.customTimeframe * 86400 * 7 -- last x full guild weeks
-    o.nineEnd = weekCutoff
+    o.nineEnd   = weekCutoff
   end
   if o.nineStart == nil then
     -- Default custom timeframe to Last 3 days if it's undefined
     MasterMerchant.systemSavedVariables.customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS)
-    MasterMerchant.systemSavedVariables.customTimeframe = 3
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 -- last x days
-    o.nineEnd = GetTimeStamp() + 7 * 86400
+    MasterMerchant.systemSavedVariables.customTimeframe     = 3
+    o.nineStart                                             = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 -- last x days
+    o.nineEnd                                               = GetTimeStamp() + 7 * 86400
   end
 
   return o
@@ -199,16 +199,16 @@ function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, s
   if not self.ranks[rankIndex] then
     self.ranks[rankIndex] = {}
     self.sales[rankIndex] = 0
-    self.tax[rankIndex] = 0
+    self.tax[rankIndex]   = 0
     self.count[rankIndex] = 0
     self.stack[rankIndex] = 0
   end
 
-  self.sales[rankIndex] = self.sales[rankIndex] + amount
-  local tax = mfloor(amount * taxFactor)
-  self.tax[rankIndex] = self.tax[rankIndex] + tax  -- Guild gets half the Cut with decimals cut off.
-  self.count[rankIndex] = self.count[rankIndex] + 1
-  self.stack[rankIndex] = self.stack[rankIndex] + stack
+  self.sales[rankIndex]    = self.sales[rankIndex] + amount
+  local tax                = mfloor(amount * taxFactor)
+  self.tax[rankIndex]      = self.tax[rankIndex] + tax  -- Guild gets half the Cut with decimals cut off.
+  self.count[rankIndex]    = self.count[rankIndex] + 1
+  self.stack[rankIndex]    = self.stack[rankIndex] + stack
 
   self.sellers[sellerName] = self.sellers[sellerName] or MMSeller:new(self, sellerName, wasKiosk, searchText)
   self.sellers[sellerName]:addSale(rankIndex, amount, stack, sort, tax)
@@ -218,7 +218,7 @@ function MMGuild:removeSale(sellerName, rankIndex, amount, stack)
   if (self.sellers[sellersName]) then self.sellers[sellersName]:removeSale(rankIndex, amount, stack) end
 
   self.sales[rankIndex] = (self.sales[rankIndex] or 0) - amount
-  self.tax[rankIndex] = (self.tax[rankIndex] or 0) - mfloor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
+  self.tax[rankIndex]   = (self.tax[rankIndex] or 0) - mfloor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = (self.count[rankIndex] or 0) - 1
   self.stack[rankIndex] = (self.stack[rankIndex] or 0) - stack
 end
@@ -273,7 +273,7 @@ function MMGuild:sortRankIndex(rankIndex)
   local i = 1
   while self.ranks[rankIndex] and self.ranks[rankIndex][i] do
     self.ranks[rankIndex][i].rank[rankIndex] = i
-    i = i + 1
+    i                                        = i + 1
   end
 end
 

@@ -8,22 +8,22 @@
 -- Sort scrollList by price in 'ordering' order (asc = true as per ZOS)
 -- Rather than using the built-in Lua quicksort, we use my own
 -- implementation of Shellsort to save on memory.
-local LMP = LibMediaProvider
+local LMP                               = LibMediaProvider
 
-local ITEMS = 'full'
-local GUILDS = 'half'
-local LISTINGS = 'listings'
+local ITEMS                             = 'full'
+local GUILDS                            = 'half'
+local LISTINGS                          = 'listings'
 
-local SALES_WINDOW_DATAROW = "MasterMerchantDataRow"
-local GUILD_WINDOW_DATAROW = "MasterMerchantGuildDataRow"
-local LISTING_WINDOW_DATAROW = "MasterMerchantListingDataRow"
+local SALES_WINDOW_DATAROW              = "MasterMerchantDataRow"
+local GUILD_WINDOW_DATAROW              = "MasterMerchantGuildDataRow"
+local LISTING_WINDOW_DATAROW            = "MasterMerchantListingDataRow"
 
-local SALES_WINDOW_CONTROL_NAME = "MasterMerchantWindow"
-local GUILD_WINDOW_CONTROL_NAME = "MasterMerchantGuildWindow"
-local LISTING_WINDOW_CONTROL_NAME = "MasterMerchantListingWindow"
+local SALES_WINDOW_CONTROL_NAME         = "MasterMerchantWindow"
+local GUILD_WINDOW_CONTROL_NAME         = "MasterMerchantGuildWindow"
+local LISTING_WINDOW_CONTROL_NAME       = "MasterMerchantListingWindow"
 
-local SALES_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantWindow"
-local GUILD_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantGuildWindow"
+local SALES_WINDOW_CONTROL_NAME_REGEX   = "^MasterMerchantWindow"
+local GUILD_WINDOW_CONTROL_NAME_REGEX   = "^MasterMerchantGuildWindow"
 local LISTING_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantListingWindow"
 
 function MasterMerchant:SortByPrice(ordering, scrollList)
@@ -173,14 +173,14 @@ end
 
 function MMScrollList:SetupSalesRow(control, data)
 
-  control.rowId = GetControl(control, 'RowId')
-  control.buyer = GetControl(control, 'Buyer')
-  control.guild = GetControl(control, 'Guild')
-  control.icon = GetControl(control, 'ItemIcon')
-  control.quant = GetControl(control, 'Quantity')
+  control.rowId    = GetControl(control, 'RowId')
+  control.buyer    = GetControl(control, 'Buyer')
+  control.guild    = GetControl(control, 'Guild')
+  control.icon     = GetControl(control, 'ItemIcon')
+  control.quant    = GetControl(control, 'Quantity')
   control.itemName = GetControl(control, 'ItemName')
   control.sellTime = GetControl(control, 'SellTime')
-  control.price = GetControl(control, 'Price')
+  control.price    = GetControl(control, 'Price')
 
   if (MasterMerchant.salesData[data[1]] == nil) then
     -- just starting up so just bail out
@@ -222,11 +222,11 @@ function MMScrollList:SetupSalesRow(control, data)
     MasterMerchant.dm("Debug", controlName)
   end
   ]]--
-  local actualItem = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
+  local actualItem     = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
-  local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
+  local isFullSize     = string.find(control:GetName(), '^MasterMerchantWindow')
 
-  local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
+  local fontString     = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
 
   control.rowId:SetFont(string.format(fontString, 12))
   control.buyer:SetFont(string.format(fontString, 15))
@@ -302,7 +302,7 @@ function MMScrollList:SetupSalesRow(control, data)
   -- math.floor(number + 0.5) is a quick shorthand way to round for
   -- positive values.
   local dispPrice = actualItem.price
-  local quantity = actualItem.quant
+  local quantity  = actualItem.quant
   if MasterMerchant.systemSavedVariables.showFullPrice then
     if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then dispPrice = math.floor((dispPrice / quantity) + 0.5) end
   else
@@ -322,15 +322,15 @@ end
 
 function MMScrollList:SetupGuildSalesRow(control, data)
 
-  control.rowId = GetControl(control, 'RowId')
-  control.seller = GetControl(control, 'Seller')
+  control.rowId    = GetControl(control, 'RowId')
+  control.seller   = GetControl(control, 'Seller')
   control.itemName = GetControl(control, 'ItemName')
-  control.guild = GetControl(control, 'Guild')
-  control.rank = GetControl(control, 'Rank')
-  control.sales = GetControl(control, 'Sales')
-  control.tax = GetControl(control, 'Tax')
-  control.count = GetControl(control, 'Count')
-  control.percent = GetControl(control, 'Percent')
+  control.guild    = GetControl(control, 'Guild')
+  control.rank     = GetControl(control, 'Rank')
+  control.sales    = GetControl(control, 'Sales')
+  control.tax      = GetControl(control, 'Tax')
+  control.count    = GetControl(control, 'Count')
+  control.percent  = GetControl(control, 'Percent')
 
   if (data[1] == nil) then
     -- just starting up so just bail out
@@ -403,7 +403,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   control.rank:SetText(data[4])
 
   -- Sales Cell
-  local sales = data[3] or 0
+  local sales       = data[3] or 0
   local stringSales = MasterMerchant.LocalizedNumber(sales)
   control.sales:SetText(stringSales .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
@@ -430,14 +430,14 @@ end
 
 function MMScrollList:SetupListingsRow(control, data)
 
-  control.rowId = GetControl(control, 'RowId')
-  control.seller = GetControl(control, 'Seller')
-  control.guild = GetControl(control, 'Guild')
-  control.icon = GetControl(control, 'ItemIcon')
-  control.quant = GetControl(control, 'Quantity')
+  control.rowId    = GetControl(control, 'RowId')
+  control.seller   = GetControl(control, 'Seller')
+  control.guild    = GetControl(control, 'Guild')
+  control.icon     = GetControl(control, 'ItemIcon')
+  control.quant    = GetControl(control, 'Quantity')
   control.itemName = GetControl(control, 'ItemName')
   control.sellTime = GetControl(control, 'SellTime')
-  control.price = GetControl(control, 'Price')
+  control.price    = GetControl(control, 'Price')
 
   if (MasterMerchant.salesData[data[1]] == nil) then
     -- just starting up so just bail out
@@ -453,11 +453,11 @@ function MMScrollList:SetupListingsRow(control, data)
     MasterMerchant.dm("Debug", controlName)
   end
   ]]--
-  local actualItem = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
+  local actualItem     = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
   local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
-  local isFullSize = string.find(control:GetName(), '^MasterMerchantWindow')
+  local isFullSize     = string.find(control:GetName(), '^MasterMerchantWindow')
 
-  local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
+  local fontString     = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
 
   control.rowId:SetFont(string.format(fontString, 12))
   control.buyer:SetFont(string.format(fontString, 15))
@@ -533,7 +533,7 @@ function MMScrollList:SetupListingsRow(control, data)
   -- math.floor(number + 0.5) is a quick shorthand way to round for
   -- positive values.
   local dispPrice = actualItem.price
-  local quantity = actualItem.quant
+  local quantity  = actualItem.quant
   if MasterMerchant.systemSavedVariables.showFullPrice then
     if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then dispPrice = math.floor((dispPrice / quantity) + 0.5) end
   else
@@ -651,29 +651,29 @@ function MMScrollList:FilterScrollList()
       if MasterMerchant.viewMode == 'self' then
         -- Search all data in the last 180 days
         local timeCheck = GetTimeStamp() - (86400 * 90)
-        local tconcat = table.concat
-        local tinsert = table.insert
-        local tolower = string.lower
-        local temp = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+        local tconcat   = table.concat
+        local tinsert   = table.insert
+        local tolower   = string.lower
+        local temp      = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
 
         for k, v in pairs(MasterMerchant.SRIndex[MasterMerchant.PlayerSpecialText]) do
-          local k = v[1]
-          local j = v[2]
-          local i = v[3]
+          local k        = v[1]
+          local j        = v[2]
+          local i        = v[3]
           local dataList = MasterMerchant.salesData[k][j]
-          local item = dataList['sales'][i]
+          local item     = dataList['sales'][i]
           if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
             --d('Bad Item:')
             --d(item)
           else
             if (item.timestamp > timeCheck) then
-              local matchesAll = true
-              temp[2] = item['buyer'] or ''
-              temp[4] = item['seller'] or ''
-              temp[6] = item['guild'] or ''
-              temp[8] = dataList['itemDesc'] or ''
-              temp[10] = dataList['itemAdderText'] or ''
-              local gn = tolower(tconcat(temp, ''))
+              local matchesAll    = true
+              temp[2]             = item['buyer'] or ''
+              temp[4]             = item['seller'] or ''
+              temp[6]             = item['guild'] or ''
+              temp[8]             = dataList['itemDesc'] or ''
+              temp[10]            = dataList['itemAdderText'] or ''
+              local gn            = tolower(tconcat(temp, ''))
               local searchByWords = string.gmatch(searchText, '%S+')
               for searchWord in searchByWords do
                 searchWord = MasterMerchant.CleanupSearch(searchWord)
@@ -689,10 +689,10 @@ function MMScrollList:FilterScrollList()
       else
         -- Search all data in the last 90 days
         local timeCheck = GetTimeStamp() - (86400 * 90)
-        local tconcat = table.concat
-        local tinsert = table.insert
-        local tolower = string.lower
-        local temp = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+        local tconcat   = table.concat
+        local tinsert   = table.insert
+        local tolower   = string.lower
+        local temp      = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
         for k, v in pairs(MasterMerchant.salesData) do
           for j, dataList in pairs(v) do
             for i, item in pairs(dataList['sales']) do
@@ -701,13 +701,13 @@ function MMScrollList:FilterScrollList()
                 --d(item)
               else
                 if (item.timestamp > timeCheck) then
-                  local matchesAll = true
-                  temp[2] = item['buyer'] or ''
-                  temp[4] = item['seller'] or ''
-                  temp[6] = item['guild'] or ''
-                  temp[8] = dataList['itemDesc'] or ''
-                  temp[10] = dataList['itemAdderText'] or ''
-                  local gn = tolower(tconcat(temp, ''))
+                  local matchesAll    = true
+                  temp[2]             = item['buyer'] or ''
+                  temp[4]             = item['seller'] or ''
+                  temp[6]             = item['guild'] or ''
+                  temp[8]             = dataList['itemDesc'] or ''
+                  temp[10]            = dataList['itemAdderText'] or ''
+                  local gn            = tolower(tconcat(temp, ''))
                   local searchByWords = string.gmatch(searchText, '%S+')
                   for searchWord in searchByWords do
                     searchWord = MasterMerchant.CleanupSearch(searchWord)
@@ -729,14 +729,14 @@ function MMScrollList:FilterScrollList()
       if MasterMerchant.viewMode == 'self' then
         searchText = MasterMerchant.concat(searchText, MasterMerchant.PlayerSpecialText)
       end
-      local searchByWords = string.gmatch(searchText, '%S+')
-      local indexToUse = MasterMerchant.SRIndex
+      local searchByWords       = string.gmatch(searchText, '%S+')
+      local indexToUse          = MasterMerchant.SRIndex
       local intersectionIndexes = {}
 
       -- Build up a list of indexes matching each word, then compute the intersection
       -- of those sets
       for searchWord in searchByWords do
-        searchWord = MasterMerchant.CleanupSearch(searchWord)
+        searchWord         = MasterMerchant.CleanupSearch(searchWord)
         local addedIndexes = {}
         for key, indexes in pairs(indexToUse) do
           local findStatus, findResult = pcall(string.find, key, searchWord)
@@ -801,11 +801,11 @@ function MMScrollList:FilterScrollList()
     end
 
     local guildList = ''
-    local guildNum = 1
+    local guildNum  = 1
     while guildNum <= GetNumGuilds() do
       local guildID = GetGuildId(guildNum)
-      guildList = guildList .. GetGuildName(guildID) .. ', '
-      guildNum = guildNum + 1
+      guildList     = guildList .. GetGuildName(guildID) .. ', '
+      guildNum      = guildNum + 1
     end
 
     local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
@@ -852,7 +852,7 @@ function MMScrollList:FilterScrollList()
         -- my guild sales - filtered
         for gn, g in pairs(dataSet) do
           -- Search the guild name for all words
-          local matchesAll = true
+          local matchesAll    = true
           -- Break up search term into words
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
@@ -877,7 +877,7 @@ function MMScrollList:FilterScrollList()
 
         for gn, g in pairs(dataSet) do
           -- Search the guild name for all words
-          local matchesAll = true
+          local matchesAll    = true
           -- Break up search term into words
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
@@ -892,7 +892,7 @@ function MMScrollList:FilterScrollList()
           end
           for sn, sellerData in pairs(g.sellers) do
             -- Search the guild name and player name for all words
-            local matchesAll = true
+            local matchesAll    = true
             -- Break up search term into words
             local searchByWords = string.gmatch(searchText, '%S+')
             for searchWord in searchByWords do
@@ -934,11 +934,11 @@ function MMScrollList:FilterScrollList()
     end
 
     local guildList = ''
-    local guildNum = 1
+    local guildNum  = 1
     while guildNum <= GetNumGuilds() do
       local guildID = GetGuildId(guildNum)
-      guildList = guildList .. GetGuildName(guildID) .. ', '
-      guildNum = guildNum + 1
+      guildList     = guildList .. GetGuildName(guildID) .. ', '
+      guildNum      = guildNum + 1
     end
 
     local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
@@ -985,7 +985,7 @@ function MMScrollList:FilterScrollList()
         -- my guild sales - filtered
         for gn, g in pairs(dataSet) do
           -- Search the guild name for all words
-          local matchesAll = true
+          local matchesAll    = true
           -- Break up search term into words
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
@@ -1010,7 +1010,7 @@ function MMScrollList:FilterScrollList()
 
         for gn, g in pairs(dataSet) do
           -- Search the guild name for all words
-          local matchesAll = true
+          local matchesAll    = true
           -- Break up search term into words
           local searchByWords = string.gmatch(searchText, '%S+')
           for searchWord in searchByWords do
@@ -1025,7 +1025,7 @@ function MMScrollList:FilterScrollList()
           end
           for sn, sellerData in pairs(g.sellers) do
             -- Search the guild name and player name for all words
-            local matchesAll = true
+            local matchesAll    = true
             -- Break up search term into words
             local searchByWords = string.gmatch(searchText, '%S+')
             for searchWord in searchByWords do
@@ -1086,29 +1086,29 @@ end
 -- Handle the OnMoveStop event for the windows
 function MasterMerchant:OnWindowMoveStop(windowMoved)
   if windowMoved == MasterMerchantWindow then
-    MasterMerchant.systemSavedVariables.winLeft = MasterMerchantWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.winTop = MasterMerchantWindow:GetTop()
+    MasterMerchant.systemSavedVariables.winLeft      = MasterMerchantWindow:GetLeft()
+    MasterMerchant.systemSavedVariables.winTop       = MasterMerchantWindow:GetTop()
 
     MasterMerchant.systemSavedVariables.guildWinLeft = MasterMerchantWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.guildWinTop = MasterMerchantWindow:GetTop()
+    MasterMerchant.systemSavedVariables.guildWinTop  = MasterMerchantWindow:GetTop()
     MasterMerchantGuildWindow:ClearAnchors()
     MasterMerchantGuildWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.guildWinLeft,
       MasterMerchant.systemSavedVariables.guildWinTop)
   elseif windowMoved == MasterMerchantGuildWindow then
     MasterMerchant.systemSavedVariables.guildWinLeft = MasterMerchantGuildWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.guildWinTop = MasterMerchantGuildWindow:GetTop()
+    MasterMerchant.systemSavedVariables.guildWinTop  = MasterMerchantGuildWindow:GetTop()
 
-    MasterMerchant.systemSavedVariables.winLeft = MasterMerchantGuildWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.winTop = MasterMerchantGuildWindow:GetTop()
+    MasterMerchant.systemSavedVariables.winLeft      = MasterMerchantGuildWindow:GetLeft()
+    MasterMerchant.systemSavedVariables.winTop       = MasterMerchantGuildWindow:GetTop()
     MasterMerchantWindow:ClearAnchors()
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.winLeft,
       MasterMerchant.systemSavedVariables.winTop)
   elseif windowMoved == MasterMerchantStatsWindow then
     MasterMerchant.systemSavedVariables.statsWinLeft = MasterMerchantStatsWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.statsWinTop = MasterMerchantStatsWindow:GetTop()
+    MasterMerchant.systemSavedVariables.statsWinTop  = MasterMerchantStatsWindow:GetTop()
   else
     MasterMerchant.systemSavedVariables.feedbackWinLeft = MasterMerchantFeedback:GetLeft()
-    MasterMerchant.systemSavedVariables.feedbackWinTop = MasterMerchantFeedback:GetTop()
+    MasterMerchant.systemSavedVariables.feedbackWinTop  = MasterMerchantFeedback:GetTop()
   end
 end
 
@@ -1132,15 +1132,15 @@ end
 -- Handle the changing of window font settings
 function MasterMerchant:UpdateFonts()
   MasterMerchant:RegisterFonts()
-  local font = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
-  local fontString = font .. '|%d'
-  local mainButtonLabel = 14
-  local mainTitle = 26
-  local mainHeader = 17
+  local font             = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
+  local fontString       = font .. '|%d'
+  local mainButtonLabel  = 14
+  local mainTitle        = 26
+  local mainHeader       = 17
   local guildButtonLabel = 14
-  local guildTitle = 26
-  local guildHeader = 17
-  local guildQuant = 10
+  local guildTitle       = 26
+  local guildHeader      = 17
+  local guildQuant       = 10
 
   -- Main Window (Sales)
   MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
@@ -1185,7 +1185,7 @@ function MasterMerchant:UpdateFonts()
 end
 
 function MasterMerchant:updateCalc()
-  local stackSize = string.match(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
+  local stackSize  = string.match(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
   local totalPrice = math.floor(tonumber(MasterMerchantPriceCalculatorUnitCostAmount:GetText()) * tonumber(stackSize))
   MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
@@ -1200,9 +1200,9 @@ function MasterMerchant:remStatsItemTooltip()
   if ItemTooltip.textPool then
     ItemTooltip.textPool:ReleaseAllObjects()
   end
-  ItemTooltip.mmText = nil
-  ItemTooltip.mmCraftText = nil
-  ItemTooltip.mmTextDebug = nil
+  ItemTooltip.mmText        = nil
+  ItemTooltip.mmCraftText   = nil
+  ItemTooltip.mmTextDebug   = nil
   ItemTooltip.mmQualityDown = nil
 end
 
@@ -1211,7 +1211,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
   local tipLine, avePrice, graphInfo = self:itemPriceTip(itemLink, false, clickable)
-  local craftCostLine = self:itemCraftPriceTip(itemLink, false)
+  local craftCostLine                = self:itemCraftPriceTip(itemLink, false)
 
   if not tooltip.textPool then
     tooltip.textPool = ZO_ControlPool:New('MMGraphLabel', tooltip, 'Text')
@@ -1284,7 +1284,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   local itemType = GetItemLinkItemType(itemLink)
   if (clickable) and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and (itemType == 1 or itemType == 2 or itemType == 20 or itemType == 21 or itemType == 26) then
 
-    local itemQuality = GetItemLinkQuality(itemLink)
+    local itemQuality                     = GetItemLinkQuality(itemLink)
     tooltip.mmQualityDown.mmData.nextItem = MasterMerchant.QualityDown(itemLink)
     --d(tooltip.mmQualityDown.mmData.nextItem)
     if tooltip.mmQualityDown.mmData.nextItem then
@@ -1407,11 +1407,11 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
           graph.points = MM_Graph:New(graph)
         end
         if graphInfo.low == graphInfo.high then
-          graphInfo.low = avePrice * 0.85
+          graphInfo.low  = avePrice * 0.85
           graphInfo.high = avePrice * 1.15
         end
-        local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        local xLow   = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        local xHigh  = MasterMerchant.LocalizedNumber(graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         local xPrice = MasterMerchant.LocalizedNumber(avePrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh,
           graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice)
@@ -1455,8 +1455,8 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     local itemInfo = MasterMerchant.ItemCodeText(itemLink)
     --local itemInfo = string.match(itemLink, '|H.-:item:(.-):')
-    itemInfo = itemInfo .. ' - ' .. MasterMerchant.makeIndexFromLink(itemLink)
-    itemInfo = itemInfo .. ' - ' .. MasterMerchant.addedSearchToItem(itemLink)
+    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.makeIndexFromLink(itemLink)
+    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.addedSearchToItem(itemLink)
     --local itemType = GetItemLinkItemType(itemLink)
     --itemInfo = '(' .. itemType .. ')' .. itemInfo
     if itemInfo then
@@ -1488,7 +1488,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
 
   if Popup == ZO_ProvisionerTopLevelTooltip then
     local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
-    Popup.lastLink = GetRecipeResultItemLink(recipeListIndex, recipeIndex)
+    Popup.lastLink                     = GetRecipeResultItemLink(recipeListIndex, recipeIndex)
   end
 
   --Make sure Info Tooltip and Context Menu is on top of the popup
@@ -1513,14 +1513,14 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
     if Popup.textPool then
       Popup.textPool:ReleaseAllObjects()
     end
-    Popup.mmText = nil
-    Popup.mmCraftText = nil
-    Popup.mmTextDebug = nil
+    Popup.mmText        = nil
+    Popup.mmCraftText   = nil
+    Popup.mmTextDebug   = nil
     Popup.mmQualityDown = nil
   end
-  Popup.mmActiveTip = Popup.lastLink
+  Popup.mmActiveTip   = Popup.lastLink
   self.isShiftPressed = IsShiftKeyDown()
-  self.isCtrlPressed = IsControlKeyDown()
+  self.isCtrlPressed  = IsControlKeyDown()
 
   self:addStatsAndGraph(Popup, Popup.mmActiveTip, true)
 end
@@ -1533,11 +1533,11 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
   if Popup.textPool then
     Popup.textPool:ReleaseAllObjects()
   end
-  Popup.mmText = nil
-  Popup.mmCraftText = nil
-  Popup.mmTextDebug = nil
+  Popup.mmText        = nil
+  Popup.mmCraftText   = nil
+  Popup.mmTextDebug   = nil
   Popup.mmQualityDown = nil
-  Popup.mmActiveTip = nil
+  Popup.mmActiveTip   = nil
 end
 
 local function GetTopControl(control)
@@ -1545,14 +1545,14 @@ local function GetTopControl(control)
   MasterMerchant.v(7, controlName)
   local count = 0
   while control and control.GetParent ~= nil do
-      control = control:GetParent()
-      count = count + 1
-      if control and control.GetName then
-        controlName = control:GetName()
-        MasterMerchant.v(7, controlName)
-        if controlName == "GuiRoot" then break end
-        if count >= 3 then break end
-      end
+    control = control:GetParent()
+    count   = count + 1
+    if control and control.GetName then
+      controlName = control:GetName()
+      MasterMerchant.v(7, controlName)
+      if controlName == "GuiRoot" then break end
+      if count >= 3 then break end
+    end
   end
 end
 
@@ -1570,7 +1570,7 @@ function MasterMerchant:addStatsItemTooltip()
     return
   end
 
-  local itemLink = nil
+  local itemLink  = nil
   local mocParent = skMoc:GetParent():GetName()
 
   -- Store screen
@@ -1608,7 +1608,7 @@ function MasterMerchant:addStatsItemTooltip()
     mocParent == 'ZO_GuildBankBackpackContents' then
     if skMoc and skMoc.dataEntry then
       local rData = skMoc.dataEntry.data
-      itemLink = GetItemLink(rData.bagId, rData.slotIndex)
+      itemLink    = GetItemLink(rData.bagId, rData.slotIndex)
     end
     -- Worn equipment
   elseif mocParent == 'ZO_Character' then
@@ -1654,15 +1654,15 @@ function MasterMerchant:addStatsItemTooltip()
       if ItemTooltip.textPool then
         ItemTooltip.textPool:ReleaseAllObjects()
       end
-      ItemTooltip.mmText = nil
-      ItemTooltip.mmCraftText = nil
-      ItemTooltip.mmTextDebug = nil
+      ItemTooltip.mmText        = nil
+      ItemTooltip.mmCraftText   = nil
+      ItemTooltip.mmTextDebug   = nil
       ItemTooltip.mmQualityDown = nil
     end
 
     self.tippingControl = skMoc
     self.isShiftPressed = IsShiftKeyDown()
-    self.isCtrlPressed = IsControlKeyDown()
+    self.isCtrlPressed  = IsControlKeyDown()
     self:addStatsAndGraph(ItemTooltip, itemLink)
   end
 
@@ -1732,15 +1732,15 @@ end
 -- Update all the fields of the stats window based on the response from SalesStats()
 function MasterMerchant:UpdateStatsWindow(guildName)
   if not guildName or guildName == '' then guildName = 'SK_STATS_TOTAL' end
-  local sliderLevel = MasterMerchantStatsWindowSlider:GetValue()
-  self.newStats = self:SalesStats(sliderLevel)
+  local sliderLevel                          = MasterMerchantStatsWindowSlider:GetValue()
+  self.newStats                              = self:SalesStats(sliderLevel)
 
-  self.newStats['totalDays'] = self.newStats['totalDays'] or 1
-  self.newStats['numSold'][guildName] = self.newStats['numSold'][guildName] or 0
-  self.newStats['kioskPercent'][guildName] = self.newStats['kioskPercent'][guildName] or 0
-  self.newStats['totalGold'][guildName] = self.newStats['totalGold'][guildName] or 0
-  self.newStats['avgGold'][guildName] = self.newStats['avgGold'][guildName] or 0
-  self.newStats['biggestSale'][guildName] = self.newStats['biggestSale'][guildName] or {}
+  self.newStats['totalDays']                 = self.newStats['totalDays'] or 1
+  self.newStats['numSold'][guildName]        = self.newStats['numSold'][guildName] or 0
+  self.newStats['kioskPercent'][guildName]   = self.newStats['kioskPercent'][guildName] or 0
+  self.newStats['totalGold'][guildName]      = self.newStats['totalGold'][guildName] or 0
+  self.newStats['avgGold'][guildName]        = self.newStats['avgGold'][guildName] or 0
+  self.newStats['biggestSale'][guildName]    = self.newStats['biggestSale'][guildName] or {}
   self.newStats['biggestSale'][guildName][1] = self.newStats['biggestSale'][guildName][1] or 0
   self.newStats['biggestSale'][guildName][2] = self.newStats['biggestSale'][guildName][2] or GetString(MM_NOTHING)
 
@@ -2001,11 +2001,11 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchant:BuildGuiTimeDropdown()
 
   -- Set sort column headers and search label from translation
-  local fontString = 'ZoFontGameLargeBold'
+  local fontString      = 'ZoFontGameLargeBold'
   local guildFontString = 'ZoFontGameLargeBold'
-  local font = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
-  fontString = font .. '|17'
-  guildFontString = font .. '|17'
+  local font            = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
+  fontString            = font .. '|17'
+  guildFontString       = font .. '|17'
 
   if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
     MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
@@ -2120,7 +2120,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   end
 
   -- Spinny animations that display while SK is scanning
-  MasterMerchantWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
+  MasterMerchantWindowLoadingIcon.animation      = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
     MasterMerchantWindowLoadingIcon)
   MasterMerchantGuildWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
     MasterMerchantGuildWindowLoadingIcon)

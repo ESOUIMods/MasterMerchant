@@ -1,9 +1,9 @@
 function MasterMerchant.NewLink(itemLink, movement)
   local subType, level = string.match(itemLink, '|H.-:item:.-:(%d-):(%d-):')
-  subType = tonumber(subType)
-  level = tonumber(level)
+  subType              = tonumber(subType)
+  level                = tonumber(level)
 
-  local newValue = { NewSubtype = nil, NewLevel = nil }
+  local newValue       = { NewSubtype = nil, NewLevel = nil }
   if ItemChangeData[subType] and ItemChangeData[subType][level] then
     newValue = ItemChangeData[subType][level][movement]
   end
@@ -11,7 +11,8 @@ function MasterMerchant.NewLink(itemLink, movement)
   if newValue.NewSubtype == nil then
     return nil
   else
-    return string.gsub(string.gsub(itemLink, '(|H.-:item:.-:)(%d-)(:.-)', '%1' .. newValue.NewSubtype .. '%3', 1), '(|H.-:item:.-:.-:)(%d-)(:.-)', '%1' .. newValue.NewLevel .. '%3', 1)
+    return string.gsub(string.gsub(itemLink, '(|H.-:item:.-:)(%d-)(:.-)', '%1' .. newValue.NewSubtype .. '%3', 1),
+      '(|H.-:item:.-:.-:)(%d-)(:.-)', '%1' .. newValue.NewLevel .. '%3', 1)
   end
 end
 
@@ -42,7 +43,7 @@ function MasterMerchant.Up(itemLink)
     if up then
       local down = MasterMerchant.QualityDown(up)
       while down do
-        up = down
+        up   = down
         down = MasterMerchant.QualityDown(up)
       end
     end
@@ -58,7 +59,7 @@ function MasterMerchant.Down(itemLink)
       local up = MasterMerchant.QualityUp(down)
       while up do
         down = up
-        up = MasterMerchant.QualityUp(down)
+        up   = MasterMerchant.QualityUp(down)
       end
     end
   end
@@ -85,7 +86,7 @@ end
 |H0:item:10927:51:50:0:0:0:0:0:0:0:0:0:0:0:0:7:0:0:0:10000:0|h|h green v1
 ]]
 
-ItemChangeData = {
+ItemChangeData      = {
   ["Sample - Subtype: 30"] = {
     ["Sample - Level: 40"] = {
       LevelUp     = { NewSubtype = 111, NewLevel = 111 },
@@ -462,56 +463,56 @@ ItemChangeData = {
 
 ItemChangeData[358] = ItemChangeData[359]
 
-ItemChangeData[39] = ItemChangeData[51]
-ItemChangeData[40] = ItemChangeData[52]
-ItemChangeData[41] = ItemChangeData[53]
-ItemChangeData[42] = ItemChangeData[54]
-ItemChangeData[43] = ItemChangeData[55]
-ItemChangeData[44] = ItemChangeData[56]
-ItemChangeData[45] = ItemChangeData[57]
-ItemChangeData[46] = ItemChangeData[58]
-ItemChangeData[47] = ItemChangeData[59]
-ItemChangeData[48] = ItemChangeData[60]
+ItemChangeData[39]  = ItemChangeData[51]
+ItemChangeData[40]  = ItemChangeData[52]
+ItemChangeData[41]  = ItemChangeData[53]
+ItemChangeData[42]  = ItemChangeData[54]
+ItemChangeData[43]  = ItemChangeData[55]
+ItemChangeData[44]  = ItemChangeData[56]
+ItemChangeData[45]  = ItemChangeData[57]
+ItemChangeData[46]  = ItemChangeData[58]
+ItemChangeData[47]  = ItemChangeData[59]
+ItemChangeData[48]  = ItemChangeData[60]
 
 -- Drops
-ItemChangeData[2] = {}
-ItemChangeData[3] = {}
-ItemChangeData[4] = {}
-ItemChangeData[5] = {}
-ItemChangeData[6] = {}
+ItemChangeData[2]   = {}
+ItemChangeData[3]   = {}
+ItemChangeData[4]   = {}
+ItemChangeData[5]   = {}
+ItemChangeData[6]   = {}
 
 --Crafted
-ItemChangeData[20] = {}
-ItemChangeData[21] = {}
-ItemChangeData[22] = {}
-ItemChangeData[23] = {}
-ItemChangeData[24] = {}
+ItemChangeData[20]  = {}
+ItemChangeData[21]  = {}
+ItemChangeData[22]  = {}
+ItemChangeData[23]  = {}
+ItemChangeData[24]  = {}
 
 --Crafted also (maybe just level 1)
-ItemChangeData[30] = {}
-ItemChangeData[31] = {}
-ItemChangeData[32] = {}
-ItemChangeData[33] = {}
-ItemChangeData[34] = {}
+ItemChangeData[30]  = {}
+ItemChangeData[31]  = {}
+ItemChangeData[32]  = {}
+ItemChangeData[33]  = {}
+ItemChangeData[34]  = {}
 
 -- Odd balls
 -- 37 = White named drop BOE
-ItemChangeData[37] = {}
+ItemChangeData[37]  = {}
 -- 9 = Green named drop BOE
-ItemChangeData[9] = {}
+ItemChangeData[9]   = {}
 -- 11 = Blue named drop BOE
-ItemChangeData[11] = {}
+ItemChangeData[11]  = {}
 -- 7 = blue named drop
-ItemChangeData[7] = {}
+ItemChangeData[7]   = {}
 -- 8 = purple named drop
-ItemChangeData[8] = {}
+ItemChangeData[8]   = {}
 
 for i = 1, 50 do
-  ItemChangeData[2][i] = { LevelUp = { NewSubtype = 2, NewLevel = i + 1 }, LevelDown = { NewSubtype = 2, NewLevel = i - 1 }, QualityUp = { NewSubtype = 3, NewLevel = i }, QualityDown = { NewSubtype = nil, NewLevel = nil } }
-  ItemChangeData[3][i] = { LevelUp = { NewSubtype = 3, NewLevel = i + 1 }, LevelDown = { NewSubtype = 3, NewLevel = i - 1 }, QualityUp = { NewSubtype = 4, NewLevel = i }, QualityDown = { NewSubtype = 2, NewLevel = i } }
-  ItemChangeData[4][i] = { LevelUp = { NewSubtype = 4, NewLevel = i + 1 }, LevelDown = { NewSubtype = 4, NewLevel = i - 1 }, QualityUp = { NewSubtype = 5, NewLevel = i }, QualityDown = { NewSubtype = 3, NewLevel = i } }
-  ItemChangeData[5][i] = { LevelUp = { NewSubtype = 5, NewLevel = i + 1 }, LevelDown = { NewSubtype = 5, NewLevel = i - 1 }, QualityUp = { NewSubtype = 6, NewLevel = i }, QualityDown = { NewSubtype = 4, NewLevel = i } }
-  ItemChangeData[6][i] = { LevelUp = { NewSubtype = 6, NewLevel = i + 1 }, LevelDown = { NewSubtype = 6, NewLevel = i - 1 }, QualityUp = { NewSubtype = nil, NewLevel = nil }, QualityDown = { NewSubtype = 5, NewLevel = i } }
+  ItemChangeData[2][i]  = { LevelUp = { NewSubtype = 2, NewLevel = i + 1 }, LevelDown = { NewSubtype = 2, NewLevel = i - 1 }, QualityUp = { NewSubtype = 3, NewLevel = i }, QualityDown = { NewSubtype = nil, NewLevel = nil } }
+  ItemChangeData[3][i]  = { LevelUp = { NewSubtype = 3, NewLevel = i + 1 }, LevelDown = { NewSubtype = 3, NewLevel = i - 1 }, QualityUp = { NewSubtype = 4, NewLevel = i }, QualityDown = { NewSubtype = 2, NewLevel = i } }
+  ItemChangeData[4][i]  = { LevelUp = { NewSubtype = 4, NewLevel = i + 1 }, LevelDown = { NewSubtype = 4, NewLevel = i - 1 }, QualityUp = { NewSubtype = 5, NewLevel = i }, QualityDown = { NewSubtype = 3, NewLevel = i } }
+  ItemChangeData[5][i]  = { LevelUp = { NewSubtype = 5, NewLevel = i + 1 }, LevelDown = { NewSubtype = 5, NewLevel = i - 1 }, QualityUp = { NewSubtype = 6, NewLevel = i }, QualityDown = { NewSubtype = 4, NewLevel = i } }
+  ItemChangeData[6][i]  = { LevelUp = { NewSubtype = 6, NewLevel = i + 1 }, LevelDown = { NewSubtype = 6, NewLevel = i - 1 }, QualityUp = { NewSubtype = nil, NewLevel = nil }, QualityDown = { NewSubtype = 5, NewLevel = i } }
 
   ItemChangeData[20][i] = { LevelUp = { NewSubtype = 20, NewLevel = i + 1 }, LevelDown = { NewSubtype = 20, NewLevel = i - 1 }, QualityUp = { NewSubtype = 21, NewLevel = i }, QualityDown = { NewSubtype = nil, NewLevel = nil } }
   ItemChangeData[21][i] = { LevelUp = { NewSubtype = 21, NewLevel = i + 1 }, LevelDown = { NewSubtype = 21, NewLevel = i - 1 }, QualityUp = { NewSubtype = 22, NewLevel = i }, QualityDown = { NewSubtype = 20, NewLevel = i } }
@@ -526,71 +527,71 @@ for i = 1, 50 do
   ItemChangeData[34][i] = { LevelUp = { NewSubtype = 34, NewLevel = i + 1 }, LevelDown = { NewSubtype = 34, NewLevel = i - 1 }, QualityUp = { NewSubtype = nil, NewLevel = nil }, QualityDown = { NewSubtype = 33, NewLevel = i } }
 
   ItemChangeData[37][i] = { LevelUp = { NewSubtype = 7, NewLevel = i + 1 }, LevelDown = { NewSubtype = 7, NewLevel = i - 1 }, QualityUp = { NewSubtype = 9, NewLevel = i }, QualityDown = { NewSubtype = nil, NewLevel = nil } }
-  ItemChangeData[9][i] = { LevelUp = { NewSubtype = 9, NewLevel = i + 1 }, LevelDown = { NewSubtype = 9, NewLevel = i - 1 }, QualityUp = { NewSubtype = 11, NewLevel = i }, QualityDown = { NewSubtype = 37, NewLevel = i } }
+  ItemChangeData[9][i]  = { LevelUp = { NewSubtype = 9, NewLevel = i + 1 }, LevelDown = { NewSubtype = 9, NewLevel = i - 1 }, QualityUp = { NewSubtype = 11, NewLevel = i }, QualityDown = { NewSubtype = 37, NewLevel = i } }
   ItemChangeData[11][i] = { LevelUp = { NewSubtype = 11, NewLevel = i + 1 }, LevelDown = { NewSubtype = 11, NewLevel = i - 1 }, QualityUp = { NewSubtype = 8, NewLevel = i }, QualityDown = { NewSubtype = 9, NewLevel = i } }
-  ItemChangeData[7][i] = { LevelUp = { NewSubtype = 7, NewLevel = i + 1 }, LevelDown = { NewSubtype = 7, NewLevel = i - 1 }, QualityUp = { NewSubtype = 8, NewLevel = i }, QualityDown = { NewSubtype = 9, NewLevel = i } }
-  ItemChangeData[8][i] = { LevelUp = { NewSubtype = 8, NewLevel = i + 1 }, LevelDown = { NewSubtype = 8, NewLevel = i - 1 }, QualityUp = { NewSubtype = 6, NewLevel = i }, QualityDown = { NewSubtype = 7, NewLevel = i } }
+  ItemChangeData[7][i]  = { LevelUp = { NewSubtype = 7, NewLevel = i + 1 }, LevelDown = { NewSubtype = 7, NewLevel = i - 1 }, QualityUp = { NewSubtype = 8, NewLevel = i }, QualityDown = { NewSubtype = 9, NewLevel = i } }
+  ItemChangeData[8][i]  = { LevelUp = { NewSubtype = 8, NewLevel = i + 1 }, LevelDown = { NewSubtype = 8, NewLevel = i - 1 }, QualityUp = { NewSubtype = 6, NewLevel = i }, QualityDown = { NewSubtype = 7, NewLevel = i } }
 
 end
 
-ItemChangeData[2][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[3][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[4][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[5][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[6][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[2][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[3][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[4][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[5][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[6][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
 
-ItemChangeData[20][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[21][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[22][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[23][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[24][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[20][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[21][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[22][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[23][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[24][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
 
-ItemChangeData[30][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[31][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[32][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[33][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[34][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[30][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[31][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[32][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[33][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[34][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
 
-ItemChangeData[37][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[9][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[11][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[7][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
-ItemChangeData[8][1]['LevelDown'] = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[37][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[9][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[11][1]['LevelDown']   = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[7][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
+ItemChangeData[8][1]['LevelDown']    = { NewSubtype = nil, NewLevel = nil }
 
 -- Regular to Vet crossover
 
 -- Drops
-ItemChangeData[2][50]['LevelUp'] = { NewSubtype = 111, NewLevel = 50 }
-ItemChangeData[3][50]['LevelUp'] = { NewSubtype = 51, NewLevel = 50 }
-ItemChangeData[4][50]['LevelUp'] = { NewSubtype = 61, NewLevel = 50 }
-ItemChangeData[5][50]['LevelUp'] = { NewSubtype = 71, NewLevel = 50 }
-ItemChangeData[6][50]['LevelUp'] = { NewSubtype = 101, NewLevel = 50 }
+ItemChangeData[2][50]['LevelUp']     = { NewSubtype = 111, NewLevel = 50 }
+ItemChangeData[3][50]['LevelUp']     = { NewSubtype = 51, NewLevel = 50 }
+ItemChangeData[4][50]['LevelUp']     = { NewSubtype = 61, NewLevel = 50 }
+ItemChangeData[5][50]['LevelUp']     = { NewSubtype = 71, NewLevel = 50 }
+ItemChangeData[6][50]['LevelUp']     = { NewSubtype = 101, NewLevel = 50 }
 
 -- Crafted
-ItemChangeData[20][50]['LevelUp'] = { NewSubtype = 125, NewLevel = 50 }
-ItemChangeData[21][50]['LevelUp'] = { NewSubtype = 135, NewLevel = 50 }
-ItemChangeData[22][50]['LevelUp'] = { NewSubtype = 145, NewLevel = 50 }
-ItemChangeData[23][50]['LevelUp'] = { NewSubtype = 155, NewLevel = 50 }
-ItemChangeData[24][50]['LevelUp'] = { NewSubtype = 165, NewLevel = 50 }
+ItemChangeData[20][50]['LevelUp']    = { NewSubtype = 125, NewLevel = 50 }
+ItemChangeData[21][50]['LevelUp']    = { NewSubtype = 135, NewLevel = 50 }
+ItemChangeData[22][50]['LevelUp']    = { NewSubtype = 145, NewLevel = 50 }
+ItemChangeData[23][50]['LevelUp']    = { NewSubtype = 155, NewLevel = 50 }
+ItemChangeData[24][50]['LevelUp']    = { NewSubtype = 165, NewLevel = 50 }
 
 -- Also Crafted (maybe just level 1)
-ItemChangeData[30][50]['LevelUp'] = { NewSubtype = 125, NewLevel = 50 }
-ItemChangeData[31][50]['LevelUp'] = { NewSubtype = 135, NewLevel = 50 }
-ItemChangeData[32][50]['LevelUp'] = { NewSubtype = 145, NewLevel = 50 }
-ItemChangeData[33][50]['LevelUp'] = { NewSubtype = 155, NewLevel = 50 }
-ItemChangeData[34][50]['LevelUp'] = { NewSubtype = 165, NewLevel = 50 }
+ItemChangeData[30][50]['LevelUp']    = { NewSubtype = 125, NewLevel = 50 }
+ItemChangeData[31][50]['LevelUp']    = { NewSubtype = 135, NewLevel = 50 }
+ItemChangeData[32][50]['LevelUp']    = { NewSubtype = 145, NewLevel = 50 }
+ItemChangeData[33][50]['LevelUp']    = { NewSubtype = 155, NewLevel = 50 }
+ItemChangeData[34][50]['LevelUp']    = { NewSubtype = 165, NewLevel = 50 }
 
-ItemChangeData[37][50]['LevelUp'] = { NewSubtype = 111, NewLevel = 50 }
-ItemChangeData[9][50]['LevelUp'] = { NewSubtype = 51, NewLevel = 50 }
-ItemChangeData[11][50]['LevelUp'] = { NewSubtype = 61, NewLevel = 50 }
-ItemChangeData[7][50]['LevelUp'] = { NewSubtype = 61, NewLevel = 50 }
-ItemChangeData[8][50]['LevelUp'] = { NewSubtype = 71, NewLevel = 50 }
+ItemChangeData[37][50]['LevelUp']    = { NewSubtype = 111, NewLevel = 50 }
+ItemChangeData[9][50]['LevelUp']     = { NewSubtype = 51, NewLevel = 50 }
+ItemChangeData[11][50]['LevelUp']    = { NewSubtype = 61, NewLevel = 50 }
+ItemChangeData[7][50]['LevelUp']     = { NewSubtype = 61, NewLevel = 50 }
+ItemChangeData[8][50]['LevelUp']     = { NewSubtype = 71, NewLevel = 50 }
 
 -- Mirror to get back  Vet to Regular
 ItemChangeData[111][50]['LevelDown'] = { NewSubtype = 2, NewLevel = 50 }
-ItemChangeData[51][50]['LevelDown'] = { NewSubtype = 3, NewLevel = 50 }
-ItemChangeData[61][50]['LevelDown'] = { NewSubtype = 4, NewLevel = 50 }
-ItemChangeData[71][50]['LevelDown'] = { NewSubtype = 5, NewLevel = 50 }
+ItemChangeData[51][50]['LevelDown']  = { NewSubtype = 3, NewLevel = 50 }
+ItemChangeData[61][50]['LevelDown']  = { NewSubtype = 4, NewLevel = 50 }
+ItemChangeData[71][50]['LevelDown']  = { NewSubtype = 5, NewLevel = 50 }
 ItemChangeData[101][50]['LevelDown'] = { NewSubtype = 6, NewLevel = 50 }
 
 ItemChangeData[125][50]['LevelDown'] = { NewSubtype = 20, NewLevel = 50 }

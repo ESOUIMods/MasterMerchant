@@ -32,7 +32,7 @@ function MasterMerchant:ssup(inputTable, numElements)
         local testVal = inputTable[j]
         if not (tableVal < testVal) then break end
         inputTable[i] = testVal;
-        i = j
+        i             = j
       end
       inputTable[i] = tableVal
     end
@@ -48,7 +48,7 @@ function MasterMerchant:ssdown(inputTable, numElements)
         local testVal = inputTable[j]
         if not (tableVal > testVal) then break end
         inputTable[i] = testVal;
-        i = j
+        i             = j
       end
       inputTable[i] = tableVal
     end
@@ -68,7 +68,7 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
         local testVal = inputTable[j]
         if not comparison(tableVal, testVal) then break end
         inputTable[i] = testVal
-        i = j
+        i             = j
       end
       inputTable[i] = tableVal
     end
@@ -143,7 +143,7 @@ end
 
 function MasterMerchant.ShowChildren(control, startNum, endNum)
   local numChildren = math.min(control:GetNumChildren(), endNum)
-  local numStart = math.min(startNum, numChildren)
+  local numStart    = math.min(startNum, numChildren)
   for i = numStart, numChildren do
     local child = control:GetChild(i)
 
@@ -162,9 +162,9 @@ end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
   if itemLink then
-    local theIID = GetItemLinkItemId(itemLink)
+    local theIID    = GetItemLinkItemId(itemLink)
     local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
-    local tipStats = MasterMerchant:toolTipStats(theIID, itemIndex, true, true, false)
+    local tipStats  = MasterMerchant:toolTipStats(theIID, itemIndex, true, true, false)
     if tipStats.avgPrice then
       return tipStats.avgPrice
     end
@@ -173,30 +173,30 @@ function MasterMerchant.GetItemLinePrice(itemLink)
 end
 
 local function GetLevelAndCPRequirementFromItemLink(itemLink)
-    local link = {ZO_LinkHandler_ParseLink(itemLink)}
-    return tonumber(link[5]), tonumber(link[6])
+  local link = { ZO_LinkHandler_ParseLink(itemLink) }
+  return tonumber(link[5]), tonumber(link[6])
 end
 
 local function GetPotionPowerLevel(itemLink)
-    local CP, level = GetLevelAndCPRequirementFromItemLink(itemLink)
-    if level < 50 then
-        return level
-    end
-    return CP
+  local CP, level = GetLevelAndCPRequirementFromItemLink(itemLink)
+  if level < 50 then
+    return level
+  end
+  return CP
 end
 
 -- The index consists of the item's required level, required vet
 -- level, quality, and trait(if any), separated by colons.
 function MasterMerchant.makeIndexFromLink(itemLink)
   --Standardize Level to 1 if the level is not relevent but is stored on some items (ex: recipes)
-  local levelReq = 1
+  local levelReq                      = 1
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   if itemType ~= ITEMTYPE_RECIPE then
     levelReq = GetItemLinkRequiredLevel(itemLink)
   end
-  local vetReq = GetItemLinkRequiredChampionPoints(itemLink) / 10
+  local vetReq      = GetItemLinkRequiredChampionPoints(itemLink) / 10
   local itemQuality = GetItemLinkQuality(itemLink)
-  local itemTrait = GetItemLinkTraitType(itemLink)
+  local itemTrait   = GetItemLinkTraitType(itemLink)
   local theLastNumber
   --Add final number in the link to handle item differences like 2 and 3 buff potions
   if itemType == ITEMTYPE_MASTER_WRIT then
@@ -206,7 +206,7 @@ function MasterMerchant.makeIndexFromLink(itemLink)
   end
   if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
     local value = GetPotionPowerLevel(itemLink)
-    itemTrait = MasterMerchant.potionVarientTable[value] or "0"
+    itemTrait   = MasterMerchant.potionVarientTable[value] or "0"
   end
   local index = levelReq .. ':' .. vetReq .. ':' .. itemQuality .. ':' .. itemTrait .. ':' .. theLastNumber
 
@@ -330,19 +330,19 @@ end
 ]]--
 
 local function is_in(search_value, search_table)
-    for k, v in pairs(search_table) do
-        if search_value == v then return true end
-        if type(search_value) == "string" then
-            if string.find(string.lower(v), string.lower(search_value)) then return true end
-        end
+  for k, v in pairs(search_table) do
+    if search_value == v then return true end
+    if type(search_value) == "string" then
+      if string.find(string.lower(v), string.lower(search_value)) then return true end
     end
-    return false
+  end
+  return false
 end
 
 -- Additional words tacked on to the item name for searching
 function MasterMerchant.addedSearchToItem(itemLink)
   --Standardize Level to 1 if the level is not relevent but is stored on some items (ex: recipes)
-  local requiredLevel = 1
+  local requiredLevel                 = 1
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   -- SI_ITEMTYPEDISPLAYCATEGORY21 RECIPE
   if itemType ~= ITEMTYPE_RECIPE then
@@ -350,9 +350,9 @@ function MasterMerchant.addedSearchToItem(itemLink)
   end
   -- SI_RECIPECRAFTINGSYSTEM is like Diagram
   local requiredVeteranRank = GetItemLinkRequiredChampionPoints(itemLink) -- verified
-  local vrAdder = GetString(MM_CP_RANK_SEARCH)
+  local vrAdder             = GetString(MM_CP_RANK_SEARCH)
 
-  local adder = ''
+  local adder               = ''
   if (requiredLevel > 0 or requiredVeteranRank > 0) then
     if (requiredVeteranRank > 0) then
       adder = vrAdder .. string.format('%02d', requiredVeteranRank)
@@ -365,15 +365,22 @@ function MasterMerchant.addedSearchToItem(itemLink)
 
   -- adds green blue
   local itemQuality = GetItemLinkDisplayQuality(itemLink) -- verified
-  if (itemQuality == ITEM_DISPLAY_QUALITY_NORMAL) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_WHITE)) end
-  if (itemQuality == ITEM_DISPLAY_QUALITY_MAGIC) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_GREEN)) end
-  if (itemQuality == ITEM_DISPLAY_QUALITY_ARCANE) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_BLUE)) end
-  if (itemQuality == ITEM_DISPLAY_QUALITY_ARTIFACT) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_PURPLE)) end
-  if (itemQuality == ITEM_DISPLAY_QUALITY_LEGENDARY) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_GOLD)) end
-  if (itemQuality == ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE) then adder = MasterMerchant.concat(adder, GetString(MM_COLOR_ORANGE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_NORMAL) then adder = MasterMerchant.concat(adder,
+    GetString(MM_COLOR_WHITE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_MAGIC) then adder = MasterMerchant.concat(adder,
+    GetString(MM_COLOR_GREEN)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_ARCANE) then adder = MasterMerchant.concat(adder,
+    GetString(MM_COLOR_BLUE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_ARTIFACT) then adder = MasterMerchant.concat(adder,
+    GetString(MM_COLOR_PURPLE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_LEGENDARY) then adder = MasterMerchant.concat(adder,
+    GetString(MM_COLOR_GOLD)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE) then adder = MasterMerchant.concat(adder,
+    GetString(MM_COLOR_ORANGE)) end
 
   -- adds Mythic Legendary
-  adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMDISPLAYQUALITY", itemQuality))) -- verified
+  adder           = MasterMerchant.concat(adder,
+    zo_strformat("<<t:1>>", GetString("SI_ITEMDISPLAYQUALITY", itemQuality))) -- verified
 
   -- adds Heavy
   local armorType = GetItemLinkArmorType(itemLink) -- verified
@@ -393,7 +400,8 @@ function MasterMerchant.addedSearchToItem(itemLink)
   end
 
   if (specializedItemType ~= 0) then
-    adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType)))
+    adder = MasterMerchant.concat(adder,
+      zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType)))
   end
 
   -- adds Mark of the Pariah
@@ -420,14 +428,14 @@ function MasterMerchant.addedSearchToItem(itemLink)
     adder = MasterMerchant.concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMTRAITTYPE", itemTrait)))
   end
 
-  resultTable = {}
+  resultTable  = {}
   resultString = string.gmatch(adder, '%S+')
   for word in resultString do
-      if next(resultTable) == nil then
-          table.insert(resultTable, word)
-      elseif not is_in(word, resultTable) then
-          table.insert(resultTable, " " .. word)
-      end
+    if next(resultTable) == nil then
+      table.insert(resultTable, word)
+    elseif not is_in(word, resultTable) then
+      table.insert(resultTable, " " .. word)
+    end
   end
   adder = table.concat(resultTable)
   return string.lower(adder)
@@ -502,27 +510,27 @@ function MasterMerchant:indexHistoryTables()
   -- DEBUG  Stop Indexing
   --do return end
 
-  local prefunc = function(extraData)
+  local prefunc    = function(extraData)
     if MasterMerchant.systemSavedVariables.minimalIndexing then
       MasterMerchant.v(3, 'Minimal Indexing...')
     else
       MasterMerchant.v(3, 'Full Indexing...')
     end
-    extraData.start = GetTimeStamp()
+    extraData.start             = GetTimeStamp()
     extraData.checkMilliseconds = 60
-    extraData.indexCount = 0
-    extraData.wordsIndexCount = 0
-    self.SRIndex = {}
+    extraData.indexCount        = 0
+    extraData.wordsIndexCount   = 0
+    self.SRIndex                = {}
     self:setScanning(true)
   end
 
-  local tconcat = table.concat
-  local tinsert = table.insert
-  local tolower = string.lower
-  local temp = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local tconcat    = table.concat
+  local tinsert    = table.insert
+  local tolower    = string.lower
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
   local playerName = tolower(GetDisplayName())
 
-  local loopfunc = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
+  local loopfunc   = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
 
     extraData.indexCount = extraData.indexCount + 1
 
@@ -535,14 +543,14 @@ function MasterMerchant:indexHistoryTables()
       end
     else
       versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(soldItem['itemLink'])
-      versiondata.itemDesc = versiondata.itemDesc or GetItemLinkName(soldItem['itemLink'])
-      versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(soldItem['itemLink'])
+      versiondata.itemDesc      = versiondata.itemDesc or GetItemLinkName(soldItem['itemLink'])
+      versiondata.itemIcon      = versiondata.itemIcon or GetItemLinkInfo(soldItem['itemLink'])
 
-      temp[2] = soldItem['buyer'] or ''
-      temp[4] = soldItem['seller'] or ''
-      temp[6] = soldItem['guild'] or ''
-      temp[8] = versiondata.itemDesc or ''
-      temp[10] = versiondata.itemAdderText or ''
+      temp[2]                   = soldItem['buyer'] or ''
+      temp[4]                   = soldItem['seller'] or ''
+      temp[6]                   = soldItem['guild'] or ''
+      temp[8]                   = versiondata.itemDesc or ''
+      temp[10]                  = versiondata.itemAdderText or ''
       if playerName == tolower(soldItem['seller']) then
         temp[12] = MasterMerchant.PlayerSpecialText
       else
@@ -553,18 +561,18 @@ function MasterMerchant:indexHistoryTables()
 
     -- Index each word
     local searchByWords = string.gmatch(searchText, '%S+')
-    local wordData = { numberID, itemData, itemIndex }
+    local wordData      = { numberID, itemData, itemIndex }
     for i in searchByWords do
       if self.SRIndex[i] == nil then
         extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        self.SRIndex[i] = {}
+        self.SRIndex[i]           = {}
       end
       tinsert(self.SRIndex[i], wordData)
     end
 
   end
 
-  local postfunc = function(extraData)
+  local postfunc   = function(extraData)
     self:setScanning(false)
     MasterMerchant.v(3, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
     MasterMerchant.v(3, '  ' .. extraData.indexCount .. ' sales records')
@@ -602,9 +610,9 @@ end
 the size of the saved vars.
 ]]--
 local function setSalesTableData(key)
-  local savedVars = MM16DataSavedVariables
+  local savedVars  = MM16DataSavedVariables
   local lookupData = savedVars
-  lookupData[key] = {}
+  lookupData[key]  = {}
   return lookupData[key]
 end
 
@@ -613,7 +621,7 @@ function MasterMerchant:AddSalesTableData(key, value)
     MM16DataSavedVariables[key] = setSalesTableData(key)
   end
   if not MM16DataSavedVariables[key][value] then
-    local index = MasterMerchant.NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
+    local index                        = MasterMerchant.NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
     MM16DataSavedVariables[key][value] = index
     if key == "AccountNames" then
       MasterMerchant.accountNameByIdLookup[index] = value
@@ -642,7 +650,8 @@ function MasterMerchant:Expected(eventID)
             local itemType, specializedItemType = GetItemLinkItemType(checking.itemLink)
             MasterMerchant.dm("Debug", "Expected: " .. checking.itemLink .. " found in " .. itemIndex)
             if (specializedItemType ~= 0) then
-              MasterMerchant.dm("Debug", MasterMerchant.concat("For", zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType))))
+              MasterMerchant.dm("Debug", MasterMerchant.concat("For",
+                zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType))))
             end
           end
         end
@@ -653,9 +662,9 @@ end
 
 function MasterMerchant:IsValidItemLink(itemLink)
   local validLink = true
-  local _, count = string.gsub(itemLink, ':', ':')
+  local _, count  = string.gsub(itemLink, ':', ':')
   if count ~= 22 then validLink = false end
-  local theIID = GetItemLinkItemId(itemLink)
+  local theIID      = GetItemLinkItemId(itemLink)
   local itemIdMatch = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
   if not theIID then validLink = false end
   if theIID and (theIID ~= itemIdMatch) then validLink = false end
@@ -672,19 +681,19 @@ function MasterMerchant:CheckForDuplicate(itemLink, eventID)
   ]]--
   if MasterMerchant.systemSavedVariables.verbose == 7 then
     if not MasterMerchant:IsValidItemLink(itemLink) then
-      MasterMerchant.dm("Warn", string.format("malformed itemLink for event %s",eventID))
+      MasterMerchant.dm("Warn", string.format("malformed itemLink for event %s", eventID))
       MasterMerchant.dm("Warn", itemLink)
       MasterMerchant:Expected(eventID)
       dupe = true
     end
   else
     local key, count = string.gsub(itemLink, ':', ':')
-    if count ~= 22 then 
+    if count ~= 22 then
       dupe = true
     end
   end
   local theIID = GetItemLinkItemId(itemLink)
-  if theIID == nil or theIID == 0 then 
+  if theIID == nil or theIID == 0 then
     dupe = true
     return dupe
   end
@@ -712,10 +721,10 @@ based on the modulo obtained from the hash which is based on
 the itemLink information.
 ]]--
 local function setSalesData(itemLink, theIID)
-  local hash = MasterMerchant.hashString(string.lower(GetItemLinkName(itemLink)))
-  local dataTable = _G[string.format("MM%02dData", hash)]
-  local savedVars = dataTable.savedVariables
-  local salesData = savedVars.SalesData
+  local hash        = MasterMerchant.hashString(string.lower(GetItemLinkName(itemLink)))
+  local dataTable   = _G[string.format("MM%02dData", hash)]
+  local savedVars   = dataTable.savedVariables
+  local salesData   = savedVars.SalesData
   salesData[theIID] = {}
   return salesData[theIID]
 end
@@ -766,18 +775,18 @@ function MasterMerchant:addToHistoryTables(theEvent)
   local key, count = string.gsub(theEvent.itemLink, ':', ':')
   if count ~= 22 then return end
   -- first add new data looks to their tables
-  local linkHash = MasterMerchant:AddSalesTableData("ItemLink", theEvent.itemLink)
-  local buyerHash = MasterMerchant:AddSalesTableData("AccountNames", theEvent.buyer)
+  local linkHash   = MasterMerchant:AddSalesTableData("ItemLink", theEvent.itemLink)
+  local buyerHash  = MasterMerchant:AddSalesTableData("AccountNames", theEvent.buyer)
   local sellerHash = MasterMerchant:AddSalesTableData("AccountNames", theEvent.seller)
-  local guildHash = MasterMerchant:AddSalesTableData("GuildNames", theEvent.guild)
+  local guildHash  = MasterMerchant:AddSalesTableData("GuildNames", theEvent.guild)
 
   --[[The quality effects itemIndex although the ID from the
   itemLink may be the same. We will keep them separate.
   ]]--
-  local itemIndex = self.makeIndexFromLink(theEvent.itemLink)
+  local itemIndex  = self.makeIndexFromLink(theEvent.itemLink)
   --[[theIID is used in the SRIndex so define it here.
   ]]--
-  local theIID = GetItemLinkItemId(theEvent.itemLink)
+  local theIID     = GetItemLinkItemId(theEvent.itemLink)
   if theIID == nil or theIID == 0 then return end
 
   --[[If the ID from the itemLink doesn't exist determine which
@@ -787,14 +796,14 @@ function MasterMerchant:addToHistoryTables(theEvent)
     self.salesData[theIID] = setSalesData(theEvent.itemLink, theIID)
   end
 
-  local insertedIndex = 1
+  local insertedIndex       = 1
 
-  local searchItemDesc = ""
+  local searchItemDesc      = ""
   local searchItemAdderText = ""
 
   if self.salesData[theIID][itemIndex] then
-    local nextLocation = #self.salesData[theIID][itemIndex]['sales'] + 1
-    searchItemDesc = self.salesData[theIID][itemIndex].itemDesc
+    local nextLocation  = #self.salesData[theIID][itemIndex]['sales'] + 1
+    searchItemDesc      = self.salesData[theIID][itemIndex].itemDesc
     searchItemAdderText = self.salesData[theIID][itemIndex].itemAdderText
     if self.salesData[theIID][itemIndex]['sales'][nextLocation] == nil then
       table.insert(self.salesData[theIID][itemIndex]['sales'], nextLocation, theEvent)
@@ -804,8 +813,8 @@ function MasterMerchant:addToHistoryTables(theEvent)
       insertedIndex = #self.salesData[theIID][itemIndex]['sales']
     end
   else
-    searchItemDesc = GetItemLinkName(theEvent.itemLink)
-    searchItemAdderText = self.addedSearchToItem(theEvent.itemLink)
+    searchItemDesc                    = GetItemLinkName(theEvent.itemLink)
+    searchItemAdderText               = self.addedSearchToItem(theEvent.itemLink)
     self.salesData[theIID][itemIndex] = {
       itemIcon      = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
@@ -814,17 +823,17 @@ function MasterMerchant:addToHistoryTables(theEvent)
   end
 
   local guild
-  local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
+  local adderDescConcat                     = searchItemDesc .. ' ' .. searchItemAdderText
 
-  guild = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
+  guild                                     = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildSales[theEvent.guild] = guild;
   guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
 
-  guild = MasterMerchant.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
+  guild                                         = MasterMerchant.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildPurchases[theEvent.guild] = guild;
   guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk)
 
-  guild = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+  guild                                     = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildItems[theEvent.guild] = guild;
   guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
     adderDescConcat)
@@ -833,13 +842,13 @@ function MasterMerchant:addToHistoryTables(theEvent)
   local isSelfSale = playerName == string.lower(theEvent.seller)
 
   if isSelfSale then
-    guild = MasterMerchant.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+    guild                                  = MasterMerchant.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
     MasterMerchant.myItems[theEvent.guild] = guild;
     guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
       adderDescConcat)
   end
 
-  local temp = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
   local searchText = ""
   if MasterMerchant.systemSavedVariables.minimalIndexing then
     if isSelfSale then
@@ -848,10 +857,10 @@ function MasterMerchant:addToHistoryTables(theEvent)
       searchText = ''
     end
   else
-    temp[2] = theEvent.buyer or ''
-    temp[4] = theEvent.seller or ''
-    temp[6] = theEvent.guild or ''
-    temp[8] = searchItemDesc or ''
+    temp[2]  = theEvent.buyer or ''
+    temp[4]  = theEvent.seller or ''
+    temp[6]  = theEvent.guild or ''
+    temp[8]  = searchItemDesc or ''
     temp[10] = searchItemAdderText or ''
     if isSelfSale then
       temp[12] = MasterMerchant.PlayerSpecialText
@@ -862,7 +871,7 @@ function MasterMerchant:addToHistoryTables(theEvent)
   end
 
   local searchByWords = string.gmatch(searchText, '%S+')
-  local wordData = { theIID, itemIndex, insertedIndex }
+  local wordData      = { theIID, itemIndex, insertedIndex }
 
   -- Index each word
   for i in searchByWords do
@@ -913,9 +922,9 @@ function MasterMerchant:UpdateItemLink(itemLink)
       if linkTable[4] == '32311' then
         itemLink = '|H1:collectible:34|hSkeleton Polymorph|h'
       else
-        itemLink = ('|H%d:%s|h%s|h'):format(linkTable[2], table.concat(linkTable, ':', 3), '')
+        itemLink     = ('|H%d:%s|h%s|h'):format(linkTable[2], table.concat(linkTable, ':', 3), '')
         linkTable[1] = GetItemLinkName(itemLink)
-        itemLink = ("|H%d:%s|h%s|h"):format(linkTable[2], table.concat(linkTable, ':', 3), linkTable[1])
+        itemLink     = ("|H%d:%s|h%s|h"):format(linkTable[2], table.concat(linkTable, ':', 3), linkTable[1])
       end
     end
   end
@@ -937,9 +946,9 @@ end
 -- values returned.  Returns true if the first event (ID 1) is newer than the last event,
 -- false otherwise.
 function MasterMerchant.IsNewestFirst(guildID)
-  local numEvents = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
+  local numEvents                           = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
   local _, secsSinceFirst, _, _, _, _, _, _ = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, 1)
-  local _, secsSinceLast, _, _, _, _, _, _ = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, numEvents)
+  local _, secsSinceLast, _, _, _, _, _, _  = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, numEvents)
   return (secsSinceFirst < secsSinceLast)
 end
 

@@ -9,12 +9,12 @@ end
 MM_Graph = ZO_Object:Subclass()
 
 function MM_Graph:New(control, pointTemplate, labelTemplate)
-  local graph = ZO_Object.New(self)
+  local graph     = ZO_Object.New(self)
 
-  graph.control = control
+  graph.control   = control
 
-  pointTemplate = pointTemplate or "MMGraphLabel"
-  labelTemplate = labelTemplate or "MMGraphLabel"
+  pointTemplate   = pointTemplate or "MMGraphLabel"
+  labelTemplate   = labelTemplate or "MMGraphLabel"
 
   graph.pointPool = ZO_ControlPool:New(pointTemplate, control, "Point")
   graph.labelPool = ZO_ControlPool:New(labelTemplate, control, "Label")
@@ -26,20 +26,20 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
   xStartValue, xEndValue, yStartValue, yEndValue, xPriceText, xPriceValue)
 
   self.xStartValue = xStartValue
-  self.xEndValue = xEndValue
+  self.xEndValue   = xEndValue
   self.yStartValue = yStartValue
-  self.yEndValue = yEndValue
+  self.yEndValue   = yEndValue
   self.xPriceValue = xPriceValue
 
   self:Clear();
 
-  self.paddingY = 0
-  self.paddingX = 0
+  self.paddingY    = 0
+  self.paddingX    = 0
 
   self.xStartLabel = self.labelPool:AcquireObject()
-  self.xEndLabel = self.labelPool:AcquireObject()
+  self.xEndLabel   = self.labelPool:AcquireObject()
   self.yStartLabel = self.labelPool:AcquireObject()
-  self.yEndLabel = self.labelPool:AcquireObject()
+  self.yEndLabel   = self.labelPool:AcquireObject()
   self.xPriceLabel = self.labelPool:AcquireObject()
   self.xPriceLabel:SetHidden(true)
 
@@ -53,11 +53,11 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
   self.xPriceLabel:ClearAnchors()
   self.marker:ClearAnchors()
 
-  local x, y = self.control:GetDimensions()
-  local top = self.paddingY
+  local x, y   = self.control:GetDimensions()
+  local top    = self.paddingY
   local bottom = self.xStartLabel:GetFontHeight() * 1.25 + self.paddingY
 
-  self.ySize = y - (top + bottom)
+  self.ySize   = y - (top + bottom)
 
   self.yStartLabel:SetAnchor(LEFT, self.control, BOTTOMLEFT, self.paddingX, -bottom)
   self.yStartLabel:SetText(yStartLabelText)
@@ -85,13 +85,13 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
   self.yStartLabel:SetHidden(false)
   self.yEndLabel:SetHidden(false)
 
-  self.xSize = x - (left + right)
+  self.xSize  = x - (left + right)
 
   self.xStart = left
   self.yStart = bottom
 
-  self.grid = self.control:GetNamedChild('Grid')
-  local grid = self.grid
+  self.grid   = self.control:GetNamedChild('Grid')
+  local grid  = self.grid
   grid:ClearAnchors()
   grid:SetAnchor(BOTTOMLEFT, self.control, BOTTOMLEFT, left, -bottom)
   grid:SetAnchor(TOPRIGHT, self.control, BOTTOMLEFT, left + self.xSize, -(bottom + self.ySize))

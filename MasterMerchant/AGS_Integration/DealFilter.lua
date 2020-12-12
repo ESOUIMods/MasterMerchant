@@ -1,14 +1,14 @@
 function MasterMerchant.InitDealFilterClass()
 
-  local AGS = AwesomeGuildStore
+  local AGS                  = AwesomeGuildStore
 
-  local FilterBase = AGS.class.FilterBase
+  local FilterBase           = AGS.class.FilterBase
   local ValueRangeFilterBase = AGS.class.ValueRangeFilterBase
 
-  local FILTER_ID = AGS:GetFilterIds()
+  local FILTER_ID            = AGS:GetFilterIds()
 
-  local DealFilter = ValueRangeFilterBase:Subclass()
-  MasterMerchant.DealFilter = DealFilter
+  local DealFilter           = ValueRangeFilterBase:Subclass()
+  MasterMerchant.DealFilter  = DealFilter
 
   function DealFilter:New(...)
     return ValueRangeFilterBase.New(self, ...)
@@ -60,15 +60,15 @@ function MasterMerchant.InitDealFilterClass()
 
     local dealById = {}
     for i = 1, #self.config.steps do
-      local step = self.config.steps[i]
+      local step        = self.config.steps[i]
       dealById[step.id] = step
     end
     self.dealById = dealById
   end
 
   function DealFilter:FilterLocalResult(result)
-    local index = result.itemUniqueId
-    local itemLink = GetTradingHouseSearchResultItemLink(index)
+    local index                     = result.itemUniqueId
+    local itemLink                  = GetTradingHouseSearchResultItemLink(index)
     local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
     return not ((dealValue or -5) + 1 < self.localMin or (dealValue or 5) + 1 > self.localMax)
   end
@@ -77,7 +77,7 @@ function MasterMerchant.InitDealFilterClass()
     if (min ~= self.config.min or max ~= self.config.max) then
       local out = {}
       for id = min, max do
-        local step = self.dealById[id]
+        local step    = self.dealById[id]
         out[#out + 1] = step.label
       end
       return table.concat(out, ", ")
@@ -90,17 +90,17 @@ end
 
 function MasterMerchant.InitProfitFilterClass()
 
-  local AGS = AwesomeGuildStore
+  local AGS                   = AwesomeGuildStore
 
-  local FilterBase = AGS.class.FilterBase
-  local ValueRangeFilterBase = AGS.class.ValueRangeFilterBase
+  local FilterBase            = AGS.class.FilterBase
+  local ValueRangeFilterBase  = AGS.class.ValueRangeFilterBase
 
-  local FILTER_ID = AGS:GetFilterIds()
+  local FILTER_ID             = AGS:GetFilterIds()
 
-  local MIN_PROFIT = 1
-  local MAX_PROFIT = 2100000000
+  local MIN_PROFIT            = 1
+  local MAX_PROFIT            = 2100000000
 
-  local ProfitFilter = ValueRangeFilterBase:Subclass()
+  local ProfitFilter          = ValueRangeFilterBase:Subclass()
   MasterMerchant.ProfitFilter = ProfitFilter
 
   function ProfitFilter:New(...)
@@ -124,8 +124,8 @@ function MasterMerchant.InitProfitFilterClass()
   end
 
   function ProfitFilter:FilterLocalResult(result)
-    local index = result.itemUniqueId
-    local itemLink = GetTradingHouseSearchResultItemLink(index)
+    local index                     = result.itemUniqueId
+    local itemLink                  = GetTradingHouseSearchResultItemLink(index)
     local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
 
     if not profit or (profit < (self.localMin or MIN_PROFIT)) or (profit > (self.localMax or MAX_PROFIT)) then
