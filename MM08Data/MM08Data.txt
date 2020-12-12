@@ -1,0 +1,11 @@
+## APIVersion: 100032 100033
+## Title: Master Merchant Data File MM08Data
+## Description: MM08Data Stores data for Master Merchant
+## Version 3.2.0
+## AddOnVersion: 320
+## License: See license - distribution without license is prohibited!
+## LastUpdated: Feb 2019
+## SavedVariables: MM08DataSavedVariables
+## DisableSavedVariablesAutoSaving: 1
+
+MM08Data.lua
