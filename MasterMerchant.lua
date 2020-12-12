@@ -1801,6 +1801,7 @@ end
 function MasterMerchant:PurgeDups()
 
   if not self.isScanning then
+    local LEQ = LibExecutionQueue:new()
     self:setScanning(true)
 
     local start = GetTimeStamp()
@@ -1817,9 +1818,15 @@ function MasterMerchant:PurgeDups()
           for _, checking in pairs(itemData['sales']) do
             dup = false
             if checking.id == nil then
+              if MasterMerchant.systemSavedVariables.verbose == 7 then
+                MasterMerchant.dm("Debug", 'Nil ID found')
+              end
               dup = true
             end
             if eventArray[checking.id] then
+              if MasterMerchant.systemSavedVariables.verbose == 7 then
+                MasterMerchant.dm("Debug", 'Dupe found: ' .. checking.id .. ': ' .. checking.itemLink)
+              end
               dup = true
             end
             if dup then
@@ -1839,7 +1846,6 @@ function MasterMerchant:PurgeDups()
 
     MasterMerchant.v(2, 'Dup purge: ' .. GetTimeStamp() - start .. ' seconds to clear ' .. count .. ' duplicates.')
     MasterMerchant.v(5, 'Reindexing Everything.')
-    local LEQ = LibExecutionQueue:new()
     if count > 0 then
       --rebuild everything
       self.SRIndex = {}
@@ -2040,6 +2046,7 @@ function MasterMerchant:CleanOutBad()
     extraData.deleteCount = 0
     extraData.checkMilliseconds = 120
     extraData.eventIdIsNumber = 0
+    extraData.badItemLinkCount = 0
 
     self:setScanning(true)
   end
@@ -2047,7 +2054,6 @@ function MasterMerchant:CleanOutBad()
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
     --saledata.itemDesc = nil
     --saledata.itemAdderText = nil
-    local key, count = string.gsub(saledata['itemLink'], ':', ':')
 
     if saledata['timestamp'] == nil
       or type(saledata['timestamp']) ~= 'number'
@@ -2063,14 +2069,25 @@ function MasterMerchant:CleanOutBad()
       or saledata['seller'] == nil
       or type(saledata['seller']) ~= 'string'
       or string.sub(saledata['seller'], 1, 1) ~= '@'
-      or saledata['itemLink'] == nil
-      or type(saledata['itemLink']) ~= 'string'
-      or count ~= 22
-      or saledata['id'] == nil
-      or (not string.match(tostring(saledata['itemLink']), '|H.-:item:(.-):')) then
+      or saledata['id'] == nil then
       -- Remove it
       versiondata['sales'][saleid] = nil
       extraData.deleteCount = extraData.deleteCount + 1
+      return
+    end
+    local key, count = string.gsub(saledata['itemLink'], ':', ':')
+    local theIID = GetItemLinkItemId(saledata['itemLink'])
+    local itemIdMatch = tonumber(string.match(saledata['itemLink'], '|H.-:item:(.-):'))
+    local itemlinkName = GetItemLinkName(saledata['itemLink'])
+    if saledata['itemLink'] == nil
+      or type(saledata['itemLink']) ~= 'string'
+      or count ~= 22
+      or not theIID
+      or itemIdMatch ~= theIID
+      or MasterMerchant:is_empty_or_nil(itemlinkName) then
+      -- Remove it
+      versiondata['sales'][saleid] = nil
+      extraData.badItemLinkCount = extraData.badItemLinkCount + 1
       return
     end
     local newid = GetItemLinkItemId(saledata['itemLink'])
@@ -2160,12 +2177,13 @@ function MasterMerchant:CleanOutBad()
     end
 
     MasterMerchant.v(2, 'Cleaning: ' .. GetTimeStamp() - extraData.start .. ' seconds to clean:')
-    MasterMerchant.v(2, '  ' .. extraData.deleteCount - extraData.moveCount .. ' bad sales records removed')
+    MasterMerchant.v(2, '  ' .. (extraData.badItemLinkCount + extraData.deleteCount) - extraData.moveCount .. ' bad sales records removed')
     MasterMerchant.v(2, '  ' .. extraData.moveCount .. ' sales records re-indexed')
     MasterMerchant.v(2, '  ' .. extraData.versionCount .. ' bad item versions')
     MasterMerchant.v(2, '  ' .. extraData.idCount .. ' bad item IDs')
     MasterMerchant.v(2, '  ' .. extraData.muleIdCount .. ' bad mule item IDs')
     MasterMerchant.v(2, '  ' .. extraData.eventIdIsNumber .. ' events with numbers converted to strings')
+    MasterMerchant.v(2, '  ' .. extraData.badItemLinkCount .. ' bad item links removed')
 
     local LEQ = LibExecutionQueue:new()
     if extraData.deleteCount > 0 then
@@ -2646,14 +2664,16 @@ function MasterMerchant:CheckStatus()
     local numEvents = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
     local eventCount, processingSpeed, timeLeft = MasterMerchant.LibHistoireListener[guildID]:GetPendingEventMetrics()
     -- first has the time been estimated
-    if timeLeft > -1 or numEvents < 1 then MasterMerchant.timeEstimated[guildID] = true end
+    if timeLeft > -1 or (eventCount == 1 and numEvents == 0) then MasterMerchant.timeEstimated[guildID] = true end
     --[[ time has been estimated so that means the next
     time we hit -1 then there is nothing else to do
     ]]--
     if (timeLeft == -1 or timeLeft == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
+    --[[
     if eventCount > 0 and MasterMerchant.eventsNeedProcessing[guildID] then
       MasterMerchant.v(2, string.format("Events remaining: %s for %s and %s : %s", eventCount, GetGuildName(guildID), processingSpeed, timeLeft))
     end
+    ]]--
   end
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)

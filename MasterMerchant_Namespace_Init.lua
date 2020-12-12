@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.5.03'
+MasterMerchant.version = '3.5.04'
 MasterMerchant.locale = GetCVar('Language.2')
 -- default is self
 MasterMerchant.viewMode = 'self'
@@ -50,6 +50,7 @@ MasterMerchant.itemLinkNameByIdLookup = {} -- added 12-2
 MasterMerchant.guildNameByIdLookup = {} -- added 12-2
 MasterMerchant.eventsNeedProcessing = {}
 MasterMerchant.timeEstimated = {}
+MasterMerchant.purgeQueue = {}
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
 else

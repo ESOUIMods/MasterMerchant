@@ -234,8 +234,8 @@ end
 
   weapon
   /script MasterMerchant.dm("Debug", GetNumTradingHouseSearchResultItemLinkAsFurniturePreviewVariations("|H0:item:68633:363:50:0:0:0:0:0:0:0:0:0:0:0:0:13:0:0:0:10000:0|h|h"))
-/script MasterMerchant.dm("Debug", GetItemLinkRequiredChampionPoints("|H0:item:167719:2:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:10000:0|h|h"))
-/script MasterMerchant.dm("Debug", GetItemLinkReagentTraitInfo("|H1:item:45839:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
+  /script MasterMerchant.dm("Debug", GetItemLinkRequiredChampionPoints("|H0:item:167719:2:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:10000:0|h|h"))
+  /script MasterMerchant.dm("Debug", GetItemLinkReagentTraitInfo("|H1:item:45839:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
   armor
 
   /script MasterMerchant.dm("Debug", zo_strformat("<<t:1>>", GetString("SI_ITEMFILTERTYPE", GetItemLinkFilterTypeInfo("|H1:item:167644:362:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:300:0|h|h"))))
@@ -629,20 +629,49 @@ function MasterMerchant:AddSalesTableData(key, value)
   return nil
 end
 
+function MasterMerchant:IsValidItemLink(itemLink)
+  local validLink = true
+  local _, count = string.gsub(itemLink, ':', ':')
+  if count ~= 22 then validLink = false end
+  local theIID = GetItemLinkItemId(itemLink)
+  local itemIdMatch = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
+  if not theIID then validLink = false end
+  if theIID and (theIID ~= itemIdMatch) then validLink = false end
+  local itemlinkName = GetItemLinkName(itemLink)
+  if MasterMerchant:is_empty_or_nil(itemlinkName) then validLink = false end
+  return validLink
+end
+
 function MasterMerchant:CheckForDuplicate(itemLink, eventID)
   local dupe = false
   --[[ we need to be able to calculate theIID and itemIndex
   when not used with addToHistoryTables() event though
   the function will calculate them.
   ]]--
+  if MasterMerchant.systemSavedVariables.verbose == 7 then
+    if not MasterMerchant:IsValidItemLink(itemLink) then
+      MasterMerchant.dm("Warn", string.format("malformed itemLink for event %s",eventID))
+      MasterMerchant.dm("Warn", itemLink)
+      --return
+    end
+  else
+    local key, count = string.gsub(itemLink, ':', ':')
+    if count ~= 22 then return end
+  end
   local theIID = GetItemLinkItemId(itemLink)
-  if theIID == nil then return end
+  if theIID == nil or theIID == 0 then return end
   local itemIndex = self.makeIndexFromLink(itemLink)
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
       if v.id == eventID then
         dupe = true
+        if MasterMerchant.systemSavedVariables.verbose == 7 then
+          if v.itemLink ~= itemLink then
+            MasterMerchant.dm("Warn", "Item link mismatch : " .. v.id)
+            table.insert(MasterMerchant.purgeQueue, v.id)
+          end
+        end
         break
       end
     end
@@ -706,6 +735,8 @@ function MasterMerchant:addToHistoryTables(theEvent)
   },
   ]]--
 
+  local key, count = string.gsub(theEvent.itemLink, ':', ':')
+  if count ~= 22 then return end
   -- first add new data looks to their tables
   local linkHash = MasterMerchant:AddSalesTableData("ItemLink", theEvent.itemLink)
   local buyerHash = MasterMerchant:AddSalesTableData("AccountNames", theEvent.buyer)
@@ -719,7 +750,7 @@ function MasterMerchant:addToHistoryTables(theEvent)
   --[[theIID is used in the SRIndex so define it here.
   ]]--
   local theIID = GetItemLinkItemId(theEvent.itemLink)
-  if theIID == nil then return end
+  if theIID == nil or theIID == 0 then return end
 
   --[[If the ID from the itemLink doesn't exist determine which
   file or container it will belong to using setSalesData()
