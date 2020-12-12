@@ -2641,26 +2641,43 @@ function MasterMerchant:ScanStoresParallel(doAlert)
 end
 
 function MasterMerchant:CheckStatus()
-  local eventsProcessing = 0
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
     local eventCount, processingSpeed, timeLeft = MasterMerchant.LibHistoireListener[guildID]:GetPendingEventMetrics()
-    eventsProcessing = math.max(eventsProcessing, eventCount)
-    if eventCount > 0 then
+    -- first has the time been estimated
+    if timeLeft > -1 then MasterMerchant.timeEstimated[guildID] = true end
+    --[[ time has been estimated so that means the next
+    time we hit -1 then there is nothing else to do
+    ]]--
+    if (timeLeft == -1 or timeLeft == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
+    --[[
+    if eventCount > 0 and MasterMerchant.eventsNeedProcessing[guildID] then
       MasterMerchant.v(2, string.format("Events remaining: %s for %s and %s : %s", eventCount, GetGuildName(guildID), processingSpeed, timeLeft))
     end
+    ]]--
   end
-  return eventsProcessing
+  for i = 1, GetNumGuilds() do
+    local guildID = GetGuildId(i)
+    if MasterMerchant.eventsNeedProcessing[guildID] then return true end
+  end
+  return false
 end
 
 function MasterMerchant:QueueCheckStatus()
   local eventsRemaining = MasterMerchant:CheckStatus()
-  if eventsRemaining > 0 then
+  if eventsRemaining then
     zo_callLater(function() MasterMerchant:QueueCheckStatus()
-    end, 10000) -- 2 minutes
+    end, 500) -- 2 minutes
   else
     self:setScanning(false)
     MasterMerchant:RefreshMasterMerchantWindow()
+    MasterMerchant.CenterScreenAnnounce_AddMessage(
+      'MasterMerchantAlert',
+      CSA_EVENT_SMALL_TEXT,
+      MasterMerchant.systemSavedVariables.alertSoundName,
+      "LibHistoire Refresh Finished"
+    )
+    MasterMerchant.v(2, "LibHistoire Refresh Finished")
   end
 end
 
@@ -2682,6 +2699,8 @@ function MasterMerchant:DoRefresh()
     local guildID = GetGuildId(i)
     MasterMerchant.LibHistoireListener[guildID]:Stop()
     MasterMerchant.LibHistoireListener[guildID] = nil
+    MasterMerchant.eventsNeedProcessing[guildID] = true
+    MasterMerchant.timeEstimated[guildID] = false
   end
   for i = 1, numGuilds do
     local guildID = GetGuildId(i)
@@ -2689,14 +2708,7 @@ function MasterMerchant:DoRefresh()
     MasterMerchant:SetupListener(guildID)
   end
   MasterMerchant.LibHistoireRefreshed = true
-  -- Siri uncomment this
-  -- MasterMerchant:QueueCheckStatus()
-  -- >>>> Siri Delete this block
-  zo_callLater(function()
-    self:setScanning(false)
-    MasterMerchant:RefreshMasterMerchantWindow()
-  end, 60000 * 10) -- 10 minutes
-  -- Siri Delete this block <<<<
+  MasterMerchant:QueueCheckStatus()
 end
 
 function MasterMerchant:initGMTools()
@@ -4159,6 +4171,21 @@ function ZO_InventorySlotActions:Show()
   g_slotActions = self
   Original_ZO_InventorySlotActions_Show(self)
 end
+
+function OnItemSelected()
+  local isPlayerViewingTrader = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.active
+  local selectedItem = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.selectedIndex
+  local searchData = ZO_TradingHouse_GamepadMaskContainerSellList.scrollList.dataList.itemData.searchData
+  local itemSelected = searchData[selectedItem]
+  local bagId = itemInventorySlot.bagId
+  local slotId = itemInventorySlot.slotId
+  local itemLink = GetItemLink(bagId, slotId)
+  -- << alter price on scroll list >>
+end
+
+--[[TODO verify when player is using Gamepad
+IsInGamepadPreferredMode()
+]]--
 
 -------------------------------------------------------------------------------
 -- LMP - Removed Fonts v1.1

@@ -27,6 +27,8 @@
         <Texture name="$(parent)Marker" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
       </Controls>
     </Control>
+
+    <!-- Graph Label -->
     <Label name="MMGraphLabel" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true"
            color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="XXX">
       <OnLinkMouseUp>

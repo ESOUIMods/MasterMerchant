@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.5.00'
+MasterMerchant.version = '3.5.01'
 MasterMerchant.locale = GetCVar('Language.2')
 -- default is self
 MasterMerchant.viewMode = 'self'
@@ -44,11 +44,12 @@ MasterMerchant.LibHistoireListener = { } -- added for debug on 10-31
 MasterMerchant.LibHistoireRefreshed = false -- added 8-25
 MasterMerchant.itemAverageLookupTable = { } -- added 11-21 used as lookup for tooltips
 MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
-MasterMerchant.isUsingGamepad = GetGamepadType() > 0 -- added 11-24
 MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
 MasterMerchant.accountNameByIdLookup = {} -- added 12-2
 MasterMerchant.itemLinkNameByIdLookup = {} -- added 12-2
 MasterMerchant.guildNameByIdLookup = {} -- added 12-2
+MasterMerchant.eventsNeedProcessing = {}
+MasterMerchant.timeEstimated = {}
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
 else
@@ -183,6 +184,14 @@ MasterMerchant.originalSetupCallback = nil
 MasterMerchant.originalSellingSetupCallback = nil
 MasterMerchant.originalRosterStatsCallback = nil
 MasterMerchant.originalRosterBuildMasterList = nil
+
+----------------------------------------
+----- Gamepad                      -----
+----------------------------------------
+
+----------------------------------------
+----- Setup                        -----
+----------------------------------------
 
 -- Gap values for Shell sort
 MasterMerchant.shellGaps = {
