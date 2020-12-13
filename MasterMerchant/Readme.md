@@ -7,6 +7,129 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.5.06
+
+- Updated Refresh routine. Reverted some aspects of it now that LibHistoire has been updated. It was taking too long again.
+
+## ChangeLog for 3.5.05
+
+- Added methods to prevent (significant) FPS drop when a new sale is added while the Master Merchant window is open. This is because I am starting to see new sales show again while online.
+- Updated /mm dups
+- Updated /mm clean to remove invalid item links
+- Added additional routines to verify invalid item links
+
+NOTE: The focus of invalid item links in the current versions will be explained in a sticky post. Please watch the comments section's sticky post for an update with an important announcement. There will also be an additional documentation update.
+
+## ChangeLog for 3.5.04
+
+- Adjusted Refresh routine so it will stop after events are sent even after an upcoming change to LibHistoire.
+
+## ChangeLog for 3.5.03
+
+- Added more verification for malformed item links.
+
+NOTE: I forgot something in 3.5.02, so it's not available.
+
+## ChangeLog for 3.5.01
+
+- Updated refresh routine to announce when refresh is finished. The spinner in the Master merchant window will also stop spinning as well.
+
+## ChangeLog for 3.5.00
+
+- Fixed Gamepad errors when listing items.
+
+NOTE: Thanks to Lyelu I have a gamepad that works with ESO. I can not promise anything but I am looking into how to add some of the simple basic features to the Gamepad UI. Although I hear that since the Gamepad usage is so low, according to ZOS that some mod authors use some Gamepad aspects of the game for convenience in keyboard mods. Meaning, it breaks the Gamepad portion of the game.
+
+## ChangeLog for 3.4.9
+
+- Added additional search index values
+- Added routine for expanding Libhistoire when using the refresh button. (Still in testing)
+- Added Popup Item Data to Master Merchant window for convenience
+
+## ChangeLog for 3.4.8
+
+- Fixed some minor typos
+- Fixed search index values. The API has changed enough that the search terms were a bit broken. Items you are searching for should show up correctly now. Such as a green or purple heavy helm.
+- Added initial lookup tables for upcoming changes to Saved Vars files
+- Removed old auto next feature for the guild store. It was no longer used and it's just a bad idea especially when AGS is active because at least for AGS it will break it.
+
+## ChangeLog for 3.4.7
+
+- Update to ShoppingList extension to prevent duplicate items. Delete your ShoppingList.lua from your SavedVariables to reset it.
+
+## ChangeLog for 3.4.6
+
+- Added optional MM extension, ShoppingList
+
+NOTE: Rothry has suggested this addition and at the time it did not seem like something I would add. Mainly because I am not sure I want to know everything I purchased. However, I am in the process of learning more about the MM Window, ZOS Scroll Lists, and other more complex parts of this beast of a mod. For that reason it is packaged with the mod and can be enabled or disabled. I hope you enjoy it.
+
+EDIT: 12-9-2020; I will be overhauling both MM and the ShoppingList. The data for MM will be preserved and kept. The data from the ShoppingList will not be preserved because I will be obtaining different sales data from traders either from AGS or the vanilla UI if you do not have AGS installed or active.
+
+## ChangeLog for 3.4.5
+
+- Added the remaining help icons for the settings menu
+
+NOTE: Still working on the documentation but as I have time to complete each section it will help explain the various options.
+
+## ChangeLog for 3.4.4
+
+- Restored color to the deal calculator when viewing items in the guild store
+
+NOTE: Still looking into all the challenges for localizing the currency format and colorization. Thank you for your patience.
+
+## ChangeLog for 3.4.3
+
+- Opps forgot other language strings for new menu options
+
+## ChangeLog for 3.4.2
+
+- Updated settings menu including help icons that go directly to the documentation.
+- Updated LibGuildRoster setup to attempt to control the columns better until the next update to the library.
+
+## ChangeLog for 3.4.1
+
+- Bugfix for not stopping LibHistoire properly during Refresh
+
+## ChangeLog for 3.4.0
+
+- Opps forgot other language strings for key-bind
+
+## ChangeLog for 3.3.9
+
+- Fix for setting days of history lower then 30
+- Added key-bind to toggle History Graph
+
+
+## ChangeLog for 3.3.8
+
+- Added a 3rd Focus which can be used for CTRL + SHIFT for example
+- Changed the name of the Master merchant window. See documentation. Link is on the description page.- - Made sure when displaying values in the inventory that the gold color is yellow
+- Made sure the custom time range updates for the drop down menu
+
+## ChangeLog for 3.3.7
+
+- Opps forgot to add the new data pool to the manifest file
+
+## ChangeLog for 3.3.6
+
+- Bugfix for blacklist
+- Fix typo in setting menu
+- Added toggle for guild roster columns. Requires UI reload.
+- Writs with the same item ID will be grouped together now.
+
+NOTE: Prior to having Writs the last part of the item link was for potions only. This caused MM to treat writs of the same type but a different voucher count as different. I will be adding a new system for writs in a future version.
+
+## ChangeLog for 3.3.5
+
+- Updated gold price label to use in game API formatting.(Meaning less numbers with a decimal of '.00' This should also add some formatting for non English users. I will be testing this more.
+- Added lookup table so that if you hover over an item twice, and no sales have been added, the tooltip needs to reconstruct less information. Should make tooltips take a little less time to draw for items have have close to 5000 sales in the MM database. There isn't much I can do to improve this more. Remember too much of a good thing... you can easily see trends with less data points over the same amount of time.
+
+## ChangeLog for 3.3.4
+
+- Added option to select mean or median when calculation outliers.
+
+For a range from 1 to 999 the data with the mean could give you and average of 89 and with the median 42. While other items like chromium grains, you may not see much of a difference. You could have way more data points. For example 44 compared to 3000. Therefore the chromium grains will have a much more focused range. Nobody wants to buy chromium grains for 125,000. The shear quantity of data points make chromium grains show a more meaningful trend then another item with less then 100 sales.
+
 ## ChangeLog for 3.3.3
 
 - Added toggle to use the default range for tooltips, for inventory as well.

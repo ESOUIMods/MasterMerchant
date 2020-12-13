@@ -674,41 +674,19 @@ function MasterMerchant:IsValidItemLink(itemLink)
 end
 
 function MasterMerchant:CheckForDuplicate(itemLink, eventID)
-  local dupe = false
+  local dupe   = false
   --[[ we need to be able to calculate theIID and itemIndex
   when not used with addToHistoryTables() event though
   the function will calculate them.
   ]]--
-  if MasterMerchant.systemSavedVariables.verbose == 7 then
-    if not MasterMerchant:IsValidItemLink(itemLink) then
-      MasterMerchant.dm("Warn", string.format("malformed itemLink for event %s", eventID))
-      MasterMerchant.dm("Warn", itemLink)
-      MasterMerchant:Expected(eventID)
-      dupe = true
-    end
-  else
-    local key, count = string.gsub(itemLink, ':', ':')
-    if count ~= 22 then
-      dupe = true
-    end
-  end
   local theIID = GetItemLinkItemId(itemLink)
-  if theIID == nil or theIID == 0 then
-    dupe = true
-    return dupe
-  end
+  if theIID == nil or theIID == 0 then return end
   local itemIndex = self.makeIndexFromLink(itemLink)
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
       if v.id == eventID then
         dupe = true
-        if MasterMerchant.systemSavedVariables.verbose == 7 then
-          if v.itemLink ~= itemLink then
-            MasterMerchant.dm("Warn", "Item link mismatch : " .. v.id)
-            table.insert(MasterMerchant.purgeQueue, v.id)
-          end
-        end
         break
       end
     end
@@ -772,8 +750,6 @@ function MasterMerchant:addToHistoryTables(theEvent)
   },
   ]]--
 
-  local key, count = string.gsub(theEvent.itemLink, ':', ':')
-  if count ~= 22 then return end
   -- first add new data looks to their tables
   local linkHash   = MasterMerchant:AddSalesTableData("ItemLink", theEvent.itemLink)
   local buyerHash  = MasterMerchant:AddSalesTableData("AccountNames", theEvent.buyer)

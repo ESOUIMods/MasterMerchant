@@ -7,6 +7,7 @@
 local LAM                       = LibAddonMenu2
 local LMP                       = LibMediaProvider
 local LGH                       = LibHistoire
+local ASYNC                     = LibAsync
 
 local OriginalGetTradingHouseSearchResultItemInfo
 local OriginalGetTradingHouseListingItemInfo
@@ -2426,7 +2427,12 @@ function MasterMerchant:RefreshMasterMerchantWindow()
   end
 end
 
------------------------------------------------------------------------
+-- don't refresh just set whether or not the list needs updated.
+function MasterMerchant:SetMasterMerchantWindowDirty()
+  self.listIsDirty[ITEMS]    = true
+  self.listIsDirty[GUILDS]   = true
+  self.listIsDirty[LISTINGS] = true
+end
 
 -- Called after store scans complete, re-creates indexes if need be,
 -- and updates the slider range. Once this is done it updates the
@@ -2659,18 +2665,22 @@ function MasterMerchant:ScanStoresParallel(doAlert)
     self.lastUpdateCount[guildName]      = 0
   end
 end
-
+-- /script d(MasterMerchant.LibHistoireListener[622389]:GetPendingEventMetrics())
 function MasterMerchant:CheckStatus()
   for i = 1, GetNumGuilds() do
     local guildID                               = GetGuildId(i)
     local numEvents                             = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
     local eventCount, processingSpeed, timeLeft = MasterMerchant.LibHistoireListener[guildID]:GetPendingEventMetrics()
     -- first has the time been estimated
+    -- I have it this way because a guild with 0 events has 1 event to LH
     if timeLeft > -1 or (eventCount == 1 and numEvents == 0) then MasterMerchant.timeEstimated[guildID] = true end
     --[[ time has been estimated so that means the next
     time we hit -1 then there is nothing else to do
+    however some versions it is -1 when it's done and other it is 0
+    so ther is no realy way to know when it's done, it keeps changing
     ]]--
     if (timeLeft == -1 or timeLeft == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
+    if (timeLeft == -1 and eventCount == 1 and numEvents == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
     --[[
     if eventCount > 0 and MasterMerchant.eventsNeedProcessing[guildID] then
       MasterMerchant.v(2, string.format("Events remaining: %s for %s and %s : %s", eventCount, GetGuildName(guildID), processingSpeed, timeLeft))
@@ -4046,9 +4056,6 @@ function MasterMerchant:SetupListener(guildID)
   end
   MasterMerchant.LibHistoireListener[guildID]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
     if eventType == GUILD_EVENT_ITEM_SOLD then
-      local LEQ = LibExecutionQueue:new()
-      LEQ:Add(function() self:setScanning(true) end, 'setScanning')
-
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
         MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] = Id64ToString(eventId)
         lastReceivedEventID                                                 = eventId
@@ -4104,10 +4111,10 @@ function MasterMerchant:SetupListener(guildID)
       }
       theEvent.wasKiosk = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
 
-      LEQ:Add(function() MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id) end, 'CheckForDuplicate')
+      local isDuplicate = MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id)
 
       if not isDuplicate then
-        LEQ:Add(function() MasterMerchant:addToHistoryTables(theEvent) end, 'addToHistoryTables')
+        MasterMerchant:addToHistoryTables(theEvent)
       end
       -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
       if not isDuplicate and string.lower(theEvent.seller) == thePlayer then
@@ -4115,11 +4122,9 @@ function MasterMerchant:SetupListener(guildID)
         table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
       end
       if not isDuplicate then
-        LEQ:Add(function() MasterMerchant:PostScanParallel(guildName, true) end, 'PostScanParallel')
-        LEQ:Add(function() MasterMerchant:RefreshMasterMerchantWindow() end, 'RefreshMasterMerchantWindow')
+        MasterMerchant:PostScanParallel(guildName, true)
+        MasterMerchant:SetMasterMerchantWindowDirty()
       end
-      LEQ:Add(function() self:setScanning(false) end, 'setScanning')
-      LEQ:Start()
     end
   end)
   MasterMerchant.LibHistoireListener[guildID]:Start()
