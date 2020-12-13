@@ -2671,18 +2671,11 @@ function MasterMerchant:CheckStatus()
     local guildID                               = GetGuildId(i)
     local numEvents                             = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
     local eventCount, processingSpeed, timeLeft = MasterMerchant.LibHistoireListener[guildID]:GetPendingEventMetrics()
-    -- first has the time been estimated
-    -- I have it this way because a guild with 0 events has 1 event to LH
     if timeLeft > -1 or (eventCount == 1 and numEvents == 0) then MasterMerchant.timeEstimated[guildID] = true end
-    --[[ time has been estimated so that means the next
-    time we hit -1 then there is nothing else to do
-    however some versions it is -1 when it's done and other it is 0
-    so ther is no realy way to know when it's done, it keeps changing
-    ]]--
-    if (timeLeft == -1 or timeLeft == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
     if (timeLeft == -1 and eventCount == 1 and numEvents == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
+    if eventCount == 0 and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
     --[[
-    if eventCount > 0 and MasterMerchant.eventsNeedProcessing[guildID] then
+    if eventCount > 1 then
       MasterMerchant.v(2, string.format("Events remaining: %s for %s and %s : %s", eventCount, GetGuildName(guildID), processingSpeed, timeLeft))
     end
     ]]--
