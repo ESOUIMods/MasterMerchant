@@ -216,10 +216,10 @@ function MMScrollList:SetupSalesRow(control, data)
   --[[
   local controlName = control:GetName()
   if not string.find(controlName, SALES_WINDOW_CONTROL_NAME_REGEX) then
-    MasterMerchant.dm("Warn", controlName)
+    MasterMerchant:dm("Warn", controlName)
     return
   else
-    MasterMerchant.dm("Debug", controlName)
+    MasterMerchant:dm("Debug", controlName)
   end
   ]]--
   local actualItem     = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
@@ -340,10 +340,10 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   --[[
   local controlName = control:GetName()
   if not string.find(controlName, GUILD_WINDOW_CONTROL_NAME_REGEX) then
-    MasterMerchant.dm("Warn", controlName)
+    MasterMerchant:dm("Warn", controlName)
     return
   else
-    MasterMerchant.dm("Debug", controlName)
+    MasterMerchant:dm("Debug", controlName)
   end
   ]]--
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
@@ -447,10 +447,10 @@ function MMScrollList:SetupListingsRow(control, data)
   --[[
   local controlName = control:GetName()
   if not string.find(controlName, LISTING_WINDOW_CONTROL_NAME_REGEX) then
-    MasterMerchant.dm("Warn", controlName)
+    MasterMerchant:dm("Warn", controlName)
     return
   else
-    MasterMerchant.dm("Debug", controlName)
+    MasterMerchant:dm("Debug", controlName)
   end
   ]]--
   local actualItem     = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
@@ -915,7 +915,7 @@ function MMScrollList:FilterScrollList()
             end
           end
         end
-        MasterMerchant.v(6, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
+        MasterMerchant:v(6, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
 
       end
     end
@@ -1048,7 +1048,7 @@ function MMScrollList:FilterScrollList()
             end
           end
         end
-        MasterMerchant.v(6, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
+        MasterMerchant:v(6, 'Filter Time' .. ': ' .. GetTimeStamp() - startTimer)
 
       end
     end
@@ -1114,6 +1114,7 @@ end
 
 -- Restore the window positions from saved vars
 function MasterMerchant:RestoreWindowPosition()
+  MasterMerchant:dm("Debug", "RestoreWindowPosition")
   MasterMerchantWindow:ClearAnchors()
   MasterMerchantStatsWindow:ClearAnchors()
   MasterMerchantGuildWindow:ClearAnchors()
@@ -1131,6 +1132,7 @@ end
 
 -- Handle the changing of window font settings
 function MasterMerchant:UpdateFonts()
+  MasterMerchant:dm("Debug", "UpdateFonts")
   MasterMerchant:RegisterFonts()
   local font             = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
   local fontString       = font .. '|%d'
@@ -1542,14 +1544,14 @@ end
 
 local function GetTopControl(control)
   local controlName = control:GetName()
-  MasterMerchant.v(7, controlName)
+  MasterMerchant:v(7, controlName)
   local count = 0
   while control and control.GetParent ~= nil do
     control = control:GetParent()
     count   = count + 1
     if control and control.GetName then
       controlName = control:GetName()
-      MasterMerchant.v(7, controlName)
+      MasterMerchant:v(7, controlName)
       if controlName == "GuiRoot" then break end
       if count >= 3 then break end
     end
@@ -1858,8 +1860,8 @@ end
 
 -- Switch between all sales and your sales
 function MasterMerchant:SwitchViewMode()
-  -- /script MasterMerchant.dm("Debug", MasterMerchant.systemSavedVariables.viewSize)
-  -- /script MasterMerchant.dm("Debug", MasterMerchant.viewMode)
+  -- /script MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewSize)
+  -- /script MasterMerchant:dm("Debug", MasterMerchant.viewMode)
   -- default is self
   --[[ MasterMerchant.viewMode
   when viewMode is 'self': then you are viewing personal sales
@@ -1964,6 +1966,7 @@ end
 -- Set up the labels and tooltips from translation files and do a couple other UI
 -- setup routines
 function MasterMerchant:SetupMasterMerchantWindow()
+  MasterMerchant:dm("Debug", "SetupMasterMerchantWindow")
   -- MasterMerchant button in guild store screen
   local reopenMasterMerchant = CreateControlFromVirtual('MasterMerchantReopenButton',
     ZO_TradingHouseBrowseItemsLeftPane, 'ZO_DefaultButton')
@@ -2161,10 +2164,14 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantStatsWindowSlider:SetValue(100)
 
   -- We're all set, so make sure we're using the right font to finish up
+  --[[TODO Will register new fonts and then update font usage prior
+  to Restoring the MM window position
+  ]]--
   self:UpdateFonts()
 end
 
 function MasterMerchant:SetupScrollLists()
+  MasterMerchant:dm("Debug", "SetupScrollLists")
   -- Scroll list init
   self.scrollList = MMScrollList:New(MasterMerchantWindow)
   --self.scrollList:Initialize()

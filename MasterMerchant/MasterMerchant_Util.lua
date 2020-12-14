@@ -6,22 +6,22 @@
 -- Distribution without license is prohibited!
 
 --  |H0:item:69359:96:50:26848:96:50:0:0:0:0:0:0:0:0:0:19:0:0:0:0:0|h|h  AUTGuild 1058 days
+local ASYNC = LibAsync
 
-function MasterMerchant.v(level, ...)
+function MasterMerchant:v(level, message)
+  local verboseLevel = MasterMerchant.verboseLevel or 4
   -- DEBUG
-  if (level <= MasterMerchant.verboseLevel) then
-    if ... then
+  if (level <= verboseLevel) then
+    if message then
       if CHAT_ROUTER then
-        CHAT_ROUTER:AddSystemMessage(...)
+        CHAT_ROUTER:AddSystemMessage(message)
       elseif RequestDebugPrintText then
-        RequestDebugPrintText(...)
+        RequestDebugPrintText(message)
       else
-        d(...)
+        d(message)
       end
     end
-    return true
   end
-  return false
 end
 
 function MasterMerchant:ssup(inputTable, numElements)
@@ -74,29 +74,6 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
     end
   end
   return inputTable
-end
-
-function MasterMerchant.spairs(t, order)
-  -- all the indexes
-  local indexes = {}
-  for k in pairs(t) do indexes[#indexes + 1] = k end
-
-  -- if order function given, sort by it by passing the table's a, b values
-  -- otherwise just sort by the index values
-  if order then
-    table.sort(indexes, function(a, b) return order(t[a], t[b]) end)
-  else
-    table.sort(indexes)
-  end
-
-  -- return the iterator function
-  local i = 0
-  return function()
-    i = i + 1
-    if indexes[i] then
-      return indexes[i], t[indexes[i]]
-    end
-  end
 end
 
 function MasterMerchant:is_empty_or_nil(t)
@@ -233,16 +210,16 @@ end
   ["itemIcon"] = "/esoui/art/icons/gear_malacath_heavy_head_a.dds",
 
   weapon
-  /script MasterMerchant.dm("Debug", GetNumTradingHouseSearchResultItemLinkAsFurniturePreviewVariations("|H0:item:68633:363:50:0:0:0:0:0:0:0:0:0:0:0:0:13:0:0:0:10000:0|h|h"))
-  /script MasterMerchant.dm("Debug", GetItemLinkRequiredChampionPoints("|H0:item:167719:2:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:10000:0|h|h"))
-  /script MasterMerchant.dm("Debug", GetItemLinkReagentTraitInfo("|H1:item:45839:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
+  /script MasterMerchant:dm("Debug", GetNumTradingHouseSearchResultItemLinkAsFurniturePreviewVariations("|H0:item:68633:363:50:0:0:0:0:0:0:0:0:0:0:0:0:13:0:0:0:10000:0|h|h"))
+  /script MasterMerchant:dm("Debug", GetItemLinkRequiredChampionPoints("|H0:item:167719:2:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:10000:0|h|h"))
+  /script MasterMerchant:dm("Debug", GetItemLinkReagentTraitInfo("|H1:item:45839:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
   armor
 
-  /script MasterMerchant.dm("Debug", zo_strformat("<<t:1>>", GetString("SI_ITEMFILTERTYPE", GetItemLinkFilterTypeInfo("|H1:item:167644:362:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:300:0|h|h"))))
+  /script MasterMerchant:dm("Debug", zo_strformat("<<t:1>>", GetString("SI_ITEMFILTERTYPE", GetItemLinkFilterTypeInfo("|H1:item:167644:362:50:0:0:0:0:0:0:0:0:0:0:0:0:111:0:0:0:300:0|h|h"))))
 
 
   SI_ITEMFILTERTYPE
-  /script adder = ""; adder = MasterMerchant.concat(adder, "weapon"); MasterMerchant.dm(adder)
+  /script adder = ""; adder = MasterMerchant.concat(adder, "weapon"); MasterMerchant:dm(adder)
 
   What is Done:
 	Line 16112: * GetItemLinkItemType(*string* _itemLink_)
@@ -446,12 +423,11 @@ function MasterMerchant:playSounds(lastIndex)
   local index, value = next(SOUNDS, lastIndex)
   if index then
     d(index)
+    local task = ASYNC:Create("playSounds")
     PlaySound(value)
-
-    zo_callLater(function()
-      local LEQ = LibExecutionQueue:new()
-      LEQ:ContinueWith(function() self:playSounds(index) end, nil)
-    end, 2000)
+    task:Delay(2000, function()
+      task:Call(function() MasterMerchant:playSounds(lastIndex) end)
+    end)
   end
 end
 
@@ -479,127 +455,22 @@ function MasterMerchant:setScanning(start)
   end
 end
 
-function MasterMerchant:setScanningParallel(start, guildName)
-  self.isScanningParallel[guildName] = start
-  MasterMerchantResetButton:SetEnabled(not start)
-  MasterMerchantGuildResetButton:SetEnabled(not start)
-  MasterMerchantRefreshButton:SetEnabled(not start)
-  MasterMerchantGuildRefreshButton:SetEnabled(not start)
-
-  if not start then
-    MasterMerchantWindowLoadingIcon.animation:Stop()
-    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
-    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
-  end
-
-  MasterMerchantWindowLoadingIcon:SetHidden(not start)
-  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
-  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
-
-  if start then
-    MasterMerchantWindowLoadingIcon.animation:PlayForward()
-    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
-    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
-  end
-end
-
--- For faster searching of large histories, we'll maintain an inverted
--- index of search terms - here we build the indexes from the existing table
-function MasterMerchant:indexHistoryTables()
-
-  -- DEBUG  Stop Indexing
-  --do return end
-
-  local prefunc    = function(extraData)
-    if MasterMerchant.systemSavedVariables.minimalIndexing then
-      MasterMerchant.v(3, 'Minimal Indexing...')
-    else
-      MasterMerchant.v(3, 'Full Indexing...')
-    end
-    extraData.start             = GetTimeStamp()
-    extraData.checkMilliseconds = 60
-    extraData.indexCount        = 0
-    extraData.wordsIndexCount   = 0
-    self.SRIndex                = {}
-    self:setScanning(true)
-  end
-
-  local tconcat    = table.concat
-  local tinsert    = table.insert
-  local tolower    = string.lower
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local playerName = tolower(GetDisplayName())
-
-  local loopfunc   = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
-
-    extraData.indexCount = extraData.indexCount + 1
-
-    local searchText
-    if MasterMerchant.systemSavedVariables.minimalIndexing then
-      if playerName == tolower(soldItem['seller']) then
-        searchText = tolower(MasterMerchant.PlayerSpecialText)
-      else
-        searchText = ''
-      end
-    else
-      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(soldItem['itemLink'])
-      versiondata.itemDesc      = versiondata.itemDesc or GetItemLinkName(soldItem['itemLink'])
-      versiondata.itemIcon      = versiondata.itemIcon or GetItemLinkInfo(soldItem['itemLink'])
-
-      temp[2]                   = soldItem['buyer'] or ''
-      temp[4]                   = soldItem['seller'] or ''
-      temp[6]                   = soldItem['guild'] or ''
-      temp[8]                   = versiondata.itemDesc or ''
-      temp[10]                  = versiondata.itemAdderText or ''
-      if playerName == tolower(soldItem['seller']) then
-        temp[12] = MasterMerchant.PlayerSpecialText
-      else
-        temp[12] = ''
-      end
-      searchText = tolower(tconcat(temp, ''))
-    end
-
-    -- Index each word
-    local searchByWords = string.gmatch(searchText, '%S+')
-    local wordData      = { numberID, itemData, itemIndex }
-    for i in searchByWords do
-      if self.SRIndex[i] == nil then
-        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        self.SRIndex[i]           = {}
-      end
-      tinsert(self.SRIndex[i], wordData)
-    end
-
-  end
-
-  local postfunc   = function(extraData)
-    self:setScanning(false)
-    MasterMerchant.v(3, 'Indexing: ' .. GetTimeStamp() - extraData.start .. ' seconds to index:')
-    MasterMerchant.v(3, '  ' .. extraData.indexCount .. ' sales records')
-    if extraData.wordsIndexCount > 1 then
-      MasterMerchant.v(3, '  ' .. extraData.wordsIndexCount .. ' unique words')
-    end
-  end
-
-  if not self.isScanning then
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
-  end
-
-end
-
 function MasterMerchant:BuildAccountNameLookup()
+  MasterMerchant:dm("Debug", "BuildAccountNameLookup")
   if not MM16DataSavedVariables["AccountNames"] then MM16DataSavedVariables["AccountNames"] = {} end
   for key, value in pairs(MM16DataSavedVariables["AccountNames"]) do
     MasterMerchant.accountNameByIdLookup[value] = key
   end
 end
 function MasterMerchant:BuildItemLinkNameLookup()
+  MasterMerchant:dm("Debug", "BuildItemLinkNameLookup")
   if not MM16DataSavedVariables["ItemLink"] then MM16DataSavedVariables["ItemLink"] = {} end
   for key, value in pairs(MM16DataSavedVariables["ItemLink"]) do
     MasterMerchant.itemLinkNameByIdLookup[value] = key
   end
 end
 function MasterMerchant:BuildGuildNameLookup()
+  MasterMerchant:dm("Debug", "BuildGuildNameLookup")
   if not MM16DataSavedVariables["GuildNames"] then MM16DataSavedVariables["GuildNames"] = {} end
   for key, value in pairs(MM16DataSavedVariables["GuildNames"]) do
     MasterMerchant.guildNameByIdLookup[value] = key
@@ -621,7 +492,7 @@ function MasterMerchant:AddSalesTableData(key, value)
     MM16DataSavedVariables[key] = setSalesTableData(key)
   end
   if not MM16DataSavedVariables[key][value] then
-    local index                        = MasterMerchant.NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
+    local index                        = MasterMerchant:NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
     MM16DataSavedVariables[key][value] = index
     if key == "AccountNames" then
       MasterMerchant.accountNameByIdLookup[index] = value
@@ -648,9 +519,9 @@ function MasterMerchant:Expected(eventID)
           end
           if checkIdString == eventID then
             local itemType, specializedItemType = GetItemLinkItemType(checking.itemLink)
-            MasterMerchant.dm("Debug", "Expected: " .. checking.itemLink .. " found in " .. itemIndex)
+            MasterMerchant:dm("Debug", "Expected: " .. checking.itemLink .. " found in " .. itemIndex)
             if (specializedItemType ~= 0) then
-              MasterMerchant.dm("Debug", MasterMerchant.concat("For",
+              MasterMerchant:dm("Debug", MasterMerchant.concat("For",
                 zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType))))
             end
           end
@@ -660,21 +531,8 @@ function MasterMerchant:Expected(eventID)
   end
 end
 
-function MasterMerchant:IsValidItemLink(itemLink)
-  local validLink = true
-  local _, count  = string.gsub(itemLink, ':', ':')
-  if count ~= 22 then validLink = false end
-  local theIID      = GetItemLinkItemId(itemLink)
-  local itemIdMatch = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
-  if not theIID then validLink = false end
-  if theIID and (theIID ~= itemIdMatch) then validLink = false end
-  local itemlinkName = GetItemLinkName(itemLink)
-  if MasterMerchant:is_empty_or_nil(itemlinkName) then validLink = false end
-  return validLink
-end
-
-function MasterMerchant:CheckForDuplicate(itemLink, eventID)
-  local dupe   = false
+function MasterMerchant:IsNotDuplicateSale(itemLink, eventID)
+  local dupe   = true
   --[[ we need to be able to calculate theIID and itemIndex
   when not used with addToHistoryTables() event though
   the function will calculate them.
@@ -686,7 +544,7 @@ function MasterMerchant:CheckForDuplicate(itemLink, eventID)
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
       if v.id == eventID then
-        dupe = true
+        dupe = false
         break
       end
     end
