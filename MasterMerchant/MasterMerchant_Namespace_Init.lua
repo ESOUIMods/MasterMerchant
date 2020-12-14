@@ -51,6 +51,8 @@ MasterMerchant.guildNameByIdLookup    = {} -- added 12-2
 MasterMerchant.eventsNeedProcessing   = {}
 MasterMerchant.timeEstimated          = {}
 MasterMerchant.purgeQueue             = {}
+MasterMerchant.a_test                 = {}
+
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
 else
@@ -131,7 +133,7 @@ local function emit_table(log_type, t, indent, table_history)
   end
 end
 
-function MasterMerchant.dm(log_type, ...)
+function MasterMerchant:dm(log_type, ...)
   if not MasterMerchant.logger then return end
   for i = 1, select("#", ...) do
     local value = select(i, ...)
@@ -166,9 +168,6 @@ MasterMerchant.PlayerSpecialText             = 'hfdkkdfunlajjamdhsiwsuwj'
 MasterMerchant.numEvents                     = { }
 MasterMerchant.moreEventsRequested           = { }
 MasterMerchant.alertQueue                    = { }
-MasterMerchant.addedEvents                   = { }
-MasterMerchant.lastUpdateTime                = { }
-MasterMerchant.lastUpdateCount               = { }
 MasterMerchant.lastNonDuplicate              = { }
 
 MasterMerchant.curSort                       = { 'time', 'desc' }

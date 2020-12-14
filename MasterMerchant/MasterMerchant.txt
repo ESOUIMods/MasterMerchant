@@ -33,6 +33,7 @@ MasterMerchant_Guild.lua
 MasterMerchant_Graph.lua
 MasterMerchant_ItemManipulation.lua
 MasterMerchant_GuildListings.lua
+MasterMerchant_Iterators.lua
 i18n\en.lua
 i18n\$(language).lua
 MasterMerchant.lua
