@@ -1797,8 +1797,8 @@ end
 function MasterMerchant:PurgeDups()
   local task = ASYNC:Create("PurgeDups")
 
-  if not self.isScanning then
-    self:setScanning(true)
+  if not MasterMerchant.isScanning then
+    task:Call(function() MasterMerchant:setScanning(true) end)
 
     local start      = GetTimeStamp()
     local eventArray = { }
@@ -1806,25 +1806,29 @@ function MasterMerchant:PurgeDups()
     local newSales
 
     --spin thru history and remove dups
-    for itemNumber, itemNumberData in pairs(self.salesData) do
-      for itemIndex, itemData in pairs(itemNumberData) do
+    task:For (pairs(MasterMerchant.salesData)):Do(function(itemNumber, itemNumberData)
+      task:For (pairs(itemNumberData)):Do(function(itemIndex, itemData)
         if itemData['sales'] then
           local dup
           newSales = {}
-          for _, checking in pairs(itemData['sales']) do
+          task:For (pairs(itemData['sales'])):Do(function(_, checking)
             local validLink = MasterMerchant:IsValidItemLink(checking.itemLink)
             dup             = false
             if checking.id == nil then
+              --[[
               if MasterMerchant.systemSavedVariables.verbose == 7 then
                 MasterMerchant:dm("Debug", 'Nil ID found')
               end
+              ]]--
               dup = true
             end
             if eventArray[checking.id] then
+              --[[
               if MasterMerchant.systemSavedVariables.verbose == 7 then
                 MasterMerchant:dm("Debug", 'Dupe found: ' .. checking.id .. ': ' .. checking.itemLink)
                 MasterMerchant:Expected(checking.id)
               end
+              ]]--
               dup = true
             end
             if not validLink then dup = true end
@@ -1835,24 +1839,24 @@ function MasterMerchant:PurgeDups()
               table.insert(newSales, checking)
               eventArray[checking.id] = true
             end
-          end
+          end)
           itemData['sales'] = newSales
         end
-      end
-    end
+      end)
+    end)
     --MasterMerchant:v(2, MasterMerchant:NonContiguousNonNilCount(eventArray, currentTask))
     eventArray = {} -- clear array
 
-    MasterMerchant:v(2, 'Dup purge: ' .. GetTimeStamp() - start .. ' seconds to clear ' .. count .. ' duplicates.')
-    MasterMerchant:v(5, 'Reindexing Everything.')
+    task:Call(function() MasterMerchant:v(2, 'Dup purge: ' .. GetTimeStamp() - start .. ' seconds to clear ' .. count .. ' duplicates.') end)
+        :Then(function() MasterMerchant:v(5, 'Reindexing Everything.') end)
     if count > 0 then
       --rebuild everything
-      self.SRIndex        = {}
+      MasterMerchant.SRIndex        = {}
 
-      self.guildPurchases = nil
-      self.guildSales     = nil
-      self.guildItems     = nil
-      self.myItems        = {}
+      MasterMerchant.guildPurchases = nil
+      MasterMerchant.guildSales     = nil
+      MasterMerchant.guildItems     = nil
+      MasterMerchant.myItems        = {}
       task:Call(function() MasterMerchant:InitItemHistory(task) end)
           :Then(function() MasterMerchant:indexHistoryTables(task) end)
           :Then(function() MasterMerchant:v(5, 'Reindexing Complete.') end)
@@ -2731,34 +2735,34 @@ function MasterMerchant:ReferenceSales(otherData, currentTask)
   otherData.savedVariables.dataLocations                 = otherData.savedVariables.dataLocations or {}
   otherData.savedVariables.dataLocations[GetWorldName()] = true
 
-  for itemid, versionlist in pairs(otherData.savedVariables.SalesData) do
-    if self.salesData[itemid] then
-      for versionid, versiondata in pairs(versionlist) do
-        if self.salesData[itemid][versionid] then
+  currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(itemid, versionlist)
+    if MasterMerchant.salesData[itemid] then
+      currentTask:For (pairs(versionlist)):Do(function(versionid, versiondata)
+        if MasterMerchant.salesData[itemid][versionid] then
           if versiondata.sales then
-            self.salesData[itemid][versionid].sales = self.salesData[itemid][versionid].sales or {}
+            MasterMerchant.salesData[itemid][versionid].sales = MasterMerchant.salesData[itemid][versionid].sales or {}
             -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
+            currentTask:For (pairs(versiondata.sales)):Do(function(saleid, saledata)
               if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(self.salesData[itemid][versionid].sales, saledata)
+                table.insert(MasterMerchant.salesData[itemid][versionid].sales, saledata)
               end
-            end
+            end)
             local _, first = next(versiondata.sales, nil)
             if first then
-              self.salesData[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
-              self.salesData[itemid][versionid].itemAdderText = self.addedSearchToItem(first.itemLink)
-              self.salesData[itemid][versionid].itemDesc      = GetItemLinkName(first.itemLink)
+              MasterMerchant.salesData[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
+              MasterMerchant.salesData[itemid][versionid].itemAdderText = MasterMerchant.addedSearchToItem(first.itemLink)
+              MasterMerchant.salesData[itemid][versionid].itemDesc      = GetItemLinkName(first.itemLink)
             end
           end
         else
-          self.salesData[itemid][versionid] = versiondata
+          MasterMerchant.salesData[itemid][versionid] = versiondata
         end
-      end
+      end)
       otherData.savedVariables.SalesData[itemid] = nil
     else
-      self.salesData[itemid] = versionlist
+      MasterMerchant.salesData[itemid] = versionlist
     end
-  end
+  end)
 end
 
 -- TODO Check This
@@ -2782,81 +2786,67 @@ function MasterMerchant:ReIndexSales(otherData, currentTask)
   local needToReindex          = false
   local needToAddDescription   = false
   local needToAdditemAdderText = false
-  for _, v in pairs(otherData.savedVariables.SalesData) do
+  currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(k, v)
     if v then
-      for j, dataList in pairs(v) do
+      currentTask:For (pairs(v)):Do(function(j, dataList)
         local key, count       = string.gsub(j, ':', ':')
         needToReindex          = (count ~= 4)
         needToAddDescription   = (dataList['itemDesc'] == nil)
         needToAdditemAdderText = (dataList['itemAdderText'] == nil)
-        break
-      end
-      break
+        return currentTask.BREAK
+      end)
+      return currentTask.BREAK
     end
-  end
+  end)
   if needToReindex or not MasterMerchant.systemSavedVariables.shouldReindex then
     --MasterMerchant:dm("Debug", "needToReindex")
     local tempSales                    = otherData.savedVariables.SalesData
     otherData.savedVariables.SalesData = {}
 
-    for k, v in pairs(tempSales) do
+    currentTask:For (pairs(tempSales)):Do(function(k, v)
       if k ~= 0 then
-        for j, dataList in pairs(v) do
+        currentTask:For (pairs(v)):Do(function(j, dataList)
           -- IPAIRS
-          for i, item in pairs(dataList['sales']) do
+          currentTask:For (pairs(dataList['sales'])):Do(function(i, item)
             if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') then
-              local itemIndex = self.makeIndexFromLink(item.itemLink)
+              local itemIndex = MasterMerchant.makeIndexFromLink(item.itemLink)
               if not otherData.savedVariables.SalesData[k] then otherData.savedVariables.SalesData[k] = {} end
               if otherData.savedVariables.SalesData[k][itemIndex] then
                 table.insert(otherData.savedVariables.SalesData[k][itemIndex]['sales'], item)
               else
                 otherData.savedVariables.SalesData[k][itemIndex] = {
                   ['itemIcon']      = dataList.itemIcon,
-                  ['itemAdderText'] = self.addedSearchToItem(item.itemLink),
+                  ['itemAdderText'] = MasterMerchant.addedSearchToItem(item.itemLink),
                   ['sales']         = { item },
                   ['itemDesc']      = GetItemLinkName(item.itemLink)
                 }
               end
             end
-          end
-        end
+          end)
+        end)
       end
-    end
+    end)
   end
   if needToAddDescription then
     --MasterMerchant:dm("Debug", "needToAddDescription")
     -- spin through and split Item Description into a seperate string
-    for _, v in pairs(otherData.savedVariables.SalesData) do
-      for _, dataList in pairs(v) do
+    currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(k, v)
+      currentTask:For (pairs(v)):Do(function(j, dataList)
         _, item              = next(dataList['sales'], nil)
         dataList['itemDesc'] = GetItemLinkName(item.itemLink)
-      end
-    end
+      end)
+    end)
   end
   if needToAdditemAdderText or not MasterMerchant.systemSavedVariables.shouldAdderText then
     --MasterMerchant:dm("Debug", "needToAdditemAdderText")
     -- spin through and split Item Description into a seperate string
-    for _, v in pairs(otherData.savedVariables.SalesData) do
-      for _, dataList in pairs(v) do
+    currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(k, v)
+      currentTask:For (pairs(v)):Do(function(j, dataList)
         _, item                   = next(dataList['sales'], nil)
-        dataList['itemAdderText'] = self.addedSearchToItem(item.itemLink)
-      end
-    end
+        dataList['itemAdderText'] = MasterMerchant.addedSearchToItem(item.itemLink)
+      end)
+    end)
   end
-  --[[It appears that after champion ranks were introduced there was the need
-  to add a description of the item and add things like cp160 purple  epic.
-  ]]--
-  --[[
-  elseif (not MasterMerchant.systemSavedVariables.switchedToChampionRanks) and (GetAPIVersion() >= 100015) then
-    for _, v in pairs(otherData.savedVariables.SalesData) do
-      for _, dataList in pairs(v) do
-        _, item = next(dataList['sales'], nil)
-        dataList['itemAdderText'] = self.addedSearchToItem(item.itemLink)
-      end
-    end
-  end
-  MasterMerchant.systemSavedVariables.switchedToChampionRanks = (GetAPIVersion() >= 100015)
-  ]]--
 end
 
 function MasterMerchant.SetupPendingPost(self)
@@ -2935,22 +2925,22 @@ function MasterMerchant:AdjustItemsAllContainers(currentTask)
   -- Convert event IDs to string if not converted
   MasterMerchant:dm("Debug", "Convert event IDs to string if not converted")
   if not MasterMerchant.systemSavedVariables.itemIDConvertedToString then
-    self:AdjustItems(MM00Data, currentTask)
-    self:AdjustItems(MM01Data, currentTask)
-    self:AdjustItems(MM02Data, currentTask)
-    self:AdjustItems(MM03Data, currentTask)
-    self:AdjustItems(MM04Data, currentTask)
-    self:AdjustItems(MM05Data, currentTask)
-    self:AdjustItems(MM06Data, currentTask)
-    self:AdjustItems(MM07Data, currentTask)
-    self:AdjustItems(MM08Data, currentTask)
-    self:AdjustItems(MM09Data, currentTask)
-    self:AdjustItems(MM10Data, currentTask)
-    self:AdjustItems(MM11Data, currentTask)
-    self:AdjustItems(MM12Data, currentTask)
-    self:AdjustItems(MM13Data, currentTask)
-    self:AdjustItems(MM14Data, currentTask)
-    self:AdjustItems(MM15Data, currentTask)
+    currentTask:Call(function() MasterMerchant:AdjustItems(MM00Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM01Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM02Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM03Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM04Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM05Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM06Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM07Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM08Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM09Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM10Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM11Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM12Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM13Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM14Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM15Data, currentTask) end)
     MasterMerchant.systemSavedVariables.itemIDConvertedToString = true
   end
 end
@@ -2959,22 +2949,22 @@ function MasterMerchant:ReIndexSalesAllContainers(currentTask)
   -- Update indexs because of Writs
   MasterMerchant:dm("Debug", "Update indexs if not converted")
   if not MasterMerchant.systemSavedVariables.shouldReindex then
-    self:ReIndexSales(MM00Data)
-    self:ReIndexSales(MM01Data)
-    self:ReIndexSales(MM02Data)
-    self:ReIndexSales(MM03Data)
-    self:ReIndexSales(MM04Data)
-    self:ReIndexSales(MM05Data)
-    self:ReIndexSales(MM06Data)
-    self:ReIndexSales(MM07Data)
-    self:ReIndexSales(MM08Data)
-    self:ReIndexSales(MM09Data)
-    self:ReIndexSales(MM10Data)
-    self:ReIndexSales(MM11Data)
-    self:ReIndexSales(MM12Data)
-    self:ReIndexSales(MM13Data)
-    self:ReIndexSales(MM14Data)
-    self:ReIndexSales(MM15Data)
+    currentTask:Call(function() MasterMerchant:ReIndexSales(MM00Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM01Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM02Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM03Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM04Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM05Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM06Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM07Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM08Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM09Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM10Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM11Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM12Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM13Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM14Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM15Data, currentTask) end)
     MasterMerchant.systemSavedVariables.shouldReindex   = true
     MasterMerchant.systemSavedVariables.shouldAdderText = true
   end
@@ -2983,22 +2973,22 @@ end
 -- Bring seperate lists together we can still access the sales history all together
 function MasterMerchant:ReferenceSalesAllContainers(currentTask)
   MasterMerchant:dm("Debug", "Bring seperate lists together")
-  self:ReferenceSales(MM00Data)
-  self:ReferenceSales(MM01Data)
-  self:ReferenceSales(MM02Data)
-  self:ReferenceSales(MM03Data)
-  self:ReferenceSales(MM04Data)
-  self:ReferenceSales(MM05Data)
-  self:ReferenceSales(MM06Data)
-  self:ReferenceSales(MM07Data)
-  self:ReferenceSales(MM08Data)
-  self:ReferenceSales(MM09Data)
-  self:ReferenceSales(MM10Data)
-  self:ReferenceSales(MM11Data)
-  self:ReferenceSales(MM12Data)
-  self:ReferenceSales(MM13Data)
-  self:ReferenceSales(MM14Data)
-  self:ReferenceSales(MM15Data)
+  currentTask:Call(function() MasterMerchant:ReferenceSales(MM00Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM01Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM02Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM03Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM04Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM05Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM06Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM07Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM08Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM09Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM10Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM11Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM12Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM13Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM14Data, currentTask) end)
+  :Then(function() MasterMerchant:ReferenceSales(MM15Data, currentTask) end)
   self.systemSavedVariables.dataLocations                 = self.systemSavedVariables.dataLocations or {}
   self.systemSavedVariables.dataLocations[GetWorldName()] = true
 end
@@ -3136,11 +3126,9 @@ function MasterMerchant:Initialize()
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
 
   local sv = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
-  MasterMerchant:dm("Debug", sv)
   -- Clean up saved variables (from previous versions)
   for key, val in pairs(sv) do
       -- Delete key-value pair if the key can't also be found in the default settings (except for version)
-      MasterMerchant:dm("Debug", key)
       if key ~= "version" and systemDefault[key] == nil then
           sv[key] = nil
       end
@@ -3479,6 +3467,7 @@ function MasterMerchant:SetupListener(guildID)
       end
       local guildName   = GetGuildName(guildID)
       local thePlayer   = string.lower(GetDisplayName())
+      local added = false
       --[[
       local theEvent = {
         buyer = p2,
@@ -3528,17 +3517,17 @@ function MasterMerchant:SetupListener(guildID)
       }
       theEvent.wasKiosk = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
 
-      local isDuplicate = MasterMerchant:CheckForDuplicate(theEvent.itemLink, theEvent.id)
+      local isNotDuplicate = MasterMerchant:IsNotDuplicateSale(theEvent.itemLink, theEvent.id)
 
-      if not isDuplicate then
-        MasterMerchant:addToHistoryTables(theEvent)
+      if isNotDuplicate then
+        added = MasterMerchant:addToHistoryTables(theEvent)
       end
       -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
-      if not isDuplicate and string.lower(theEvent.seller) == thePlayer then
+      if added and string.lower(theEvent.seller) == thePlayer then
         --MasterMerchant:dm("Debug", "alertQueue updated")
         table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
       end
-      if not isDuplicate then
+      if added then
         MasterMerchant:PostScanParallel(guildName, true)
         MasterMerchant:SetMasterMerchantWindowDirty()
       end
@@ -3550,7 +3539,7 @@ end
 function MasterMerchant:InitScrollLists()
   MasterMerchant:dm("Debug", "InitScrollLists")
 
-  self:SetupScrollLists()
+  MasterMerchant:SetupScrollLists()
 
   local numGuilds = GetNumGuilds()
   if numGuilds > 0 then
@@ -3572,14 +3561,14 @@ function MasterMerchant:InitScrollLists()
     end
   end
 
-  MasterMerchant:v(2, '|cFFFF00Master Merchant Initialized -- Holding information on ' .. self.totalRecords .. ' sales.|r')
+  MasterMerchant:v(2, '|cFFFF00Master Merchant Initialized -- Holding information on ' .. MasterMerchant.totalRecords .. ' sales.|r')
 
-  self.isFirstScan = MasterMerchant.systemSavedVariables.offlineSales
-  if NonContiguousCount(self.salesData) > 0 then
-    self.veryFirstScan = false
+  MasterMerchant.isFirstScan = MasterMerchant.systemSavedVariables.offlineSales
+  if NonContiguousCount(MasterMerchant.salesData) > 0 then
+    MasterMerchant.veryFirstScan = false
   else
     -- most of this stuff was unused
-    self.veryFirstScan = true
+    MasterMerchant.veryFirstScan = true
 
     MasterMerchant:v(2, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
   end
@@ -3709,41 +3698,23 @@ local function loop4()
     d(i)
   end
 end
-function MasterMerchant.TestLibAsync()
+
+function MasterMerchant:loopFunction(itemId, count, task)
+  itemId = 123456
+  count = 0
+  task:While(function() return itemId ~= nil end):Do(function()
+                      d(itemId)
+                      count = count + 1
+                      if count > 100 then itemId = nil end
+                  end)
+end
+
+function MasterMerchant:TestLibAsync()
   local task = ASYNC:Create("example1")
 
-  local function doneLooping()
-    for i = 10, 15 do
-      d(i)
-    end
-    return true
-  end
-  local function doneLooping2()
-    for i = 20, 25 do
-      d(i)
-    end
-    return true
-  end
-  local function doneLooping3()
-    for i = 20, 25 do
-      d(i)
-    end
-    return true
-  end
-  task:WaitUntil(function()
-    return doneLooping()
-  end):Then(function()
-    MasterMerchant:v(1, "|cFFFF00We waited until it was done|r")
-    task:WaitUntil(function(task)
-      return doneLooping2()
-    end):Then(function()
-      MasterMerchant:v(1, "|cFFFF00But we also waited a second time|r")
-      task:WaitUntil(function(task)
-        return doneLooping3()
-      end):Then(function()
-        MasterMerchant:v(1, "|cFFFF00Then yet one more time|r")
-      end)
-    end)
+  task:Call(function() MasterMerchant:loopFunction(nil, nil, task) end)
+  task:Then(function()
+    d("end")
   end)
 end
 
@@ -3783,7 +3754,7 @@ function MasterMerchant.Slash(allArgs)
   end
 
   if args == 'atest' then
-    MasterMerchant.TestLibAsync()
+    MasterMerchant:TestLibAsync()
     return
   end
   if args == 'dups' or args == 'stilldups' then

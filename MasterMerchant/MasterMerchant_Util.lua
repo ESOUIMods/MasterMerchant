@@ -432,6 +432,11 @@ function MasterMerchant:playSounds(lastIndex)
 end
 
 function MasterMerchant:setScanning(start)
+  if start == true then
+    MasterMerchant:dm("Debug", "setScanning is being set to true")
+  else
+    MasterMerchant:dm("Debug", "setScanning is being set to false")
+  end
   self.isScanning = start
   MasterMerchantResetButton:SetEnabled(not start)
   MasterMerchantGuildResetButton:SetEnabled(not start)
@@ -454,31 +459,6 @@ function MasterMerchant:setScanning(start)
     MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
   end
 end
-
-function MasterMerchant:setScanningParallel(start, guildName)
-  self.isScanningParallel[guildName] = start
-  MasterMerchantResetButton:SetEnabled(not start)
-  MasterMerchantGuildResetButton:SetEnabled(not start)
-  MasterMerchantRefreshButton:SetEnabled(not start)
-  MasterMerchantGuildRefreshButton:SetEnabled(not start)
-
-  if not start then
-    MasterMerchantWindowLoadingIcon.animation:Stop()
-    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
-    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
-  end
-
-  MasterMerchantWindowLoadingIcon:SetHidden(not start)
-  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
-  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
-
-  if start then
-    MasterMerchantWindowLoadingIcon.animation:PlayForward()
-    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
-    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
-  end
-end
-
 
 function MasterMerchant:BuildAccountNameLookup()
   MasterMerchant:dm("Debug", "BuildAccountNameLookup")
