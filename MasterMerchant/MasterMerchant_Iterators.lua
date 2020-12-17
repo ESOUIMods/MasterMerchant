@@ -82,7 +82,6 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
 
   extraData.versionCount      = (extraData.versionCount or 0)
   extraData.idCount           = (extraData.idCount or 0)
-  extraData.checkMilliseconds = (extraData.checkMilliseconds or 20)
 
   if prefunc then
     prefunc(extraData, currentTask)
@@ -368,8 +367,7 @@ function MasterMerchant:InitItemHistory(currentTask)
 
       self:setScanning(false)
 
-      MasterMerchant:v(3,
-        'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
+      MasterMerchant:v(3, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
     end
 
     MasterMerchant:dm("Debug", "InitItemHistory iterateOverSalesData")

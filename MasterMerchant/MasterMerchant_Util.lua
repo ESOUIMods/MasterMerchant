@@ -556,8 +556,8 @@ function MasterMerchant:Expected(eventID)
   end
 end
 
-function MasterMerchant:CheckForDuplicate(itemLink, eventID)
-  local dupe   = false
+function MasterMerchant:IsNotDuplicateSale(itemLink, eventID)
+  local dupe   = true
   --[[ we need to be able to calculate theIID and itemIndex
   when not used with addToHistoryTables() event though
   the function will calculate them.
@@ -569,7 +569,7 @@ function MasterMerchant:CheckForDuplicate(itemLink, eventID)
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
       if v.id == eventID then
-        dupe = true
+        dupe = false
         break
       end
     end

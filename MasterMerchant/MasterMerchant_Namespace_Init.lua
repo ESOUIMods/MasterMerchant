@@ -51,6 +51,7 @@ MasterMerchant.guildNameByIdLookup    = {} -- added 12-2
 MasterMerchant.eventsNeedProcessing   = {}
 MasterMerchant.timeEstimated          = {}
 MasterMerchant.purgeQueue             = {}
+MasterMerchant.totalRecords           = 0 -- added 12-16 but always there
 MasterMerchant.a_test                 = {}
 
 if AwesomeGuildStore then
