@@ -2844,38 +2844,55 @@ function MasterMerchant:ReIndexSales(otherData)
   end
 end
 
-function MasterMerchant:ReferenceSales(otherData)
-  otherData.savedVariables.dataLocations                 = otherData.savedVariables.dataLocations or {}
-  otherData.savedVariables.dataLocations[GetWorldName()] = true
-
-  for itemid, versionlist in pairs(otherData.savedVariables.SalesData) do
-    if self.salesData[itemid] then
+function MasterMerchant:ConcatSales(otherData)
+  local savedVariablesTable = otherData.savedVariables.SalesData
+  for itemid, versionlist in pairs(savedVariablesTable) do
+    if savedVariablesTable[itemid] then
+      if self.salesData[itemid] == nil then self.salesData[itemid] = {} end
       for versionid, versiondata in pairs(versionlist) do
-        if self.salesData[itemid][versionid] then
+        if savedVariablesTable[itemid][versionid] then
+          if self.salesData[itemid][versionid] == nil then self.salesData[itemid][versionid] = {} end
           if versiondata.sales then
-            self.salesData[itemid][versionid].sales = self.salesData[itemid][versionid].sales or {}
-            -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
-              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(self.salesData[itemid][versionid].sales, saledata)
-              end
+            if self.salesData[itemid][versionid].sales == nil then self.salesData[itemid][versionid].sales = {} end
+            self.salesData[itemid][versionid].itemIcon = savedVariablesTable[itemid][versionid].itemIcon
+            self.salesData[itemid][versionid].itemAdderText = savedVariablesTable[itemid][versionid].itemAdderText
+            self.salesData[itemid][versionid].itemDesc = savedVariablesTable[itemid][versionid].itemDesc
+            local currentSales = savedVariablesTable[itemid][versionid].sales
+            for saleid, saledata in pairs(currentSales) do
+              table.insert(self.salesData[itemid][versionid].sales, saledata)
             end
-            local _, first = next(versiondata.sales, nil)
-            if first then
-              self.salesData[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
-              self.salesData[itemid][versionid].itemAdderText = self.addedSearchToItem(first.itemLink)
-              self.salesData[itemid][versionid].itemDesc      = GetItemLinkName(first.itemLink)
+          end -- if there are sales
+        end -- second if
+      end-- second for loop
+    end -- first if
+  end -- main loop
+end
+
+function MasterMerchant:RebuildSalesData()
+  local concatenatedSalesTable = ZO_DeepTableCopy(self.salesData)
+  local salesTable = {}
+
+  for itemid, versionlist in pairs(concatenatedSalesTable) do
+    if concatenatedSalesTable[itemid] then
+      if salesTable[itemid] == nil then salesTable[itemid] = {} end
+      for versionid, versiondata in pairs(versionlist) do
+        if concatenatedSalesTable[itemid][versionid] then
+          if salesTable[itemid][versionid] == nil then salesTable[itemid][versionid] = {} end
+          if concatenatedSalesTable[itemid][versionid].sales then
+            if salesTable[itemid][versionid].sales == nil then salesTable[itemid][versionid].sales = {} end
+            salesTable[itemid][versionid].itemIcon = concatenatedSalesTable[itemid][versionid].itemIcon
+            salesTable[itemid][versionid].itemAdderText = concatenatedSalesTable[itemid][versionid].itemAdderText
+            salesTable[itemid][versionid].itemDesc = concatenatedSalesTable[itemid][versionid].itemDesc
+            local currentSales = concatenatedSalesTable[itemid][versionid].sales
+            for saleid, saledata in pairs(currentSales) do
+              table.insert(salesTable[itemid][versionid].sales, saledata)
             end
-          end
-        else
-          self.salesData[itemid][versionid] = versiondata
-        end
-      end
-      otherData.savedVariables.SalesData[itemid] = nil
-    else
-      self.salesData[itemid] = versionlist
-    end
-  end
+          end -- if there are sales
+        end -- second if
+      end-- second for loop
+    end -- first if
+  end -- main loop
+  self.salesData = salesTable
 end
 
 --[[ register event monitor
@@ -2979,25 +2996,46 @@ function MasterMerchant:ReIndexSalesAllContainers()
 end
 
 -- Bring seperate lists together we can still access the sales history all together
+function MasterMerchant:ConcatSalesAllContainers()
+  MasterMerchant:dm("Debug", "ConcatSalesAllContainers")
+  MasterMerchant.salesData              = { }
+  self:ConcatSales(MM00Data)
+  self:ConcatSales(MM01Data)
+  self:ConcatSales(MM02Data)
+  self:ConcatSales(MM03Data)
+  self:ConcatSales(MM04Data)
+  self:ConcatSales(MM05Data)
+  self:ConcatSales(MM06Data)
+  self:ConcatSales(MM07Data)
+  self:ConcatSales(MM08Data)
+  self:ConcatSales(MM09Data)
+  self:ConcatSales(MM10Data)
+  self:ConcatSales(MM11Data)
+  self:ConcatSales(MM12Data)
+  self:ConcatSales(MM13Data)
+  self:ConcatSales(MM14Data)
+  self:ConcatSales(MM15Data)
+end
+
 -- Bring seperate lists together we can still access the sales history all together
-function MasterMerchant:ReferenceSalesAllContainers()
-  MasterMerchant:dm("Debug", "ReferenceSalesAllContainers")
-  self:ReferenceSales(MM00Data)
-  self:ReferenceSales(MM01Data)
-  self:ReferenceSales(MM02Data)
-  self:ReferenceSales(MM03Data)
-  self:ReferenceSales(MM04Data)
-  self:ReferenceSales(MM05Data)
-  self:ReferenceSales(MM06Data)
-  self:ReferenceSales(MM07Data)
-  self:ReferenceSales(MM08Data)
-  self:ReferenceSales(MM09Data)
-  self:ReferenceSales(MM10Data)
-  self:ReferenceSales(MM11Data)
-  self:ReferenceSales(MM12Data)
-  self:ReferenceSales(MM13Data)
-  self:ReferenceSales(MM14Data)
-  self:ReferenceSales(MM15Data)
+function MasterMerchant:RebuildSalesDataAllContainers()
+  MasterMerchant:dm("Debug", "RebuildSalesDataAllContainers")
+  self:RebuildSalesData(MM00Data)
+  self:RebuildSalesData(MM01Data)
+  self:RebuildSalesData(MM02Data)
+  self:RebuildSalesData(MM03Data)
+  self:RebuildSalesData(MM04Data)
+  self:RebuildSalesData(MM05Data)
+  self:RebuildSalesData(MM06Data)
+  self:RebuildSalesData(MM07Data)
+  self:RebuildSalesData(MM08Data)
+  self:RebuildSalesData(MM09Data)
+  self:RebuildSalesData(MM10Data)
+  self:RebuildSalesData(MM11Data)
+  self:RebuildSalesData(MM12Data)
+  self:RebuildSalesData(MM13Data)
+  self:RebuildSalesData(MM14Data)
+  self:RebuildSalesData(MM15Data)
 end
 
 -- Scans all stores a player has access to in parallel.
@@ -3389,8 +3427,9 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:MoveFromOldAcctSavedVariables() end, 'MoveFromOldAcctSavedVariables')
     LEQ:Add(function() MasterMerchant:AdjustItemsAllContainers(task) end, 'AdjustItemsAllContainers')
     LEQ:Add(function() MasterMerchant:ReIndexSalesAllContainers(task) end, 'ReIndexSalesAllContainers')
-    LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers(task) end, 'ReferenceSalesAllContainers')
+    LEQ:Add(function() MasterMerchant:ConcatSalesAllContainers() end, 'ConcatSalesAllContainers')
     LEQ:Add(function() MasterMerchant:TruncateHistory(task) end, 'TruncateHistory')
+    LEQ:Add(function() MasterMerchant:RebuildSalesDataAllContainers() end, 'ReferenceSalesAllContainers')
     LEQ:Add(function() MasterMerchant:InitItemHistory(task) end, 'InitItemHistory')
     LEQ:Add(function() MasterMerchant:indexHistoryTables(task) end, 'indexHistoryTables')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
