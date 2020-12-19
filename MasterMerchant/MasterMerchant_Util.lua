@@ -6,6 +6,7 @@
 -- Distribution without license is prohibited!
 
 --  |H0:item:69359:96:50:26848:96:50:0:0:0:0:0:0:0:0:0:19:0:0:0:0:0|h|h  AUTGuild 1058 days
+local ASYNC = LibAsync
 
 function MasterMerchant:v(level, message)
   local verboseLevel = MasterMerchant.verboseLevel or 4
@@ -422,12 +423,11 @@ function MasterMerchant:playSounds(lastIndex)
   local index, value = next(SOUNDS, lastIndex)
   if index then
     d(index)
+    local task = ASYNC:Create("playSounds")
     PlaySound(value)
-
-    zo_callLater(function()
-      local LEQ = LibExecutionQueue:new()
-      LEQ:ContinueWith(function() self:playSounds(index) end, nil)
-    end, 2000)
+    task:Delay(2000, function()
+      task:Call(function() MasterMerchant:playSounds(lastIndex) end)
+    end)
   end
 end
 
@@ -492,7 +492,7 @@ function MasterMerchant:AddSalesTableData(key, value)
     MM16DataSavedVariables[key] = setSalesTableData(key)
   end
   if not MM16DataSavedVariables[key][value] then
-    local index = MasterMerchant:NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
+    local index = MasterMerchant:NonContiguousNonNilCount(MM16DataSavedVariables[key], nil) + 1
     MM16DataSavedVariables[key][value] = index
     if key == "AccountNames" then
       MasterMerchant.accountNameByIdLookup[index] = value
@@ -784,13 +784,6 @@ function MasterMerchant.IsNewestFirst(guildID)
   local _, secsSinceFirst, _, _, _, _, _, _ = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, 1)
   local _, secsSinceLast, _, _, _, _, _, _  = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, numEvents)
   return (secsSinceFirst < secsSinceLast)
-end
-
--- A simple utility function to return which set of settings are active,
--- based on the allSettingsAccount option setting.
-function MasterMerchant:ActiveSettings()
-  return ((self.acctSavedVariables.allSettingsAccount and self.acctSavedVariables) or
-    self.savedVariables)
 end
 
 function MasterMerchant:ActiveWindow()
