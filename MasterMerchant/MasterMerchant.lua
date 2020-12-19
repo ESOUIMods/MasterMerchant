@@ -2684,6 +2684,26 @@ function MasterMerchant:InitRosterChanges()
 
 end
 
+function MasterMerchant.SetupPendingPost(self)
+  OriginalSetupPendingPost(self)
+
+  if (self.pendingItemSlot) then
+    local itemLink         = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
+    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
+
+    local theIID           = GetItemLinkItemId(itemLink)
+    local itemIndex        = MasterMerchant.makeIndexFromLink(itemLink)
+
+    if MasterMerchant.systemSavedVariables.pricingData and MasterMerchant.systemSavedVariables.pricingData[theIID] and MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] then
+      self:SetPendingPostPrice(math.floor(MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] * stackCount))
+    else
+      local tipStats = MasterMerchant:itemStats(itemLink)
+      if (tipStats.avgPrice) then
+        self:SetPendingPostPrice(math.floor(tipStats.avgPrice * stackCount))
+      end
+    end
+  end
+end
 
 -- Handle the reset button - clear out the search and scan tables,
 -- and set the time of the last scan to nil, then force a scan.
@@ -2736,40 +2756,6 @@ function MasterMerchant:AdjustItems(otherData)
           saleData.id = tostring(saleData.id)
         end
       end
-    end
-  end
-end
-
-function MasterMerchant:ReferenceSales(otherData)
-  otherData.savedVariables.dataLocations                 = otherData.savedVariables.dataLocations or {}
-  otherData.savedVariables.dataLocations[GetWorldName()] = true
-
-  for itemid, versionlist in pairs(otherData.savedVariables.SalesData) do
-    if self.salesData[itemid] then
-      for versionid, versiondata in pairs(versionlist) do
-        if self.salesData[itemid][versionid] then
-          if versiondata.sales then
-            self.salesData[itemid][versionid].sales = self.salesData[itemid][versionid].sales or {}
-            -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
-              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(self.salesData[itemid][versionid].sales, saledata)
-              end
-            end
-            local _, first = next(versiondata.sales, nil)
-            if first then
-              self.salesData[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
-              self.salesData[itemid][versionid].itemAdderText = self.addedSearchToItem(first.itemLink)
-              self.salesData[itemid][versionid].itemDesc      = GetItemLinkName(first.itemLink)
-            end
-          end
-        else
-          self.salesData[itemid][versionid] = versiondata
-        end
-      end
-      otherData.savedVariables.SalesData[itemid] = nil
-    else
-      self.salesData[itemid] = versionlist
     end
   end
 end
@@ -2858,23 +2844,36 @@ function MasterMerchant:ReIndexSales(otherData)
   end
 end
 
-function MasterMerchant.SetupPendingPost(self)
-  OriginalSetupPendingPost(self)
+function MasterMerchant:ReferenceSales(otherData)
+  otherData.savedVariables.dataLocations                 = otherData.savedVariables.dataLocations or {}
+  otherData.savedVariables.dataLocations[GetWorldName()] = true
 
-  if (self.pendingItemSlot) then
-    local itemLink         = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
-    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
-
-    local theIID           = GetItemLinkItemId(itemLink)
-    local itemIndex        = MasterMerchant.makeIndexFromLink(itemLink)
-
-    if MasterMerchant.systemSavedVariables.pricingData and MasterMerchant.systemSavedVariables.pricingData[theIID] and MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] then
-      self:SetPendingPostPrice(math.floor(MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] * stackCount))
-    else
-      local tipStats = MasterMerchant:itemStats(itemLink)
-      if (tipStats.avgPrice) then
-        self:SetPendingPostPrice(math.floor(tipStats.avgPrice * stackCount))
+  for itemid, versionlist in pairs(otherData.savedVariables.SalesData) do
+    if self.salesData[itemid] then
+      for versionid, versiondata in pairs(versionlist) do
+        if self.salesData[itemid][versionid] then
+          if versiondata.sales then
+            self.salesData[itemid][versionid].sales = self.salesData[itemid][versionid].sales or {}
+            -- IPAIRS
+            for saleid, saledata in pairs(versiondata.sales) do
+              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
+                table.insert(self.salesData[itemid][versionid].sales, saledata)
+              end
+            end
+            local _, first = next(versiondata.sales, nil)
+            if first then
+              self.salesData[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
+              self.salesData[itemid][versionid].itemAdderText = self.addedSearchToItem(first.itemLink)
+              self.salesData[itemid][versionid].itemDesc      = GetItemLinkName(first.itemLink)
+            end
+          end
+        else
+          self.salesData[itemid][versionid] = versiondata
+        end
       end
+      otherData.savedVariables.SalesData[itemid] = nil
+    else
+      self.salesData[itemid] = versionlist
     end
   end
 end
@@ -2930,7 +2929,7 @@ function MasterMerchant:MoveFromOldAcctSavedVariables()
   end
 end
 
-function MasterMerchant:AdjustItemsAllContainers(currentTask)
+function MasterMerchant:AdjustItemsAllContainers()
   -- Convert event IDs to string if not converted
   MasterMerchant:dm("Debug", "Convert event IDs to string if not converted")
   if not MasterMerchant.systemSavedVariables.itemIDConvertedToString then
@@ -2954,7 +2953,7 @@ function MasterMerchant:AdjustItemsAllContainers(currentTask)
   end
 end
 
-function MasterMerchant:ReIndexSalesAllContainers(currentTask)
+function MasterMerchant:ReIndexSalesAllContainers()
   -- Update indexs because of Writs
   MasterMerchant:dm("Debug", "Update indexs if not converted")
   if not MasterMerchant.systemSavedVariables.shouldReindex then
@@ -2980,8 +2979,9 @@ function MasterMerchant:ReIndexSalesAllContainers(currentTask)
 end
 
 -- Bring seperate lists together we can still access the sales history all together
-function MasterMerchant:ReferenceSalesAllContainers(currentTask)
-  MasterMerchant:dm("Debug", "Bring seperate lists together")
+-- Bring seperate lists together we can still access the sales history all together
+function MasterMerchant:ReferenceSalesAllContainers()
+  MasterMerchant:dm("Debug", "ReferenceSalesAllContainers")
   self:ReferenceSales(MM00Data)
   self:ReferenceSales(MM01Data)
   self:ReferenceSales(MM02Data)
@@ -2998,8 +2998,6 @@ function MasterMerchant:ReferenceSalesAllContainers(currentTask)
   self:ReferenceSales(MM13Data)
   self:ReferenceSales(MM14Data)
   self:ReferenceSales(MM15Data)
-  self.systemSavedVariables.dataLocations                 = self.systemSavedVariables.dataLocations or {}
-  self.systemSavedVariables.dataLocations[GetWorldName()] = true
 end
 
 -- Scans all stores a player has access to in parallel.
@@ -3028,7 +3026,6 @@ function MasterMerchant:Initialize()
 
   local systemDefault = {
     -- old settings
-    dataLocations              = {},
     showChatAlerts             = false,
     showMultiple               = true,
     openWithMail               = true,
