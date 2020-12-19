@@ -1775,7 +1775,6 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.verbose end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.verbose = value
-        MasterMerchant.systemSavedVariables.verbose = value
         MasterMerchant.verboseLevel                 = value
       end,
       default = MasterMerchant.systemDefault.verbose,
@@ -2224,9 +2223,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
             MasterMerchant.systemSavedVariables.alertSoundName,
             string.format(GetString(SK_SALES_ALERT_GROUP_COLOR), numSold, stringPrice))
         else
-          MasterMerchant:v(1,
-            string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)),
-              numSold, stringPrice))
+          MasterMerchant:v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)), numSold, stringPrice))
         end
       end
     end

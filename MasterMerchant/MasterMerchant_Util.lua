@@ -492,7 +492,7 @@ function MasterMerchant:AddSalesTableData(key, value)
     MM16DataSavedVariables[key] = setSalesTableData(key)
   end
   if not MM16DataSavedVariables[key][value] then
-    local index                        = MasterMerchant:NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
+    local index = MasterMerchant:NonContiguousNonNilCount(MM16DataSavedVariables[key], nil) + 1
     MM16DataSavedVariables[key][value] = index
     if key == "AccountNames" then
       MasterMerchant.accountNameByIdLookup[index] = value
