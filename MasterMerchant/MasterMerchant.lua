@@ -3404,18 +3404,18 @@ function MasterMerchant:Initialize()
   -- Right, we're all set up, so wait for the player activated event
   -- and then do an initial (deep) scan in case it's been a while since the player
   -- logged on, then use RegisterForUpdate to set up a timed scan.
-  local task = ASYNC:Create("Initialize")
-  task:Call(function() printInitMessage() end)
+  local MasterMerchant.InitializeTask = ASYNC:Create("Initialize")
+  MasterMerchant.currentTask:Call(function() printInitMessage() end)
       :Then(function() MasterMerchant:MoveFromOldAcctSavedVariables() end)
-      :Then(function() MasterMerchant:AdjustItemsAllContainers(task) end)
-      :Then(function() MasterMerchant:ReIndexSalesAllContainers(task) end)
-      :Then(function() MasterMerchant:ConcatSalesAllContainers(task) end)
-      :Then(function() MasterMerchant:TruncateHistory(task) end)
-      --:Then(function() MasterMerchant:RebuildSalesData(task) end)
-      :Then(function() MasterMerchant:InitItemHistory(task) end)
-      :Then(function() MasterMerchant:indexHistoryTables(task) end)
-      :Then(function() MasterMerchant:InitScrollLists(task) end)
-      :Then(function() MasterMerchant:SetupListenerLibHistoire(task) end)
+      :Then(function() MasterMerchant:AdjustItemsAllContainers(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:ReIndexSalesAllContainers(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:ConcatSalesAllContainers(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:TruncateHistory(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:RebuildSalesData(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:InitItemHistory(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:indexHistoryTables(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:InitScrollLists(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:SetupListenerLibHistoire(MasterMerchant.currentTask) end)
 end
 
 function MasterMerchant:SwitchPrice(control, slot)
@@ -3544,7 +3544,7 @@ function MasterMerchant:SetupListener(guildID)
       local isNotDuplicate = MasterMerchant:IsNotDuplicateSale(theEvent.itemLink, theEvent.id)
 
       if isNotDuplicate then
-        added = MasterMerchant:addToHistoryTables(theEvent)
+        added = MasterMerchant:addToHistoryTables(theEvent, currentTask)
       end
       -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
       if added and string.lower(theEvent.seller) == thePlayer then

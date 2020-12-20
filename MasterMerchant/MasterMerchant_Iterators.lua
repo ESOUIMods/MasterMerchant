@@ -302,34 +302,31 @@ function MasterMerchant:InitItemHistory(currentTask)
       extraData.totalRecords = extraData.totalRecords + 1
       if (not (saledata == {})) and saledata.guild then
         if (extradata.doGuildItems) then
-          self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild)
+          self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
           local guild                     = self.guildItems[saledata.guild]
           local _, firstsaledata          = next(versiondata.sales, nil)
           local seatchData                = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
-            seatchData)
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData, currentTask)
         end
 
         if (extradata.doMyItems and string.lower(saledata.seller) == extradata.playerName) then
-          self.myItems[saledata.guild] = self.myItems[saledata.guild] or MMGuild:new(saledata.guild)
+          self.myItems[saledata.guild] = self.myItems[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
           local guild                  = self.myItems[saledata.guild]
           local _, firstsaledata       = next(versiondata.sales, nil)
           local seatchData             = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
-            seatchData)
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData, currentTask)
         end
 
         if (extradata.doGuildSales) then
-          self.guildSales[saledata.guild] = self.guildSales[saledata.guild] or MMGuild:new(saledata.guild)
+          self.guildSales[saledata.guild] = self.guildSales[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
           local guild                     = self.guildSales[saledata.guild]
-          guild:addSaleByDate(saledata.seller, saledata.timestamp, saledata.price, saledata.quant, false, false)
+          guild:addSaleByDate(saledata.seller, saledata.timestamp, saledata.price, saledata.quant, false, false, currentTask)
         end
 
         if (extradata.doGuildPurchases) then
-          self.guildPurchases[saledata.guild] = self.guildPurchases[saledata.guild] or MMGuild:new(saledata.guild)
+          self.guildPurchases[saledata.guild] = self.guildPurchases[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
           local guild                         = self.guildPurchases[saledata.guild]
-          guild:addSaleByDate(saledata.buyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk,
-            false)
+          guild:addSaleByDate(saledata.buyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false, currentTask)
         end
       end
       return false
