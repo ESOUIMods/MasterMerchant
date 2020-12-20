@@ -431,7 +431,7 @@ function MasterMerchant:playSounds(lastIndex)
   end
 end
 
-function MasterMerchant:setScanning(start)
+function MasterMerchant:setScanning(start, currentTask)
   self.isScanning = start
   MasterMerchantResetButton:SetEnabled(not start)
   MasterMerchantGuildResetButton:SetEnabled(not start)

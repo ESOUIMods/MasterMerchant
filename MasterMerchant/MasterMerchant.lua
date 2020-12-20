@@ -2748,20 +2748,20 @@ function MasterMerchant:DoReset()
 end
 
 --[[TODO Use this to convert even IDs to strings]]--
-function MasterMerchant:AdjustItems(otherData)
-  for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
-    for field, itemIndexData in pairs(itemIndex) do
-      for sale, saleData in pairs(itemIndexData['sales']) do
+function MasterMerchant:AdjustItems(otherData, currentTask)
+  currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(itemID, itemIndex)
+    currentTask:For (pairs(itemIndex)):Do(function(field, itemIndexData)
+      currentTask:For (pairs(itemIndexData['sales'])):Do(function(sale, saleData)
         if type(saleData.id) ~= 'string' then
           saleData.id = tostring(saleData.id)
         end
-      end
-    end
-  end
+      end)
+    end)
+  end)
 end
 
 -- TODO Check This
-function MasterMerchant:ReIndexSales(otherData)
+function MasterMerchant:ReIndexSales(otherData, currentTask)
   --[[This uses the first itemIndex ["50:16:4:7:0"] found
   if it does not have 4 colons, then the data needs to be
   updated. As if there was a time when the itemIndex was
@@ -2781,28 +2781,28 @@ function MasterMerchant:ReIndexSales(otherData)
   local needToReindex          = false
   local needToAddDescription   = false
   local needToAdditemAdderText = false
-  for _, v in pairs(otherData.savedVariables.SalesData) do
+  currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(_, v)
     if v then
-      for j, dataList in pairs(v) do
+      currentTask:For (pairs(v)):Do(function(j, dataList)
         local key, count       = string.gsub(j, ':', ':')
         needToReindex          = (count ~= 4)
         needToAddDescription   = (dataList['itemDesc'] == nil)
         needToAdditemAdderText = (dataList['itemAdderText'] == nil)
-        break
-      end
-      break
+        return currentTask.BREAK
+      end)
+      return currentTask.BREAK
     end
-  end
+  end)
   if needToReindex or not MasterMerchant.systemSavedVariables.shouldReindex then
     --MasterMerchant:dm("Debug", "needToReindex")
     local tempSales                    = otherData.savedVariables.SalesData
     otherData.savedVariables.SalesData = {}
 
-    for k, v in pairs(tempSales) do
+    currentTask:For (pairs(tempSales)):Do(function(k, v)
       if k ~= 0 then
-        for j, dataList in pairs(v) do
+        currentTask:For (pairs(v)):Do(function(j, dataList)
           -- IPAIRS
-          for i, item in pairs(dataList['sales']) do
+          currentTask:For (pairs(dataList['sales'])):Do(function(i, item)
             if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') then
               local itemIndex = self.makeIndexFromLink(item.itemLink)
               if not otherData.savedVariables.SalesData[k] then otherData.savedVariables.SalesData[k] = {} end
@@ -2817,39 +2817,39 @@ function MasterMerchant:ReIndexSales(otherData)
                 }
               end
             end
-          end
-        end
+          end)
+        end)
       end
-    end
+    end)
   end
   if needToAddDescription then
     --MasterMerchant:dm("Debug", "needToAddDescription")
     -- spin through and split Item Description into a seperate string
-    for _, v in pairs(otherData.savedVariables.SalesData) do
-      for _, dataList in pairs(v) do
+    currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(_, v)
+      currentTask:For (pairs(v)):Do(function(_, dataList)
         _, item              = next(dataList['sales'], nil)
         dataList['itemDesc'] = GetItemLinkName(item.itemLink)
-      end
-    end
+      end)
+    end)
   end
   if needToAdditemAdderText or not MasterMerchant.systemSavedVariables.shouldAdderText then
     --MasterMerchant:dm("Debug", "needToAdditemAdderText")
     -- spin through and split Item Description into a seperate string
-    for _, v in pairs(otherData.savedVariables.SalesData) do
-      for _, dataList in pairs(v) do
+    currentTask:For (pairs(otherData.savedVariables.SalesData)):Do(function(_, v)
+      currentTask:For (pairs(v)):Do(function(_, dataList)
         _, item                   = next(dataList['sales'], nil)
         dataList['itemAdderText'] = self.addedSearchToItem(item.itemLink)
-      end
-    end
+      end)
+    end)
   end
 end
 
-function MasterMerchant:ConcatSales(otherData)
+function MasterMerchant:ConcatSales(otherData, currentTask)
   local savedVariablesTable = otherData.savedVariables.SalesData
-  for itemid, versionlist in pairs(savedVariablesTable) do
+  currentTask:For (pairs(savedVariablesTable)):Do(function(itemid, versionlist)
     if savedVariablesTable[itemid] then
       if self.salesData[itemid] == nil then self.salesData[itemid] = {} end
-      for versionid, versiondata in pairs(versionlist) do
+      currentTask:For (pairs(versionlist)):Do(function(versionid, versiondata)
         if savedVariablesTable[itemid][versionid] then
           if self.salesData[itemid][versionid] == nil then self.salesData[itemid][versionid] = {} end
           if versiondata.sales then
@@ -2858,24 +2858,25 @@ function MasterMerchant:ConcatSales(otherData)
             self.salesData[itemid][versionid].itemAdderText = savedVariablesTable[itemid][versionid].itemAdderText
             self.salesData[itemid][versionid].itemDesc = savedVariablesTable[itemid][versionid].itemDesc
             local currentSales = savedVariablesTable[itemid][versionid].sales
-            for saleid, saledata in pairs(currentSales) do
+            currentTask:For (pairs(currentSales)):Do(function(saleid, saledata)
               table.insert(self.salesData[itemid][versionid].sales, saledata)
-            end
+            end)
           end -- if there are sales
         end -- second if
-      end-- second for loop
+      end) -- second for loop
     end -- first if
-  end -- main loop
+  end) -- main loop
 end
 
-function MasterMerchant:RebuildSalesData()
+function MasterMerchant:RebuildSalesData(currentTask)
+  MasterMerchant:dm("Debug", "RebuildSalesData")
   local concatenatedSalesTable = ZO_DeepTableCopy(self.salesData)
   local salesTable = {}
 
-  for itemid, versionlist in pairs(concatenatedSalesTable) do
+  currentTask:For (pairs(concatenatedSalesTable)):Do(function(itemid, versionlist)
     if concatenatedSalesTable[itemid] then
       if salesTable[itemid] == nil then salesTable[itemid] = {} end
-      for versionid, versiondata in pairs(versionlist) do
+      currentTask:For (pairs(versionlist)):Do(function(versionid, versiondata)
         if concatenatedSalesTable[itemid][versionid] then
           if salesTable[itemid][versionid] == nil then salesTable[itemid][versionid] = {} end
           if concatenatedSalesTable[itemid][versionid].sales then
@@ -2884,14 +2885,14 @@ function MasterMerchant:RebuildSalesData()
             salesTable[itemid][versionid].itemAdderText = concatenatedSalesTable[itemid][versionid].itemAdderText
             salesTable[itemid][versionid].itemDesc = concatenatedSalesTable[itemid][versionid].itemDesc
             local currentSales = concatenatedSalesTable[itemid][versionid].sales
-            for saleid, saledata in pairs(currentSales) do
+            currentTask:For (pairs(currentSales)):Do(function(saleid, saledata)
               table.insert(salesTable[itemid][versionid].sales, saledata)
-            end
+            end)
           end -- if there are sales
         end -- second if
-      end-- second for loop
+      end)-- second for loop
     end -- first if
-  end -- main loop
+  end) -- main loop
   self.salesData = salesTable
 end
 
@@ -2946,100 +2947,79 @@ function MasterMerchant:MoveFromOldAcctSavedVariables()
   end
 end
 
-function MasterMerchant:AdjustItemsAllContainers()
+function MasterMerchant:AdjustItemsAllContainers(currentTask)
   -- Convert event IDs to string if not converted
   MasterMerchant:dm("Debug", "Convert event IDs to string if not converted")
   if not MasterMerchant.systemSavedVariables.itemIDConvertedToString then
-    self:AdjustItems(MM00Data)
-    self:AdjustItems(MM01Data)
-    self:AdjustItems(MM02Data)
-    self:AdjustItems(MM03Data)
-    self:AdjustItems(MM04Data)
-    self:AdjustItems(MM05Data)
-    self:AdjustItems(MM06Data)
-    self:AdjustItems(MM07Data)
-    self:AdjustItems(MM08Data)
-    self:AdjustItems(MM09Data)
-    self:AdjustItems(MM10Data)
-    self:AdjustItems(MM11Data)
-    self:AdjustItems(MM12Data)
-    self:AdjustItems(MM13Data)
-    self:AdjustItems(MM14Data)
-    self:AdjustItems(MM15Data)
+    currentTask:Call(function() MasterMerchant:AdjustItems(MM00Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM01Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM02Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM03Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM04Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM05Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM06Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM07Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM08Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM09Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM10Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM11Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM12Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM13Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM14Data, currentTask) end)
+    :Then(function() MasterMerchant:AdjustItems(MM15Data, currentTask) end)
     MasterMerchant.systemSavedVariables.itemIDConvertedToString = true
   end
 end
 
-function MasterMerchant:ReIndexSalesAllContainers()
+function MasterMerchant:ReIndexSalesAllContainers(currentTask)
   -- Update indexs because of Writs
   MasterMerchant:dm("Debug", "Update indexs if not converted")
   if not MasterMerchant.systemSavedVariables.shouldReindex then
-    self:ReIndexSales(MM00Data)
-    self:ReIndexSales(MM01Data)
-    self:ReIndexSales(MM02Data)
-    self:ReIndexSales(MM03Data)
-    self:ReIndexSales(MM04Data)
-    self:ReIndexSales(MM05Data)
-    self:ReIndexSales(MM06Data)
-    self:ReIndexSales(MM07Data)
-    self:ReIndexSales(MM08Data)
-    self:ReIndexSales(MM09Data)
-    self:ReIndexSales(MM10Data)
-    self:ReIndexSales(MM11Data)
-    self:ReIndexSales(MM12Data)
-    self:ReIndexSales(MM13Data)
-    self:ReIndexSales(MM14Data)
-    self:ReIndexSales(MM15Data)
+    currentTask:Call(function() MasterMerchant:ReIndexSales(MM00Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM01Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM02Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM03Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM04Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM05Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM06Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM07Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM08Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM09Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM10Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM11Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM12Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM13Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM14Data, currentTask) end)
+    :Then(function() MasterMerchant:ReIndexSales(MM15Data, currentTask) end)
     MasterMerchant.systemSavedVariables.shouldReindex   = true
     MasterMerchant.systemSavedVariables.shouldAdderText = true
   end
 end
 
 -- Bring seperate lists together we can still access the sales history all together
-function MasterMerchant:ConcatSalesAllContainers()
+function MasterMerchant:ConcatSalesAllContainers(currentTask)
   MasterMerchant:dm("Debug", "ConcatSalesAllContainers")
   MasterMerchant.salesData              = { }
-  self:ConcatSales(MM00Data)
-  self:ConcatSales(MM01Data)
-  self:ConcatSales(MM02Data)
-  self:ConcatSales(MM03Data)
-  self:ConcatSales(MM04Data)
-  self:ConcatSales(MM05Data)
-  self:ConcatSales(MM06Data)
-  self:ConcatSales(MM07Data)
-  self:ConcatSales(MM08Data)
-  self:ConcatSales(MM09Data)
-  self:ConcatSales(MM10Data)
-  self:ConcatSales(MM11Data)
-  self:ConcatSales(MM12Data)
-  self:ConcatSales(MM13Data)
-  self:ConcatSales(MM14Data)
-  self:ConcatSales(MM15Data)
-end
-
--- Bring seperate lists together we can still access the sales history all together
-function MasterMerchant:RebuildSalesDataAllContainers()
-  MasterMerchant:dm("Debug", "RebuildSalesDataAllContainers")
-  self:RebuildSalesData(MM00Data)
-  self:RebuildSalesData(MM01Data)
-  self:RebuildSalesData(MM02Data)
-  self:RebuildSalesData(MM03Data)
-  self:RebuildSalesData(MM04Data)
-  self:RebuildSalesData(MM05Data)
-  self:RebuildSalesData(MM06Data)
-  self:RebuildSalesData(MM07Data)
-  self:RebuildSalesData(MM08Data)
-  self:RebuildSalesData(MM09Data)
-  self:RebuildSalesData(MM10Data)
-  self:RebuildSalesData(MM11Data)
-  self:RebuildSalesData(MM12Data)
-  self:RebuildSalesData(MM13Data)
-  self:RebuildSalesData(MM14Data)
-  self:RebuildSalesData(MM15Data)
+  currentTask:Call(function() MasterMerchant:ConcatSales(MM00Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM01Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM02Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM03Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM04Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM05Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM06Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM07Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM08Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM09Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM10Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM11Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM12Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM13Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM14Data, currentTask) end)
+  :Then(function() MasterMerchant:ConcatSales(MM15Data, currentTask) end)
 end
 
 -- Scans all stores a player has access to in parallel.
-function MasterMerchant:SetupListenerLibHistoire()
+function MasterMerchant:SetupListenerLibHistoire(currentTask)
   MasterMerchant:dm("Debug", "SetupListenerLibHistoire")
   MasterMerchant:v(2, 'LibHistoire Activated, listening for guild sales...')
   -- do not start listening until mm is fully Initialized
@@ -3418,24 +3398,24 @@ function MasterMerchant:Initialize()
   SetupScrollLists
   SetupListenerLibHistoire
   ]]--
+  local function printInitMessage()
+    MasterMerchant:v(1, "|cFFFF00Master Merchant Initializing...|r")
+  end
   -- Right, we're all set up, so wait for the player activated event
   -- and then do an initial (deep) scan in case it's been a while since the player
   -- logged on, then use RegisterForUpdate to set up a timed scan.
-  zo_callLater(function()
-    local LEQ = LibExecutionQueue:new()
-    LEQ:Add(function() MasterMerchant:v(1, "|cFFFF00Master Merchant Initializing...|r") end, '')
-    LEQ:Add(function() MasterMerchant:MoveFromOldAcctSavedVariables() end, 'MoveFromOldAcctSavedVariables')
-    LEQ:Add(function() MasterMerchant:AdjustItemsAllContainers(task) end, 'AdjustItemsAllContainers')
-    LEQ:Add(function() MasterMerchant:ReIndexSalesAllContainers(task) end, 'ReIndexSalesAllContainers')
-    LEQ:Add(function() MasterMerchant:ConcatSalesAllContainers() end, 'ConcatSalesAllContainers')
-    LEQ:Add(function() MasterMerchant:TruncateHistory(task) end, 'TruncateHistory')
-    LEQ:Add(function() MasterMerchant:RebuildSalesDataAllContainers() end, 'ReferenceSalesAllContainers')
-    LEQ:Add(function() MasterMerchant:InitItemHistory(task) end, 'InitItemHistory')
-    LEQ:Add(function() MasterMerchant:indexHistoryTables(task) end, 'indexHistoryTables')
-    LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
-    LEQ:Add(function() MasterMerchant:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
-    LEQ:Start()
-  end, 10)
+  local task = ASYNC:Create("Initialize")
+  task:Call(function() printInitMessage() end)
+      :Then(function() MasterMerchant:MoveFromOldAcctSavedVariables() end)
+      :Then(function() MasterMerchant:AdjustItemsAllContainers(task) end)
+      :Then(function() MasterMerchant:ReIndexSalesAllContainers(task) end)
+      :Then(function() MasterMerchant:ConcatSalesAllContainers(task) end)
+      :Then(function() MasterMerchant:TruncateHistory(task) end)
+      --:Then(function() MasterMerchant:RebuildSalesData(task) end)
+      :Then(function() MasterMerchant:InitItemHistory(task) end)
+      :Then(function() MasterMerchant:indexHistoryTables(task) end)
+      :Then(function() MasterMerchant:InitScrollLists(task) end)
+      :Then(function() MasterMerchant:SetupListenerLibHistoire(task) end)
 end
 
 function MasterMerchant:SwitchPrice(control, slot)
@@ -3580,10 +3560,10 @@ function MasterMerchant:SetupListener(guildID)
   MasterMerchant.LibHistoireListener[guildID]:Start()
 end
 
-function MasterMerchant:InitScrollLists()
+function MasterMerchant:InitScrollLists(currentTask)
   MasterMerchant:dm("Debug", "InitScrollLists")
 
-  self:SetupScrollLists()
+  self:SetupScrollLists(currentTask)
 
   local numGuilds = GetNumGuilds()
   if numGuilds > 0 then
