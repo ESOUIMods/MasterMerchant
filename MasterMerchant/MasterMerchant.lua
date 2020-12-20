@@ -2845,21 +2845,26 @@ function MasterMerchant:ReIndexSales(otherData, currentTask)
 end
 
 function MasterMerchant:ConcatSales(otherData, currentTask)
-  local savedVariablesTable = otherData.savedVariables.SalesData
+  if LibGuildStore then
+    local dataTable = _G[string.format("GS%02dDataSavedVariables", otherData)]
+    savedVariablesTable = dataTable["data"]
+  else
+    local savedVariablesTable = otherData.savedVariables.SalesData
+  end
   currentTask:For (pairs(savedVariablesTable)):Do(function(itemid, versionlist)
     if savedVariablesTable[itemid] then
-      if self.salesData[itemid] == nil then self.salesData[itemid] = {} end
+      if MasterMerchant.salesData[itemid] == nil then MasterMerchant.salesData[itemid] = {} end
       currentTask:For (pairs(versionlist)):Do(function(versionid, versiondata)
         if savedVariablesTable[itemid][versionid] then
-          if self.salesData[itemid][versionid] == nil then self.salesData[itemid][versionid] = {} end
+          if MasterMerchant.salesData[itemid][versionid] == nil then MasterMerchant.salesData[itemid][versionid] = {} end
           if versiondata.sales then
-            if self.salesData[itemid][versionid].sales == nil then self.salesData[itemid][versionid].sales = {} end
-            self.salesData[itemid][versionid].itemIcon = savedVariablesTable[itemid][versionid].itemIcon
-            self.salesData[itemid][versionid].itemAdderText = savedVariablesTable[itemid][versionid].itemAdderText
-            self.salesData[itemid][versionid].itemDesc = savedVariablesTable[itemid][versionid].itemDesc
+            if MasterMerchant.salesData[itemid][versionid].sales == nil then MasterMerchant.salesData[itemid][versionid].sales = {} end
+            MasterMerchant.salesData[itemid][versionid].itemIcon = savedVariablesTable[itemid][versionid].itemIcon
+            MasterMerchant.salesData[itemid][versionid].itemAdderText = savedVariablesTable[itemid][versionid].itemAdderText
+            MasterMerchant.salesData[itemid][versionid].itemDesc = savedVariablesTable[itemid][versionid].itemDesc
             local currentSales = savedVariablesTable[itemid][versionid].sales
             currentTask:For (pairs(currentSales)):Do(function(saleid, saledata)
-              table.insert(self.salesData[itemid][versionid].sales, saledata)
+              table.insert(MasterMerchant.salesData[itemid][versionid].sales, saledata)
             end)
           end -- if there are sales
         end -- second if
@@ -2999,23 +3004,43 @@ end
 -- Bring seperate lists together we can still access the sales history all together
 function MasterMerchant:ConcatSalesAllContainers(currentTask)
   MasterMerchant:dm("Debug", "ConcatSalesAllContainers")
-  MasterMerchant.salesData              = { }
-  currentTask:Call(function() MasterMerchant:ConcatSales(MM00Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM01Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM02Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM03Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM04Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM05Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM06Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM07Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM08Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM09Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM10Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM11Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM12Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM13Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM14Data, currentTask) end)
-  :Then(function() MasterMerchant:ConcatSales(MM15Data, currentTask) end)
+  if not LibGuildStore then
+    MasterMerchant.salesData              = { }
+    currentTask:Call(function() MasterMerchant:ConcatSales(MM00Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM01Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM02Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM03Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM04Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM05Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM06Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM07Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM08Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM09Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM10Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM11Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM12Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM13Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM14Data, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(MM15Data, currentTask) end)
+  else
+    MasterMerchant.salesData              = { }
+    currentTask:Call(function() MasterMerchant:ConcatSales(00, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(01, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(02, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(03, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(04, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(05, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(06, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(07, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(08, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(09, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(10, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(11, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(12, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(13, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(14, currentTask) end)
+    :Then(function() MasterMerchant:ConcatSales(15, currentTask) end)
+  end
 end
 
 -- Scans all stores a player has access to in parallel.
@@ -3404,18 +3429,24 @@ function MasterMerchant:Initialize()
   -- Right, we're all set up, so wait for the player activated event
   -- and then do an initial (deep) scan in case it's been a while since the player
   -- logged on, then use RegisterForUpdate to set up a timed scan.
-  local MasterMerchant.InitializeTask = ASYNC:Create("Initialize")
-  MasterMerchant.currentTask:Call(function() printInitMessage() end)
+  if LibGuildStore then
+    MasterMerchant.LibGuildStoreActive = true
+  else
+    MasterMerchant.LibGuildStoreActive = false
+  end
+  local currentTask = ASYNC:Create("Initialize")
+  currentTask:Call(function() printInitMessage() end)
+  currentTask:WaitUntil(function() return LibGuildStore.guildStoreReady or (not MasterMerchant.LibGuildStoreActive) end)
       :Then(function() MasterMerchant:MoveFromOldAcctSavedVariables() end)
-      :Then(function() MasterMerchant:AdjustItemsAllContainers(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:ReIndexSalesAllContainers(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:ConcatSalesAllContainers(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:TruncateHistory(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:RebuildSalesData(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:InitItemHistory(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:indexHistoryTables(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:InitScrollLists(MasterMerchant.currentTask) end)
-      :Then(function() MasterMerchant:SetupListenerLibHistoire(MasterMerchant.currentTask) end)
+      :Then(function() MasterMerchant:AdjustItemsAllContainers(currentTask) end)
+      :Then(function() MasterMerchant:ReIndexSalesAllContainers(currentTask) end)
+      :Then(function() MasterMerchant:ConcatSalesAllContainers(currentTask) end)
+      :Then(function() MasterMerchant:TruncateHistory(currentTask) end)
+      --:Then(function() MasterMerchant:RebuildSalesData(currentTask) end)
+      --:Then(function() MasterMerchant:InitItemHistory(currentTask) end)
+      --:Then(function() MasterMerchant:indexHistoryTables(currentTask) end)
+      --:Then(function() MasterMerchant:InitScrollLists(currentTask) end)
+      :Then(function() MasterMerchant:SetupListenerLibHistoire(currentTask) end)
 end
 
 function MasterMerchant:SwitchPrice(control, slot)
@@ -3740,6 +3771,11 @@ function MasterMerchant:TestLibAsync()
   task:Then(function()
     d("end")
   end)
+
+  local active = true
+  local ready = false
+  task:Call(function() MasterMerchant:v(1, "Waiting") end):WaitUntil(function() return ready or (not active) end)
+      :Then(function() MasterMerchant:v(1, "Ready") end)
 end
 
 function MasterMerchant.Slash(allArgs)

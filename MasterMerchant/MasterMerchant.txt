@@ -16,7 +16,7 @@
 ## SavedVariables: ShopkeeperSavedVars
 ## DependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data MM16Data
 ## DependsOn: LibExecutionQueue>=200 LibAddonMenu-2.0>=31 LibMediaProvider-1.0>=14 LibGuildRoster LibHistoire>=392
-## OptionalDependsOn: AwesomeGuildStore>=2614 LibDebugLogger>=196 DebugLogViewer
+## OptionalDependsOn: AwesomeGuildStore>=2614 LibDebugLogger>=196 DebugLogViewer LibGuildStore
 
 MasterMerchantMisc.xml
 MasterMerchantSales.xml

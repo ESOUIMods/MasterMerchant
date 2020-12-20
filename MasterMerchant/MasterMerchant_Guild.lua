@@ -105,7 +105,7 @@ MMGuild = {
   initDateTime = GetTimeStamp()
 }
 
-function MMGuild:new(_name, currentTask)
+function MMGuild:new(_name)
   local function guild_system_offline()
     local weekCutoff = 1595962800 -- Tuesday, 28-Jul-20 19:00:00 UTC
 
@@ -232,7 +232,7 @@ function MMGuild:removeRankIndex(rankIndex)
   if (self.rank[rankIndex]) then self.rank[rankIndex] = nil end
 end
 
-function MMGuild:addSaleByDate(sellerName, date, amount, stack, wasKiosk, sort, searchText, currentTask)
+function MMGuild:addSaleByDate(sellerName, date, amount, stack, wasKiosk, sort, searchText)
   if sellerName == nil then return end
   if date == nil then return end
   if type(date) ~= 'number' then return end
@@ -265,7 +265,7 @@ function MMGuild:removeSaleByDate(sellerName, date, amount, stack)
   if (date >= self.nineStart and date < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end ;
 end
 
-function MMGuild:sortRankIndex(rankIndex, currentTask)
+function MMGuild:sortRankIndex(rankIndex)
   MasterMerchant.shellSort(self.ranks[rankIndex] or {}, function(sortA, sortB)
     return (sortA.sales[rankIndex] or 0) > (sortB.sales[rankIndex] or 0)
   end)
@@ -277,16 +277,16 @@ function MMGuild:sortRankIndex(rankIndex, currentTask)
   end
 end
 
-function MMGuild:sort(currentTask)
-  self:sortRankIndex(1, currentTask)
-  self:sortRankIndex(2, currentTask)
-  self:sortRankIndex(3, currentTask)
-  self:sortRankIndex(4, currentTask)
-  self:sortRankIndex(5, currentTask)
-  self:sortRankIndex(6, currentTask)
-  self:sortRankIndex(7, currentTask)
-  self:sortRankIndex(8, currentTask)
-  self:sortRankIndex(9, currentTask)
+function MMGuild:sort()
+  self:sortRankIndex(1)
+  self:sortRankIndex(2)
+  self:sortRankIndex(3)
+  self:sortRankIndex(4)
+  self:sortRankIndex(5)
+  self:sortRankIndex(6)
+  self:sortRankIndex(7)
+  self:sortRankIndex(8)
+  self:sortRankIndex(9)
 end
 
 

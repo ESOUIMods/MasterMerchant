@@ -52,8 +52,10 @@ MasterMerchant.eventsNeedProcessing   = {}
 MasterMerchant.timeEstimated          = {}
 MasterMerchant.purgeQueue             = {}
 MasterMerchant.totalRecords           = 0 -- added 12-16 but always there
-MasterMerchant.a_test                 = {}
-MasterMerchant.InitializeTask            = nil
+MasterMerchant.a_test1                 = {}
+MasterMerchant.a_test2                 = {}
+MasterMerchant.LibGuildStoreActive    = false -- added 8-25
+
 
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2

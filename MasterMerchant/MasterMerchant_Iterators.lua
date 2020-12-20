@@ -21,15 +21,13 @@ function MasterMerchant:CleanMule(dataset, currentTask)
   return muleIdCount
 end
 
-function MasterMerchant:NonContiguousNonNilCount(tableObject)
+function MasterMerchant:NonContiguousNonNilCount(tableObject, currentTask)
   local count = 0
-  local apiCount = NonContiguousCount(tableObject)
 
-  for _, v in pairs(tableObject) do
+  currentTask:For (pairs(tableObject)):Do(function(_, v)
     if v ~= nil then count = count + 1 end
-  end
+  end)
 
-  if count ~= apiCount then MasterMerchant:dm("Warn", string.format("count: %s ; apiCount: %s", count, apiCount)) end
   return count
 end
 
@@ -38,7 +36,7 @@ function MasterMerchant:CleanTimestamp(salesRecord)
   return salesRecord.timestamp
 end
 
-function MasterMerchant:spairs(currentTask, t, order)
+function MasterMerchant:spairs(t, order, currentTask)
   -- all the indexes
   local indexes = {}
   currentTask:For (pairs(t)):Do(function(k)
@@ -90,13 +88,16 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
 
   local versionlist
   if itemid == nil then
-    itemid, versionlist      = next(self.salesData, itemid)
+    itemid, versionlist      = next(MasterMerchant.salesData, itemid)
     extraData.versionRemoved = false
     versionid                = nil
   else
-    versionlist = self.salesData[itemid]
+    versionlist = MasterMerchant.salesData[itemid]
   end
-  while (itemid ~= nil) do
+  MasterMerchant:dm("Debug", "iterateOverSalesData itemid")
+  MasterMerchant:dm("Debug", itemid)
+  MasterMerchant:dm("Debug", versionlist)
+  currentTask:While(function() return (itemid ~= nil) end):Do(function()
     local versiondata
     if versionid == nil then
       versionid, versiondata = next(versionlist, versionid)
@@ -105,7 +106,7 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
     else
       versiondata = versionlist[versionid]
     end
-    while (versionid ~= nil) do
+    currentTask:While(function() return (versionid ~= nil) end):Do(function()
       if versiondata['sales'] then
         local saledata
         if saleid == nil then
@@ -113,7 +114,7 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
         else
           saledata = versiondata['sales'][saleid]
         end
-        while (saleid ~= nil) do
+        currentTask:While(function() return (saleid ~= nil) end):Do(function()
           local skipTheRest     = loopfunc(itemid, versionid, versiondata, saleid, saledata, extraData, currentTask)
           extraData.saleRemoved = extraData.saleRemoved or (versiondata['sales'][saleid] == nil)
           if skipTheRest then
@@ -121,21 +122,21 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
           else
             saleid, saledata = next(versiondata['sales'], saleid)
           end
-        end
+        end)
 
         if extraData.saleRemoved then
           local sales = {}
-          for sid, sd in pairs(versiondata['sales']) do
+          currentTask:For (pairs(versiondata['sales'])):Do(function(sid, sd)
             if (sd ~= nil) and (type(sd) == 'table') then
               table.insert(sales, sd)
             end
-          end
+          end)
           versiondata['sales'] = sales
         end
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (MasterMerchant:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not string.match(tostring(versionid),
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (MasterMerchant:NonContiguousNonNilCount(versiondata['sales'], currentTask) < 1) or (not string.match(tostring(versionid),
         "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount   = (extraData.versionCount or 0) + 1
         versionlist[versionid]   = nil
@@ -146,28 +147,28 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
       versionid, versiondata = next(versionlist, versionid)
       extraData.saleRemoved  = false
       saleid                 = nil
-    end
+    end)
 
     if extraData.versionRemoved then
       local versions = {}
-      for vid, vd in pairs(self.salesData[itemid]) do
+      currentTask:For (pairs(self.salesData[itemid])):Do(function(vid, vd)
         if (vd ~= nil) and (type(vd) == 'table') then
           versions[vid] = vd
         end
-      end
-      self.salesData[itemid] = versions
+      end)
+      MasterMerchant.salesData[itemid] = versions
     end
 
-    if (self.salesData[itemid] ~= nil and ((MasterMerchant:NonContiguousNonNilCount(versionlist) < 1) or (type(itemid) ~= 'number'))) then
+    if (MasterMerchant.salesData[itemid] ~= nil and ((MasterMerchant:NonContiguousNonNilCount(versionlist, currentTask) < 1) or (type(itemid) ~= 'number'))) then
       extraData.idCount      = (extraData.idCount or 0) + 1
-      self.salesData[itemid] = nil
+      MasterMerchant.salesData[itemid] = nil
     end
 
     -- Go on to the next Item
-    itemid, versionlist      = next(self.salesData, itemid)
+    itemid, versionlist      = next(MasterMerchant.salesData, itemid)
     extraData.versionRemoved = false
     versionid                = nil
-  end
+  end)
 
   if postfunc then
     postfunc(extraData, currentTask)
@@ -187,6 +188,7 @@ function MasterMerchant:TruncateHistory(currentTask)
   -- do return end
 
   local prefunc  = function(extraData, currentTask)
+    MasterMerchant:dm("Debug", "TruncateHistory prefunc")
     extraData.start       = GetTimeStamp()
     extraData.deleteCount = 0
     extraData.epochBack   = GetTimeStamp() - (86400 * MasterMerchant.systemSavedVariables.historyDepth)
@@ -195,9 +197,9 @@ function MasterMerchant:TruncateHistory(currentTask)
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData, currentTask)
-
-    local salesCount = MasterMerchant:NonContiguousNonNilCount(versiondata['sales'])
-    local salesDataTable = MasterMerchant:spairs(currentTask, versiondata['sales'], function(a, b) return MasterMerchant:CleanTimestamp(a) < MasterMerchant:CleanTimestamp(b) end)
+    MasterMerchant:dm("Debug", "TruncateHistory loopfunc")
+    local salesCount = MasterMerchant:NonContiguousNonNilCount(versiondata['sales'], currentTask)
+    local salesDataTable = MasterMerchant:spairs(versiondata['sales'], function(a, b) return MasterMerchant:CleanTimestamp(a) < MasterMerchant:CleanTimestamp(b) end, currentTask)
     for saleid, saledata in salesDataTable do
       if MasterMerchant.systemSavedVariables.useSalesHistory then
         if (saledata['timestamp'] < extraData.epochBack
@@ -228,7 +230,7 @@ function MasterMerchant:TruncateHistory(currentTask)
   end
 
   local postfunc = function(extraData, currentTask)
-
+    MasterMerchant:dm("Debug", "TruncateHistory postfunc")
     extraData.muleIdCount = 0
     if extraData.deleteCount > 0 then
       extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM00Data.savedVariables.SalesData, currentTask) end)
@@ -269,24 +271,24 @@ function MasterMerchant:InitItemHistory(currentTask)
 
   local extradata = {}
 
-  if self.guildItems == nil then
-    self.guildItems        = {}
+  if MasterMerchant.guildItems == nil then
+    MasterMerchant.guildItems        = {}
     extradata.doGuildItems = true
   end
 
-  if self.myItems == nil then
-    self.myItems         = {}
+  if MasterMerchant.myItems == nil then
+    MasterMerchant.myItems         = {}
     extradata.doMyItems  = true
     extradata.playerName = string.lower(GetDisplayName())
   end
 
-  if self.guildSales == nil then
-    self.guildSales        = {}
+  if MasterMerchant.guildSales == nil then
+    MasterMerchant.guildSales        = {}
     extradata.doGuildSales = true
   end
 
-  if self.guildPurchases == nil then
-    self.guildPurchases        = {}
+  if MasterMerchant.guildPurchases == nil then
+    MasterMerchant.guildPurchases        = {}
     extradata.doGuildPurchases = true
   end
 
@@ -302,31 +304,31 @@ function MasterMerchant:InitItemHistory(currentTask)
       extraData.totalRecords = extraData.totalRecords + 1
       if (not (saledata == {})) and saledata.guild then
         if (extradata.doGuildItems) then
-          self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
-          local guild                     = self.guildItems[saledata.guild]
+          MasterMerchant.guildItems[saledata.guild] = MasterMerchant.guildItems[saledata.guild] or MMGuild:new(saledata.guild)
+          local guild                     = MasterMerchant.guildItems[saledata.guild]
           local _, firstsaledata          = next(versiondata.sales, nil)
           local seatchData                = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData, currentTask)
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
         end
 
         if (extradata.doMyItems and string.lower(saledata.seller) == extradata.playerName) then
-          self.myItems[saledata.guild] = self.myItems[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
-          local guild                  = self.myItems[saledata.guild]
+          MasterMerchant.myItems[saledata.guild] = MasterMerchant.myItems[saledata.guild] or MMGuild:new(saledata.guild)
+          local guild                  = MasterMerchant.myItems[saledata.guild]
           local _, firstsaledata       = next(versiondata.sales, nil)
           local seatchData             = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
-          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData, currentTask)
+          guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, seatchData)
         end
 
         if (extradata.doGuildSales) then
-          self.guildSales[saledata.guild] = self.guildSales[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
-          local guild                     = self.guildSales[saledata.guild]
-          guild:addSaleByDate(saledata.seller, saledata.timestamp, saledata.price, saledata.quant, false, false, currentTask)
+          MasterMerchant.guildSales[saledata.guild] = MasterMerchant.guildSales[saledata.guild] or MMGuild:new(saledata.guild)
+          local guild                     = MasterMerchant.guildSales[saledata.guild]
+          guild:addSaleByDate(saledata.seller, saledata.timestamp, saledata.price, saledata.quant, false, false)
         end
 
         if (extradata.doGuildPurchases) then
-          self.guildPurchases[saledata.guild] = self.guildPurchases[saledata.guild] or MMGuild:new(saledata.guild, currentTask)
-          local guild                         = self.guildPurchases[saledata.guild]
-          guild:addSaleByDate(saledata.buyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false, currentTask)
+          MasterMerchant.guildPurchases[saledata.guild] = MasterMerchant.guildPurchases[saledata.guild] or MMGuild:new(saledata.guild)
+          local guild                         = MasterMerchant.guildPurchases[saledata.guild]
+          guild:addSaleByDate(saledata.buyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
         end
       end
       return false
@@ -335,33 +337,33 @@ function MasterMerchant:InitItemHistory(currentTask)
     local postfunc    = function(extraData, currentTask)
 
       if (extradata.doGuildItems) then
-        for _, guild in pairs(self.guildItems) do
+        for _, guild in pairs(MasterMerchant.guildItems) do
           guild:sort()
         end
       end
 
       if (extradata.doMyItems) then
-        for _, guild in pairs(self.myItems) do
+        for _, guild in pairs(MasterMerchant.myItems) do
           guild:sort()
         end
       end
 
       if (extradata.doGuildSales) then
-        for guildName, guild in pairs(self.guildSales) do
+        for guildName, guild in pairs(MasterMerchant.guildSales) do
           guild:sort()
         end
       end
 
       if (extradata.doGuildPurchases) then
-        for _, guild in pairs(self.guildPurchases) do
+        for _, guild in pairs(MasterMerchant.guildPurchases) do
           guild:sort()
         end
       end
 
       self:setScanning(false, currentTask)
 
-      self.totalRecords = extraData.totalRecords
-      MasterMerchant:v(3, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. self.totalRecords .. ' records.')
+      MasterMerchant.totalRecords = extraData.totalRecords
+      MasterMerchant:v(3, 'Init Guild and Item totals: ' .. GetTimeStamp() - extraData.start .. ' seconds to init ' .. MasterMerchant.totalRecords .. ' records.')
     end
 
     if not self.isScanning then
@@ -433,11 +435,11 @@ function MasterMerchant:indexHistoryTables(currentTask)
     local searchByWords = string.gmatch(searchText, '%S+')
     local wordData      = { numberID, itemData, itemIndex }
     for i in searchByWords do
-      if self.SRIndex[i] == nil then
+      if MasterMerchant.SRIndex[i] == nil then
         extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        self.SRIndex[i]           = {}
+        MasterMerchant.SRIndex[i]           = {}
       end
-      tinsert(self.SRIndex[i], wordData)
+      tinsert(MasterMerchant.SRIndex[i], wordData)
     end
 
   end
@@ -463,6 +465,7 @@ end
 ----------------------------------------
 
 function MasterMerchant:CleanOutBad()
+  currentTask = ASYNC:Create("Initialize")
 
   local prefunc  = function(extraData)
     extraData.start             = GetTimeStamp()
@@ -472,7 +475,7 @@ function MasterMerchant:CleanOutBad()
     extraData.eventIdIsNumber   = 0
     extraData.badItemLinkCount  = 0
 
-    self:setScanning(true)
+    self:setScanning(true, currentTask)
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
@@ -577,22 +580,22 @@ function MasterMerchant:CleanOutBad()
 
     extraData.muleIdCount = 0
     if extraData.deleteCount > 0 then
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM00Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM01Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM02Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM03Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM04Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM05Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM06Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM07Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM08Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM09Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM10Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM11Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM12Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM13Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM14Data.savedVariables.SalesData)
-      extraData.muleIdCount = extraData.muleIdCount + self:CleanMule(MM15Data.savedVariables.SalesData)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM00Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM01Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM02Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM03Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM04Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM05Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM06Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM07Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM08Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM09Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM10Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM11Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM12Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM13Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM14Data.savedVariables.SalesData, currentTask) end)
+      extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM15Data.savedVariables.SalesData, currentTask) end)
     end
 
     MasterMerchant:v(2, 'Cleaning: ' .. GetTimeStamp() - extraData.start .. ' seconds to clean:')
@@ -605,7 +608,6 @@ function MasterMerchant:CleanOutBad()
     MasterMerchant:v(2, '  ' .. extraData.eventIdIsNumber .. ' events with numbers converted to strings')
     MasterMerchant:v(2, '  ' .. extraData.badItemLinkCount .. ' bad item links removed')
 
-    local LEQ = LibExecutionQueue:new()
     if extraData.deleteCount > 0 then
       MasterMerchant:v(5, 'Reindexing Everything.')
       --rebuild everything
@@ -615,20 +617,17 @@ function MasterMerchant:CleanOutBad()
       self.guildSales     = {}
       self.guildItems     = {}
       self.myItems        = {}
-      LEQ:Add(function() self:InitItemHistory() end, 'InitItemHistory')
-      LEQ:Add(function() self:indexHistoryTables() end, 'indexHistoryTables')
-      LEQ:Add(function() MasterMerchant:v(5, 'Reindexing Complete.') end, 'Done')
+      currentTask:Call(function() MasterMerchant:InitItemHistory(currentTask) end)
+                 :Then(function() MasterMerchant:indexHistoryTables(currentTask) end)
+                 :Then(function() MasterMerchant:v(5, 'Reindexing Complete.') end)
     end
 
-    LEQ:Add(function()
-      self:setScanning(false)
-    end, '')
-    LEQ:Start()
+      self:setScanning(false, currentTask)
 
   end
 
   if not self.isScanning then
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
+    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {}, currentTask)
   end
 
   MasterMerchant.systemSavedVariables.shouldReindex   = false
@@ -640,6 +639,7 @@ end
 ----------------------------------------
 
 function MasterMerchant:SlideSales(goback)
+  local currentTask = ASYNC:Create("Initialize")
 
   local prefunc  = function(extraData)
     extraData.start     = GetTimeStamp()
@@ -650,7 +650,7 @@ function MasterMerchant:SlideSales(goback)
 
     if goback then extraData.oldName, extraData.newName = extraData.newName, extraData.oldName end
 
-    self:setScanning(true)
+    self:setScanning(true, currentTask)
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
@@ -664,12 +664,12 @@ function MasterMerchant:SlideSales(goback)
 
     MasterMerchant:v(2, 'Sliding: ' .. GetTimeStamp() - extraData.start .. ' seconds to slide ' .. extraData.moveCount .. ' sales records to ' .. extraData.newName .. '.')
     self.SRIndex[MasterMerchant.PlayerSpecialText] = {}
-    self:setScanning(false)
+    self:setScanning(false, currentTask)
 
   end
 
   if not self.isScanning then
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
+    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {}, currentTask)
   end
 
 end
