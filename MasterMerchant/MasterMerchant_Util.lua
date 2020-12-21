@@ -492,7 +492,7 @@ function MasterMerchant:AddSalesTableData(key, value)
     MM16DataSavedVariables[key] = setSalesTableData(key)
   end
   if not MM16DataSavedVariables[key][value] then
-    local index = MasterMerchant:NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
+    local index = MasterMerchant:NonContiguousCount(MM16DataSavedVariables[key]) + 1
     MM16DataSavedVariables[key][value] = index
     if key == "AccountNames" then
       MasterMerchant.accountNameByIdLookup[index] = value
@@ -659,15 +659,15 @@ function MasterMerchant:addToHistoryTables(theEvent, currentTask)
   local guild
   local adderDescConcat                     = searchItemDesc .. ' ' .. searchItemAdderText
 
-  guild                                     = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild, currentTask)
+  guild                                     = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildSales[theEvent.guild] = guild;
   guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
 
-  guild                                         = MasterMerchant.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild, currentTask)
+  guild                                         = MasterMerchant.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildPurchases[theEvent.guild] = guild;
   guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk)
 
-  guild                                     = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild, currentTask)
+  guild                                     = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   MasterMerchant.guildItems[theEvent.guild] = guild;
   guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
     adderDescConcat)
@@ -676,7 +676,7 @@ function MasterMerchant:addToHistoryTables(theEvent, currentTask)
   local isSelfSale = playerName == string.lower(theEvent.seller)
 
   if isSelfSale then
-    guild                                  = MasterMerchant.myItems[theEvent.guild] or MMGuild:new(theEvent.guild, currentTask)
+    guild                                  = MasterMerchant.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
     MasterMerchant.myItems[theEvent.guild] = guild;
     guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
       adderDescConcat)

@@ -83,7 +83,7 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
   extraData.idCount           = (extraData.idCount or 0)
 
   if prefunc then
-    prefunc(extraData, currentTask)
+    currentTask:Call(function() prefunc(extraData, currentTask) end)
   end
 
   local versionlist
@@ -94,9 +94,6 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
   else
     versionlist = MasterMerchant.salesData[itemid]
   end
-  MasterMerchant:dm("Debug", "iterateOverSalesData itemid")
-  MasterMerchant:dm("Debug", itemid)
-  MasterMerchant:dm("Debug", versionlist)
   currentTask:While(function() return (itemid ~= nil) end):Do(function()
     local versiondata
     if versionid == nil then
@@ -151,7 +148,7 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
 
     if extraData.versionRemoved then
       local versions = {}
-      currentTask:For (pairs(self.salesData[itemid])):Do(function(vid, vd)
+      currentTask:For (pairs(MasterMerchant.salesData[itemid])):Do(function(vid, vd)
         if (vd ~= nil) and (type(vd) == 'table') then
           versions[vid] = vd
         end
@@ -171,7 +168,7 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
   end)
 
   if postfunc then
-    postfunc(extraData, currentTask)
+    currentTask:Call(function() postfunc(extraData, currentTask) end)
   end
 end
 
@@ -188,7 +185,6 @@ function MasterMerchant:TruncateHistory(currentTask)
   -- do return end
 
   local prefunc  = function(extraData, currentTask)
-    MasterMerchant:dm("Debug", "TruncateHistory prefunc")
     extraData.start       = GetTimeStamp()
     extraData.deleteCount = 0
     extraData.epochBack   = GetTimeStamp() - (86400 * MasterMerchant.systemSavedVariables.historyDepth)
@@ -197,10 +193,14 @@ function MasterMerchant:TruncateHistory(currentTask)
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData, currentTask)
-    MasterMerchant:dm("Debug", "TruncateHistory loopfunc")
     local salesCount = MasterMerchant:NonContiguousNonNilCount(versiondata['sales'], currentTask)
+    local newTable = { }
+    for k, v in MasterMerchant.spairs(versiondata['sales'], function(a, b) return MasterMerchant.CleanTimestamp(a) < MasterMerchant.CleanTimestamp(b) end, currentTask) do
+      table.insert(newTable, v)
+    end
+
     local salesDataTable = MasterMerchant:spairs(versiondata['sales'], function(a, b) return MasterMerchant:CleanTimestamp(a) < MasterMerchant:CleanTimestamp(b) end, currentTask)
-    for saleid, saledata in salesDataTable do
+    currentTask:For (pairs(salesDataTable)):Do(function(saleid, saledata)
       if MasterMerchant.systemSavedVariables.useSalesHistory then
         if (saledata['timestamp'] < extraData.epochBack
           or saledata['timestamp'] == nil
@@ -224,13 +224,12 @@ function MasterMerchant:TruncateHistory(currentTask)
           salesCount                   = salesCount - 1
         end
       end
-    end
+    end)
     return true
 
   end
 
   local postfunc = function(extraData, currentTask)
-    MasterMerchant:dm("Debug", "TruncateHistory postfunc")
     extraData.muleIdCount = 0
     if extraData.deleteCount > 0 then
       extraData.muleIdCount = extraData.muleIdCount + currentTask:Then(function() MasterMerchant:CleanMule(MM00Data.savedVariables.SalesData, currentTask) end)
@@ -259,7 +258,7 @@ function MasterMerchant:TruncateHistory(currentTask)
 
   if not self.isScanning then
     MasterMerchant:dm("Debug", "TruncateHistory iterateOverSalesData")
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {}, currentTask)
+    currentTask:Call(function() self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {}, currentTask) end)
   end
 end
 
@@ -368,7 +367,7 @@ function MasterMerchant:InitItemHistory(currentTask)
 
     if not self.isScanning then
       MasterMerchant:dm("Debug", "InitItemHistory iterateOverSalesData")
-      self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata, currentTask)
+      currentTask:Call(function() self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata, currentTask) end)
     end
 
   end
@@ -455,7 +454,7 @@ function MasterMerchant:indexHistoryTables(currentTask)
 
   if not self.isScanning then
     MasterMerchant:dm("Debug", "indexHistoryTables iterateOverSalesData")
-    self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {}, currentTask)
+    currentTask:Call(function() self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {}, currentTask) end)
   end
 
 end
@@ -465,7 +464,7 @@ end
 ----------------------------------------
 
 function MasterMerchant:CleanOutBad()
-  currentTask = ASYNC:Create("Initialize")
+  currentTask = ASYNC:Create("CleanOutBad")
 
   local prefunc  = function(extraData)
     extraData.start             = GetTimeStamp()
@@ -639,7 +638,7 @@ end
 ----------------------------------------
 
 function MasterMerchant:SlideSales(goback)
-  local currentTask = ASYNC:Create("Initialize")
+  local currentTask = ASYNC:Create("SlideSales")
 
   local prefunc  = function(extraData)
     extraData.start     = GetTimeStamp()

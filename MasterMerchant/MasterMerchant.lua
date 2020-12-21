@@ -2845,12 +2845,7 @@ function MasterMerchant:ReIndexSales(otherData, currentTask)
 end
 
 function MasterMerchant:ConcatSales(otherData, currentTask)
-  if LibGuildStore then
-    local dataTable = _G[string.format("GS%02dDataSavedVariables", otherData)]
-    savedVariablesTable = dataTable["data"]
-  else
-    local savedVariablesTable = otherData.savedVariables.SalesData
-  end
+  local savedVariablesTable = otherData.savedVariables.SalesData
   currentTask:For (pairs(savedVariablesTable)):Do(function(itemid, versionlist)
     if savedVariablesTable[itemid] then
       if MasterMerchant.salesData[itemid] == nil then MasterMerchant.salesData[itemid] = {} end
@@ -2871,34 +2866,6 @@ function MasterMerchant:ConcatSales(otherData, currentTask)
       end) -- second for loop
     end -- first if
   end) -- main loop
-end
-
-function MasterMerchant:RebuildSalesData(currentTask)
-  MasterMerchant:dm("Debug", "RebuildSalesData")
-  local concatenatedSalesTable = ZO_DeepTableCopy(self.salesData)
-  local salesTable = {}
-
-  currentTask:For (pairs(concatenatedSalesTable)):Do(function(itemid, versionlist)
-    if concatenatedSalesTable[itemid] then
-      if salesTable[itemid] == nil then salesTable[itemid] = {} end
-      currentTask:For (pairs(versionlist)):Do(function(versionid, versiondata)
-        if concatenatedSalesTable[itemid][versionid] then
-          if salesTable[itemid][versionid] == nil then salesTable[itemid][versionid] = {} end
-          if concatenatedSalesTable[itemid][versionid].sales then
-            if salesTable[itemid][versionid].sales == nil then salesTable[itemid][versionid].sales = {} end
-            salesTable[itemid][versionid].itemIcon = concatenatedSalesTable[itemid][versionid].itemIcon
-            salesTable[itemid][versionid].itemAdderText = concatenatedSalesTable[itemid][versionid].itemAdderText
-            salesTable[itemid][versionid].itemDesc = concatenatedSalesTable[itemid][versionid].itemDesc
-            local currentSales = concatenatedSalesTable[itemid][versionid].sales
-            currentTask:For (pairs(currentSales)):Do(function(saleid, saledata)
-              table.insert(salesTable[itemid][versionid].sales, saledata)
-            end)
-          end -- if there are sales
-        end -- second if
-      end)-- second for loop
-    end -- first if
-  end) -- main loop
-  self.salesData = salesTable
 end
 
 --[[ register event monitor
@@ -3004,7 +2971,6 @@ end
 -- Bring seperate lists together we can still access the sales history all together
 function MasterMerchant:ConcatSalesAllContainers(currentTask)
   MasterMerchant:dm("Debug", "ConcatSalesAllContainers")
-  if not LibGuildStore then
     MasterMerchant.salesData              = { }
     currentTask:Call(function() MasterMerchant:ConcatSales(MM00Data, currentTask) end)
     :Then(function() MasterMerchant:ConcatSales(MM01Data, currentTask) end)
@@ -3022,25 +2988,6 @@ function MasterMerchant:ConcatSalesAllContainers(currentTask)
     :Then(function() MasterMerchant:ConcatSales(MM13Data, currentTask) end)
     :Then(function() MasterMerchant:ConcatSales(MM14Data, currentTask) end)
     :Then(function() MasterMerchant:ConcatSales(MM15Data, currentTask) end)
-  else
-    MasterMerchant.salesData              = { }
-    currentTask:Call(function() MasterMerchant:ConcatSales(00, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(01, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(02, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(03, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(04, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(05, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(06, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(07, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(08, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(09, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(10, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(11, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(12, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(13, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(14, currentTask) end)
-    :Then(function() MasterMerchant:ConcatSales(15, currentTask) end)
-  end
 end
 
 -- Scans all stores a player has access to in parallel.
@@ -3429,24 +3376,17 @@ function MasterMerchant:Initialize()
   -- Right, we're all set up, so wait for the player activated event
   -- and then do an initial (deep) scan in case it's been a while since the player
   -- logged on, then use RegisterForUpdate to set up a timed scan.
-  if LibGuildStore then
-    MasterMerchant.LibGuildStoreActive = true
-  else
-    MasterMerchant.LibGuildStoreActive = false
-  end
   local currentTask = ASYNC:Create("Initialize")
   currentTask:Call(function() printInitMessage() end)
-  currentTask:WaitUntil(function() return LibGuildStore.guildStoreReady or (not MasterMerchant.LibGuildStoreActive) end)
       :Then(function() MasterMerchant:MoveFromOldAcctSavedVariables() end)
       :Then(function() MasterMerchant:AdjustItemsAllContainers(currentTask) end)
       :Then(function() MasterMerchant:ReIndexSalesAllContainers(currentTask) end)
       :Then(function() MasterMerchant:ConcatSalesAllContainers(currentTask) end)
       :Then(function() MasterMerchant:TruncateHistory(currentTask) end)
-      --:Then(function() MasterMerchant:RebuildSalesData(currentTask) end)
       --:Then(function() MasterMerchant:InitItemHistory(currentTask) end)
       --:Then(function() MasterMerchant:indexHistoryTables(currentTask) end)
       --:Then(function() MasterMerchant:InitScrollLists(currentTask) end)
-      :Then(function() MasterMerchant:SetupListenerLibHistoire(currentTask) end)
+      --:Then(function() MasterMerchant:SetupListenerLibHistoire(currentTask) end)
 end
 
 function MasterMerchant:SwitchPrice(control, slot)
@@ -3575,7 +3515,7 @@ function MasterMerchant:SetupListener(guildID)
       local isNotDuplicate = MasterMerchant:IsNotDuplicateSale(theEvent.itemLink, theEvent.id)
 
       if isNotDuplicate then
-        added = MasterMerchant:addToHistoryTables(theEvent, currentTask)
+        added = MasterMerchant:addToHistoryTables(theEvent)
       end
       -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
       if added and string.lower(theEvent.seller) == thePlayer then
