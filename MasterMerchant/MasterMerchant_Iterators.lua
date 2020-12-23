@@ -191,6 +191,8 @@ end
 ----- Setup                        -----
 ----------------------------------------
 
+-- TODO is salesData important here
+-- Yes it does not use SavedVars but the global table
 function MasterMerchant:TruncateHistory()
   MasterMerchant:dm("Debug", "TruncateHistory")
 
@@ -272,6 +274,7 @@ function MasterMerchant:TruncateHistory()
 
 end
 
+-- TODO is SRIndex important here
 function MasterMerchant:InitItemHistory()
   MasterMerchant:dm("Debug", "InitItemHistory")
 

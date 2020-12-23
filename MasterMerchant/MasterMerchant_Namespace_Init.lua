@@ -26,13 +26,13 @@ MMScrollList.SORT_KEYS                = {
 
 MasterMerchant                        = { }
 MasterMerchant.name                   = 'MasterMerchant'
-MasterMerchant.version                = '3.5.08'
+MasterMerchant.version                = '3.5.09'
 MasterMerchant.locale                 = GetCVar('Language.2')
 -- default is self
 MasterMerchant.viewMode               = 'self'
 MasterMerchant.isScanning             = false
 MasterMerchant.isScanningParallel     = { }
-MasterMerchant.salesData              = { }
+MasterMerchant.salesData              = { } -- global container for all sales
 MasterMerchant.eventsCache            = { }
 -- MasterMerchant.lastHistoryRequest = { } unused now from ProcessGuildHistoryResponse
 MasterMerchant.verboseLevel           = 4

@@ -1311,7 +1311,7 @@ function MasterMerchant:LibAddonInit()
             MasterMerchant.systemSavedVariables.alertSoundName = self:SearchSoundNames(value)
             PlaySound(MasterMerchant.systemSavedVariables.alertSoundName)
           end,
-          default = MasterMerchant.systemDefault.alertSoundName,
+          default = self:SearchSounds(MasterMerchant.systemDefault.alertSoundName),
         },
         -- Whether or not to show multiple alerts for multiple sales
         [5] = {
@@ -3042,10 +3042,10 @@ function MasterMerchant:Initialize()
     statsWinTop                = 820,
     feedbackWinLeft            = 720,
     feedbackWinTop             = 420,
-    windowFont                 = 'ProseAntique',
+    windowFont                 = "ProseAntique",
     showAnnounceAlerts         = true,
     showCyroAlerts             = true,
-    alertSoundName             = 'Book_Acquired',
+    alertSoundName             = "Book_Acquired",
     showUnitPrice              = false,
     viewSize                   = ITEMS,
     offlineSales               = true,
@@ -3053,6 +3053,7 @@ function MasterMerchant:Initialize()
     showCraftCost              = true,
     showGraph                  = true,
     showCalc                   = true,
+    minProfitFilter            = true,
     rankIndex                  = 1,
     rankIndexRoster            = 1,
     viewBuyerSeller            = 'buyer',
