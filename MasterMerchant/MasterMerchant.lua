@@ -106,7 +106,6 @@ function MasterMerchant:FindMeanDaysRange(list, timeCheck)
   local initSum     = 0
   local initCount   = 0
   local initMean    = 0
-  local medianTable = {}
   local oldestTime  = nil
   local newestTime  = nil
   for i, item in pairs(list) do
@@ -116,11 +115,10 @@ function MasterMerchant:FindMeanDaysRange(list, timeCheck)
       local individualSale = item.price / item.quant
       initSum              = initSum + item.price
       initCount            = initCount + item.quant
-      table.insert(medianTable, individualSale)
     end
   end
   initMean = (initSum / initCount)
-  return initCount, initMean, medianTable, oldestTime, newestTime
+  return initCount, initMean, oldestTime, newestTime
 end
 
 function MasterMerchant:FindMeanAllSales(list)
@@ -128,7 +126,6 @@ function MasterMerchant:FindMeanAllSales(list)
   local initSum        = 0
   local initCount      = 0
   local initMean       = 0
-  local medianTable    = {}
   local oldestTime     = nil
   local newestTime     = nil
   for i, item in pairs(list) do
@@ -138,11 +135,10 @@ function MasterMerchant:FindMeanAllSales(list)
       local individualSale = item.price / item.quant
       initSum              = initSum + item.price
       initCount            = initCount + item.quant
-      table.insert(medianTable, individualSale)
     end
   end
   initMean = (initSum / initCount)
-  return initCount, initMean, medianTable, oldestTime, newestTime
+  return initCount, initMean, oldestTime, newestTime
 end
 
 function MasterMerchant:FindStandardDeviationDaysRange(list, initCount, initMean, timeCheck)
@@ -198,13 +194,13 @@ end
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
   -- 10000 for numDays is more or less like saying it is undefined
   local returnData        = { ['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = 10000, ['numItems'] = nil, ['craftCost'] = nil }
+  if not MasterMerchant.isInitialized then return returnData end
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
   For example when you press SHIFT or CTRL then daysHistory and daysRange
   are the same. However, when you do not modify the data, then daysRange
   is 10000 and daysHistory is however many days you have.
   ]]--
-  local initMedian        = 0 -- may not be selected
   local standardDeviation = 1 -- because 1 gold or more
   local hasSalesData      = false
   local legitSales        = 0
@@ -228,7 +224,6 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     local initMean    = 0
     local oldestTime  = nil
     local newestTime  = nil
-    local medianTable = {}
     --[[TODO: what is goBack
 
     if no sales were found do it again but don't worry about
@@ -241,14 +236,14 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     goBack is also used in SwitchPrice, and GetItemLinePrice
     ]]--
     if not goBack then
-      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
+      initCount, initMean, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
     end
     if goBack and MasterMerchant.systemSavedVariables.useDefaultDaysRange then
-      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
+      initCount, initMean, oldestTime, newestTime = MasterMerchant:FindMeanDaysRange(list, timeCheck)
     elseif goBack then
       daysRange                                                = 10000
       timeCheck                                                = GetTimeStamp() - (86400 * daysRange)
-      initCount, initMean, medianTable, oldestTime, newestTime = MasterMerchant:FindMeanAllSales(list)
+      initCount, initMean, oldestTime, newestTime = MasterMerchant:FindMeanAllSales(list)
     end
 
     if initCount == 0 then
@@ -273,30 +268,11 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     ZO_CreateStringId("MM_STATISTICS_MEAN", "Mean")
     ZO_CreateStringId("MM_STATISTICS_AVERAGE", "Average")
     ZO_CreateStringId("MM_STATISTICS_MEDIAN", "Median")
-    MasterMerchant.systemSavedVariables.defaultStatistics
     MasterMerchant.systemSavedVariables.trimOutliers
     MasterMerchant:dm("Debug", daysRange)
     ]]--
 
     local lookupDataFound = dataPresent(theIID, itemIndex, daysRange)
-
-    if not lookupDataFound then
-      if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
-        -- determine the median
-        table.sort(medianTable)
-
-        -- If we have an even number of table elements or odd.
-        if math.fmod(#medianTable, 2) == 0 then
-          -- assign mean value of middle two elements
-          initMedian = (medianTable[#medianTable / 2] + medianTable[(#medianTable / 2) + 1]) / 2
-        else
-          -- assign middle element
-          initMedian = medianTable[math.ceil(#medianTable / 2)]
-        end
-      end
-    else
-      initMedian = MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory].median
-    end
 
     --[[ Determine the standard deviation, which requires the mean
     we do not need this if we are not going to trim the outliers
@@ -316,7 +292,6 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
       standardDeviation = MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory].deviation
     end
 
-    local priceDeterminant
     local timeInterval     = newestTime - oldestTime
     local lowPrice         = nil
     local highPrice        = nil
@@ -324,19 +299,9 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     local countSold        = 0
     local weigtedCountSold = 0
     local salesPoints      = {}
-    local rangeDeviation   = (3 * standardDeviation)
     local weightValue      = 0
     local dayInterval      = 0
-    local lowRange         = 1
-    local highRange        = 2
     local isOutlier        = false
-    if MasterMerchant.systemSavedVariables.defaultStatistics == GetString(MM_STATISTICS_MEDIAN) then
-      priceDeterminant = initMedian
-    else
-      priceDeterminant = initMean
-    end
-    if priceDeterminant - rangeDeviation > 1 then lowRange = priceDeterminant - rangeDeviation end
-    if priceDeterminant + rangeDeviation > 2 then highRange = priceDeterminant + rangeDeviation end
     if timeInterval > 86400 then
       dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
     end
@@ -358,9 +323,15 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
       -- get individualSale
       local individualSale = item.price / item.quant
       -- determine if it is an outlier, if toggle is on
-      if MasterMerchant.systemSavedVariables.trimOutliers and (individualSale < lowRange or individualSale > highRange) then
+      if MasterMerchant.systemSavedVariables.trimOutliers then
         -- within range
-        isOutlier = true
+        local z = (individualSale - initMean) / standardDeviation
+        if z > -3.0 and z < 3.0 then
+          -- price is ok
+        else
+          -- price is not in range
+          isOutlier = true
+        end
       end
       if usesaleitem and not isOutlier then
         -- process this sals
@@ -416,7 +387,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     if MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory] == nil then
       MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory] = {}
     end
-    MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory] = { ['deviation'] = standardDeviation, ['median'] = initMedian, }
+    MasterMerchant.itemAverageLookupTable[theIID][itemIndex][daysHistory] = { ['deviation'] = standardDeviation }
   end
   return returnData
 end
@@ -1675,19 +1646,8 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimOutliers = value end,
       default = MasterMerchant.systemDefault.trimOutliers,
     },
-    -- which price statistic should we use?
-    [22] = {
-      type     = 'dropdown',
-      name     = GetString(MM_CUSTOM_STATISTICS_RANGE_NAME),
-      tooltip  = GetString(MM_CUSTOM_STATISTICS_RANGE_TIP),
-      choices  = { GetString(MM_STATISTICS_MEAN), GetString(MM_STATISTICS_MEDIAN) },
-      getFunc  = function() return MasterMerchant.systemSavedVariables.defaultStatistics end,
-      setFunc  = function(value) MasterMerchant.systemSavedVariables.defaultStatistics = value end,
-      disabled = function() return not MasterMerchant.systemSavedVariables.trimOutliers end,
-      default  = MasterMerchant.systemDefault.defaultStatistics,
-    },
     -- should we trim off decimals?
-    [23] = {
+    [22] = {
       type    = 'checkbox',
       name    = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
@@ -1695,14 +1655,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimDecimals = value end,
       default = MasterMerchant.systemDefault.trimDecimals,
     },
-    [24] = {
+    [23] = {
       type    = "header",
       name    = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
     },
     -- should we replace inventory values?
-    [25] = {
+    [24] = {
       type    = 'checkbox',
       name    = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
@@ -1711,7 +1671,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.replaceInventoryValues,
     },
     -- should we use the default days range for the tooltips?
-    [26] = {
+    [25] = {
       type    = 'checkbox',
       name    = GetString(MM_DEFAULT_PRICESWAP_TIME_NAME),
       tooltip = GetString(MM_DEFAULT_PRICESWAP_TIME_TIP),
@@ -1719,14 +1679,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useDefaultDaysRange = value end,
       default = MasterMerchant.systemDefault.useDefaultDaysRange,
     },
-    [27] = {
+    [26] = {
       type    = "header",
       name    = GetString(GUILD_STORE_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
     -- Should we show the stack price calculator?
-    [28] = {
+    [27] = {
       type    = 'checkbox',
       name    = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
@@ -1735,7 +1695,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showCalc,
     },
     -- should we display a Min Profit Filter in AGS?
-    [29] = {
+    [28] = {
       type    = 'checkbox',
       name    = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1744,7 +1704,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.minProfitFilter,
     },
     -- should we display profit instead of margin?
-    [30] = {
+    [29] = {
       type    = 'checkbox',
       name    = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -1752,14 +1712,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
       default = MasterMerchant.systemDefault.saucy,
     },
-    [31] = {
+    [30] = {
       type    = "header",
       name    = GetString(GUILD_MASTER_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#ExportSalesReport",
     },
     -- should we add taxes to the export?
-    [32] = {
+    [31] = {
       type    = 'checkbox',
       name    = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -1767,14 +1727,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
-    [33] = {
+    [32] = {
       type    = "header",
       name    = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
     },
     -- Verbose MM Messages
-    [34] = {
+    [33] = {
       type    = 'slider',
       name    = GetString(MM_VERBOSE_NAME),
       tooltip = GetString(MM_VERBOSE_TIP),
@@ -1787,7 +1747,7 @@ function MasterMerchant:LibAddonInit()
       end,
       default = MasterMerchant.systemDefault.verbose,
     },
-    [35] = {
+    [34] = {
       type    = 'checkbox',
       name    = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
@@ -2259,7 +2219,7 @@ function MasterMerchant:CheckStatus()
     if eventCount == 0 and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
     --[[
     if eventCount > 1 then
-      MasterMerchant:v(2, string.format("Events remaining: %s for %s and %s : %s", eventCount, GetGuildName(guildID), processingSpeed, timeLeft))
+      MasterMerchant:v(2, string.format("Guild Name: %s ; Numevents loaded: %s ; Event Count: %s ; Speed: %s ; Time Left: %s", GetGuildName(guildID), numEvents, eventCount, processingSpeed, timeLeft))
     end
     ]]--
   end
@@ -2684,7 +2644,6 @@ function MasterMerchant:InitRosterChanges()
 
 end
 
-
 -- Handle the reset button - clear out the search and scan tables,
 -- and set the time of the last scan to nil, then force a scan.
 function MasterMerchant:DoReset()
@@ -2770,6 +2729,21 @@ function MasterMerchant:ReferenceSales(otherData)
       otherData.savedVariables.SalesData[itemid] = nil
     else
       self.salesData[itemid] = versionlist
+    end
+  end
+end
+
+function MasterMerchant:AddNewData(otherData)
+  for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
+    for field, itemIndexData in pairs(itemIndex) do
+      local oldestTime = nil
+      local totalCount = 0
+      for sale, saleData in pairs(itemIndexData['sales']) do
+        totalCount = totalCount +1
+        if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+      end
+      self.salesData[itemID][field].totalCount = totalCount
+      self.salesData[itemID][field].oldestTime = oldestTime
     end
   end
 end
@@ -2930,7 +2904,7 @@ function MasterMerchant:MoveFromOldAcctSavedVariables()
   end
 end
 
-function MasterMerchant:AdjustItemsAllContainers(currentTask)
+function MasterMerchant:AdjustItemsAllContainers()
   -- Convert event IDs to string if not converted
   MasterMerchant:dm("Debug", "Convert event IDs to string if not converted")
   if not MasterMerchant.systemSavedVariables.itemIDConvertedToString then
@@ -2954,7 +2928,7 @@ function MasterMerchant:AdjustItemsAllContainers(currentTask)
   end
 end
 
-function MasterMerchant:ReIndexSalesAllContainers(currentTask)
+function MasterMerchant:ReIndexSalesAllContainers()
   -- Update indexs because of Writs
   MasterMerchant:dm("Debug", "Update indexs if not converted")
   if not MasterMerchant.systemSavedVariables.shouldReindex then
@@ -3000,6 +2974,27 @@ function MasterMerchant:ReferenceSalesAllContainers(currentTask)
   self:ReferenceSales(MM15Data)
   self.systemSavedVariables.dataLocations                 = self.systemSavedVariables.dataLocations or {}
   self.systemSavedVariables.dataLocations[GetWorldName()] = true
+end
+
+-- Add new data to concatanated data array
+function MasterMerchant:AddNewDataAllContainers(currentTask)
+  MasterMerchant:dm("Debug", "Add new data to concatanated data array")
+  self:AddNewData(MM00Data)
+  self:AddNewData(MM01Data)
+  self:AddNewData(MM02Data)
+  self:AddNewData(MM03Data)
+  self:AddNewData(MM04Data)
+  self:AddNewData(MM05Data)
+  self:AddNewData(MM06Data)
+  self:AddNewData(MM07Data)
+  self:AddNewData(MM08Data)
+  self:AddNewData(MM09Data)
+  self:AddNewData(MM10Data)
+  self:AddNewData(MM11Data)
+  self:AddNewData(MM12Data)
+  self:AddNewData(MM13Data)
+  self:AddNewData(MM14Data)
+  self:AddNewData(MM15Data)
 end
 
 -- Scans all stores a player has access to in parallel.
@@ -3096,7 +3091,6 @@ function MasterMerchant:Initialize()
     showAmountTaxes            = false,
     useDefaultDaysRange        = false,
     itemIDConvertedToString    = false, -- this only converts id64 at this time
-    defaultStatistics          = GetString(MM_STATISTICS_MEDIAN),
     useLibDebugLogger          = false, -- added 11-28
     shouldReindex              = false,
     shouldAdderText            = false,
@@ -3396,6 +3390,7 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers(task) end, 'ReferenceSalesAllContainers')
     LEQ:Add(function() MasterMerchant:TruncateHistory(task) end, 'TruncateHistory')
     LEQ:Add(function() MasterMerchant:InitItemHistory(task) end, 'InitItemHistory')
+    LEQ:Add(function() MasterMerchant:AddNewDataAllContainers(task) end, 'AddNewDataAllContainers')
     LEQ:Add(function() MasterMerchant:indexHistoryTables(task) end, 'indexHistoryTables')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Add(function() MasterMerchant:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')

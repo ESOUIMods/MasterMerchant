@@ -492,7 +492,7 @@ function MasterMerchant:AddSalesTableData(key, value)
     MM16DataSavedVariables[key] = setSalesTableData(key)
   end
   if not MM16DataSavedVariables[key][value] then
-    local index = MasterMerchant:NonContiguousNonNilCount(MM16DataSavedVariables[key]) + 1
+    local index = MasterMerchant:NonContiguousCount(MM16DataSavedVariables[key]) + 1
     MM16DataSavedVariables[key][value] = index
     if key == "AccountNames" then
       MasterMerchant.accountNameByIdLookup[index] = value
@@ -609,10 +609,12 @@ function MasterMerchant:addToHistoryTables(theEvent)
   ]]--
 
   -- first add new data looks to their tables
+  --[[
   local linkHash   = MasterMerchant:AddSalesTableData("ItemLink", theEvent.itemLink)
   local buyerHash  = MasterMerchant:AddSalesTableData("AccountNames", theEvent.buyer)
   local sellerHash = MasterMerchant:AddSalesTableData("AccountNames", theEvent.seller)
   local guildHash  = MasterMerchant:AddSalesTableData("GuildNames", theEvent.guild)
+  ]]--
 
   --[[The quality effects itemIndex although the ID from the
   itemLink may be the same. We will keep them separate.
@@ -639,6 +641,10 @@ function MasterMerchant:addToHistoryTables(theEvent)
     local nextLocation  = #self.salesData[theIID][itemIndex]['sales'] + 1
     searchItemDesc      = self.salesData[theIID][itemIndex].itemDesc
     searchItemAdderText = self.salesData[theIID][itemIndex].itemAdderText
+    self.salesData[theIID][itemIndex].totalCount = self.salesData[theIID][itemIndex].totalCount + 1
+    local oldestTime = self.salesData[theIID][itemIndex].oldestTime
+    if oldestTime > theEvent.timestamp then oldestTime = theEvent.timestamp end
+    self.salesData[theIID][itemIndex].oldestTime = oldestTime
     if self.salesData[theIID][itemIndex]['sales'][nextLocation] == nil then
       table.insert(self.salesData[theIID][itemIndex]['sales'], nextLocation, theEvent)
       insertedIndex = nextLocation
@@ -653,6 +659,8 @@ function MasterMerchant:addToHistoryTables(theEvent)
       itemIcon      = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
       itemDesc      = searchItemDesc,
+      oldestTime    = theEvent.timestamp,
+      totalCount    = 1,
       sales         = { theEvent } }
   end
 
