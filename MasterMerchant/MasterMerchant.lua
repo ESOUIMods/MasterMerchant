@@ -2744,6 +2744,25 @@ function MasterMerchant:AddNewData(otherData)
       end
       self.salesData[itemID][field].totalCount = totalCount
       self.salesData[itemID][field].oldestTime = oldestTime
+      self.salesData[itemID][field].wasAltered = false
+    end
+  end
+end
+
+function MasterMerchant:RenewExtraData(otherData)
+  for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
+    for field, itemIndexData in pairs(itemIndex) do
+      if itemIndexData.wasAltered then
+        local oldestTime = nil
+        local totalCount = 0
+        for sale, saleData in pairs(itemIndexData['sales']) do
+          totalCount = totalCount +1
+          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+        end
+        self.salesData[itemID][field].totalCount = totalCount
+        self.salesData[itemID][field].oldestTime = oldestTime
+        self.salesData[itemID][field].wasAltered = false
+      end
     end
   end
 end
@@ -2954,7 +2973,7 @@ function MasterMerchant:ReIndexSalesAllContainers()
 end
 
 -- Bring seperate lists together we can still access the sales history all together
-function MasterMerchant:ReferenceSalesAllContainers(currentTask)
+function MasterMerchant:ReferenceSalesAllContainers()
   MasterMerchant:dm("Debug", "Bring seperate lists together")
   self:ReferenceSales(MM00Data)
   self:ReferenceSales(MM01Data)
@@ -2977,7 +2996,7 @@ function MasterMerchant:ReferenceSalesAllContainers(currentTask)
 end
 
 -- Add new data to concatanated data array
-function MasterMerchant:AddNewDataAllContainers(currentTask)
+function MasterMerchant:AddNewDataAllContainers()
   MasterMerchant:dm("Debug", "Add new data to concatanated data array")
   self:AddNewData(MM00Data)
   self:AddNewData(MM01Data)
@@ -2997,7 +3016,28 @@ function MasterMerchant:AddNewDataAllContainers(currentTask)
   self:AddNewData(MM15Data)
 end
 
--- Scans all stores a player has access to in parallel.
+-- Renew extra data if list was altered
+function MasterMerchant:RenewExtraDataAllContainers()
+  MasterMerchant:dm("Debug", "Add new data to concatanated data array")
+  self:RenewExtraData(MM00Data)
+  self:RenewExtraData(MM01Data)
+  self:RenewExtraData(MM02Data)
+  self:RenewExtraData(MM03Data)
+  self:RenewExtraData(MM04Data)
+  self:RenewExtraData(MM05Data)
+  self:RenewExtraData(MM06Data)
+  self:RenewExtraData(MM07Data)
+  self:RenewExtraData(MM08Data)
+  self:RenewExtraData(MM09Data)
+  self:RenewExtraData(MM10Data)
+  self:RenewExtraData(MM11Data)
+  self:RenewExtraData(MM12Data)
+  self:RenewExtraData(MM13Data)
+  self:RenewExtraData(MM14Data)
+  self:RenewExtraData(MM15Data)
+end
+
+-- Setup LibHistoire listeners
 function MasterMerchant:SetupListenerLibHistoire()
   MasterMerchant:dm("Debug", "SetupListenerLibHistoire")
   MasterMerchant:v(2, 'LibHistoire Activated, listening for guild sales...')
@@ -3197,9 +3237,9 @@ function MasterMerchant:Initialize()
   MasterMerchant.verboseLevel = MasterMerchant.systemSavedVariables.verbose or 4
 
   -- MoveFromOldAcctSavedVariables STEP
-  -- AdjustItemsAllContainers(task) STEP
-  -- ReIndexSalesAllContainers(task) STEP
-  -- ReferenceSalesAllContainers(task) STEP
+  -- AdjustItemsAllContainers() STEP
+  -- ReIndexSalesAllContainers() STEP
+  -- ReferenceSalesAllContainers() STEP
   -- New, added 9/26
   self:InitRosterChanges()
 
@@ -3385,13 +3425,14 @@ function MasterMerchant:Initialize()
     local LEQ = LibExecutionQueue:new()
     LEQ:Add(function() MasterMerchant:v(1, "|cFFFF00Master Merchant Initializing...|r") end, '')
     LEQ:Add(function() MasterMerchant:MoveFromOldAcctSavedVariables() end, 'MoveFromOldAcctSavedVariables')
-    LEQ:Add(function() MasterMerchant:AdjustItemsAllContainers(task) end, 'AdjustItemsAllContainers')
-    LEQ:Add(function() MasterMerchant:ReIndexSalesAllContainers(task) end, 'ReIndexSalesAllContainers')
-    LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers(task) end, 'ReferenceSalesAllContainers')
-    LEQ:Add(function() MasterMerchant:TruncateHistory(task) end, 'TruncateHistory')
-    LEQ:Add(function() MasterMerchant:InitItemHistory(task) end, 'InitItemHistory')
-    LEQ:Add(function() MasterMerchant:AddNewDataAllContainers(task) end, 'AddNewDataAllContainers')
-    LEQ:Add(function() MasterMerchant:indexHistoryTables(task) end, 'indexHistoryTables')
+    LEQ:Add(function() MasterMerchant:AdjustItemsAllContainers() end, 'AdjustItemsAllContainers')
+    LEQ:Add(function() MasterMerchant:ReIndexSalesAllContainers() end, 'ReIndexSalesAllContainers')
+    LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
+    LEQ:Add(function() MasterMerchant:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
+    LEQ:Add(function() MasterMerchant:TruncateHistory() end, 'TruncateHistory')
+    LEQ:Add(function() MasterMerchant:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
+    LEQ:Add(function() MasterMerchant:InitItemHistory() end, 'InitItemHistory')
+    LEQ:Add(function() MasterMerchant:indexHistoryTables() end, 'indexHistoryTables')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Add(function() MasterMerchant:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:Start()

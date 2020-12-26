@@ -209,7 +209,8 @@ function MasterMerchant:TruncateHistory()
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
 
-    local salesCount = MasterMerchant:NonContiguousNonNilCount(versiondata['sales'])
+    local salesDeleted = 0
+    salesCount = versiondata.totalCount
     local salesDataTable = MasterMerchant:spairs(versiondata['sales'], function(a, b) return MasterMerchant:CleanTimestamp(a) < MasterMerchant:CleanTimestamp(b) end)
     for saleid, saledata in salesDataTable do
       if MasterMerchant.systemSavedVariables.useSalesHistory then
@@ -219,8 +220,7 @@ function MasterMerchant:TruncateHistory()
         ) then
           -- Remove it by setting it to nil
           versiondata['sales'][saleid] = nil
-          extraData.deleteCount        = extraData.deleteCount + 1
-          salesCount                   = salesCount - 1
+          salesDeleted                 = salesDeleted + 1
         end
       else
         if salesCount > MasterMerchant.systemSavedVariables.minItemCount and
@@ -231,10 +231,21 @@ function MasterMerchant:TruncateHistory()
           ) then
           -- Remove it by setting it to nil
           versiondata['sales'][saleid] = nil
-          extraData.deleteCount        = extraData.deleteCount + 1
+          salesDeleted                 = salesDeleted + 1
           salesCount                   = salesCount - 1
         end
       end
+    end
+    extraData.deleteCount = extraData.deleteCount + salesDeleted
+    --[[ `for saleid, saledata in salesDataTable do` is not a loop
+    to Lua so we can not get the oldest time of the first element
+    and break. Mark the list altered and clean up in RenewExtraData.
+
+    Also since we have to get the new oldest time, renew the totalCount
+    with RenewExtraData also.
+    ]]--
+    if salesDeleted > 0 then
+     versiondata.wasAltered = true
     end
     return true
 
