@@ -665,20 +665,19 @@ function MasterMerchant:addToHistoryTables(theEvent)
   end
 
   local guild
-  local adderDescConcat                     = searchItemDesc .. ' ' .. searchItemAdderText
+  local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
 
-  guild                                     = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
-  MasterMerchant.guildSales[theEvent.guild] = guild;
+  guild = MasterMerchant.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
+  MasterMerchant.guildSales[theEvent.guild] = guild
   guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
 
-  guild                                         = MasterMerchant.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
-  MasterMerchant.guildPurchases[theEvent.guild] = guild;
+  guild = MasterMerchant.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
+  MasterMerchant.guildPurchases[theEvent.guild] = guild
   guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk)
 
-  guild                                     = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
-  MasterMerchant.guildItems[theEvent.guild] = guild;
-  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
-    adderDescConcat)
+  guild = MasterMerchant.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+  MasterMerchant.guildItems[theEvent.guild] = guild
+  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
 
   local playerName = string.lower(GetDisplayName())
   local isSelfSale = playerName == string.lower(theEvent.seller)
