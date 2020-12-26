@@ -23,13 +23,11 @@ end
 
 function MasterMerchant:NonContiguousNonNilCount(tableObject)
   local count = 0
-  local apiCount = NonContiguousCount(tableObject)
 
   for _, v in pairs(tableObject) do
     if v ~= nil then count = count + 1 end
   end
 
-  if count ~= apiCount then MasterMerchant:dm("Warn", string.format("count: %s ; apiCount: %s", count, apiCount)) end
   return count
 end
 
