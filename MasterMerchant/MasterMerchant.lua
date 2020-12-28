@@ -3045,6 +3045,7 @@ function MasterMerchant:SetupListenerLibHistoire()
   MasterMerchant.isInitialized = true -- moved in 3.2.7
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
+    MasterMerchant.LibHistoireListener[guildID] = {}
     MasterMerchant:SetupListener(guildID)
   end
 end
@@ -3500,7 +3501,7 @@ function MasterMerchant:SetupListener(guildID)
   local lastReceivedEventID
   if MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID] then
     --MasterMerchant:dm("Info", string.format("MasterMerchant Saved Var: %s, GuildID: (%s)", MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID], guildID))
-    lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID])
+    lastReceivedEventID = StringToId64(MasterMerchant.systemSavedVariables["lastReceivedEventID"][guildID]) or "0"
     --MasterMerchant:dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
     MasterMerchant.LibHistoireListener[guildID]:SetAfterEventId(lastReceivedEventID)
   end
