@@ -3065,6 +3065,7 @@ function MasterMerchant:Initialize()
   local systemDefault = {
     -- old settings
     dataLocations              = {},
+    pricingData                = {}, -- added 12-31 but has always been there
     showChatAlerts             = false,
     showMultiple               = true,
     openWithMail               = true,
