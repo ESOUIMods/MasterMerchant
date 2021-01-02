@@ -299,9 +299,14 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     local countSold        = 0
     local weigtedCountSold = 0
     local salesPoints      = {}
+    local rangeDeviation   = (3 * standardDeviation)
     local weightValue      = 0
     local dayInterval      = 0
+    local lowRange         = 1
+    local highRange        = 2
     local isOutlier        = false
+    if initMean - rangeDeviation > 1 then lowRange = initMean - rangeDeviation end
+    if initMean + rangeDeviation > 2 then highRange = initMean + rangeDeviation end
     if timeInterval > 86400 then
       dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
     end
@@ -323,15 +328,9 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
       -- get individualSale
       local individualSale = item.price / item.quant
       -- determine if it is an outlier, if toggle is on
-      if MasterMerchant.systemSavedVariables.trimOutliers then
+      if MasterMerchant.systemSavedVariables.trimOutliers and (individualSale < lowRange or individualSale > highRange) then
         -- within range
-        local z = (individualSale - initMean) / standardDeviation
-        if z > -3.0 and z < 3.0 then
-          -- price is ok
-        else
-          -- price is not in range
-          isOutlier = true
-        end
+        isOutlier = true
       end
       if usesaleitem and not isOutlier then
         -- process this sals
