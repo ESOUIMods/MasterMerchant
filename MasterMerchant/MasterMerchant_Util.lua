@@ -720,15 +720,6 @@ function MasterMerchant:addToHistoryTables(theEvent)
     table.insert(self.SRIndex[i], wordData)
   end
 
-  -- set lookuptable to nil more or less
-  if MasterMerchant.itemAverageLookupTable[theIID] == nil then
-    MasterMerchant.itemAverageLookupTable[theIID] = {}
-  end
-  if MasterMerchant.itemAverageLookupTable[theIID][itemIndex] == nil then
-    MasterMerchant.itemAverageLookupTable[theIID][itemIndex] = {}
-  end
-  MasterMerchant.itemAverageLookupTable[theIID][itemIndex] = { }
-
   return true
 end
 

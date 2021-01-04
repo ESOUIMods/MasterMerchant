@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS                = {
 
 MasterMerchant                        = { }
 MasterMerchant.name                   = 'MasterMerchant'
-MasterMerchant.version                = '3.5.12'
+MasterMerchant.version                = '3.5.13'
 MasterMerchant.locale                 = GetCVar('Language.2')
 -- default is self
 MasterMerchant.viewMode               = 'self'
@@ -42,7 +42,6 @@ MasterMerchant.isInitialized          = false -- added 8-25 used
 MasterMerchant.guildMemberInfo        = { } -- added 10-17 used as lookup
 MasterMerchant.LibHistoireListener    = { } -- added for debug on 10-31
 MasterMerchant.LibHistoireRefreshed   = false -- added 8-25
-MasterMerchant.itemAverageLookupTable = { } -- added 11-21 used as lookup for tooltips
 MasterMerchant.customTimeframeText    = "" -- added 11-21 used as lookup for tooltips
 MasterMerchant.systemDefault          = {} -- added 11-26 placeholder for init routine
 MasterMerchant.accountNameByIdLookup  = {} -- added 12-2
