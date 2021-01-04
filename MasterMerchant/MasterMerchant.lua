@@ -172,15 +172,30 @@ function stats.median( t, index, range )
 end
 
 function stats.getMiddleIndex( count )
+    local evenNumber = false
     local quotient, remainder = math.modf(count / 2)
+    if remainder == 0 then evenNumber = true end
     local middleIndex = quotient + math.floor(0.5+remainder)
-    return middleIndex
+    return middleIndex, evenNumber
 end
 
+--[[ we do not use this function in there are less then three
+items in the table.
+
+middleIndex will be rounded up when odd
+]]--
 function stats.interquartileRange( t )
-    local middleIndex = stats.getMiddleIndex( #t )
-    quartile1 = stats.median( t , 1, middleIndex - 1 )
-    quartile3 = stats.median( t , middleIndex + 1, #t )
+    local middleIndex, evenNumber = stats.getMiddleIndex( #t )
+    -- 1,2,3,4
+    if evenNumber then
+      quartile1 = stats.median( t , 1, middleIndex )
+      quartile3 = stats.median( t , middleIndex + 1, #t )
+    else
+      -- 1,2,3,4,5
+      -- odd number
+      quartile1 = stats.median( t , 1, middleIndex )
+      quartile3 = stats.median( t , middleIndex, #t )
+    end
     return quartile1, quartile3, quartile3 - quartile1
 end
 
