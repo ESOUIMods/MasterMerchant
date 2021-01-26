@@ -96,7 +96,7 @@ ZO_CreateStringId("SK_THOUSANDS_SEP", ".")
 -- Chat and center screen alerts/messages
 ZO_CreateStringId("SK_FIRST_SCAN", "Gilde wird zum ersten mal gescannt.  Dies kann einige Minuten dauern!")
 ZO_CreateStringId("SK_REFRESH_LABEL", "Aktualisierung")
-ZO_CreateStringId("SK_REFRESH_START", "Manuelle Aktualisierung der Verka\195\164ufe gestartet.")
+ZO_CreateStringId("SK_REFRESH_START", "Manuelle Aktualisierung der Verkäufe gestartet.")
 ZO_CreateStringId("SK_REFRESH_DONE", "Aktualisierung der Verka\195\164ufe abgeschlossen.")
 ZO_CreateStringId("SK_REFRESH_WAIT", "Bitte mindesten eine Minute zwischen den Aktualisierungen warten.")
 ZO_CreateStringId("SK_RESET_LABEL", "Zur\195\188cksetzen")

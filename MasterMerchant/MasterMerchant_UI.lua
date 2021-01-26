@@ -1448,7 +1448,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
     end
   end
 
-  if MasterMerchant.systemSavedVariables.verbose == 7 then
+  if MasterMerchant.systemSavedVariables.verbose == 6 then
     if not tooltip.mmTextDebug then
       tooltip.mmTextDebug = tooltip.textPool:AcquireObject()
       tooltip:AddControl(tooltip.mmTextDebug)

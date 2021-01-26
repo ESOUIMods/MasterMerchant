@@ -502,7 +502,8 @@ function MasterMerchant:CleanOutBad()
     --saledata.itemDesc = nil
     --saledata.itemAdderText = nil
 
-    if saledata['timestamp'] == nil
+    if type(saledata) ~= 'table'
+      or saledata['timestamp'] == nil
       or type(saledata['timestamp']) ~= 'number'
       or saledata['timestamp'] < 0
       or saledata['price'] == nil

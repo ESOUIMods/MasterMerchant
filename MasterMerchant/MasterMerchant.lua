@@ -143,7 +143,7 @@ function stats.mean( t )
     count = count + 1
   end
 
-  return (sum / count)
+  return (sum / count), count, sum
 end
 
 -- Get the median of a table.
@@ -153,7 +153,6 @@ function stats.median( t, index, range )
   index = index or 1
   range = range or #t
 
-  -- deep copy table so that when we sort it, the original is unchanged
   for i = index, range do
     local individualSale = sortedSales[i].price / sortedSales[i].quant
     table.insert( temp, individualSale )
@@ -169,6 +168,57 @@ function stats.median( t, index, range )
     -- return middle element
     return temp[math.ceil(#temp/2)]
   end
+end
+
+function stats.maxmin( t )
+  local max = -math.huge
+  local min = math.huge
+
+  for key, item in pairs(t) do
+    local individualSale = item.price / item.quant
+    max = math.max( max, individualSale )
+    min = math.min( min, individualSale )
+  end
+
+  return max, min
+end
+
+function stats.range( t )
+  local highest, lowest = stats.maxmin( t )
+  return highest - lowest
+end
+
+-- Get the mode of a table.  Returns a table of values.
+-- Works on anything (not just numbers).
+function stats.mode( t )
+  local counts={}
+
+  for key, item in pairs(t) do
+    local individualSale = item.price / item.quant
+    if counts[individualSale] == nil then
+      counts[individualSale] = 1
+    else
+      counts[individualSale] = counts[individualSale] + 1
+    end
+  end
+
+  local biggestCount = 0
+
+  for k, v  in pairs( counts ) do
+    if v > biggestCount then
+      biggestCount = v
+    end
+  end
+
+  local temp={}
+
+  for k,v in pairs( counts ) do
+    if v == biggestCount then
+      table.insert( temp, k )
+    end
+  end
+
+  return temp
 end
 
 function stats.getMiddleIndex( count )
@@ -2663,13 +2713,17 @@ function MasterMerchant:DoReset()
   ]]--
 end
 
---[[TODO Use this to convert even IDs to strings]]--
+--[[TODO Use this to convert IDs to strings]]--
 function MasterMerchant:AdjustItems(otherData)
   for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
     for field, itemIndexData in pairs(itemIndex) do
       for sale, saleData in pairs(itemIndexData['sales']) do
-        if type(saleData.id) ~= 'string' then
-          saleData.id = tostring(saleData.id)
+        if type(saleData) == 'table' then
+          if type(saleData.id) ~= 'string' then
+            saleData.id = tostring(saleData.id)
+          end
+        else
+          MasterMerchant.dataNeedsCleaning = true
         end
       end
     end
@@ -3415,6 +3469,12 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:Start()
   end, 10)
+
+  if MasterMerchant.dataNeedsCleaning then
+    MasterMerchant:CleanOutBad()
+    MasterMerchant:PurgeDups()
+    ReloadUI()
+  end
 end
 
 function MasterMerchant:SwitchPrice(control, slot)
