@@ -2813,15 +2813,11 @@ function MasterMerchant:ReIndexSales(otherData)
   --if (GetAPIVersion() >= 100015) then return end
 
   local needToReindex          = false
-  local needToAddDescription   = false
-  local needToAdditemAdderText = false
   for _, v in pairs(otherData.savedVariables.SalesData) do
     if v then
       for j, dataList in pairs(v) do
         local key, count       = string.gsub(j, ':', ':')
         needToReindex          = (count ~= 4)
-        needToAddDescription   = (dataList['itemDesc'] == nil)
-        needToAdditemAdderText = (dataList['itemAdderText'] == nil)
         break
       end
       break
@@ -2856,9 +2852,10 @@ function MasterMerchant:ReIndexSales(otherData)
       end
     end
   end
-  if needToAddDescription then
-    --MasterMerchant:dm("Debug", "needToAddDescription")
-    -- spin through and split Item Description into a seperate string
+end
+
+function MasterMerchant:ReAddDescription(otherData)
+  if not MasterMerchant.systemSavedVariables.shouldAdderText then
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
         _, item              = next(dataList['sales'], nil)
@@ -2866,9 +2863,10 @@ function MasterMerchant:ReIndexSales(otherData)
       end
     end
   end
-  if needToAdditemAdderText or not MasterMerchant.systemSavedVariables.shouldAdderText then
-    --MasterMerchant:dm("Debug", "needToAdditemAdderText")
-    -- spin through and split Item Description into a seperate string
+end
+
+function MasterMerchant:ReAdderText(otherData)
+  if not MasterMerchant.systemSavedVariables.shouldAdderText then
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
         _, item                   = next(dataList['sales'], nil)
@@ -2995,6 +2993,29 @@ function MasterMerchant:ReIndexSalesAllContainers()
     self:ReIndexSales(MM14Data)
     self:ReIndexSales(MM15Data)
     MasterMerchant.systemSavedVariables.shouldReindex   = true
+  end
+end
+
+function MasterMerchant:ReAdderTextAllContainers()
+  -- Update indexs because of Writs
+  MasterMerchant:dm("Debug", "Update indexs if not converted")
+  if not MasterMerchant.systemSavedVariables.shouldAdderText then
+    self:ReAdderText(MM00Data)
+    self:ReAdderText(MM01Data)
+    self:ReAdderText(MM02Data)
+    self:ReAdderText(MM03Data)
+    self:ReAdderText(MM04Data)
+    self:ReAdderText(MM05Data)
+    self:ReAdderText(MM06Data)
+    self:ReAdderText(MM07Data)
+    self:ReAdderText(MM08Data)
+    self:ReAdderText(MM09Data)
+    self:ReAdderText(MM10Data)
+    self:ReAdderText(MM11Data)
+    self:ReAdderText(MM12Data)
+    self:ReAdderText(MM13Data)
+    self:ReAdderText(MM14Data)
+    self:ReAdderText(MM15Data)
     MasterMerchant.systemSavedVariables.shouldAdderText = true
   end
 end
@@ -3455,7 +3476,8 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:v(1, "|cFFFF00Master Merchant Initializing...|r") end, '')
     LEQ:Add(function() MasterMerchant:MoveFromOldAcctSavedVariables() end, 'MoveFromOldAcctSavedVariables')
     LEQ:Add(function() MasterMerchant:AdjustItemsAllContainers() end, 'AdjustItemsAllContainers')
-    LEQ:Add(function() MasterMerchant:ReIndexSalesAllContainers() end, 'ReIndexSalesAllContainers')
+    -- LEQ:Add(function() MasterMerchant:ReIndexSalesAllContainers() end, 'ReIndexSalesAllContainers')
+    LEQ:Add(function() MasterMerchant:ReAdderTextAllContainers() end, 'ReAdderTextAllContainers')
     LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
     LEQ:Add(function() MasterMerchant:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
     LEQ:Add(function() MasterMerchant:TruncateHistory() end, 'TruncateHistory')
@@ -3928,16 +3950,6 @@ function MasterMerchant.Slash(allArgs)
     return
   end
 
-  if args == 'freeze' then
-    MasterMerchant:setScanning(true)
-    return
-  end
-
-  if args == 'unfreeze' then
-    MasterMerchant:setScanning(false)
-    return
-  end
-
   if args == 'clean' or args == 'stillclean' then
     if MasterMerchant.isScanning then
       if args == 'clean' then MasterMerchant:v(2,
@@ -3947,6 +3959,11 @@ function MasterMerchant.Slash(allArgs)
     end
     MasterMerchant:v(2, "Cleaning Out Bad Records.")
     MasterMerchant:CleanOutBad()
+    return
+  end
+  if args == 'redesc' then
+    MasterMerchant.systemSavedVariables.shouldAdderText = false
+    MasterMerchant:v(2, "MM Clean is set to update search text.")
     return
   end
   if args == 'clearprices' then

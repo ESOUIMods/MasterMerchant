@@ -524,6 +524,7 @@ function MasterMerchant:CleanOutBad()
       or saledata['id'] == nil then
       -- Remove it
       versiondata['sales'][saleid] = nil
+      versiondata["wasAltered"] = true
       extraData.deleteCount        = extraData.deleteCount + 1
       return
     end
@@ -531,9 +532,13 @@ function MasterMerchant:CleanOutBad()
     local theIID       = GetItemLinkItemId(saledata['itemLink'])
     local itemIdMatch  = tonumber(string.match(saledata['itemLink'], '|H.-:item:(.-):'))
     local itemlinkName = GetItemLinkName(saledata['itemLink'])
+    if not MasterMerchant.systemSavedVariables.shouldAdderText then
+      versiondata['itemAdderText'] = self.addedSearchToItem(saledata['itemLink'])
+    end
     if not MasterMerchant:IsValidItemLink(saledata['itemLink']) then
       -- Remove it
       versiondata['sales'][saleid] = nil
+      versiondata["wasAltered"] = true
       extraData.badItemLinkCount   = extraData.badItemLinkCount + 1
       return
     end
@@ -596,6 +601,7 @@ function MasterMerchant:CleanOutBad()
       extraData.moveCount          = extraData.moveCount + 1
       -- Remove it from it's current location
       versiondata['sales'][saleid] = nil
+      versiondata["wasAltered"] = true
       extraData.deleteCount        = extraData.deleteCount + 1
       return
     end
@@ -643,6 +649,7 @@ function MasterMerchant:CleanOutBad()
       self.guildSales     = {}
       self.guildItems     = {}
       self.myItems        = {}
+      LEQ:Add(function() self:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
       LEQ:Add(function() self:InitItemHistory() end, 'InitItemHistory')
       LEQ:Add(function() self:indexHistoryTables() end, 'indexHistoryTables')
       LEQ:Add(function() MasterMerchant:v(5, 'Reindexing Complete.') end, 'Done')
@@ -659,8 +666,9 @@ function MasterMerchant:CleanOutBad()
     self:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
-  MasterMerchant.systemSavedVariables.shouldReindex   = false
-  MasterMerchant.systemSavedVariables.shouldAdderText = false
+  MasterMerchant.systemSavedVariables.verThreeItemIDConvertedToString = true
+  MasterMerchant.systemSavedVariables.shouldReindex   = true
+  MasterMerchant.systemSavedVariables.shouldAdderText = true
 end
 
 ----------------------------------------
