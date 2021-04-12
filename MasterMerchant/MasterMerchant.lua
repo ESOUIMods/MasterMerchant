@@ -2767,7 +2767,16 @@ function MasterMerchant:AddNewData(otherData)
       local totalCount = 0
       for sale, saleData in pairs(itemIndexData['sales']) do
         totalCount = totalCount +1
-        if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+        if saleData.timestamp then
+          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+        else
+          if MasterMerchant:is_empty_or_nil(saleData) then
+            MasterMerchant:dm("Warn", "Empty Table Detected!")
+            MasterMerchant:dm("Warn", itemID)
+            MasterMerchant:dm("Warn", sale)
+            itemIndexData['sales'][sale] = nil
+          end
+        end
       end
       self.salesData[itemID][field].totalCount = totalCount
       self.salesData[itemID][field].oldestTime = oldestTime
@@ -3613,19 +3622,21 @@ function MasterMerchant:SetupListener(guildID)
       }
       theEvent.wasKiosk = (MasterMerchant.guildMemberInfo[guildID][string.lower(theEvent.buyer)] == nil)
 
-      local isNotDuplicate = MasterMerchant:IsNotDuplicateSale(theEvent.itemLink, theEvent.id)
-
-      if isNotDuplicate then
-        added = MasterMerchant:addToHistoryTables(theEvent)
-      end
-      -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
-      if added and string.lower(theEvent.seller) == thePlayer then
-        --MasterMerchant:dm("Debug", "alertQueue updated")
-        table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
-      end
-      if added then
-        MasterMerchant:PostScanParallel(guildName, true)
-        MasterMerchant:SetMasterMerchantWindowDirty()
+      local daysOfHistoryToKeep = GetTimeStamp() - MasterMerchant.oneDayInSeconds * MasterMerchant.systemSavedVariables.historyDepth
+      if (theEvent.timestamp > daysOfHistoryToKeep) then
+        local isNotDuplicate = MasterMerchant:IsNotDuplicateSale(theEvent.itemLink, theEvent.id)
+        if isNotDuplicate then
+          added = MasterMerchant:addToHistoryTables(theEvent)
+        end
+        -- (doAlert and (MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts))
+        if added and string.lower(theEvent.seller) == thePlayer then
+          --MasterMerchant:dm("Debug", "alertQueue updated")
+          table.insert(MasterMerchant.alertQueue[theEvent.guild], theEvent)
+        end
+        if added then
+          MasterMerchant:PostScanParallel(guildName, true)
+          MasterMerchant:SetMasterMerchantWindowDirty()
+        end
       end
     end
   end)
