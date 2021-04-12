@@ -2718,12 +2718,8 @@ function MasterMerchant:AdjustItems(otherData)
   for itemID, itemIndex in pairs(otherData.savedVariables.SalesData) do
     for field, itemIndexData in pairs(itemIndex) do
       for sale, saleData in pairs(itemIndexData['sales']) do
-        if type(saleData) == 'table' then
-          if type(saleData.id) ~= 'string' then
-            saleData.id = tostring(saleData.id)
-          end
-        else
-          MasterMerchant.dataNeedsCleaning = true
+        if type(saleData.id) ~= 'string' then
+          saleData.id = tostring(saleData.id)
         end
       end
     end
@@ -2957,7 +2953,7 @@ end
 function MasterMerchant:AdjustItemsAllContainers()
   -- Convert event IDs to string if not converted
   MasterMerchant:dm("Debug", "Convert event IDs to string if not converted")
-  if not MasterMerchant.systemSavedVariables.itemIDConvertedToString then
+  if not MasterMerchant.systemSavedVariables.verThreeItemIDConvertedToString then
     self:AdjustItems(MM00Data)
     self:AdjustItems(MM01Data)
     self:AdjustItems(MM02Data)
@@ -2974,7 +2970,7 @@ function MasterMerchant:AdjustItemsAllContainers()
     self:AdjustItems(MM13Data)
     self:AdjustItems(MM14Data)
     self:AdjustItems(MM15Data)
-    MasterMerchant.systemSavedVariables.itemIDConvertedToString = true
+    MasterMerchant.systemSavedVariables.verThreeItemIDConvertedToString = true
   end
 end
 
@@ -3162,8 +3158,9 @@ function MasterMerchant:Initialize()
     diplayCountInfo            = true,
     lastReceivedEventID        = {},
     showAmountTaxes            = false,
-    itemIDConvertedToString    = false, -- this only converts id64 at this time
     useLibDebugLogger          = false, -- added 11-28
+    -- conversion vars
+    verThreeItemIDConvertedToString    = false, -- this only converts id64 at this time
     shouldReindex              = false,
     shouldAdderText            = false,
   }
@@ -3469,12 +3466,6 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:Start()
   end, 10)
-
-  if MasterMerchant.dataNeedsCleaning then
-    MasterMerchant:CleanOutBad()
-    MasterMerchant:PurgeDups()
-    ReloadUI()
-  end
 end
 
 function MasterMerchant:SwitchPrice(control, slot)

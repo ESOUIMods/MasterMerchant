@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS                = {
 
 MasterMerchant                        = { }
 MasterMerchant.name                   = 'MasterMerchant'
-MasterMerchant.version                = '3.5.15'
+MasterMerchant.version                = '3.5.16'
 MasterMerchant.locale                 = GetCVar('Language.2')
 -- default is self
 MasterMerchant.viewMode               = 'self'
@@ -51,7 +51,6 @@ MasterMerchant.eventsNeedProcessing   = {}
 MasterMerchant.timeEstimated          = {}
 MasterMerchant.purgeQueue             = {}
 MasterMerchant.totalRecords           = 0 -- added 12-16 but always there
-MasterMerchant.dataNeedsCleaning      = false -- added 1-25 after bad data record reported
 MasterMerchant.a_test                 = {}
 
 if AwesomeGuildStore then
