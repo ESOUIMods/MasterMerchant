@@ -7,22 +7,6 @@
 
 --  |H0:item:69359:96:50:26848:96:50:0:0:0:0:0:0:0:0:0:19:0:0:0:0:0|h|h  AUTGuild 1058 days
 
-function MasterMerchant:v(level, message)
-  local verboseLevel = MasterMerchant.verboseLevel or 4
-  -- DEBUG
-  if (level <= verboseLevel) then
-    if message then
-      if CHAT_ROUTER then
-        CHAT_ROUTER:AddSystemMessage(message)
-      elseif RequestDebugPrintText then
-        RequestDebugPrintText(message)
-      else
-        d(message)
-      end
-    end
-  end
-end
-
 function MasterMerchant:ssup(inputTable, numElements)
   for _, gapVal in ipairs(MasterMerchant.shellGaps) do
     for i = gapVal + 1, numElements do
@@ -305,16 +289,6 @@ end
   MasterMerchant.concat("weapon", "weapon")
 ]]--
 
-local function is_in(search_value, search_table)
-  for k, v in pairs(search_table) do
-    if search_value == v then return true end
-    if type(search_value) == "string" then
-      if string.find(string.lower(v), string.lower(search_value)) then return true end
-    end
-  end
-  return false
-end
-
 -- Additional words tacked on to the item name for searching
 function MasterMerchant.addedSearchToItem(itemLink)
   --Standardize Level to 1 if the level is not relevent but is stored on some items (ex: recipes)
@@ -409,7 +383,7 @@ function MasterMerchant.addedSearchToItem(itemLink)
   for word in resultString do
     if next(resultTable) == nil then
       table.insert(resultTable, word)
-    elseif not is_in(word, resultTable) then
+    elseif not MasterMerchant:is_in(word, resultTable) then
       table.insert(resultTable, " " .. word)
     end
   end

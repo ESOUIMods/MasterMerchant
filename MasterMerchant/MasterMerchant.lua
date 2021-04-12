@@ -36,6 +36,20 @@ MasterMerchant.oneYearInSeconds = MasterMerchant.oneDayInSeconds * 365
 ------------------------------
 --- MM Stuff               ---
 ------------------------------
+function MasterMerchant:SetFontListChoices()
+  if MasterMerchant.effective_lang == "pl" then
+    MasterMerchant.fontListChoices = { "Arial Narrow", "Consolas",
+      "Futura Condensed", "Futura Condensed Bold",
+      "Futura Condensed Light", "Trajan Pro", "Univers 55",
+      "Univers 57", "Univers 67", }
+    if not MasterMerchant:is_in(MasterMerchant.systemSavedVariables.windowFont, MasterMerchant.fontListChoices) then
+      MasterMerchant.systemSavedVariables.windowFont = "Univers 57"
+    end
+  else
+    MasterMerchant.fontListChoices = LMP:List(LMP.MediaType.FONT)
+    -- /script d(LibMediaProvider:List(LibMediaProvider.MediaType.FONT))
+  end
+end
 
 function MasterMerchant.CenterScreenAnnounce_AddMessage(eventId, category, ...)
   local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(category)
@@ -672,7 +686,7 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
     end
 
     if (recNumber >= endNumber) then
-      MasterMerchant:v(5, '|cFFFF00Recipes Initialized -- Found information on ' .. MasterMerchant.recipeCount .. ' recipes.|r')
+      MasterMerchant:dm("Info", '|cFFFF00Recipes Initialized -- Found information on ' .. MasterMerchant.recipeCount .. ' recipes.|r')
       MasterMerchant.systemSavedVariables.recipeData = MasterMerchant.recipeData
       break
     end
@@ -744,7 +758,7 @@ function MasterMerchant.setupRecipeInfo()
     MasterMerchant.potionSolvents     = {}
     MasterMerchant.poisonSolvents     = {}
 
-    MasterMerchant:v(5, '|cFFFF00Searching Items|r')
+    MasterMerchant:dm("Info", '|cFFFF00Searching Items|r')
     local LEQ = LibExecutionQueue:new()
     LEQ:Add(function() MasterMerchant.loadRecipesFrom(1, 450000) end, 'Search Items')
     LEQ:Add(function() MasterMerchant.BuildEnchantingRecipes(1, 1, 0) end, 'Enchanting Recipes')
@@ -974,7 +988,7 @@ function MasterMerchant.PostPendingItem(self)
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
       local selectedGuildId = GetSelectedTradingHouseGuildId()
-      MasterMerchant:v(2, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
+      MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
           zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
           GetGuildName(selectedGuildId)))
     end
@@ -1182,6 +1196,8 @@ MasterMerchant.UI_GuildTime  = nil
 
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
+  -- configure font choices
+  MasterMerchant:SetFontListChoices()
   MasterMerchant:dm("Debug", "LibAddonInit")
   local panelData = {
     type                = 'panel',
@@ -1263,7 +1279,7 @@ function MasterMerchant:LibAddonInit()
       type    = 'dropdown',
       name    = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
-      choices = LMP:List(LMP.MediaType.FONT),
+      choices = MasterMerchant.fontListChoices,
       getFunc = function() return MasterMerchant.systemSavedVariables.windowFont end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.windowFont = value
@@ -1760,21 +1776,7 @@ function MasterMerchant:LibAddonInit()
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
     },
-    -- Verbose MM Messages
     [32] = {
-      type    = 'slider',
-      name    = GetString(MM_VERBOSE_NAME),
-      tooltip = GetString(MM_VERBOSE_TIP),
-      min     = 1,
-      max     = 7,
-      getFunc = function() return MasterMerchant.systemSavedVariables.verbose end,
-      setFunc = function(value)
-        MasterMerchant.systemSavedVariables.verbose = value
-        MasterMerchant.verboseLevel                 = value
-      end,
-      default = MasterMerchant.systemDefault.verbose,
-    },
-    [33] = {
       type    = 'checkbox',
       name    = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
@@ -1810,7 +1812,7 @@ function MasterMerchant:PurgeDups()
             dup             = false
             if checking.id == nil then
               --[[
-              if MasterMerchant.systemSavedVariables.verbose == 7 then
+              if MasterMerchant.systemSavedVariables.useLibDebugLogger then
                 MasterMerchant:dm("Debug", 'Nil ID found')
               end
               ]]--
@@ -1818,7 +1820,7 @@ function MasterMerchant:PurgeDups()
             end
             if eventArray[checking.id] then
               --[[
-              if MasterMerchant.systemSavedVariables.verbose == 7 then
+              if MasterMerchant.systemSavedVariables.useLibDebugLogger then
                 MasterMerchant:dm("Debug", 'Dupe found: ' .. checking.id .. ': ' .. checking.itemLink)
                 MasterMerchant:Expected(checking.id)
               end
@@ -1838,11 +1840,11 @@ function MasterMerchant:PurgeDups()
         end
       end
     end
-    --MasterMerchant:v(2, MasterMerchant:NonContiguousNonNilCount(eventArray, currentTask))
+    MasterMerchant:dm("Verbose", MasterMerchant:NonContiguousNonNilCount(eventArray, currentTask))
     eventArray = {} -- clear array
 
-    MasterMerchant:v(2, 'Dup purge: ' .. GetTimeStamp() - start .. ' seconds to clear ' .. count .. ' duplicates.')
-    MasterMerchant:v(5, 'Reindexing Everything.')
+    MasterMerchant:dm("Info", string.format(GetString(MM_DUP_PURGE), GetTimeStamp() - start, count))
+    MasterMerchant:dm("Info", GetString(MM_REINDEXING_EVERYTHING))
     if count > 0 then
       --rebuild everything
       self.SRIndex        = {}
@@ -1856,7 +1858,7 @@ function MasterMerchant:PurgeDups()
     end
     LEQ:Add(function()
       self:setScanning(false);
-      MasterMerchant:v(5, 'Reindexing Complete.')
+      MasterMerchant:dm("Info", GetString(MM_REINDEXING_COMPLETE))
     end, 'LetScanningContinue')
     LEQ:Start()
   end
@@ -1888,7 +1890,7 @@ function MasterMerchant:checkForDoubles()
       for versionid, _ in pairs(versionlist) do
         for j = i + 1, 15, 1 do
           if dataList[j][itemid] and dataList[j][itemid][versionid] then
-            MasterMerchant:v(5, itemid .. '/' .. versionid .. ' is in ' .. i .. ' and ' .. j .. '.')
+            MasterMerchant:dm("Info", itemid .. '/' .. versionid .. ' is in ' .. i .. ' and ' .. j .. '.')
           end
         end
       end
@@ -1942,14 +1944,14 @@ function MasterMerchant:ExportLastWeek()
   local numGuilds = GetNumGuilds()
   local guildNum  = self.guildNumber
   if guildNum > numGuilds then
-    MasterMerchant:v(1, "Invalid Guild Number.")
+    MasterMerchant:dm("Info", GetString(MM_EXPORTING_INVALID))
     return
   end
 
   local guildID   = GetGuildId(guildNum)
   local guildName = GetGuildName(guildID)
 
-  MasterMerchant:v(2, guildName)
+  MasterMerchant:dm("Info", string.format(GetString(MM_EXPORTING), guildName))
   export[guildName]     = {}
   local list            = export[guildName]
 
@@ -2170,7 +2172,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
           -- German word order differs so argument order also needs to be changed
           -- Also due to plurality differences in German, need to differentiate
           -- single item sold vs. multiple of an item sold.
-          if MasterMerchant.locale == 'de' then
+          if MasterMerchant.effective_lang == 'de' then
             if theEvent.quant > 1 then
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
                 string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant,
@@ -2190,23 +2192,14 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
         -- Chat alert
         if MasterMerchant.systemSavedVariables.showChatAlerts then
-          if MasterMerchant.locale == 'de' then
+          if MasterMerchant.effective_lang == 'de' then
             if theEvent.quant > 1 then
-              MasterMerchant:v(1,
-                string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                  theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
-                  self.TextTimeSince(theEvent.timestamp, true)))
+              MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)), theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
             else
-              MasterMerchant:v(1,
-                string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
-                  zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
-                  self.TextTimeSince(theEvent.timestamp, true)))
+              MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)), zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
             end
           else
-            MasterMerchant:v(1,
-              string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
-                self.TextTimeSince(theEvent.timestamp, true)))
+            MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
           end
         end
       end
@@ -2221,7 +2214,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
             MasterMerchant.systemSavedVariables.alertSoundName,
             string.format(GetString(SK_SALES_ALERT_GROUP_COLOR), numSold, stringPrice))
         else
-          MasterMerchant:v(1, string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)),
+          MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)),
               numSold, stringPrice))
         end
       end
@@ -2244,11 +2237,9 @@ function MasterMerchant:CheckStatus()
     if timeLeft > -1 or (eventCount == 1 and numEvents == 0) then MasterMerchant.timeEstimated[guildID] = true end
     if (timeLeft == -1 and eventCount == 1 and numEvents == 0) and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
     if eventCount == 0 and MasterMerchant.timeEstimated[guildID] then MasterMerchant.eventsNeedProcessing[guildID] = false end
-    --[[
     if eventCount > 1 then
-      MasterMerchant:v(2, string.format("Guild Name: %s ; Numevents loaded: %s ; Event Count: %s ; Speed: %s ; Time Left: %s", GetGuildName(guildID), numEvents, eventCount, processingSpeed, timeLeft))
+      MasterMerchant:dm("Verbose", string.format(GetString(MM_CHECK_STATUS), GetGuildName(guildID), numEvents, eventCount, processingSpeed, timeLeft))
     end
-    ]]--
   end
   for i = 1, GetNumGuilds() do
     local guildID = GetGuildId(i)
@@ -2271,23 +2262,22 @@ function MasterMerchant:QueueCheckStatus()
       MasterMerchant.systemSavedVariables.alertSoundName,
       "LibHistoire Refresh Finished"
     )
-    MasterMerchant:v(2, "LibHistoire Refresh Finished")
+    MasterMerchant:dm("Info", GetString(MM_LIBHISTOIRE_REFRESH_FINISHED))
   end
 end
 
 -- Handle the refresh button
 function MasterMerchant:DoRefresh()
   if not MasterMerchant.isInitialized then
-    MasterMerchant:v(2, 'Master Merchant is still initializing.')
+    MasterMerchant:dm("Info", GetString(MM_STILL_INITIALIZING))
     return
   end
   if MasterMerchant.LibHistoireRefreshed then
-    MasterMerchant:v(2,
-      'LibHistoire can only be refreshed once per session. This will take a while and LibHistoire does not notify MM when it has completed.')
+    MasterMerchant:dm("Info", GetString(MM_LIBHISTOIRE_REFRESH_ONCE))
     return
   end
   self:setScanning(true)
-  MasterMerchant:v(2, 'LibHistoire refreshing...')
+  MasterMerchant:dm("Info", GetString(MM_LIBHISTOIRE_REFRESHING))
   numGuilds = GetNumGuilds()
   for i = 1, numGuilds do
     local guildID = GetGuildId(i)
@@ -2330,7 +2320,7 @@ function MasterMerchant:initSellingAdvice()
         zo_callLater(function() MasterMerchant.AddSellingAdvice(row, data) end, 1)
       end
     else
-      MasterMerchant:v(5, GetString(MM_ADVICE_ERROR))
+      MasterMerchant:dm("Info", GetString(MM_ADVICE_ERROR))
     end
   end
 
@@ -2407,7 +2397,7 @@ function MasterMerchant:initBuyingAdvice()
         zo_callLater(function() MasterMerchant.AddBuyingAdvice(row, data) end, 1)
       end
     else
-      MasterMerchant:v(5, GetString(MM_ADVICE_ERROR))
+      MasterMerchant:dm("Info", GetString(MM_ADVICE_ERROR))
     end
   end
 
@@ -2704,8 +2694,8 @@ function MasterMerchant:DoReset()
     MasterMerchant.guildScrollList:RefreshData()
   end
   self:setScanning(false)
-  MasterMerchant:v(2, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_RESET_DONE)))
-  MasterMerchant:v(2, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_REFRESH_START)))
+  MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_RESET_DONE)))
+  MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_REFRESH_START)))
   self.veryFirstScan = true
   -- self:ScanStoresParallel(true)
   --[[needs updating so start and stop the listener then
@@ -2864,25 +2854,33 @@ function MasterMerchant:ReIndexSales(otherData)
 end
 
 function MasterMerchant:ReAddDescription(otherData)
+  local count = 0
   if not MasterMerchant.systemSavedVariables.shouldAdderText then
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
         _, item              = next(dataList['sales'], nil)
-        dataList['itemDesc'] = GetItemLinkName(item.itemLink)
+        local textToAdd = GetItemLinkName(item.itemLink)
+        if dataList['itemDesc'] ~= textToAdd then count = count + 1 end
+        dataList['itemDesc'] = textToAdd
       end
     end
   end
+  MasterMerchant:dm("Verbose", count)
 end
 
 function MasterMerchant:ReAdderText(otherData)
+  local count = 0
   if not MasterMerchant.systemSavedVariables.shouldAdderText then
     for _, v in pairs(otherData.savedVariables.SalesData) do
       for _, dataList in pairs(v) do
         _, item                   = next(dataList['sales'], nil)
-        dataList['itemAdderText'] = self.addedSearchToItem(item.itemLink)
+        local textToAdd = self.addedSearchToItem(item.itemLink)
+        if dataList['itemAdderText'] ~= textToAdd then count = count + 1 end
+        dataList['itemAdderText'] = textToAdd
       end
     end
   end
+  MasterMerchant:dm("Verbose", count)
 end
 
 function MasterMerchant.SetupPendingPost(self)
@@ -3029,6 +3027,30 @@ function MasterMerchant:ReAdderTextAllContainers()
   end
 end
 
+function MasterMerchant:ReAddDescriptionAllContainers()
+  -- Update indexs because of Writs
+  MasterMerchant:dm("Debug", "Update indexs if not converted")
+  if not MasterMerchant.systemSavedVariables.shouldAdderText then
+    self:ReAddDescription(MM00Data)
+    self:ReAddDescription(MM01Data)
+    self:ReAddDescription(MM02Data)
+    self:ReAddDescription(MM03Data)
+    self:ReAddDescription(MM04Data)
+    self:ReAddDescription(MM05Data)
+    self:ReAddDescription(MM06Data)
+    self:ReAddDescription(MM07Data)
+    self:ReAddDescription(MM08Data)
+    self:ReAddDescription(MM09Data)
+    self:ReAddDescription(MM10Data)
+    self:ReAddDescription(MM11Data)
+    self:ReAddDescription(MM12Data)
+    self:ReAddDescription(MM13Data)
+    self:ReAddDescription(MM14Data)
+    self:ReAddDescription(MM15Data)
+    MasterMerchant.systemSavedVariables.shouldAdderText = true
+  end
+end
+
 -- Bring seperate lists together we can still access the sales history all together
 function MasterMerchant:ReferenceSalesAllContainers()
   MasterMerchant:dm("Debug", "Bring seperate lists together")
@@ -3097,7 +3119,7 @@ end
 -- Setup LibHistoire listeners
 function MasterMerchant:SetupListenerLibHistoire()
   MasterMerchant:dm("Debug", "SetupListenerLibHistoire")
-  MasterMerchant:v(2, 'LibHistoire Activated, listening for guild sales...')
+  MasterMerchant:dm("Info", GetString(MM_LIBHISTOIRE_ACTIVATED))
   -- do not start listening until mm is fully Initialized
   MasterMerchant.isInitialized = true -- moved in 3.2.7
   for i = 1, GetNumGuilds() do
@@ -3168,7 +3190,6 @@ function MasterMerchant:Initialize()
     ctrlShiftDays              = GetString(MM_RANGE_FOCUS3),
     saucy                      = false,
     displayListingMessage      = false,
-    verbose                    = 4,
     -- settingsToUse
     viewSize                   = ITEMS,
     customTimeframe            = 90,
@@ -3226,6 +3247,7 @@ function MasterMerchant:Initialize()
   ]]--
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), old_defaults)
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
+  MasterMerchant.show_log = self.systemSavedVariables.useLibDebugLogger
 
   local sv = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
   -- Clean up saved variables (from previous versions)
@@ -3293,7 +3315,6 @@ function MasterMerchant:Initialize()
     self.savedVariables.blacklist                 = nil
   end
 
-  MasterMerchant.verboseLevel = MasterMerchant.systemSavedVariables.verbose or 4
 
   -- MoveFromOldAcctSavedVariables STEP
   -- AdjustItemsAllContainers() STEP
@@ -3482,7 +3503,7 @@ function MasterMerchant:Initialize()
   -- logged on, then use RegisterForUpdate to set up a timed scan.
   zo_callLater(function()
     local LEQ = LibExecutionQueue:new()
-    LEQ:Add(function() MasterMerchant:v(1, "|cFFFF00Master Merchant Initializing...|r") end, '')
+    LEQ:Add(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
     LEQ:Add(function() MasterMerchant:MoveFromOldAcctSavedVariables() end, 'MoveFromOldAcctSavedVariables')
     LEQ:Add(function() MasterMerchant:AdjustItemsAllContainers() end, 'AdjustItemsAllContainers')
     -- LEQ:Add(function() MasterMerchant:ReIndexSalesAllContainers() end, 'ReIndexSalesAllContainers')
@@ -3668,7 +3689,7 @@ function MasterMerchant:InitScrollLists()
     end
   end
 
-  MasterMerchant:v(2, '|cFFFF00Master Merchant Initialized -- Holding information on ' .. self.totalRecords .. ' sales.|r')
+  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), self.totalRecords))
 
   self.isFirstScan = MasterMerchant.systemSavedVariables.offlineSales
   if NonContiguousCount(self.salesData) > 0 then
@@ -3677,7 +3698,7 @@ function MasterMerchant:InitScrollLists()
     -- most of this stuff was unused
     self.veryFirstScan = true
 
-    MasterMerchant:v(2, MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
+    MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
   end
 
   -- MasterMerchant.isInitialized = true
@@ -3839,83 +3860,76 @@ function MasterMerchant.Slash(allArgs)
   args = string.lower(args)
 
   if args == 'help' then
-    MasterMerchant:v(1, "/mm  - show/hide the main Master Merchant window")
-    MasterMerchant:v(1, "/mm dups  - scans your history to purge duplicate entries")
-    MasterMerchant:v(1, "/mm clean - cleans out bad sales records (invalid information)")
-    MasterMerchant:v(1, "/mm clearprices  - clears your historical listing prices")
-    MasterMerchant:v(1,
-      "/mm invisible  - resets the MM window positions in case they are invisible (aka off the screen)")
-    MasterMerchant:v(1, "/mm export <Guild number>  - 'exports' last weeks sales/purchase totals for the guild")
-    MasterMerchant:v(1, "/mm sales <Guild number>  - 'exports' sales activity data for your guild")
-    MasterMerchant:v(1,
-      "/mm verbose <setting 1-6>  - sets MM message verbosity: 1 - Nearly Silent to 6 - Debugging Level Info.")
-
-    MasterMerchant:v(1, "/mm deal  - toggles deal display between margin % and profit in the guild stores")
-    MasterMerchant:v(1, "/mm types  - list the item type filters that are available")
-    MasterMerchant:v(1, "/mm traits  - list the item trait filters that are available")
-    MasterMerchant:v(1, "/mm quality  - list the item quality filters that are available")
-    MasterMerchant:v(1, "/mm equip  - list the item equipment type filters that are available")
-    MasterMerchant:v(1,
-      "/mm slide  - relocates your sales records to a new @name (Ex. @kindredspiritgr to @kindredspiritgrSlid)  /mm slideback to reverse.")
+    MasterMerchant:dm("Info", GetString(MM_HELP_WINDOW))
+    MasterMerchant:dm("Info", GetString(MM_HELP_DUPS))
+    MasterMerchant:dm("Info", GetString(MM_HELP_CLEAN))
+    MasterMerchant:dm("Info", GetString(MM_HELP_CLEARPRICES))
+    MasterMerchant:dm("Info", GetString(MM_HELP_INVISIBLE))
+    MasterMerchant:dm("Info", GetString(MM_HELP_EXPORT))
+    MasterMerchant:dm("Info", GetString(MM_HELP_SALES))
+    MasterMerchant:dm("Info", GetString(MM_HELP_DEAL))
+    MasterMerchant:dm("Info", GetString(MM_HELP_TYPES))
+    MasterMerchant:dm("Info", GetString(MM_HELP_TRAITS))
+    MasterMerchant:dm("Info", GetString(MM_HELP_QUALITY))
+    MasterMerchant:dm("Info", GetString(MM_HELP_EQUIP))
+    MasterMerchant:dm("Info", GetString(MM_HELP_SLIDE))
     return
   end
-
+  --[[
   if args == 'atest' then
     MasterMerchant:TestLibAsync()
     return
   end
+  ]]--
   if args == 'dups' or args == 'stilldups' then
     if MasterMerchant.isScanning then
-      if args == 'dups' then MasterMerchant:v(2,
-        "Purging of duplicate sales records will begin when current scan completes.") end
+      if args == 'dups' then MasterMerchant:dm("Info", GetString(MM_PURGING_DUPLICATES_DELAY)) end
       zo_callLater(function() MasterMerchant.Slash('stilldups') end, 10000)
       return
     end
-    MasterMerchant:v(2, "Purging duplicates.")
+    MasterMerchant:dm("Info", GetString(MM_PURGING_DUPLICATES))
     MasterMerchant:PurgeDups()
     return
   end
   if args == 'slide' or args == 'kindred' or args == 'stillslide' then
     if MasterMerchant.isScanning then
-      if args ~= 'stillslide' then MasterMerchant:v(2,
-        "Sliding of your sales records will begin when current scan completes.") end
+      if args ~= 'stillslide' then MasterMerchant:dm("Info", GetString(MM_SLIDING_SALES_DELAY)) end
       zo_callLater(function() MasterMerchant.Slash('stillslide') end, 10000)
       return
     end
-    MasterMerchant:v(2, "Sliding your sales.")
+    MasterMerchant:dm("Info", GetString(MM_SLIDING_SALES))
     MasterMerchant:SlideSales(false)
     return
   end
 
   if args == 'slideback' or args == 'kindredback' or args == 'stillslideback' then
     if MasterMerchant.isScanning then
-      if args ~= 'stillslideback' then MasterMerchant:v(2,
-        "Sliding of your sales records will begin when current scan completes.") end
+      if args ~= 'stillslideback' then MasterMerchant:dm("Info", GetString(MM_SLIDING_SALES_DELAY)) end
       zo_callLater(function() MasterMerchant.Slash('stillslideback') end, 10000)
       return
     end
-    MasterMerchant:v(2, "Sliding your sales.")
+    MasterMerchant:dm("Info", GetString(MM_SLIDING_SALES))
     MasterMerchant:SlideSales(true)
     return
   end
 
   if args == 'export' then
     if not MasterMerchant.isInitialized then
-      MasterMerchant:v(2, "Master Merchant is still initializing.")
+      MasterMerchant:dm("Info", GetString(MM_STILL_INITIALIZING))
       return
     end
     MasterMerchant.guildNumber = guildNumber
     if (MasterMerchant.guildNumber > 0) and (GetNumGuilds() > 0) then
-      MasterMerchant:v(2, "Exporting selected weeks sales/purchase/taxes/rank data.")
+      MasterMerchant:dm("Info", GetString(MM_EXPORT_START))
       MasterMerchant:ExportLastWeek()
-      MasterMerchant:v(2, "Export complete.  /reloadui to save the file.")
+      MasterMerchant:dm("Info", GetString(MM_EXPORT_COMPLETE))
     else
-      MasterMerchant:v(2, "Please include the guild number you wish to export.")
-      MasterMerchant:v(2, "For example '/mm export 1' to export guild 1.")
+      MasterMerchant:dm("Info", GetString(MM_GUILD_INDEX_INCLUDE))
+      MasterMerchant:dm("Info", GetString(MM_GUILD_EXPORT_EXAMPLE))
       for i = 1, GetNumGuilds() do
         local guildID   = GetGuildId(i)
         local guildName = GetGuildName(guildID)
-        MasterMerchant:v(2, string.format("[%s] - %s", i, guildName))
+        MasterMerchant:dm("Info", string.format(GetString(MM_GUILD_INDEX_NAME), i, guildName))
       end
     end
     return
@@ -3923,21 +3937,21 @@ function MasterMerchant.Slash(allArgs)
 
   if args == 'sales' then
     if not MasterMerchant.isInitialized then
-      MasterMerchant:v(2, "Master Merchant is still initializing.")
+      MasterMerchant:dm("Info", GetString(MM_STILL_INITIALIZING))
       return
     end
     MasterMerchant.guildNumber = guildNumber
     if (MasterMerchant.guildNumber > 0) and (GetNumGuilds() > 0) then
-      MasterMerchant:v(2, "'Exporting' sales activity.")
+      MasterMerchant:dm("Info", GetString(MM_SALES_EXPORT_START))
       MasterMerchant:ExportSalesData()
-      MasterMerchant:v(2, "Export complete.  /reloadui to save the file.")
+      MasterMerchant:dm("Info", GetString(MM_EXPORT_COMPLETE))
     else
-      MasterMerchant:v(2, "Please include the guild number you wish to export.")
-      MasterMerchant:v(2, "For example '/mm sales 1' to export guild 1.")
+      MasterMerchant:dm("Info", GetString(MM_GUILD_INDEX_INCLUDE))
+      MasterMerchant:dm("Info", GetString(MM_GUILD_SALES_EXAMPLE))
       for i = 1, GetNumGuilds() do
         local guildID   = GetGuildId(i)
         local guildName = GetGuildName(guildID)
-        MasterMerchant:v(2, string.format("[%s] - %s", i, guildName))
+        MasterMerchant:dm("Info", string.format(GetString(MM_GUILD_INDEX_NAME), i, guildName))
       end
     end
     return
@@ -3948,38 +3962,24 @@ function MasterMerchant.Slash(allArgs)
     return
   end
 
-  if args == 'verbose' then
-    if guildNumber == nil then guildNumber = 1 end
-    if guildNumber >= 1 and guildNumber <= 7 then
-      MasterMerchant.systemSavedVariables.verbose = guildNumber
-      MasterMerchant.savedVariables.verbose       = guildNumber
-      MasterMerchant.verboseLevel                 = guildNumber
-      MasterMerchant:v(2, "Verbosity setting changed.")
-    else
-      MasterMerchant:v(2, "Verbosity setting must be between 1 and 7.")
-    end
-    return
-  end
-
   if args == 'clean' or args == 'stillclean' then
     if MasterMerchant.isScanning then
-      if args == 'clean' then MasterMerchant:v(2,
-        "Cleaning out bad sales records will begin when current scan completes.") end
+      if args == 'clean' then MasterMerchant:dm("Info", GetString(MM_CLEAN_START_DELAY)) end
       zo_callLater(function() MasterMerchant.Slash('stillclean') end, 10000)
       return
     end
-    MasterMerchant:v(2, "Cleaning Out Bad Records.")
+    MasterMerchant:dm("Info", GetString(MM_CLEAN_START))
     MasterMerchant:CleanOutBad()
     return
   end
   if args == 'redesc' then
     MasterMerchant.systemSavedVariables.shouldAdderText = false
-    MasterMerchant:v(2, "MM Clean is set to update search text.")
+    MasterMerchant:dm("Info", GetString(MM_CLEAN_UPDATE_DESC))
     return
   end
   if args == 'clearprices' then
     MasterMerchant.systemSavedVariables.pricingData = {}
-    MasterMerchant:v(2, "Your prices have been cleared.")
+    MasterMerchant:dm("Info", GetString(MM_CLEAR_SAVED_PRICES))
     return
   end
   if args == 'invisible' then
@@ -3991,28 +3991,28 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant.systemSavedVariables.guildWinLeft = 30
     MasterMerchant.systemSavedVariables.winTop       = 85
     MasterMerchant.systemSavedVariables.guildWinTop  = 85
-    MasterMerchant:v(2, "Your MM window positions have been reset.")
+    MasterMerchant:dm("Info", GetString(MM_RESET_POSITION))
     return
   end
   if args == 'deal' or args == 'saucy' then
     MasterMerchant.systemSavedVariables.saucy = not MasterMerchant.systemSavedVariables.saucy
-    MasterMerchant:v(2, "Guild listing display switched.")
+    MasterMerchant:dm("Info", GetString(MM_GUILD_DEAL_TYPE))
     return
   end
   if args == 'types' then
     local message = 'Item types: '
-    for i = 0, 64 do
+    for i = 0, 71 do
       message = message .. i .. ')' .. GetString("SI_ITEMTYPE", i) .. ', '
     end
-    MasterMerchant:v(2, message)
+    MasterMerchant:dm("Info", message)
     return
   end
   if args == 'traits' then
     local message = 'Item traits: '
-    for i = 0, 32 do
+    for i = 0, 33 do
       message = message .. i .. ')' .. GetString("SI_ITEMTRAITTYPE", i) .. ', '
     end
-    MasterMerchant:v(2, message)
+    MasterMerchant:dm("Info", message)
     return
   end
   if args == 'quality' then
@@ -4020,15 +4020,26 @@ function MasterMerchant.Slash(allArgs)
     for i = 0, 5 do
       message = message .. GetString("SI_ITEMQUALITY", i) .. ', '
     end
-    MasterMerchant:v(2, message)
+    MasterMerchant:dm("Info", message)
     return
   end
+  --[[
+  if args == 'addr' then
+    if MasterMerchant.isScanning then
+      MasterMerchant:dm("Info", "Master Merchant is busy, wait for the current process to finish.")
+      return
+    end
+    MasterMerchant.systemSavedVariables.shouldAdderText = false
+    MasterMerchant:ReAddDescriptionAllContainers()
+    return
+  end
+  ]]--
   if args == 'equip' then
     local message = 'Equipment types: '
-    for i = 0, 14 do
+    for i = 1, 15 do
       message = message .. GetString("SI_EQUIPTYPE", i) .. ', '
     end
-    MasterMerchant:v(2, message)
+    MasterMerchant:dm("Info", message)
     return
   end
 

@@ -1,5 +1,5 @@
 ﻿-- MasterMerchant English Localization File
--- Last Updated September 6, 2014
+-- Last Updated April 11, 2021
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
@@ -18,8 +18,6 @@ ZO_CreateStringId("SK_OPEN_STORE_NAME", "Open With Store")
 ZO_CreateStringId("SK_OPEN_STORE_TIP", "Open the Master Merchant sales summary along with guild stores.")
 ZO_CreateStringId("SK_FULL_SALE_NAME", "Show Full Sale Price")
 ZO_CreateStringId("SK_FULL_SALE_TIP", "Show the price goods sold for before the store cut is taken out.")
-ZO_CreateStringId("SK_SCAN_FREQ_NAME", "Scan Frequency")
-ZO_CreateStringId("SK_SCAN_FREQ_TIP", "How long to wait (in seconds) between checks of guild store sales.")
 ZO_CreateStringId("SK_HISTORY_DEPTH_NAME", "Sales History Size")
 ZO_CreateStringId("SK_HISTORY_DEPTH_TIP", "How many days of sales data should be stored. Lowering this may reduce the performance impact of this addon.")
 ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Show Pricing Information")
@@ -36,8 +34,6 @@ ZO_CreateStringId("SK_ALERT_TYPE_NAME", "Alert Sound")
 ZO_CreateStringId("SK_ALERT_TYPE_TIP", "The sound to play when you sell an item, if any.")
 ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Chat Alerts")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Show sales alerts in your chat box.")
-ZO_CreateStringId("SK_ACCOUNT_WIDE_NAME", "Account-Wide Settings")
-ZO_CreateStringId("SK_ACCOUNT_WIDE_TIP", "Makes all settings apply to all characters on your account.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Offline Sales Report")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Show alerts in chat for items you sold while offline when you log in next.")
 
@@ -46,9 +42,6 @@ ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Ignore transactions with prices way o
 
 ZO_CreateStringId("SK_TRIM_DECIMALS_NAME", "Hide Decimals in Prices")
 ZO_CreateStringId("SK_TRIM_DECIMALS_TIP", "Round all pricing to nearest gold piece.")
-
-ZO_CreateStringId("SK_DELAY_INIT_NAME", "Delay Initialization")
-ZO_CreateStringId("SK_DELAY_INIT_TIP", "If you are having problems logging in, delay the initialization until after character load.")
 
 ZO_CreateStringId("SK_ROSTER_INFO_NAME", "Display Info on Guild Roster")
 ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Show Purchase and Sales totals on the Guild Roster based on the timeframe selected on the MM window.")
@@ -82,14 +75,7 @@ ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Click to sort by sale price.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Open statistics window.")
 ZO_CreateStringId("SK_SELLER_TOOLTIP", "Seller Info")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Item Info")
-ZO_CreateStringId("SK_TIME_SECONDS", "<<1[Just now/%d seconds ago]>>")
-ZO_CreateStringId("SK_TIME_MINUTES", "<<1[%d minute ago/%d minutes ago]>>")
-ZO_CreateStringId("SK_TIME_HOURS", "<<1[%d hour ago/%d hours ago]>>")
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[Yesterday/%d days ago]>>")
-ZO_CreateStringId("SK_TIME_SECONDS_LC", "<<1[just now/%d seconds ago]>>")
-ZO_CreateStringId("SK_TIME_MINUTES_LC", "<<1[%d minute ago/%d minutes ago]>>")
-ZO_CreateStringId("SK_TIME_HOURS_LC", "<<1[%d hour ago/%d hours ago]>>")
-ZO_CreateStringId("SK_TIME_DAYS_LC", "<<1[yesterday/%d days ago]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ",")
 
 -- Chat and center screen alerts/messages
@@ -144,9 +130,8 @@ ZO_CreateStringId("MM_APP_AUTHOR", "Sharlikran, Philgo68, Khaibit")
 ZO_CreateStringId("MM_APP_MESSAGE_NAME", "[Master Merchant]")
 ZO_CreateStringId("MM_APP_TEXT_TIMES", " x ")
 ZO_CreateStringId("MM_ADVICE_ERROR", "Master Merchant could not hook into the Trading House to provide buying advice.")
-ZO_CreateStringId("MM_POSTED_FOR", "posted for")
+
 ZO_CreateStringId("MM_TOTAL_TITLE", "Total: ")
-ZO_CreateStringId("MM_VET_RANK_SEARCH", "vr")
 ZO_CreateStringId("MM_CP_RANK_SEARCH", "cp")
 ZO_CreateStringId("MM_REGULAR_RANK_SEARCH", "rr")
 ZO_CreateStringId("MM_COLOR_WHITE", "white")
@@ -211,8 +196,6 @@ ZO_CreateStringId("MM_SAUCY_NAME", "Display profit instead of margin")
 ZO_CreateStringId("MM_SAUCY_TIP", "In the Guild Store, display potential profit instead of margin percent.")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "Display Profit Filter")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Adds an additional filter to AGS based on profit.")
-ZO_CreateStringId("MM_AUTO_ADVANCE_NAME", "Auto Advance to Next Page")
-ZO_CreateStringId("MM_AUTO_ADVANCE_TIP", "If all items are filtered out on a guild store page, auto advance to the next page.")
 
 ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
@@ -239,12 +222,6 @@ ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Display sales info tooltips for graph po
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Level/Quality Selectors")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Display buttons on item popup to adjust level/quality.")
 
-ZO_CreateStringId("MM_VERBOSE_NAME", "Verbose Messages")
-ZO_CreateStringId("MM_VERBOSE_TIP", "Displays more status messages in your chat window during MM operations.")
-
-ZO_CreateStringId("MM_SIMPLE_SCAN_NAME", "Simple Guild History Scanning")
-ZO_CreateStringId("MM_SIMPLE_SCAN_TIP", "Guild scanning is less intensive to get data faster, but may leave gaps in your history.")
-
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Minimal Indexing")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Sales History indexes are skipped to save memory, but searching on the MM screen is much slower.")
 
@@ -253,9 +230,6 @@ ZO_CreateStringId("MM_DAYS_ONLY_TIP", "Will use Sales History Size only when tri
 
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_NAME", "Add Taxes Sales Rank Export")
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_TIP", "Will calculate 3.5% of total sales as the amount of Taxes for a user when using /mm export.")
-
-ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_NAME", "Use Tooltip Days Range")
-ZO_CreateStringId("MM_DEFAULT_PRICESWAP_TIME_TIP", "Use the Tooltip Default Days Range when displaying the MM price on the inventory grid.")
 
 ZO_CreateStringId("MM_GUILD_ROSTER_OPTIONS_NAME", "Guild Roster Options")
 ZO_CreateStringId("MM_GUILD_ROSTER_OPTIONS_TIP", "Enable and disable the different guild roster columns. (Requires until next update of LibGuild Roster)")
@@ -287,3 +261,73 @@ ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Guild Master Options")
 ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventory Options")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
+
+-- new notification messages
+ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
+ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized -- retaining %s sales.")
+ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Starting Guild and Item total initialization")
+ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Init Guild and Item totals: %s seconds to init %s records.")
+ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimal Indexing...")
+ZO_CreateStringId("MM_FULL_INDEXING", "Full Indexing...")
+ZO_CreateStringId("MM_TRUNCATE_TIME_ELAPSED", "Trimming: %s seconds to trim.")
+ZO_CreateStringId("MM_TRUNCATE_REMOVED", "Trimming: %s old records removed.")
+ZO_CreateStringId("MM_INDEX_HISTORY_TIME_ELAPSED", "Indexing: %s seconds to index.")
+ZO_CreateStringId("MM_INDEX_HISTORY_TIME_RECORDS", "Indexing: %s sales records.")
+ZO_CreateStringId("MM_INDEX_HISTORY_TIME_WORDS", "Indexing: %s unique words.")
+ZO_CreateStringId("MM_SLIDING_SUMMARY", "Sliding: %s seconds to slide %s sales records to %s.")
+ZO_CreateStringId("MM_REINDEXING_COMPLETE", "Reindexing Complete.")
+ZO_CreateStringId("MM_REINDEXING_EVERYTHING", "Reindexing Everything.")
+ZO_CreateStringId("MM_CLEANING_TIME_ELAPSED", "Cleaning: %s seconds to clean:")
+ZO_CreateStringId("MM_CLEANING_BAD_REMOVED", '  %s bad sales records removed')
+ZO_CreateStringId("MM_CLEANING_REINDEXED", '  %s sales records re-indexed')
+ZO_CreateStringId("MM_CLEANING_WRONG_VERSION", '  %s bad item versions')
+ZO_CreateStringId("MM_CLEANING_WRONG_ID", '  %s bad item IDs')
+ZO_CreateStringId("MM_CLEANING_WRONG_MULE", '  %s bad mule item IDs')
+ZO_CreateStringId("MM_CLEANING_STRINGS_CONVERTED", '  %s events with numbers converted to strings')
+ZO_CreateStringId("MM_CLEANING_BAD_ITEMLINKS", '  %s bad item links removed')
+ZO_CreateStringId("MM_LIBHISTOIRE_REFRESH_FINISHED", "LibHistoire Refresh Finished")
+ZO_CreateStringId("MM_LIBHISTOIRE_ACTIVATED", 'LibHistoire Activated, listening for guild sales...')
+ZO_CreateStringId("MM_STILL_INITIALIZING", "Master Merchant is still initializing.")
+ZO_CreateStringId("MM_LIBHISTOIRE_REFRESHING", "LibHistoire refreshing...")
+ZO_CreateStringId("MM_LIBHISTOIRE_REFRESH_ONCE", "LibHistoire can only be refreshed once per session.")
+ZO_CreateStringId("MM_EXPORTING", "Exporting: %s")
+ZO_CreateStringId("MM_EXPORTING_INVALID", "Invalid! Valid guild numbers, 1 to 5.")
+ZO_CreateStringId("MM_DUP_PURGE", "Dup purge: %s seconds to clear %s duplicates.")
+ZO_CreateStringId("MM_CHECK_STATUS", "Guild Name: %s ; Numevents loaded: %s ; Event Count: %s ; Speed: %s ; Time Left: %s")
+
+-- new debug messages
+ZO_CreateStringId("MM_FILTER_TIME", "Filter Time: %s")
+
+-- new slash and help command strings
+ZO_CreateStringId("MM_GUILD_DEAL_TYPE", "Guild listing display switched.")
+ZO_CreateStringId("MM_RESET_POSITION", "Your MM window positions have been reset.")
+ZO_CreateStringId("MM_CLEAR_SAVED_PRICES", "Your prices have been cleared.")
+ZO_CreateStringId("MM_CLEAN_UPDATE_DESC", "MM Clean is set to update search text.")
+ZO_CreateStringId("MM_CLEAN_START", "Cleaning Out Bad Records.")
+ZO_CreateStringId("MM_CLEAN_START_DELAY", "Cleaning out bad sales records will begin when current scan completes.")
+ZO_CreateStringId("MM_GUILD_INDEX_NAME", "[%s] - %s")
+ZO_CreateStringId("MM_GUILD_INDEX_INCLUDE", "Please include the guild number you wish to export.")
+ZO_CreateStringId("MM_GUILD_SALES_EXAMPLE", "For example '/mm sales 1' to export guild 1.")
+ZO_CreateStringId("MM_SALES_EXPORT_START", "Exporting' sales activity.")
+ZO_CreateStringId("MM_EXPORT_COMPLETE", "Export complete.  /reloadui to save the file.")
+ZO_CreateStringId("MM_GUILD_EXPORT_EXAMPLE", "For example '/mm export 1' to export guild 1.")
+ZO_CreateStringId("MM_EXPORT_START", "Exporting selected weeks sales/purchase/taxes/rank data.")
+ZO_CreateStringId("MM_SLIDING_SALES", "Sliding your sales.")
+ZO_CreateStringId("MM_SLIDING_SALES_DELAY", "Sliding of your sales records will begin when current scan completes.")
+ZO_CreateStringId("MM_PURGING_DUPLICATES", "Purging duplicates.")
+ZO_CreateStringId("MM_PURGING_DUPLICATES_DELAY", "Purging of duplicate sales records will begin when current scan completes.")
+
+-- help
+ZO_CreateStringId("MM_HELP_WINDOW", "/mm  - show/hide the main Master Merchant window")
+ZO_CreateStringId("MM_HELP_DUPS", "/mm dups  - scans your history to purge duplicate entries")
+ZO_CreateStringId("MM_HELP_CLEAN", "/mm clean - cleans out bad sales records (invalid information)")
+ZO_CreateStringId("MM_HELP_CLEARPRICES", "/mm clearprices  - clears your historical listing prices")
+ZO_CreateStringId("MM_HELP_INVISIBLE", "/mm invisible  - resets the MM window positions in case they are invisible (aka off the screen)")
+ZO_CreateStringId("MM_HELP_EXPORT", "/mm export <Guild number>  - 'exports' last weeks sales/purchase totals for the guild")
+ZO_CreateStringId("MM_HELP_SALES", "/mm sales <Guild number>  - 'exports' sales activity data for your guild")
+ZO_CreateStringId("MM_HELP_DEAL", "/mm deal  - toggles deal display between margin % and profit in the guild stores")
+ZO_CreateStringId("MM_HELP_TYPES", "/mm types  - list the item type filters that are available")
+ZO_CreateStringId("MM_HELP_TRAITS", "/mm traits  - list the item trait filters that are available")
+ZO_CreateStringId("MM_HELP_QUALITY", "/mm quality  - list the item quality filters that are available")
+ZO_CreateStringId("MM_HELP_EQUIP", "/mm equip  - list the item equipment type filters that are available")
+ZO_CreateStringId("MM_HELP_SLIDE", "/mm slide  - relocates your sales records to a new @name (Ex. @kindredspiritgr to @kindredspiritgrSlid)  /mm slideback to reverse.")

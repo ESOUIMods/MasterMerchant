@@ -26,8 +26,37 @@ MMScrollList.SORT_KEYS                = {
 
 MasterMerchant                        = { }
 MasterMerchant.name                   = 'MasterMerchant'
-MasterMerchant.version                = '3.5.21'
-MasterMerchant.locale                 = GetCVar('Language.2')
+MasterMerchant.version                = '3.5.23'
+
+-------------------------------------------------
+----- early helper                          -----
+-------------------------------------------------
+
+function MasterMerchant:is_in(search_value, search_table)
+  for k, v in pairs(search_table) do
+    if search_value == v then return true end
+    if type(search_value) == "string" then
+      if string.find(string.lower(v), string.lower(search_value)) then return true end
+    end
+  end
+  return false
+end
+
+-------------------------------------------------
+----- MasterMerchant Localization           -----
+-------------------------------------------------
+
+MasterMerchant.client_lang = GetCVar("Language.2")
+MasterMerchant.effective_lang = nil
+MasterMerchant.supported_lang = true
+local supported_lang = { "br", "de", "en", "fr", "jp", "ru", "pl", }
+if MasterMerchant:is_in(MasterMerchant.client_lang, supported_lang) then
+  MasterMerchant.effective_lang = MasterMerchant.client_lang
+else
+  MasterMerchant.effective_lang = "en"
+end
+MasterMerchant.supported_lang = MasterMerchant.client_lang == MasterMerchant.effective_lang
+
 -- default is self
 MasterMerchant.viewMode               = 'self'
 MasterMerchant.isScanning             = false
@@ -35,7 +64,6 @@ MasterMerchant.isScanningParallel     = { }
 MasterMerchant.salesData              = { } -- global container for all sales
 MasterMerchant.eventsCache            = { }
 -- MasterMerchant.lastHistoryRequest = { } unused now from ProcessGuildHistoryResponse
-MasterMerchant.verboseLevel           = 4
 MasterMerchant.lastInputVar           = { } -- debug var
 MasterMerchant.isScanningHistory      = { } -- added for debug on 8-21
 MasterMerchant.isInitialized          = false -- added 8-25 used
@@ -51,6 +79,7 @@ MasterMerchant.eventsNeedProcessing   = {}
 MasterMerchant.timeEstimated          = {}
 MasterMerchant.purgeQueue             = {}
 MasterMerchant.totalRecords           = 0 -- added 12-16 but always there
+MasterMerchant.fontListChoices        = {} -- added 12-16 but always there
 MasterMerchant.a_test                 = {}
 
 if AwesomeGuildStore then
@@ -88,10 +117,23 @@ if LibDebugLogger then
   local logger          = LibDebugLogger.Create(MasterMerchant.name)
   MasterMerchant.logger = logger
 end
+MasterMerchant.show_log = false
 local SDLV = DebugLogViewer
 if SDLV then MasterMerchant.viewer = true else MasterMerchant.viewer = false end
 
 local function create_log(log_type, log_content)
+  if not MasterMerchant.viewer and log_type == "Info" then
+    if CHAT_ROUTER then
+      CHAT_ROUTER:AddSystemMessage(log_content)
+    elseif RequestDebugPrintText then
+      RequestDebugPrintText(log_content)
+    else
+      d(log_content)
+    end
+    return
+  end
+  if not MasterMerchant.logger then return end
+  if not MasterMerchant.show_log then return end
   if log_type == "Debug" then
     MasterMerchant.logger:Debug(log_content)
   end
@@ -134,7 +176,6 @@ local function emit_table(log_type, t, indent, table_history)
 end
 
 function MasterMerchant:dm(log_type, ...)
-  if not MasterMerchant.logger then return end
   for i = 1, select("#", ...) do
     local value = select(i, ...)
     if (type(value) == "table") then
