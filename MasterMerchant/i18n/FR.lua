@@ -265,16 +265,13 @@ ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
-ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized -- retaining %s sales.")
+ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: retaining %s sales.")
 ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Starting Guild and Item total initialization")
 ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Init Guild and Item totals: %s seconds to init %s records.")
-ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimal Indexing...")
-ZO_CreateStringId("MM_FULL_INDEXING", "Full Indexing...")
-ZO_CreateStringId("MM_TRUNCATE_TIME_ELAPSED", "Trimming: %s seconds to trim.")
-ZO_CreateStringId("MM_TRUNCATE_REMOVED", "Trimming: %s old records removed.")
-ZO_CreateStringId("MM_INDEX_HISTORY_TIME_ELAPSED", "Indexing: %s seconds to index.")
-ZO_CreateStringId("MM_INDEX_HISTORY_TIME_RECORDS", "Indexing: %s sales records.")
-ZO_CreateStringId("MM_INDEX_HISTORY_TIME_WORDS", "Indexing: %s unique words.")
+ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimal Indexing Started...")
+ZO_CreateStringId("MM_FULL_INDEXING", "Full Indexing Started...")
+ZO_CreateStringId("MM_INDEXING_SUMMARY", "Indexing: %s seconds to index %s sales records, %s unique words")
+ZO_CreateStringId("MM_TRUNCATE_COMPLETE", "Trimming Complete: %s seconds to trim, %s old records removed.")
 ZO_CreateStringId("MM_SLIDING_SUMMARY", "Sliding: %s seconds to slide %s sales records to %s.")
 ZO_CreateStringId("MM_REINDEXING_COMPLETE", "Reindexing Complete.")
 ZO_CreateStringId("MM_REINDEXING_EVERYTHING", "Reindexing Everything.")
@@ -332,3 +329,10 @@ ZO_CreateStringId("MM_HELP_TRAITS", "/mm traits  - list the item trait filters t
 ZO_CreateStringId("MM_HELP_QUALITY", "/mm quality  - list the item quality filters that are available")
 ZO_CreateStringId("MM_HELP_EQUIP", "/mm equip  - list the item equipment type filters that are available")
 ZO_CreateStringId("MM_HELP_SLIDE", "/mm slide  - relocates your sales records to a new @name (Ex. @kindredspiritgr to @kindredspiritgrSlid)  /mm slideback to reverse.")
+
+-- new summary toggle
+ZO_CreateStringId("MM_GUILD_ITEM_SUMMARY_NAME", "Enable Guild and Item Summary")
+ZO_CreateStringId("MM_GUILD_ITEM_SUMMARY_TIP", "Show Guild and Item totals after process is complete.")
+
+ZO_CreateStringId("MM_INDEXING_NAME", "Enable Indexing Summary")
+ZO_CreateStringId("MM_INDEXING_TIP", "Show Indexing totals after process is complete.")

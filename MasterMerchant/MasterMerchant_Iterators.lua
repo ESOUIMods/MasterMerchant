@@ -289,8 +289,7 @@ function MasterMerchant:TruncateHistory()
     end
     self:setScanning(false)
 
-    MasterMerchant:dm("Info", string.format(GetString(MM_TRUNCATE_TIME_ELAPSED), GetTimeStamp() - extraData.start))
-    MasterMerchant:dm("Info", string.format(GetString(MM_TRUNCATE_REMOVED), extraData.deleteCount))
+    MasterMerchant:dm("Info", string.format(GetString(MM_TRUNCATE_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
 
   end
 
@@ -302,8 +301,6 @@ end
 
 -- TODO is SRIndex important here
 function MasterMerchant:InitItemHistory()
-  MasterMerchant:dm("Debug", "InitItemHistory")
-
   MasterMerchant:dm("Info", GetString(MM_INIT_ITEM_HISTORY))
 
   local extradata = {}
@@ -408,7 +405,9 @@ function MasterMerchant:InitItemHistory()
       self:setScanning(false)
 
       self.totalRecords = extraData.totalRecords
-      MasterMerchant:dm("Info", string.format(GetString(MM_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start, self.totalRecords))
+      if MasterMerchant.systemSavedVariables.showGuildInitSummary then
+        MasterMerchant:dm("Info", string.format(GetString(MM_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start, self.totalRecords))
+      end
     end
 
     if not self.isScanning then
@@ -421,7 +420,6 @@ end
 -- For faster searching of large histories, we'll maintain an inverted
 -- index of search terms - here we build the indexes from the existing table
 function MasterMerchant:indexHistoryTables()
-  MasterMerchant:dm("Debug", "indexHistoryTables")
 
   -- DEBUG  Stop Indexing
   --do return end
@@ -491,10 +489,8 @@ function MasterMerchant:indexHistoryTables()
 
   local postfunc   = function(extraData)
     self:setScanning(false)
-    MasterMerchant:dm("Info", string.format(GetString(MM_INDEX_HISTORY_TIME_ELAPSED), GetTimeStamp() - extraData.start))
-    MasterMerchant:dm("Info", string.format(GetString(MM_INDEX_HISTORY_TIME_RECORDS), extraData.indexCount))
-    if extraData.wordsIndexCount > 1 then
-      MasterMerchant:dm("Info", string.format(GetString(MM_INDEX_HISTORY_TIME_WORDS), extraData.wordsIndexCount))
+    if MasterMerchant.systemSavedVariables.showGuildInitSummary then
+      MasterMerchant:dm("Info", string.format(GetString(MM_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount, extraData.wordsIndexCount))
     end
   end
 

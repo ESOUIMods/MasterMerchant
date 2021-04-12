@@ -1784,6 +1784,22 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
     },
+    [33] = {
+      type    = 'checkbox',
+      name    = GetString(MM_GUILD_ITEM_SUMMARY_NAME),
+      tooltip = GetString(MM_GUILD_ITEM_SUMMARY_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.showGuildInitSummary end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.showGuildInitSummary = value end,
+      default = MasterMerchant.systemDefault.showGuildInitSummary,
+    },
+    [34] = {
+      type    = 'checkbox',
+      name    = GetString(MM_INDEXING_NAME),
+      tooltip = GetString(MM_INDEXING_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.showIndexingSummary end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.showIndexingSummary = value end,
+      default = MasterMerchant.systemDefault.showIndexingSummary,
+    },
   }
 
   -- And make the options panel
@@ -2320,7 +2336,7 @@ function MasterMerchant:initSellingAdvice()
         zo_callLater(function() MasterMerchant.AddSellingAdvice(row, data) end, 1)
       end
     else
-      MasterMerchant:dm("Info", GetString(MM_ADVICE_ERROR))
+      MasterMerchant:dm("Debug", GetString(MM_ADVICE_ERROR))
     end
   end
 
@@ -2397,7 +2413,7 @@ function MasterMerchant:initBuyingAdvice()
         zo_callLater(function() MasterMerchant.AddBuyingAdvice(row, data) end, 1)
       end
     else
-      MasterMerchant:dm("Info", GetString(MM_ADVICE_ERROR))
+      MasterMerchant:dm("Debug", GetString(MM_ADVICE_ERROR))
     end
   end
 
@@ -3214,6 +3230,8 @@ function MasterMerchant:Initialize()
     verThreeItemIDConvertedToString    = false, -- this only converts id64 at this time
     shouldReindex              = false,
     shouldAdderText            = false,
+    showGuildInitSummary       = false,
+    showIndexingSummary        = false,
   }
 
   for i = 1, GetNumGuilds() do
