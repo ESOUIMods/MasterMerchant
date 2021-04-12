@@ -327,18 +327,22 @@ function MasterMerchant:InitItemHistory()
           self.guildItems[saledata.guild] = self.guildItems[saledata.guild] or MMGuild:new(saledata.guild)
           local guild                     = self.guildItems[saledata.guild]
           local _, firstsaledata          = next(versiondata.sales, nil)
-          local seatchData                = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
+          local searchDataDesc            = versiondata.itemDesc or GetItemLinkName(firstsaledata.itemLink)
+          local searchDataAdder           = versiondata.itemAdderText or MasterMerchant.addedSearchToItem(firstsaledata.itemLink)
+          local searchData                = searchDataDesc .. ' ' .. searchDataAdder
           guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
-            seatchData)
+            searchData)
         end
 
         if (extradata.doMyItems and string.lower(saledata.seller) == extradata.playerName) then
           self.myItems[saledata.guild] = self.myItems[saledata.guild] or MMGuild:new(saledata.guild)
           local guild                  = self.myItems[saledata.guild]
           local _, firstsaledata       = next(versiondata.sales, nil)
-          local seatchData             = versiondata.itemDesc .. ' ' .. versiondata.itemAdderText
+          local searchDataDesc            = versiondata.itemDesc or GetItemLinkName(firstsaledata.itemLink)
+          local searchDataAdder           = versiondata.itemAdderText or MasterMerchant.addedSearchToItem(firstsaledata.itemLink)
+          local searchData                = searchDataDesc .. ' ' .. searchDataAdder
           guild:addSaleByDate(firstsaledata.itemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
-            seatchData)
+            searchData)
         end
 
         if (extradata.doGuildSales) then
