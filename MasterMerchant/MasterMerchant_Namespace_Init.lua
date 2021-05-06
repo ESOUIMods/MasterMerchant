@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS                = {
 
 MasterMerchant                        = { }
 MasterMerchant.name                   = 'MasterMerchant'
-MasterMerchant.version                = '3.5.26'
+MasterMerchant.version                = '3.5.27'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -117,7 +117,6 @@ if LibDebugLogger then
   local logger          = LibDebugLogger.Create(MasterMerchant.name)
   MasterMerchant.logger = logger
 end
-MasterMerchant.show_log = false
 local SDLV = DebugLogViewer
 if SDLV then MasterMerchant.viewer = true else MasterMerchant.viewer = false end
 
@@ -133,7 +132,6 @@ local function create_log(log_type, log_content)
     return
   end
   if not MasterMerchant.logger then return end
-  if not MasterMerchant.show_log then return end
   if log_type == "Debug" then
     MasterMerchant.logger:Debug(log_content)
   end
