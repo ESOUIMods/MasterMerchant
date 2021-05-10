@@ -553,7 +553,7 @@ function MasterMerchant:CleanOutBad()
     local itemlinkName = GetItemLinkName(saledata['itemLink'])
     --[[
     if not MasterMerchant.systemSavedVariables.shouldAdderText then
-      local itemIndex = MasterMerchant.makeIndexFromLink(saledata['itemLink'])
+      local itemIndex = MasterMerchant.GetOrCreateIndexFromLink(saledata['itemLink'])
       self.salesData[theIID][itemIndex]['itemAdderText'] = MasterMerchant.addedSearchToItem(saledata['itemLink'])
       self.salesData[theIID][itemIndex]['itemDesc'] = GetItemLinkName(saledata['itemLink'])
     end
@@ -568,7 +568,7 @@ function MasterMerchant:CleanOutBad()
       return
     end
     local newid      = GetItemLinkItemId(saledata['itemLink'])
-    local newversion = MasterMerchant.makeIndexFromLink(saledata['itemLink'])
+    local newversion = MasterMerchant.GetOrCreateIndexFromLink(saledata['itemLink'])
     if type(saledata['id']) == 'number' then
       saledata['id']            = tostring(saledata['id'])
       extraData.eventIdIsNumber = extraData.eventIdIsNumber + 1

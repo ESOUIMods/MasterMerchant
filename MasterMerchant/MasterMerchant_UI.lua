@@ -1457,7 +1457,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     local itemInfo = MasterMerchant.ItemCodeText(itemLink)
     --local itemInfo = string.match(itemLink, '|H.-:item:(.-):')
-    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.makeIndexFromLink(itemLink)
+    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.GetOrCreateIndexFromLink(itemLink)
     itemInfo       = itemInfo .. ' - ' .. MasterMerchant.addedSearchToItem(itemLink)
     --local itemType = GetItemLinkItemType(itemLink)
     --itemInfo = '(' .. itemType .. ')' .. itemInfo
