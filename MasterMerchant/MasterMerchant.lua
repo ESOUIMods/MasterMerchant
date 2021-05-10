@@ -2849,7 +2849,7 @@ function MasterMerchant:ReIndexSales(otherData)
           -- IPAIRS
           for i, item in pairs(dataList['sales']) do
             if (type(i) == 'number' and type(item) == 'table' and type(item.timestamp) == 'number') then
-              local itemIndex = self.makeIndexFromLink(item.itemLink)
+              local itemIndex = self.GetOrCreateIndexFromLink(item.itemLink)
               if not otherData.savedVariables.SalesData[k] then otherData.savedVariables.SalesData[k] = {} end
               if otherData.savedVariables.SalesData[k][itemIndex] then
                 table.insert(otherData.savedVariables.SalesData[k][itemIndex]['sales'], item)
@@ -3397,7 +3397,7 @@ function MasterMerchant:Initialize()
       if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
         local theLink     = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
         local theIID      = GetItemLinkItemId(theLink)
-        local theIData    = self.makeIndexFromLink(theLink)
+        local theIData    = self.GetOrCreateIndexFromLink(theLink)
         local postedStats = self:toolTipStats(theIID, theIData)
         MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
         local floorPrice = 0

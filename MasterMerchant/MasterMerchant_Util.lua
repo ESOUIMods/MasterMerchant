@@ -535,7 +535,7 @@ function MasterMerchant:IsNotDuplicateSale(itemLink, eventID)
   ]]--
   local theIID = GetItemLinkItemId(itemLink)
   if theIID == nil or theIID == 0 then return end
-  local itemIndex = self.makeIndexFromLink(itemLink)
+  local itemIndex = self.GetOrCreateIndexFromLink(itemLink)
 
   if self.salesData[theIID] and self.salesData[theIID][itemIndex] then
     for k, v in pairs(self.salesData[theIID][itemIndex]['sales']) do
@@ -615,7 +615,7 @@ function MasterMerchant:addToHistoryTables(theEvent)
   --[[The quality effects itemIndex although the ID from the
   itemLink may be the same. We will keep them separate.
   ]]--
-  local itemIndex  = self.makeIndexFromLink(theEvent.itemLink)
+  local itemIndex  = self.GetOrCreateIndexFromLink(theEvent.itemLink)
   --[[theIID is used in the SRIndex so define it here.
   ]]--
   local theIID     = GetItemLinkItemId(theEvent.itemLink)
