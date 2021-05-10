@@ -714,9 +714,8 @@ function MasterMerchant.LocalizedNumber(amount)
 	if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount) then
 		return ZO_CommaDelimitNumber(amount)
 	end
-	-- If amount is a float number, round to 2 decimal numbers.
-	-- tonumber() does also trim the trailing zeros
-	return ZO_CommaDelimitNumber(tonumber(string.format("%.2f", amount)))
+	-- Round to two decimal values
+	return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
 end
 
 function MasterMerchant:UpdateItemLink(itemLink)
