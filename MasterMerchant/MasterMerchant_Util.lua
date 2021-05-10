@@ -707,9 +707,9 @@ function MasterMerchant.LocalizedNumber(amount)
 		return "0"
 	end
 	if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 then
-		return ZO_CommaDelimitNumber(math.floor(amount))
+		return ZO_CommaDelimitNumber(zo_floor(amount))
 	end
-	return ZO_CommaDelimitNumber(string.format("%.2f", amount))
+	return string.format("%.2f", ZO_CommaDelimitNumber(amount))
 end
 
 function MasterMerchant:UpdateItemLink(itemLink)
