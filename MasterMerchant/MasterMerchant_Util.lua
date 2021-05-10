@@ -716,8 +716,7 @@ function MasterMerchant.LocalizedNumber(amount)
 	end
 	-- If amount is a float number, round to 2 decimal numbers.
 	-- tonumber() does also trim the trailing zeros
-	local numeral, fractional = zo_decimalsplit(amount)
-	return ZO_CommaDelimitNumber(numeral + tonumber(string.format("%.2f", fractional)))
+	return ZO_CommaDelimitNumber(tonumber(string.format("%.2f", amount)))
 end
 
 function MasterMerchant:UpdateItemLink(itemLink)
