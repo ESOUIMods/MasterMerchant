@@ -156,32 +156,6 @@ end
 
 -- The index consists of the item's required level, required vet
 -- level, quality, and trait(if any), separated by colons.
-function MasterMerchant.GetOrCreateIndexFromLink(itemLink)
-  --Standardize Level to 1 if the level is not relevent but is stored on some items (ex: recipes)
-  local levelReq                      = 1
-  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  if itemType ~= ITEMTYPE_RECIPE then
-    levelReq = GetItemLinkRequiredLevel(itemLink)
-  end
-  local vetReq      = GetItemLinkRequiredChampionPoints(itemLink) / 10
-  local itemQuality = GetItemLinkQuality(itemLink)
-  local itemTrait   = GetItemLinkTraitType(itemLink)
-  local theLastNumber
-  --Add final number in the link to handle item differences like 2 and 3 buff potions
-  if itemType == ITEMTYPE_MASTER_WRIT then
-    theLastNumber = 0
-  else
-    theLastNumber = zo_strmatch(itemLink, '|H.-:item:.-:(%d-)|h') or 0
-  end
-  if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
-    local value = GetPotionPowerLevel(itemLink)
-    itemTrait   = MasterMerchant.potionVarientTable[value] or "0"
-  end
-  local index = levelReq .. ':' .. vetReq .. ':' .. itemQuality .. ':' .. itemTrait .. ':' .. theLastNumber
-
-  return index
-end
-
 do
 	local itemIndexCache = { }
 
