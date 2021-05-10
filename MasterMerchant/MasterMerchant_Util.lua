@@ -702,8 +702,8 @@ end
 -- ||u0:6%:currency:||u
 -- ||t80%:80%:/esoui/art/currency/gold_mipmap.dds||t
 -- '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-local function IsValueInteger(amount)
-	return amount % 2 == 0
+local function IsValueInteger(value)
+	return value % 2 == 0
 end
 
 function MasterMerchant.LocalizedNumber(amount)
