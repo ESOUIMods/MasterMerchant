@@ -599,9 +599,3 @@ ItemChangeData[135][50]['LevelDown'] = { NewSubtype = 21, NewLevel = 50 }
 ItemChangeData[145][50]['LevelDown'] = { NewSubtype = 22, NewLevel = 50 }
 ItemChangeData[155][50]['LevelDown'] = { NewSubtype = 23, NewLevel = 50 }
 ItemChangeData[165][50]['LevelDown'] = { NewSubtype = 24, NewLevel = 50 }
-
-
-
-
-
-

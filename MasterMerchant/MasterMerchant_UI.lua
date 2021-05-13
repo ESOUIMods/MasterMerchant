@@ -9,6 +9,9 @@
 -- Rather than using the built-in Lua quicksort, we use my own
 -- implementation of Shellsort to save on memory.
 local LMP                               = LibMediaProvider
+local sales_data = _G["LibGuildStore_SalesData"]
+local sr_index = _G["LibGuildStore_SalesIndex"]
+local internal = _G["LibGuildStore_Internal"]
 
 local ITEMS                             = 'full'
 local GUILDS                            = 'half'
@@ -162,11 +165,11 @@ function MasterMerchant:SortByItemGuildName(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
   if not ordering then
     MasterMerchant.shellSort(listData, function(sortA, sortB)
-      return (MasterMerchant.salesData[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]['guild'] or 0) > (MasterMerchant.salesData[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]['guild'] or 0)
+      return (sales_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]['guild'] or 0) > (sales_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]['guild'] or 0)
     end)
   else
     MasterMerchant.shellSort(listData, function(sortA, sortB)
-      return (MasterMerchant.salesData[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]['guild'] or 0) < (MasterMerchant.salesData[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]['guild'] or 0)
+      return (sales_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]['guild'] or 0) < (sales_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]['guild'] or 0)
     end)
   end
 end
@@ -182,12 +185,12 @@ function MMScrollList:SetupSalesRow(control, data)
   control.sellTime = GetControl(control, 'SellTime')
   control.price    = GetControl(control, 'Price')
 
-  if (MasterMerchant.salesData[data[1]] == nil) then
+  if (sales_data[data[1]] == nil) then
     -- just starting up so just bail out
     return
   end
 
-  if (MasterMerchant.salesData[data[1]][data[2]] == nil) then
+  if (sales_data[data[1]][data[2]] == nil) then
     --d('MM Data Error:')
     --d(data[1])
     --d(data[2])
@@ -195,7 +198,7 @@ function MMScrollList:SetupSalesRow(control, data)
     return
   end
 
-  if (MasterMerchant.salesData[data[1]][data[2]]['sales'] == nil) then
+  if (sales_data[data[1]][data[2]]['sales'] == nil) then
     --d('MM Data Error:')
     --d(data[1])
     --d(data[2])
@@ -204,7 +207,7 @@ function MMScrollList:SetupSalesRow(control, data)
     return
   end
 
-  if (MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]] == nil) then
+  if (sales_data[data[1]][data[2]]['sales'][data[3]] == nil) then
     --d('MM Data Error:')
     --d(data[1])
     --d(data[2])
@@ -222,8 +225,12 @@ function MMScrollList:SetupSalesRow(control, data)
     MasterMerchant:dm("Debug", controlName)
   end
   ]]--
-  local actualItem     = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
-  local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
+  local actualItem     = sales_data[data[1]][data[2]]['sales'][data[3]]
+  local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem['itemLink'])
+  local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, actualItem['guild'])
+  local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['buyer'])
+  local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['seller'])
+  local actualItemIcon = sales_data[data[1]][data[2]]['itemIcon']
   local isFullSize     = string.find(control:GetName(), '^MasterMerchantWindow')
 
   local fontString     = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
@@ -243,16 +250,16 @@ function MMScrollList:SetupSalesRow(control, data)
 
   local buyerString
   if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
-    buyerString = actualItem.buyer
+    buyerString = currentBuyer
   else
-    buyerString = actualItem.seller
+    buyerString = currentSeller
   end
 
   control.buyer:GetLabelControl():SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.buyer:SetText(buyerString)
   -- If the seller is the player, color the buyer green.  Otherwise, blue.
   local acctName = GetDisplayName()
-  if string.lower(actualItem.seller) == string.lower(acctName) then
+  if string.lower(currentSeller) == string.lower(acctName) then
     control.buyer:SetNormalFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetPressedFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetMouseOverFontColor(0.32, 0.90, 0.18, 1)
@@ -267,7 +274,7 @@ function MMScrollList:SetupSalesRow(control, data)
   end)
 
   -- Guild cell
-  local guildString = actualItem.guild
+  local guildString = currentGuild
   if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
@@ -279,13 +286,13 @@ function MMScrollList:SetupSalesRow(control, data)
 
   -- Item name cell
   control.itemName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-  control.itemName:SetText(zo_strformat('<<t:1>>', actualItem.itemLink))
+  control.itemName:SetText(zo_strformat('<<t:1>>', currentItemLink))
   -- Insert the item link into the chat box, with a quick substitution so brackets show up
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
-  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(actualItem.itemLink, '|H0', '|H1'))
+  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
   --end)
   control.itemName:SetHandler('OnMouseEnter',
-    function() MasterMerchant.ShowToolTip(actualItem.itemLink, control.itemName) end)
+    function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
   control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
 
   -- Quantity cell
@@ -439,7 +446,7 @@ function MMScrollList:SetupListingsRow(control, data)
   control.sellTime = GetControl(control, 'SellTime')
   control.price    = GetControl(control, 'Price')
 
-  if (MasterMerchant.salesData[data[1]] == nil) then
+  if (sales_data[data[1]] == nil) then
     -- just starting up so just bail out
     return
   end
@@ -453,8 +460,12 @@ function MMScrollList:SetupListingsRow(control, data)
     MasterMerchant:dm("Debug", controlName)
   end
   ]]--
-  local actualItem     = MasterMerchant.salesData[data[1]][data[2]]['sales'][data[3]]
-  local actualItemIcon = MasterMerchant.salesData[data[1]][data[2]]['itemIcon']
+  local actualItem     = sales_data[data[1]][data[2]]['sales'][data[3]]
+  local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem['itemLink'])
+  local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, actualItem['guild'])
+  local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['buyer'])
+  local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['seller'])
+  local actualItemIcon = sales_data[data[1]][data[2]]['itemIcon']
   local isFullSize     = string.find(control:GetName(), '^MasterMerchantWindow')
 
   local fontString     = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
@@ -474,16 +485,16 @@ function MMScrollList:SetupListingsRow(control, data)
 
   local buyerString
   if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
-    buyerString = actualItem.buyer
+    buyerString = currentBuyer
   else
-    buyerString = actualItem.seller
+    buyerString = currentSeller
   end
 
   control.buyer:GetLabelControl():SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.buyer:SetText(buyerString)
   -- If the seller is the player, color the buyer green.  Otherwise, blue.
   local acctName = GetDisplayName()
-  if string.lower(actualItem.seller) == string.lower(acctName) then
+  if string.lower(currentSeller) == string.lower(acctName) then
     control.buyer:SetNormalFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetPressedFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetMouseOverFontColor(0.32, 0.90, 0.18, 1)
@@ -498,7 +509,7 @@ function MMScrollList:SetupListingsRow(control, data)
   end)
 
   -- Guild cell
-  local guildString = actualItem.guild
+  local guildString = currentGuild
   if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
@@ -510,13 +521,13 @@ function MMScrollList:SetupListingsRow(control, data)
 
   -- Item name cell
   control.itemName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-  control.itemName:SetText(zo_strformat('<<t:1>>', actualItem.itemLink))
+  control.itemName:SetText(zo_strformat('<<t:1>>', currentItemLink))
   -- Insert the item link into the chat box, with a quick substitution so brackets show up
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
-  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(actualItem.itemLink, '|H0', '|H1'))
+  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
   --end)
   control.itemName:SetHandler('OnMouseEnter',
-    function() MasterMerchant.ShowToolTip(actualItem.itemLink, control.itemName) end)
+    function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
   control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
 
   -- Quantity cell
@@ -629,8 +640,8 @@ function MMScrollList:FilterScrollList()
     -- return item sales
     if MasterMerchant.viewMode ~= 'self' and (searchText == nil or searchText == '') then
       -- everything unfiltered (filter to the default time range)
-      local timeCheck = MasterMerchant:TimeCheck()
-      for k, v in pairs(MasterMerchant.salesData) do
+      local timeCheck = MasterMerchant:CheckTime()
+      for k, v in pairs(sales_data) do
         for j, dataList in pairs(v) do
           -- IPAIRS
           for i, item in pairs(dataList['sales']) do
@@ -646,7 +657,7 @@ function MMScrollList:FilterScrollList()
           end
         end
       end
-    elseif NonContiguousCount(MasterMerchant.SRIndex) == 1 and (searchText ~= nil and searchText ~= '') then
+    elseif NonContiguousCount(sr_index) == 1 and (searchText ~= nil and searchText ~= '') then
       -- We just have player indexed and we have something to filter with
       if MasterMerchant.viewMode == 'self' then
         -- Search all data in the last 180 days
@@ -656,21 +667,25 @@ function MMScrollList:FilterScrollList()
         local tolower   = string.lower
         local temp      = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
 
-        for k, v in pairs(MasterMerchant.SRIndex[MasterMerchant.PlayerSpecialText]) do
+        for k, v in pairs(sr_index[internal.PlayerSpecialText]) do
           local k        = v[1]
           local j        = v[2]
           local i        = v[3]
-          local dataList = MasterMerchant.salesData[k][j]
+          local dataList = sales_data[k][j]
           local item     = dataList['sales'][i]
+          local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item['itemLink'])
+          local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
+          local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
+          local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
           if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
             --d('Bad Item:')
             --d(item)
           else
             if (item.timestamp > timeCheck) then
               local matchesAll    = true
-              temp[2]             = item['buyer'] or ''
-              temp[4]             = item['seller'] or ''
-              temp[6]             = item['guild'] or ''
+              temp[2]             = currentBuyer or ''
+              temp[4]             = currentSeller or ''
+              temp[6]             = currentGuild or ''
               temp[8]             = dataList['itemDesc'] or ''
               temp[10]            = dataList['itemAdderText'] or ''
               local gn            = tolower(tconcat(temp, ''))
@@ -693,18 +708,22 @@ function MMScrollList:FilterScrollList()
         local tinsert   = table.insert
         local tolower   = string.lower
         local temp      = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-        for k, v in pairs(MasterMerchant.salesData) do
+        for k, v in pairs(sales_data) do
           for j, dataList in pairs(v) do
             for i, item in pairs(dataList['sales']) do
+              local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item['itemLink'])
+              local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
+              local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
+              local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
               if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
                 --d('Bad Item:')
                 --d(item)
               else
                 if (item.timestamp > timeCheck) then
                   local matchesAll    = true
-                  temp[2]             = item['buyer'] or ''
-                  temp[4]             = item['seller'] or ''
-                  temp[6]             = item['guild'] or ''
+                  temp[2]             = currentBuyer or ''
+                  temp[4]             = currentSeller or ''
+                  temp[6]             = currentGuild or ''
                   temp[8]             = dataList['itemDesc'] or ''
                   temp[10]            = dataList['itemAdderText'] or ''
                   local gn            = tolower(tconcat(temp, ''))
@@ -727,10 +746,10 @@ function MMScrollList:FilterScrollList()
       -- We have the indexes to search
       -- Break up search term into words
       if MasterMerchant.viewMode == 'self' then
-        searchText = MasterMerchant.concat(searchText, MasterMerchant.PlayerSpecialText)
+        searchText = MasterMerchant.concat(searchText, internal.PlayerSpecialText)
       end
       local searchByWords       = string.gmatch(searchText, '%S+')
-      local indexToUse          = MasterMerchant.SRIndex
+      local indexToUse          = sr_index
       local intersectionIndexes = {}
 
       -- Build up a list of indexes matching each word, then compute the intersection
@@ -778,7 +797,7 @@ function MMScrollList:FilterScrollList()
       for k, val in pairs(intersectionIndexes) do
         for j, subval in pairs(val) do
           for i in pairs(subval) do
-            local actualItem = MasterMerchant.salesData[k][j]['sales'][i]
+            local actualItem = sales_data[k][j]['sales'][i]
             table.insert(listData,
               ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
           end
@@ -789,14 +808,14 @@ function MMScrollList:FilterScrollList()
   elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     local dataSet = nil
     if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
-      dataSet = MasterMerchant.guildPurchases
+      dataSet = internal.guildPurchases
     elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
-      dataSet = MasterMerchant.guildSales
+      dataSet = internal.guildSales
     else
       if MasterMerchant.viewMode == 'self' then
-        dataSet = MasterMerchant.myItems
+        dataSet = internal.myItems
       else
-        dataSet = MasterMerchant.guildItems
+        dataSet = internal.guildItems
       end
     end
 
@@ -927,9 +946,9 @@ function MMScrollList:FilterScrollList()
       dataSet = MasterMerchant.guildSales
     else
       if MasterMerchant.viewMode == 'self' then
-        dataSet = MasterMerchant.myItems
+        dataSet = internal.myItems
       else
-        dataSet = MasterMerchant.guildItems
+        dataSet = internal.guildItems
       end
     end
 
@@ -1457,8 +1476,8 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     local itemInfo = MasterMerchant.ItemCodeText(itemLink)
     --local itemInfo = string.match(itemLink, '|H.-:item:(.-):')
-    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.makeIndexFromLink(itemLink)
-    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.addedSearchToItem(itemLink)
+    itemInfo       = itemInfo .. ' - ' .. internal:MakeIndexFromLink(itemLink)
+    itemInfo       = itemInfo .. ' - ' .. internal:AddSearchToItem(itemLink)
     --local itemType = GetItemLinkItemType(itemLink)
     --itemInfo = '(' .. itemType .. ')' .. itemInfo
     if itemInfo then
@@ -2141,7 +2160,8 @@ function MasterMerchant:SetupMasterMerchantWindow()
     buttons  = {
       {
         text     = SI_DIALOG_ACCEPT,
-        callback = function() self:DoReset() end
+        -- callback = function() self:DoReset() end
+        callback = function() end
       },
       { text = SI_DIALOG_CANCEL }
     }

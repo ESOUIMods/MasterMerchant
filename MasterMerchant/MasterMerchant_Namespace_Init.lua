@@ -59,26 +59,10 @@ MasterMerchant.supported_lang = MasterMerchant.client_lang == MasterMerchant.eff
 
 -- default is self
 MasterMerchant.viewMode               = 'self'
-MasterMerchant.isScanning             = false
-MasterMerchant.isScanningParallel     = { }
-MasterMerchant.salesData              = { } -- global container for all sales
-MasterMerchant.eventsCache            = { }
--- MasterMerchant.lastHistoryRequest = { } unused now from ProcessGuildHistoryResponse
-MasterMerchant.lastInputVar           = { } -- debug var
-MasterMerchant.isScanningHistory      = { } -- added for debug on 8-21
 MasterMerchant.isInitialized          = false -- added 8-25 used
 MasterMerchant.guildMemberInfo        = { } -- added 10-17 used as lookup
-MasterMerchant.LibHistoireListener    = { } -- added for debug on 10-31
-MasterMerchant.LibHistoireRefreshed   = false -- added 8-25
 MasterMerchant.customTimeframeText    = "" -- added 11-21 used as lookup for tooltips
 MasterMerchant.systemDefault          = {} -- added 11-26 placeholder for init routine
-MasterMerchant.accountNameByIdLookup  = {} -- added 12-2
-MasterMerchant.itemLinkNameByIdLookup = {} -- added 12-2
-MasterMerchant.guildNameByIdLookup    = {} -- added 12-2
-MasterMerchant.eventsNeedProcessing   = {}
-MasterMerchant.timeEstimated          = {}
-MasterMerchant.purgeQueue             = {}
-MasterMerchant.totalRecords           = 0 -- added 12-16 but always there
 MasterMerchant.fontListChoices        = {} -- added 12-16 but always there
 MasterMerchant.a_test                 = {}
 
@@ -195,19 +179,7 @@ MasterMerchant.calcInput                     = nil
 
 MasterMerchant.guildSales                    = nil
 MasterMerchant.guildPurchases                = nil
-MasterMerchant.guildItems                    = nil
 MasterMerchant.guildColor                    = { }
-
--- SRIndex is an inverted indexe of the ScanResults table
--- Each key is a word found in one of the sales items' searched
--- fields (buyer, guild, item name) and a table of the SalesData
--- indexes that contain that word.
-MasterMerchant.SRIndex                       = { }
-MasterMerchant.PlayerSpecialText             = 'hfdkkdfunlajjamdhsiwsuwj'
-MasterMerchant.numEvents                     = { }
-MasterMerchant.moreEventsRequested           = { }
-MasterMerchant.alertQueue                    = { }
-MasterMerchant.lastNonDuplicate              = { }
 
 MasterMerchant.curSort                       = { 'time', 'desc' }
 MasterMerchant.curGuildSort                  = { 'rank', 'asc' }
