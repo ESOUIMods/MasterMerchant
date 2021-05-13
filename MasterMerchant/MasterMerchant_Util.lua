@@ -738,7 +738,7 @@ function MasterMerchant:UpdateItemLink(itemLink)
 end
 
 -- Create a textual representation of a time interval
-function MasterMerchant.TextTimeSince(theTime, useLowercase)
+function MasterMerchant.TextTimeSince(theTime)
   local secsSince = GetTimeStamp() - theTime
 
   if secsSince < ZO_ONE_DAY_IN_SECONDS then
