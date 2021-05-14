@@ -74,7 +74,7 @@ function MasterMerchant:setupGuildColors()
   end
 end
 
-function MasterMerchant:TimeCheck()
+function MasterMerchant:CheckTime()
   -- setup focus info
   local range = MasterMerchant.systemSavedVariables.defaultDays
   if IsControlKeyDown() and IsShiftKeyDown() then
@@ -307,7 +307,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     local initCount   = 0
     local list           = self.salesData[theIID][itemIndex]['sales']
 
-    timeCheck, daysRange = self:TimeCheck()
+    timeCheck, daysRange = self:CheckTime()
 
     if timeCheck == -1 then return returnData end
 
@@ -975,6 +975,7 @@ function MasterMerchant:my_NameHandler_OnLinkMouseUp(player, button, control)
 end
 
 function MasterMerchant.PostPendingItem(self)
+  MasterMerchant:dm("Debug", "PostPendingItem")
   if self.pendingItemSlot and self.pendingSaleIsValid then
     local itemLink                                                     = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
     local _, stackCount, _                                             = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
@@ -2900,6 +2901,7 @@ function MasterMerchant:ReAdderText(otherData)
 end
 
 function MasterMerchant.SetupPendingPost(self)
+  MasterMerchant:dm("Debug", "SetupPendingPost")
   OriginalSetupPendingPost(self)
 
   if (self.pendingItemSlot) then
@@ -2912,7 +2914,7 @@ function MasterMerchant.SetupPendingPost(self)
     if MasterMerchant.systemSavedVariables.pricingData and MasterMerchant.systemSavedVariables.pricingData[theIID] and MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] then
       self:SetPendingPostPrice(math.floor(MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] * stackCount))
     else
-      local tipStats = MasterMerchant:itemStats(itemLink)
+      local tipStats = MasterMerchant:itemStats(itemLink, false)
       if (tipStats.avgPrice) then
         self:SetPendingPostPrice(math.floor(tipStats.avgPrice * stackCount))
       end
@@ -3448,12 +3450,22 @@ function MasterMerchant:Initialize()
   ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnHide',
     function() self:remStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
 
-  if TRADING_HOUSE then
-    OriginalSetupPendingPost       = TRADING_HOUSE.SetupPendingPost
-    TRADING_HOUSE.SetupPendingPost = MasterMerchant.SetupPendingPost
-    ZO_PreHook(TRADING_HOUSE, 'PostPendingItem', MasterMerchant.PostPendingItem)
-  end
 
+  if AwesomeGuildStore then
+    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED, function(guildId, itemLink, price, stackCount)
+      local theIID = GetItemLinkItemId(itemLink)
+      local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
+      MasterMerchant.systemSavedVariables.pricingData  = MasterMerchant.systemSavedVariables.pricingData or {}
+      MasterMerchant.systemSavedVariables.pricingData[theIID] = MasterMerchant.systemSavedVariables.pricingData[theIID] or {}
+      MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] = price / stackCount
+    end)
+  else
+    if TRADING_HOUSE then
+      OriginalSetupPendingPost       = TRADING_HOUSE.SetupPendingPost
+      TRADING_HOUSE.SetupPendingPost = MasterMerchant.SetupPendingPost
+      ZO_PreHook(TRADING_HOUSE, 'PostPendingItem', MasterMerchant.PostPendingItem)
+    end
+  end
   -- Set up GM Tools, if also installed
   self:initGMTools()
 

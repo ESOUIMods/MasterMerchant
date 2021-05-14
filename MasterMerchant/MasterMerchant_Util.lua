@@ -758,13 +758,6 @@ function MasterMerchant.IsNewestFirst(guildID)
   return (secsSinceFirst < secsSinceLast)
 end
 
--- A simple utility function to return which set of settings are active,
--- based on the allSettingsAccount option setting.
-function MasterMerchant:ActiveSettings()
-  return ((self.acctSavedVariables.allSettingsAccount and self.acctSavedVariables) or
-    self.savedVariables)
-end
-
 function MasterMerchant:ActiveWindow()
   return ((MasterMerchant.systemSavedVariables.viewSize == 'full' and MasterMerchantWindow) or MasterMerchantGuildWindow)
 end
