@@ -13,7 +13,7 @@ end
 
 function MasterMerchant:TimeCheck()
   --[[
-  this does nothing because LibPrice has no idea what it going on
-  don't mess with it or I'll make it local
+  this does nothing because LibPrice has no idea what MM
+  is doing. Don't mess with it or I'll make it local.
   ]]--
 end

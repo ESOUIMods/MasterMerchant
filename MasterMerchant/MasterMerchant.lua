@@ -2823,7 +2823,7 @@ function MasterMerchant:Initialize()
   if AwesomeGuildStore then
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED, function(guildId, itemLink, price, stackCount)
       local theIID = GetItemLinkItemId(itemLink)
-      local itemIndex = MasterMerchant.makeIndexFromLink(itemLink)
+      local itemIndex = internal:MakeIndexFromLink(itemLink)
       MasterMerchant.systemSavedVariables.pricingData  = MasterMerchant.systemSavedVariables.pricingData or {}
       MasterMerchant.systemSavedVariables.pricingData[theIID] = MasterMerchant.systemSavedVariables.pricingData[theIID] or {}
       MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] = price / stackCount
