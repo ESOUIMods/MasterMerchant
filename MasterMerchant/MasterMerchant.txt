@@ -14,10 +14,11 @@
 ## License: See license - distribution without license is prohibited!
 ## LastUpdated: Mar 2021
 ## SavedVariables: ShopkeeperSavedVars
-## DependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data
-## DependsOn: MM11Data MM12Data MM13Data MM14Data MM15Data MM16Data LibExecutionQueue>=200 LibAddonMenu-2.0>=32
-## DependsOn: LibMediaProvider-1.0>=17 LibGuildRoster>=10 LibHistoire>=450 LibGuildStore>=100
-## OptionalDependsOn: AwesomeGuildStore>=2684 LibDebugLogger>=196 DebugLogViewer EsoPL
+## DependsOn: LibExecutionQueue>=200 LibAddonMenu-2.0>=32 LibMediaProvider-1.0>=17 LibGuildRoster>=10
+## DependsOn: LibHistoire>=450 LibGuildStore>=100
+## OptionalDependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data MM10Data
+## OptionalDependsOn: MM11Data MM12Data MM13Data MM14Data MM15Data MM16Data AwesomeGuildStore>=2684 LibDebugLogger>=196
+## OptionalDependsOn: DebugLogViewer EsoPL ArkadiusTradeTools
 
 MasterMerchantMisc.xml
 MasterMerchantSales.xml

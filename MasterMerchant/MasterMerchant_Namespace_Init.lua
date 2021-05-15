@@ -64,6 +64,7 @@ MasterMerchant.guildMemberInfo        = { } -- added 10-17 used as lookup
 MasterMerchant.customTimeframeText    = "" -- added 11-21 used as lookup for tooltips
 MasterMerchant.systemDefault          = {} -- added 11-26 placeholder for init routine
 MasterMerchant.fontListChoices        = {} -- added 12-16 but always there
+MasterMerchant.isFirstScan            = false -- added again 5-14-2021 but used previously
 MasterMerchant.a_test                 = {}
 
 if AwesomeGuildStore then
