@@ -2868,7 +2868,7 @@ function MasterMerchant:Initialize()
   -- Set up purchase tracking, if also installed
   self:initPurchaseTracking()
 
-  if LibGuildStore_SavedVariables["firstRun"] then
+  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     MasterMerchant:dm("Debug", "Checked Settings")
     LibGuildStore_SavedVariables["historyDepth"] = math.max(MasterMerchant.systemSavedVariables.historyDepth,
       LibGuildStore_SavedVariables["historyDepth"])
