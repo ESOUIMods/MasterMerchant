@@ -24,13 +24,12 @@ CSA_EVENT_COMBINED_TEXT         = 3
 CSA_EVENT_NO_TEXT               = 4
 CSA_EVENT_RAID_COMPLETE_TEXT    = 5
 MasterMerchant.oneHour          = 3600
-MasterMerchant.oneDayInSeconds  = 86400
 --[[
 used to temporarily ignore sales that are so new
 the ammount of time in seconds causes the UI to say
 the sale was made 1657 months ago or 71582789 minutes ago.
 ]]--
-MasterMerchant.oneYearInSeconds = MasterMerchant.oneDayInSeconds * 365
+MasterMerchant.oneYearInSeconds = ZO_ONE_DAY_IN_SECONDS * 365
 
 ------------------------------
 --- MM Stuff               ---

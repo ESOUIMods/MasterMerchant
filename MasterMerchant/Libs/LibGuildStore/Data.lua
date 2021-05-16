@@ -532,7 +532,7 @@ function internal:SetupListener(guildId)
       }
       theEvent.wasKiosk         = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
 
-      local daysOfHistoryToKeep = GetTimeStamp() - internal.oneDayInSeconds * LibGuildStore_SavedVariables["historyDepth"]
+      local daysOfHistoryToKeep = GetTimeStamp() - ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"]
       if (theEvent.timestamp > daysOfHistoryToKeep) then
         local duplicate = internal:CheckForDuplicate(theEvent.itemLink, theEvent.id)
         if not duplicate then

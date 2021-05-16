@@ -24,7 +24,7 @@ function internal:ImportMasterMerchantSales()
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
-    local daysOfHistoryToKeep = GetTimeStamp() - (internal.oneDayInSeconds * LibGuildStore_SavedVariables["historyDepth"])
+    local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
       local duplicate = internal:CheckForDuplicate(saledata['itemLink'], saledata['id'])
       if not duplicate then
@@ -80,7 +80,7 @@ function internal:ImportATTSales()
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
-    local daysOfHistoryToKeep = GetTimeStamp() - (internal.oneDayInSeconds * LibGuildStore_SavedVariables["historyDepth"])
+    local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
       local duplicate = internal:CheckForDuplicate(saledata['itemLink'], saledata['id'])
       if not duplicate then

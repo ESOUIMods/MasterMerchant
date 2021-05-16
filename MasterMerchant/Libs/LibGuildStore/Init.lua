@@ -138,7 +138,6 @@ internal.myItems                 = nil
 internal.guildSales              = nil
 internal.guildPurchases          = nil
 internal.totalRecords            = 0
-internal.oneDayInSeconds         = 86400
 
 internal.GS_NA_NAMESPACE     = "datana"
 internal.GS_EU_NAMESPACE     = "dataeu"
