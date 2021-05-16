@@ -629,7 +629,7 @@ function MMScrollList:FilterScrollList()
     -- return item sales
     if MasterMerchant.viewMode ~= 'self' and (searchText == nil or searchText == '') then
       -- everything unfiltered (filter to the default time range)
-      local timeCheck = MasterMerchant:TimeCheck()
+      local timeCheck = MasterMerchant:CheckTime()
       for k, v in pairs(MasterMerchant.salesData) do
         for j, dataList in pairs(v) do
           -- IPAIRS
@@ -1457,7 +1457,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     local itemInfo = MasterMerchant.ItemCodeText(itemLink)
     --local itemInfo = string.match(itemLink, '|H.-:item:(.-):')
-    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.makeIndexFromLink(itemLink)
+    itemInfo       = itemInfo .. ' - ' .. MasterMerchant.GetOrCreateIndexFromLink(itemLink)
     itemInfo       = itemInfo .. ' - ' .. MasterMerchant.addedSearchToItem(itemLink)
     --local itemType = GetItemLinkItemType(itemLink)
     --itemInfo = '(' .. itemType .. ')' .. itemInfo
