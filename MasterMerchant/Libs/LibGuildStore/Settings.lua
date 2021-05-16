@@ -88,7 +88,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(LIBGUILDSTORE_DEBUG_OPTIONS),
+    name = GetString(GS_DEBUG_OPTIONS),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
   }
@@ -110,14 +110,52 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(LIBGUILDSTORE_REFRESH),
+    name = GetString(GS_IMPORT_MM_BUTTON),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
   }
   optionsData[#optionsData + 1] = {
     type = "description",
-    title = "My Description",
-    text = [[Refresh LibHistoire Database.]]
+    title = "Import MM Sales",
+    text = [[Until MM 3.6.x Master Merchant data was not saved separately for NA and EU servers. It is not recomended to import data from a different server type as the prices can be different.]]
+  }
+  optionsData[#optionsData + 1] = {
+    type = "button",
+    name = GetString(GS_IMPORT_MM_NAME),
+    tooltip = GetString(GS_IMPORT_MM_TIP),
+    func = function()
+      internal:ImportMMSales()
+    end,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(GS_IMPORT_ATT_BUTTON),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    title = "Import ATT Sales",
+    text = [[Arkadius Trade Tools sales data is not account specific so you only need to do this once per server NA or EU, not once per account.]]
+  }
+  optionsData[#optionsData + 1] = {
+    type = "button",
+    name = GetString(GS_IMPORT_ATT_NAME),
+    tooltip = GetString(GS_IMPORT_ATT_TIP),
+    func = function()
+      internal:ImportATTSales()
+    end,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(GS_REFRESH_BUTTON),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    title = "Refresh LibHistoire Database",
+    text = [[LibHistoire data is not account specific so you only need to do this once per server NA or EU, not once per account.]]
   }
   optionsData[#optionsData + 1] = {
     type = "button",
@@ -131,44 +169,40 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(LIBGUILDSTORE_REFRESH),
+    name = GetString(GS_RESET_NA_BUTTON),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
   }
   optionsData[#optionsData + 1] = {
     type = "description",
     title = "Reset NA LibGuildStore",
-    text = [[Reset NA LibGuildStore Database.]]
+    text = [[This will only reset NA LibGuildStore Data.]]
   }
   optionsData[#optionsData + 1] = {
     type = "button",
-    name = GetString(GS_REFRESH_LIBHISTOIRE_NAME),
-    tooltip = GetString(GS_REFRESH_LIBHISTOIRE_TIP),
+    name = GetString(GS_RESET_NA_NAME),
+    tooltip = GetString(GS_RESET_NA_TIP),
     func = function()
-      internal:RefreshLibGuildStore()
-      internal:SetupListenerLibHistoire()
-      StartQueue()
+      ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation")
     end,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(LIBGUILDSTORE_REFRESH),
+    name = GetString(GS_RESET_RU_BUTTON),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
   }
   optionsData[#optionsData + 1] = {
     type = "description",
     title = "Reset EU LibGuildStore",
-    text = [[Reset NA LibGuildStore Database.]]
+    text = [[This will only reset EU LibGuildStore Data.]]
   }
   optionsData[#optionsData + 1] = {
     type = "button",
-    name = GetString(GS_REFRESH_LIBHISTOIRE_NAME),
-    tooltip = GetString(GS_REFRESH_LIBHISTOIRE_TIP),
+    name = GetString(GS_RESET_EU_NAME),
+    tooltip = GetString(GS_RESET_EU_TIP),
     func = function()
-      internal:RefreshLibGuildStore()
-      internal:SetupListenerLibHistoire()
-      StartQueue()
+      ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation")
     end,
   }
 

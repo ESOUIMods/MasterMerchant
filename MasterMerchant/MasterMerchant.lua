@@ -2535,6 +2535,65 @@ function MasterMerchant.SetupPendingPost(self)
   end
 end
 
+function MasterMerchant:ReferenceSales(otherData)
+  otherData.savedVariables.dataLocations                 = otherData.savedVariables.dataLocations or {}
+  otherData.savedVariables.dataLocations[GetWorldName()] = true
+  if LibGuildStore then return end
+
+  for itemid, versionlist in pairs(otherData.savedVariables.SalesData) do
+    if self.salesData[itemid] then
+      for versionid, versiondata in pairs(versionlist) do
+        if self.salesData[itemid][versionid] then
+          if versiondata.sales then
+            self.salesData[itemid][versionid].sales = self.salesData[itemid][versionid].sales or {}
+            -- IPAIRS
+            for saleid, saledata in pairs(versiondata.sales) do
+              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
+                table.insert(self.salesData[itemid][versionid].sales, saledata)
+              end
+            end
+            local _, first = next(versiondata.sales, nil)
+            if first then
+              self.salesData[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
+              self.salesData[itemid][versionid].itemAdderText = self.addedSearchToItem(first.itemLink)
+              self.salesData[itemid][versionid].itemDesc      = GetItemLinkName(first.itemLink)
+            end
+          end
+        else
+          self.salesData[itemid][versionid] = versiondata
+        end
+      end
+      otherData.savedVariables.SalesData[itemid] = nil
+    else
+      self.salesData[itemid] = versionlist
+    end
+  end
+end
+
+-- Bring seperate lists together we can still access the sales history all together
+function MasterMerchant:ReferenceSalesAllContainers()
+  self.systemSavedVariables.dataLocations                 = self.systemSavedVariables.dataLocations or {}
+  self.systemSavedVariables.dataLocations[GetWorldName()] = true
+  if internal:CheckMasterMerchantData() then return end
+  MasterMerchant:dm("Debug", "Bring seperate lists together")
+  self:ReferenceSales(MM00Data)
+  self:ReferenceSales(MM01Data)
+  self:ReferenceSales(MM02Data)
+  self:ReferenceSales(MM03Data)
+  self:ReferenceSales(MM04Data)
+  self:ReferenceSales(MM05Data)
+  self:ReferenceSales(MM06Data)
+  self:ReferenceSales(MM07Data)
+  self:ReferenceSales(MM08Data)
+  self:ReferenceSales(MM09Data)
+  self:ReferenceSales(MM10Data)
+  self:ReferenceSales(MM11Data)
+  self:ReferenceSales(MM12Data)
+  self:ReferenceSales(MM13Data)
+  self:ReferenceSales(MM14Data)
+  self:ReferenceSales(MM15Data)
+end
+
 --[[ register event monitor
 local function OnPlayerDeactivated(eventCode)
   EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
@@ -2561,6 +2620,7 @@ function MasterMerchant:Initialize()
 
   local systemDefault          = {
     -- old settings
+    dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
     pricingData = {}, -- added 12-31 but has always been there
     showChatAlerts = false,
     showMultiple = true,
@@ -2935,6 +2995,7 @@ function MasterMerchant:Initialize()
   zo_callLater(function()
     local LEQ = LibExecutionQueue:new()
     LEQ:Add(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
+    LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Start()
   end, 10)

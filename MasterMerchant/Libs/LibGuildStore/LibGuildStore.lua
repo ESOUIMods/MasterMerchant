@@ -274,8 +274,10 @@ end
 local function CheckImportStatus()
   local naDetected = false
   local euDetected = false
-  if MM00DataSavedVariables.dataLocations and MM00DataSavedVariables.dataLocations["NA Megaserver"] then naDetected = true end
-  if MM00DataSavedVariables.dataLocations and MM00DataSavedVariables.dataLocations["EU Megaserver"] then euDetected = true end
+  local dataLocale = MM00DataSavedVariables.Default.MasterMerchant["$AccountWide"].dataLocations
+  if dataLocale and dataLocale["NA Megaserver"] then naDetected = true end
+  if dataLocale and dataLocale["EU Megaserver"] then euDetected = true end
+
   if naDetected and euDetected then return true end
   return false
 end
@@ -283,10 +285,14 @@ end
 local function CheckServerImportType()
   local naDetected = false
   local euDetected = false
-  if MM00DataSavedVariables.dataLocations and MM00DataSavedVariables.dataLocations["NA Megaserver"] then naDetected = true end
-  if MM00DataSavedVariables.dataLocations and MM00DataSavedVariables.dataLocations["EU Megaserver"] then euDetected = true end
-  if naDetected and internal.dataNamespace == internal.GS_EU_NAMESPACE then return true end
-  if euDetected and internal.dataNamespace == internal.GS_NA_NAMESPACE then return true end
+  local dataLocale = MM00DataSavedVariables.Default.MasterMerchant["$AccountWide"].dataLocations
+  if dataLocale and dataLocale["NA Megaserver"] then naDetected = true end
+  if dataLocale and dataLocale["EU Megaserver"] then euDetected = true end
+
+  if internal.dataNamespace == internal.GS_NA_NAMESPACE and euDetected then return true end
+  if internal.dataNamespace == internal.GS_EU_NAMESPACE and naDetected then return true end
+  internal:dm("Info", naDetected)
+  internal:dm("Info", euDetected)
   return false
 end
 
@@ -308,6 +314,44 @@ function internal:CheckArkadiusData()
      not ArkadiusTradeToolsSalesData13 and not ArkadiusTradeToolsSalesData14 and not ArkadiusTradeToolsSalesData15 and
      not ArkadiusTradeToolsSalesData16 then return true end
   return false
+end
+
+function internal:ImportMMSales()
+    if internal.isDatabaseBusy then
+      internal:dm("Info", "LibGuildStore is busy")
+      return
+    end
+    if internal:CheckMasterMerchantData() then
+      internal:dm("Info", "Old Master Merchant sales not detected.")
+      return
+    end
+    if CheckImportStatus() then
+      internal:dm("Info", "Your MM data contains values from both NA and EU servers.")
+      internal:dm("Info", "All versions prior to 3.6.x did not separate NA and EU sales data.")
+      internal:dm("Info", "You must override this in the LibGuildStore settings.")
+      return
+    end
+    if CheckServerImportType() then
+      internal:dm("Info", "You are attempting to import NA or EU MM data,")
+      internal:dm("Info", "however you logged into a different server type.")
+      internal:dm("Info", "You must override this in the LibGuildStore settings.")
+      return
+    end
+    internal:dm("Info", "Import MasterMerchant Sales")
+    internal:ImportMasterMerchantSales()
+end
+
+function internal:ImportATTSales()
+    if internal.isDatabaseBusy then
+      internal:dm("Info", "LibGuildStore is busy")
+      return
+    end
+    if internal:CheckArkadiusData() then
+      internal:dm("Info", "Arkadius Trade Tools Sales Data not detected.")
+      return
+    end
+    internal:dm("Info", "Import ATT Sales")
+    internal:ImportATTSales()
 end
 
 function internal.Slash(allArgs)
@@ -378,40 +422,10 @@ function internal.Slash(allArgs)
     return
   end
   if args == 'mmimport' then
-    if internal.isDatabaseBusy then
-      internal:dm("Info", "LibGuildStore is busy")
-      return
-    end
-    if internal:CheckMasterMerchantData() then
-      internal:dm("Info", "Old Master Merchant sales not detected.")
-      return
-    end
-    if CheckImportStatus() then
-      internal:dm("Info", "Your MM data contains values from both NA and EU servers.")
-      internal:dm("Info", "All versions prior to 3.6.x did not separate NA and EU sales data.")
-      internal:dm("Info", "You must override this in the LibGuildStore settings.")
-      return
-    end
-    if CheckServerImportType() then
-      internal:dm("Info", "You are attempting to import NA or EU MM data,")
-      internal:dm("Info", "however you logged into a different server type.")
-      internal:dm("Info", "You must override this in the LibGuildStore settings.")
-      return
-    end
-    internal:dm("Info", "Import MasterMerchant Sales")
-    internal:ImportMasterMerchantSales()
+    internal:ImportMMSales()
     return
   end
   if args == 'attimport' then
-    if internal.isDatabaseBusy then
-      internal:dm("Info", "LibGuildStore is busy")
-      return
-    end
-    if internal:CheckArkadiusData() then
-      internal:dm("Info", "Arkadius Trade Tools Sales Data not detected.")
-      return
-    end
-    internal:dm("Info", "Import ATT Sales")
     internal:ImportATTSales()
     return
   end

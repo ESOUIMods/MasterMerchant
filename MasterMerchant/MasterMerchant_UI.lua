@@ -2155,13 +2155,12 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantResetButton:SetText(GetString(SK_RESET_LABEL))
   MasterMerchantGuildResetButton:SetText(GetString(SK_RESET_LABEL))
   local confirmDialog = {
-    title    = { text = GetString(SK_RESET_CONFIRM_TITLE) },
-    mainText = { text = GetString(SK_RESET_CONFIRM_MAIN) },
+    title    = { text = GetString(GS_RESET_CONFIRM_TITLE) },
+    mainText = { text = GetString(GS_RESET_CONFIRM_MAIN) },
     buttons  = {
       {
         text     = SI_DIALOG_ACCEPT,
-        -- callback = function() self:DoReset() end
-        callback = function() end
+        callback = function() internal:DoReset() end
       },
       { text = SI_DIALOG_CANCEL }
     }
