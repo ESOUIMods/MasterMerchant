@@ -23,13 +23,12 @@ CSA_EVENT_LARGE_TEXT            = 2
 CSA_EVENT_COMBINED_TEXT         = 3
 CSA_EVENT_NO_TEXT               = 4
 CSA_EVENT_RAID_COMPLETE_TEXT    = 5
-MasterMerchant.oneHour          = 3600
 --[[
 used to temporarily ignore sales that are so new
 the ammount of time in seconds causes the UI to say
 the sale was made 1657 months ago or 71582789 minutes ago.
 ]]--
-MasterMerchant.oneYearInSeconds = ZO_ONE_DAY_IN_SECONDS * 365
+MasterMerchant.oneYearInSeconds = ZO_ONE_MONTH_IN_SECONDS * 12
 
 ------------------------------
 --- MM Stuff               ---
@@ -91,7 +90,7 @@ function MasterMerchant:CheckTime()
   if range == GetString(MM_RANGE_FOCUS2) then daysRange = MasterMerchant.systemSavedVariables.focus2 end
   if range == GetString(MM_RANGE_FOCUS3) then daysRange = MasterMerchant.systemSavedVariables.focus3 end
 
-  return GetTimeStamp() - (86400 * daysRange), daysRange
+  return GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * daysRange), daysRange
 end
 
 function RemoveSalesPerBlacklist(list)
@@ -361,7 +360,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     you have. Might be because of oldestTime.
     ]]--
     if (daysRange == 10000) then
-      local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / 86400.0)
+      local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS)
       daysHistory               = quotient + math.floor(0.5 + remainder)
     else
       daysHistory = daysRange
@@ -390,8 +389,8 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     local salesPoints      = {}
     local weightValue      = 0
     local dayInterval      = 0
-    if timeInterval > 86400 then
-      dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
+    if timeInterval > ZO_ONE_DAY_IN_SECONDS then
+      dayInterval = math.floor((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS) + 1
     end
     -- start loop
     for i, item in pairs(list) do
@@ -403,8 +402,8 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
       local individualSale  = item.price / item.quant
       -- determine if it is an outlier, if toggle is on
       countSold             = countSold + item.quant
-      if timeInterval > 86400 then
-        weightValue      = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
+      if timeInterval > ZO_ONE_DAY_IN_SECONDS then
+        weightValue      = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)
         avgPrice         = avgPrice + (item.price * weightValue)
         weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
       else
@@ -423,12 +422,12 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
           local nameString  = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
           if item.quant == 1 then
             tooltip = zo_strformat(GetString(SK_TIME_DAYS),
-              math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+              math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
               string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller,
                 zo_strformat('<<t:1>>', nameString), currentBuyer, stringPrice)
           else
             tooltip = zo_strformat(GetString(SK_TIME_DAYS),
-              math.floor((GetTimeStamp() - item.timestamp) / 86400.0)) .. " " ..
+              math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
               string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
                 zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
           end
@@ -436,7 +435,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
         table.insert(salesPoints, { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip })
       end -- end skip dots
     end -- end new loop
-    if timeInterval > 86400 then
+    if timeInterval > ZO_ONE_DAY_IN_SECONDS then
       avgPrice = avgPrice / weigtedCountSold
     else
       avgPrice = avgPrice / countSold
@@ -1096,7 +1095,7 @@ function MasterMerchant:SalesStats(statsDays)
 
   -- 86,400 seconds in a day; this will be the epoch time statsDays ago
   -- (roughly, actual time computations are a LOT more complex but meh)
-  local statsDaysEpoch = GetTimeStamp() - (86400 * statsDays)
+  local statsDaysEpoch = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * statsDays)
 
   -- Loop through the player's sales and create the stats as appropriate
   -- (everything or everything with a timestamp after statsDaysEpoch)
@@ -1158,11 +1157,11 @@ function MasterMerchant:SalesStats(statsDays)
   -- them; divided by 86,400 it's the number of days (or at least close enough for this)
   local timeWindow = newestTime - oldestTime
   local dayWindow  = 1
-  if timeWindow > 86400 then dayWindow = math.floor(timeWindow / 86400) + 1 end
+  if timeWindow > ZO_ONE_DAY_IN_SECONDS then dayWindow = math.floor(timeWindow / ZO_ONE_DAY_IN_SECONDS) + 1 end
 
   local overallTimeWindow = GetTimeStamp() - overallOldestTime
   local overallDayWindow  = 1
-  if overallTimeWindow > 86400 then overallDayWindow = math.floor(overallTimeWindow / 86400) + 1 end
+  if overallTimeWindow > ZO_ONE_DAY_IN_SECONDS then overallDayWindow = math.floor(overallTimeWindow / ZO_ONE_DAY_IN_SECONDS) + 1 end
 
   local goldPerDay      = {}
   local kioskPercentage = {}
@@ -1780,7 +1779,7 @@ end
 
 function MasterMerchant:SpecialMessage(force)
   if GetDisplayName() == '@sylviermoone' or (GetDisplayName() == '@Philgo68' and force) then
-    local daysCount = math.floor(((GetTimeStamp() - (1460980800 + 38 * 86400 + 19 * 3600)) / 86400) * 4) / 4
+    local daysCount = math.floor(((GetTimeStamp() - (1460980800 + 38 * ZO_ONE_DAY_IN_SECONDS + 19 * ZO_ONE_HOUR_IN_SECONDS)) / ZO_ONE_DAY_IN_SECONDS) * 4) / 4
     if (daysCount > (MasterMerchant.systemSavedVariables.daysPast or 0)) or force then
       MasterMerchant.systemSavedVariables.daysPast = daysCount
 
@@ -1889,7 +1888,7 @@ function MasterMerchant:ExportSalesData()
   export[guildName] = {}
   local list        = export[guildName]
 
-  local epochBack   = GetTimeStamp() - (86400 * 10)
+  local epochBack   = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 10)
   for k, v in pairs(sales_data) do
     for j, dataList in pairs(v) do
       if dataList['sales'] then

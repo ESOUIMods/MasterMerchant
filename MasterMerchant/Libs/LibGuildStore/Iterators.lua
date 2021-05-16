@@ -272,7 +272,7 @@ function internal:TruncateHistory()
   local prefunc  = function(extraData)
     extraData.start       = GetTimeStamp()
     extraData.deleteCount = 0
-    extraData.epochBack   = GetTimeStamp() - (86400 * LibGuildStore_SavedVariables["historyDepth"])
+    extraData.epochBack   = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
     extraData.wasAltered  = false
 
     internal:DatabaseBusy(true)
@@ -475,7 +475,7 @@ function internal:indexHistoryTables()
       internal:dm("Info", GetString(GS_FULL_INDEXING))
     end
     extraData.start             = GetTimeStamp()
-    extraData.checkMilliseconds = 60
+    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
     extraData.indexCount        = 0
     extraData.wordsIndexCount   = 0
     extraData.wasAltered        = false

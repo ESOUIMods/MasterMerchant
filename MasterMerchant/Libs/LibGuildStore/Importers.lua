@@ -14,7 +14,7 @@ function internal:ImportMasterMerchantSales()
 
   local prefunc  = function(extraData)
     extraData.start             = GetTimeStamp()
-    extraData.checkMilliseconds = 60
+    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
     extraData.eventIdIsNumber   = 0
     extraData.badItemLinkCount  = 0
     extraData.wasAltered        = false
@@ -70,7 +70,7 @@ end
 function internal:ImportATTSales()
   local prefunc  = function(extraData)
     extraData.start             = GetTimeStamp()
-    extraData.checkMilliseconds = 60
+    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
     extraData.eventIdIsNumber   = 0
     extraData.badItemLinkCount  = 0
     extraData.wasAltered        = false

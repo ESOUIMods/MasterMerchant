@@ -661,7 +661,7 @@ function MMScrollList:FilterScrollList()
       -- We just have player indexed and we have something to filter with
       if MasterMerchant.viewMode == 'self' then
         -- Search all data in the last 180 days
-        local timeCheck = GetTimeStamp() - (86400 * 90)
+        local timeCheck = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 90)
         local tconcat   = table.concat
         local tinsert   = table.insert
         local tolower   = string.lower
@@ -703,7 +703,7 @@ function MMScrollList:FilterScrollList()
         end
       else
         -- Search all data in the last 90 days
-        local timeCheck = GetTimeStamp() - (86400 * 90)
+        local timeCheck = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 90)
         local tconcat   = table.concat
         local tinsert   = table.insert
         local tolower   = string.lower

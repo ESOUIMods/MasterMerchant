@@ -222,7 +222,7 @@ function MasterMerchant.TextTimeSince(theTime, useLowercase)
   if secsSince < 864000 then
     return ZO_FormatDurationAgo(secsSince)
   else
-    return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / 86400.0))
+    return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / ZO_ONE_DAY_IN_SECONDS))
   end
 end
 

@@ -7,7 +7,7 @@ local LAM           = LibAddonMenu2
 
 function internal:StartQueue()
   internal:dm("Debug", "StartQueue")
-  zo_callLater(function() internal:QueueCheckStatus() end, 60000) -- 60000 1 minute
+  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
 end
 
 function internal:LibAddonInit()
@@ -48,7 +48,7 @@ function internal:LibAddonInit()
     name = GetString(GS_HISTORY_DEPTH_NAME),
     tooltip = GetString(GS_HISTORY_DEPTH_TIP),
     min = 1,
-    max = 365,
+    max = MasterMerchant.oneYearInSeconds,
     getFunc = function() return LibGuildStore_SavedVariables.historyDepth end,
     setFunc = function(value) LibGuildStore_SavedVariables.historyDepth = value end,
     default = internal.defaults.historyDepth,

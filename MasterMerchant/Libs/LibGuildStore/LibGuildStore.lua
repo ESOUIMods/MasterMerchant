@@ -43,7 +43,7 @@ end
 function internal:QueueCheckStatus()
   local eventsRemaining = internal:CheckStatus()
   if eventsRemaining then
-    zo_callLater(function() internal:QueueCheckStatus() end, 60000) -- 60000 1 minute
+    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
     internal:dm("Info", "LibGuildStore Refresh Not Finished Yet")
   else
     --[[
@@ -158,7 +158,7 @@ local function Initilizze()
   end
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     SetupLibGuildStore()
-    zo_callLater(function() internal:QueueCheckStatus() end, 60000) -- 60000 1 minute
+    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
   end
   SetupData()
 
