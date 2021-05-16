@@ -1210,7 +1210,7 @@ function MasterMerchant:UpdateFonts()
 end
 
 function MasterMerchant:updateCalc()
-  local stackSize  = string.match(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
+  local stackSize  = zo_strmatch(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
   local totalPrice = math.floor(tonumber(MasterMerchantPriceCalculatorUnitCostAmount:GetText()) * tonumber(stackSize))
   MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
@@ -1479,7 +1479,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
     end
 
     local itemInfo = MasterMerchant.ItemCodeText(itemLink)
-    --local itemInfo = string.match(itemLink, '|H.-:item:(.-):')
+    --local itemInfo = zo_strmatch(itemLink, '|H.-:item:(.-):')
     itemInfo       = itemInfo .. ' - ' .. internal:MakeIndexFromLink(itemLink)
     itemInfo       = itemInfo .. ' - ' .. internal:AddSearchToItem(itemLink)
     --local itemType = GetItemLinkItemType(itemLink)

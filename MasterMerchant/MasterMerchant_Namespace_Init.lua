@@ -3070,7 +3070,7 @@ local qualityIds = {
 }
 
 local function splitItem(t, index)
-  local itemId, lvl, CPLVL, quality = string.match(index, "(%d+):(%d+):(%d+):(%d+)")
+  local itemId, lvl, CPLVL, quality = zo_strmatch(index, "(%d+):(%d+):(%d+):(%d+)")
   itemId                            = tonumber(itemId)
   lvl                               = tonumber(lvl)
   CPLVL                             = tonumber(CPLVL)

@@ -102,7 +102,7 @@ function internal:IsValidItemLink(itemLink)
     validLink = false
   end
   local theIID      = GetItemLinkItemId(itemLink)
-  local itemIdMatch = tonumber(string.match(itemLink, '|H.-:item:(.-):'))
+  local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
   if not theIID then
     internal:dm("Debug", "theIID was nil I guess?")
     validLink = false
@@ -191,7 +191,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not string.match(tostring(versionid),
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid),
         "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount   = (extraData.versionCount or 0) + 1
         versionlist[versionid]   = nil
@@ -602,7 +602,7 @@ function internal:CleanOutBad()
     end
     local key, count   = string.gsub(currentItemLink, ':', ':')
     local theIID       = GetItemLinkItemId(currentItemLink)
-    local itemIdMatch  = tonumber(string.match(currentItemLink, '|H.-:item:(.-):'))
+    local itemIdMatch  = tonumber(zo_strmatch(currentItemLink, '|H.-:item:(.-):'))
     local itemlinkName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
     --[[
     if LibGuildStore_SavedVariables["updateAdditionalText"] then

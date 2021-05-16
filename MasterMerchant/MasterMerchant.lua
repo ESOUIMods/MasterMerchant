@@ -505,7 +505,7 @@ function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
 
 
   --switch to MM pricing Item style
-  local mmStyleLink = string.match(switchItemLink, '|H.-:item:(.-):')
+  local mmStyleLink = zo_strmatch(switchItemLink, '|H.-:item:(.-):')
   if mmStyleLink then
     mmStyleLink = mmStyleLink .. ':' .. internal:MakeIndexFromLink(switchItemLink)
     if MasterMerchant.virtualRecipe[mmStyleLink] then
@@ -546,7 +546,7 @@ function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
     return MasterMerchant.GetItemLinkRecipeIngredientInfo(MasterMerchant.recipeData[switchItemLink], i)
   end
 
-  local mmStyleLink = string.match(switchItemLink, '|H.-:item:(.-):')
+  local mmStyleLink = zo_strmatch(switchItemLink, '|H.-:item:(.-):')
   if mmStyleLink then
     mmStyleLink = mmStyleLink .. ':' .. internal:MakeIndexFromLink(switchItemLink)
     if MasterMerchant.virtualRecipe[mmStyleLink] then
@@ -805,7 +805,7 @@ function MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect)
     --d(glyph)
     --d(potencyNum .. '.' .. essenceNum .. '.' .. aspectNum)
     if (glyph ~= '') then
-      local mmGlyph                         = string.match(glyph,
+      local mmGlyph                         = zo_strmatch(glyph,
         '|H.-:item:(.-):') .. ':' .. internal:MakeIndexFromLink(glyph)
 
       MasterMerchant.virtualRecipe[mmGlyph] = {
@@ -909,7 +909,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
 
     local link = linkFunction()
 
-    if (link ~= "" and string.match(link, '|H.-:item:(.-):')) then
+    if (link ~= "" and zo_strmatch(link, '|H.-:item:(.-):')) then
       ClearMenu()
 
       AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
@@ -1059,7 +1059,7 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
   if st == SLOT_TYPE_TRADING_HOUSE_ITEM_LISTING then
     link = GetTradingHouseListingItemLink(ZO_Inventory_GetSlotIndex(inventorySlot), linkStyle)
   end
-  if (link and string.match(link, '|H.-:item:(.-):')) then
+  if (link and zo_strmatch(link, '|H.-:item:(.-):')) then
     zo_callLater(function()
       if MasterMerchant:itemCraftPrice(link) then
         AddMenuItem("Craft Cost to Chat", function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)

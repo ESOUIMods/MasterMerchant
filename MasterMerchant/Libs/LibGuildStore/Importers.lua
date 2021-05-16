@@ -192,7 +192,7 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not string.match(tostring(versionid),
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid),
         "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount   = (extraData.versionCount or 0) + 1
         versionlist[versionid]   = nil
@@ -311,7 +311,7 @@ function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, lo
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not string.match(tostring(versionid),
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid),
         "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount   = (extraData.versionCount or 0) + 1
         versionlist[versionid]   = nil

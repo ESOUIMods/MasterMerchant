@@ -93,7 +93,7 @@ function internal:MakeIndexFromLink(itemLink)
   if itemType == ITEMTYPE_MASTER_WRIT then
     theLastNumber = 0
   else
-    theLastNumber = string.match(itemLink, '|H.-:item:.-:(%d-)|h') or 0
+    theLastNumber = zo_strmatch(itemLink, '|H.-:item:.-:(%d-)|h') or 0
   end
   if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
     local value = GetPotionPowerLevel(itemLink)
