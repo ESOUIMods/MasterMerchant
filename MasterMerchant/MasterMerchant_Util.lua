@@ -7,7 +7,7 @@
 
 --  |H0:item:69359:96:50:26848:96:50:0:0:0:0:0:0:0:0:0:19:0:0:0:0:0|h|h  AUTGuild 1058 days
 
-local zo_strmatch, zo_strgmatch, zo_min, zo_strlower = zo_strmatch, zo_strgmatch, zo_min, zo_strlower
+local zo_strmatch, zo_strgmatch, zo_min, zo_strlower, zo_floor = zo_strmatch, zo_strgmatch, zo_min, zo_strlower, zo_floor
 local tonumber, tostring = tonumber, tostring
 local type = type
 local ipairs, pairs, next = ipairs, pairs, next
@@ -730,7 +730,7 @@ function MasterMerchant.LocalizedNumber(amount)
 	end
 	-- Check if amount is an integer
 	if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount) then
-		return ZO_CommaDelimitNumber(amount)
+		return ZO_CommaDelimitNumber(zo_floor(amount))
 	end
 	-- Round to two decimal values
 	return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
