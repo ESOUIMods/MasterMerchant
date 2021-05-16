@@ -639,10 +639,12 @@ end
 -- and set the time of the last scan to nil, then force a scan.
 function internal:DoReset()
   if GetWorldName() == 'NA Megaserver' and internal.dataToReset == internal.GS_EU_NAMESPACE then
-    internal:dm("Info", "Reset aborted because LibHistoire would not properly refresh NA Data.")
+    internal:dm("Info", "Reset aborted because LibHistoire would refresh NA Data instead.")
+    return
   end
   if GetWorldName() == 'EU Megaserver' and internal.dataToReset == internal.GS_NA_NAMESPACE then
-    internal:dm("Info", "Reset aborted because LibHistoire would not properly refresh EU Data.")
+    internal:dm("Info", "Reset aborted because LibHistoire would refresh EU Data instead.")
+    return
   end
 
   internal:dm("Debug", "DoReset")
