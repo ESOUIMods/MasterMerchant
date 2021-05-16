@@ -180,20 +180,20 @@ end
 -- ||u0:6%:currency:||u
 -- ||t80%:80%:/esoui/art/currency/gold_mipmap.dds||t
 -- '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-function MasterMerchant.LocalizedNumber(numberValue, chatText)
-  if not numberValue then return '0' end
-  if (numberValue > 100) or MasterMerchant.systemSavedVariables.trimDecimals then
-    stringPrice = string.format('%.0f', numberValue)
-  else
-    stringPrice = string.format('%.2f', numberValue)
-  end
-  local subString = '%1' .. GetString(SK_THOUSANDS_SEP) .. '%2'
-  -- Insert thousands separators for the price
-  while true do
-    stringPrice, k = string.gsub(stringPrice, '^(-?%d+)(%d%d%d)', subString)
-    if (k == 0) then break end
-  end
-  return stringPrice
+local function IsValueInteger(value)
+    return value % 2 == 0
+end
+
+function MasterMerchant.LocalizedNumber(amount)
+	if not amount then
+		return tostring(0)
+	end
+	-- Check if amount is an integer
+	if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount) then
+		return ZO_CommaDelimitNumber(zo_floor(amount))
+	end
+	-- Round to two decimal values
+	return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
 end
 
 function MasterMerchant:UpdateItemLink(itemLink)
