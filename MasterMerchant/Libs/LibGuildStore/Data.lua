@@ -58,7 +58,7 @@ end
 function internal:MakeHashString(itemLink)
   name       = string.lower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
   local hash = 0
-  for c in string.gmatch(name, '.') do
+  for c in zo_strgmatch(name, '.') do
     if c then hash = hash + string.byte(c) end
   end
   return hash % 16
@@ -182,7 +182,7 @@ function internal:AddSearchToItem(itemLink)
   end
 
   resultTable  = {}
-  resultString = string.gmatch(adder, '%S+')
+  resultString = zo_strgmatch(adder, '%S+')
   for word in resultString do
     if next(resultTable) == nil then
       table.insert(resultTable, word)
@@ -442,7 +442,7 @@ function internal:addToHistoryTables(theEvent)
     searchText = string.lower(table.concat(temp, ''))
   end
 
-  local searchByWords = string.gmatch(searchText, '%S+')
+  local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
   -- Index each word
@@ -640,7 +640,7 @@ function internal:DoReset()
   local sr_index                    = {}
   _G["LibGuildStore_SalesData"]     = sales_data
   _G["LibGuildStore_SalesIndex"]    = sr_index
-  
+
   GS00DataSavedVariables[internal.dataToReset] = {}
   GS01DataSavedVariables[internal.dataToReset] = {}
   GS02DataSavedVariables[internal.dataToReset] = {}

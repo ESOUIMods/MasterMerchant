@@ -521,7 +521,7 @@ function internal:indexHistoryTables()
     end
 
     -- Index each word
-    local searchByWords = string.gmatch(searchText, '%S+')
+    local searchByWords = zo_strgmatch(searchText, '%S+')
     local wordData      = { numberID, itemData, itemIndex }
     for i in searchByWords do
       if sr_index[i] == nil then

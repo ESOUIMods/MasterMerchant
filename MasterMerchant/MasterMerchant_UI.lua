@@ -689,7 +689,7 @@ function MMScrollList:FilterScrollList()
               temp[8]             = dataList['itemDesc'] or ''
               temp[10]            = dataList['itemAdderText'] or ''
               local gn            = tolower(tconcat(temp, ''))
-              local searchByWords = string.gmatch(searchText, '%S+')
+              local searchByWords = zo_strgmatch(searchText, '%S+')
               for searchWord in searchByWords do
                 searchWord = MasterMerchant.CleanupSearch(searchWord)
                 matchesAll = (matchesAll and string.find(gn, searchWord))
@@ -727,7 +727,7 @@ function MMScrollList:FilterScrollList()
                   temp[8]             = dataList['itemDesc'] or ''
                   temp[10]            = dataList['itemAdderText'] or ''
                   local gn            = tolower(tconcat(temp, ''))
-                  local searchByWords = string.gmatch(searchText, '%S+')
+                  local searchByWords = zo_strgmatch(searchText, '%S+')
                   for searchWord in searchByWords do
                     searchWord = MasterMerchant.CleanupSearch(searchWord)
                     matchesAll = (matchesAll and string.find(gn, searchWord))
@@ -748,7 +748,7 @@ function MMScrollList:FilterScrollList()
       if MasterMerchant.viewMode == 'self' then
         searchText = MasterMerchant.concat(searchText, internal.PlayerSpecialText)
       end
-      local searchByWords       = string.gmatch(searchText, '%S+')
+      local searchByWords       = zo_strgmatch(searchText, '%S+')
       local indexToUse          = sr_index
       local intersectionIndexes = {}
 
@@ -873,7 +873,7 @@ function MMScrollList:FilterScrollList()
           -- Search the guild name for all words
           local matchesAll    = true
           -- Break up search term into words
-          local searchByWords = string.gmatch(searchText, '%S+')
+          local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
@@ -898,7 +898,7 @@ function MMScrollList:FilterScrollList()
           -- Search the guild name for all words
           local matchesAll    = true
           -- Break up search term into words
-          local searchByWords = string.gmatch(searchText, '%S+')
+          local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
@@ -913,7 +913,7 @@ function MMScrollList:FilterScrollList()
             -- Search the guild name and player name for all words
             local matchesAll    = true
             -- Break up search term into words
-            local searchByWords = string.gmatch(searchText, '%S+')
+            local searchByWords = zo_strgmatch(searchText, '%S+')
             for searchWord in searchByWords do
               searchWord = MasterMerchant.CleanupSearch(searchWord)
               local txt
@@ -1006,7 +1006,7 @@ function MMScrollList:FilterScrollList()
           -- Search the guild name for all words
           local matchesAll    = true
           -- Break up search term into words
-          local searchByWords = string.gmatch(searchText, '%S+')
+          local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
@@ -1031,7 +1031,7 @@ function MMScrollList:FilterScrollList()
           -- Search the guild name for all words
           local matchesAll    = true
           -- Break up search term into words
-          local searchByWords = string.gmatch(searchText, '%S+')
+          local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
@@ -1046,7 +1046,7 @@ function MMScrollList:FilterScrollList()
             -- Search the guild name and player name for all words
             local matchesAll    = true
             -- Break up search term into words
-            local searchByWords = string.gmatch(searchText, '%S+')
+            local searchByWords = zo_strgmatch(searchText, '%S+')
             for searchWord in searchByWords do
               searchWord = MasterMerchant.CleanupSearch(searchWord)
               local txt

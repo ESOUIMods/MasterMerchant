@@ -359,7 +359,7 @@ function internal.Slash(allArgs)
   local guildNumber = 0
   local hoursBack   = 0
   local argNum      = 0
-  for w in string.gmatch(allArgs, "%w+") do
+  for w in zo_strgmatch(allArgs, "%w+") do
     argNum = argNum + 1
     if argNum == 1 then args = w end
     if argNum == 2 then guildNumber = tonumber(w) end
