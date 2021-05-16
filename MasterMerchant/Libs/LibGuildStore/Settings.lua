@@ -5,7 +5,7 @@ local listings_data = _G["LibGuildStore_ListingsData"]
 local sr_index      = _G["LibGuildStore_SalesIndex"]
 local LAM           = LibAddonMenu2
 
-local function StartQueue()
+function internal:StartQueue()
   internal:dm("Debug", "StartQueue")
   zo_callLater(function() internal:QueueCheckStatus() end, 60000) -- 60000 1 minute
 end
@@ -164,7 +164,7 @@ function internal:LibAddonInit()
     func = function()
       internal:RefreshLibGuildStore()
       internal:SetupListenerLibHistoire()
-      StartQueue()
+      internal:StartQueue()
     end,
   }
   optionsData[#optionsData + 1] = {
@@ -183,6 +183,7 @@ function internal:LibAddonInit()
     name = GetString(GS_RESET_NA_NAME),
     tooltip = GetString(GS_RESET_NA_TIP),
     func = function()
+      internal.dataToReset             = internal.GS_NA_NAMESPACE
       ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation")
     end,
   }
@@ -202,6 +203,7 @@ function internal:LibAddonInit()
     name = GetString(GS_RESET_EU_NAME),
     tooltip = GetString(GS_RESET_EU_TIP),
     func = function()
+      internal.dataToReset             = internal.GS_EU_NAMESPACE
       ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation")
     end,
   }

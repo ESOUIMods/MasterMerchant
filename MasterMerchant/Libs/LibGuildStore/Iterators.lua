@@ -1075,10 +1075,12 @@ function internal:DatabaseBusy(start)
   ]]--
   if not MasterMerchant then return end
 
+  --[[ TODO this may be used for something else
   MasterMerchantResetButton:SetEnabled(not start)
   MasterMerchantGuildResetButton:SetEnabled(not start)
   MasterMerchantRefreshButton:SetEnabled(not start)
   MasterMerchantGuildRefreshButton:SetEnabled(not start)
+  ]]--
 
   if not start then
     MasterMerchantWindowLoadingIcon.animation:Stop()

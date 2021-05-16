@@ -1947,7 +1947,7 @@ function MasterMerchant:RefreshMasterMerchantWindow()
     self.listIsDirty[LISTINGS] = true
   else
     if not MasterMerchantListingWindow:IsHidden() and not internal.isDatabaseBusy then
-      self.listingScrollList:RefreshData()
+      self.listingscrolllist:RefreshData()
     else
       self.listIsDirty[LISTINGS] = true
     end
@@ -3085,18 +3085,16 @@ function MasterMerchant:InitScrollLists()
 
   MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalRecords))
 
-  self.isFirstScan = MasterMerchant.systemSavedVariables.offlineSales
   if NonContiguousCount(sales_data) > 0 then
-    self.veryFirstScan = false
+    --[[ Sales exist, but no way to know from what source
+    previously this would set a variable of veryFirstScan to false
+    and true just below
+    ]]--
   else
-    -- most of this stuff was unused
-    self.veryFirstScan = true
-
     MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
   end
 
   MasterMerchant.isInitialized = true
-  -- CALLBACK_MANAGER:RegisterCallback("OnGuildSelected", function() MasterMerchant:NewGuildSelected() end)
 end
 
 local dealInfoCache               = {}

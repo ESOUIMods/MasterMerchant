@@ -628,47 +628,53 @@ end
 -- Handle the reset button - clear out the search and scan tables,
 -- and set the time of the last scan to nil, then force a scan.
 function internal:DoReset()
-  internal:dm("Info", "DoReset is not ready yet")
-  local notReady = true
-  if notReady then return end
+  if GetWorldName() == 'NA Megaserver' and internal.dataToReset == internal.GS_EU_NAMESPACE then
+    internal:dm("Info", "Reset aborted because LibHistoire would not properly refresh NA Data.")
+  end
+  if GetWorldName() == 'EU Megaserver' and internal.dataToReset == internal.GS_NA_NAMESPACE then
+    internal:dm("Info", "Reset aborted because LibHistoire would not properly refresh EU Data.")
+  end
 
+  internal:dm("Debug", "DoReset")
   local sales_data                  = {}
   local sr_index                    = {}
   _G["LibGuildStore_SalesData"]     = sales_data
   _G["LibGuildStore_SalesIndex"]    = sr_index
+  
+  GS00DataSavedVariables[internal.dataToReset] = {}
+  GS01DataSavedVariables[internal.dataToReset] = {}
+  GS02DataSavedVariables[internal.dataToReset] = {}
+  GS03DataSavedVariables[internal.dataToReset] = {}
+  GS04DataSavedVariables[internal.dataToReset] = {}
+  GS05DataSavedVariables[internal.dataToReset] = {}
+  GS06DataSavedVariables[internal.dataToReset] = {}
+  GS07DataSavedVariables[internal.dataToReset] = {}
+  GS08DataSavedVariables[internal.dataToReset] = {}
+  GS09DataSavedVariables[internal.dataToReset] = {}
+  GS10DataSavedVariables[internal.dataToReset] = {}
+  GS11DataSavedVariables[internal.dataToReset] = {}
+  GS12DataSavedVariables[internal.dataToReset] = {}
+  GS13DataSavedVariables[internal.dataToReset] = {}
+  GS14DataSavedVariables[internal.dataToReset] = {}
+  GS15DataSavedVariables[internal.dataToReset] = {}
 
-  MM00Data.savedVariables.SalesData = {}
-  MM01Data.savedVariables.SalesData = {}
-  MM02Data.savedVariables.SalesData = {}
-  MM03Data.savedVariables.SalesData = {}
-  MM04Data.savedVariables.SalesData = {}
-  MM05Data.savedVariables.SalesData = {}
-  MM06Data.savedVariables.SalesData = {}
-  MM07Data.savedVariables.SalesData = {}
-  MM08Data.savedVariables.SalesData = {}
-  MM09Data.savedVariables.SalesData = {}
-  MM10Data.savedVariables.SalesData = {}
-  MM11Data.savedVariables.SalesData = {}
-  MM12Data.savedVariables.SalesData = {}
-  MM13Data.savedVariables.SalesData = {}
-  MM14Data.savedVariables.SalesData = {}
-  MM15Data.savedVariables.SalesData = {}
-
-  self.guildPurchases               = {}
-  self.guildSales                   = {}
-  self.guildItems                   = {}
-  self.myItems                      = {}
+  internal.guildPurchases               = {}
+  internal.guildSales                   = {}
+  internal.guildItems                   = {}
+  internal.myItems                      = {}
   if MasterMerchantGuildWindow:IsHidden() then
-    internal.scrollList:RefreshData()
+    MasterMerchant.scrollList:RefreshData()
   else
-    internal.guildScrollList:RefreshData()
+    MasterMerchant.guildScrollList:RefreshData()
   end
-  self:setScanning(false)
+  internal:DatabaseBusy(false)
   internal:dm("Info", internal:concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_RESET_DONE)))
   internal:dm("Info", internal:concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_REFRESH_START)))
-  self.veryFirstScan = true
-  -- self:ScanStoresParallel(true)
+  MasterMerchant.isFirstScan = true
   --[[needs updating so start and stop the listener then
   init everyting
   ]]--
+  internal:RefreshLibGuildStore()
+  internal:SetupListenerLibHistoire()
+  internal:StartQueue()
 end

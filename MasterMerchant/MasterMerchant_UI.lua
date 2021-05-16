@@ -1173,8 +1173,10 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantWindowTitle:SetFont(string.format(fontString, mainTitle))
   MasterMerchantSwitchViewButton:SetFont(string.format(fontString, mainButtonLabel))
   MasterMerchantPriceSwitchButton:SetFont(string.format(fontString, mainButtonLabel))
+  --[[ TODO this may be used for something else
   MasterMerchantResetButton:SetFont(string.format(fontString, mainButtonLabel))
   MasterMerchantRefreshButton:SetFont(string.format(fontString, mainButtonLabel))
+  ]]--
 
   -- Guild Window
   MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
@@ -1187,8 +1189,10 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantGuildWindowSearchBox:SetFont(string.format(fontString, guildButtonLabel))
   MasterMerchantGuildWindowTitle:SetFont(string.format(fontString, guildTitle))
   MasterMerchantGuildSwitchViewButton:SetFont(string.format(fontString, guildButtonLabel))
+  --[[ TODO this may be used for something else
   MasterMerchantGuildResetButton:SetFont(string.format(fontString, guildButtonLabel))
   MasterMerchantGuildRefreshButton:SetFont(string.format(fontString, guildButtonLabel))
+  ]]--
 
   -- Stats Window
   MasterMerchantStatsWindowTitle:SetFont(string.format(fontString, mainTitle))
@@ -2147,6 +2151,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantGuildWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
     MasterMerchantGuildWindowLoadingIcon)
 
+  --[[ TODO this may be used for something else
   -- Refresh button
   MasterMerchantRefreshButton:SetText(GetString(SK_REFRESH_LABEL))
   MasterMerchantGuildRefreshButton:SetText(GetString(SK_REFRESH_LABEL))
@@ -2154,6 +2159,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   -- Reset button and confirmation dialog
   MasterMerchantResetButton:SetText(GetString(SK_RESET_LABEL))
   MasterMerchantGuildResetButton:SetText(GetString(SK_RESET_LABEL))
+  ]]--
   local confirmDialog = {
     title    = { text = GetString(GS_RESET_CONFIRM_TITLE) },
     mainText = { text = GetString(GS_RESET_CONFIRM_MAIN) },

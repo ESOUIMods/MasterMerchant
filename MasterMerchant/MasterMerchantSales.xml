@@ -181,20 +181,6 @@
           <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-3"/>
           <Dimensions x="32" y="32"/>
         </Texture>
-        <Button name="MasterMerchantRefreshButton" inherits="ZO_DefaultButton">
-          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-5"/>
-          <Dimensions x="180"/>
-          <OnClicked>
-            MasterMerchant:DoRefresh()
-          </OnClicked>
-        </Button>
-        <Button name="MasterMerchantResetButton" inherits="ZO_DefaultButton">
-          <Anchor point="RIGHT" relativeTo="MasterMerchantRefreshButton" relativePoint="LEFT" offsetX="0" offsetY="0"/>
-          <Dimensions x="180"/>
-          <OnClicked>
-            ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation", nil, nil)
-          </OnClicked>
-        </Button>
       </Controls>
     </TopLevelControl>
 

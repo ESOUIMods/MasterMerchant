@@ -147,6 +147,7 @@ internal.GS_CHECK_ACCOUNTNAME    = "AccountNames"
 internal.GS_CHECK_ITEMLINK       = "ItemLink"
 internal.GS_CHECK_GUILDNAME      = "GuildNames"
 internal.PlayerSpecialText       = 'hfdkkdfunlajjamdhsiwsuwj'
+internal.dataToReset             = ""
 
 internal.dataNamespace           = ""
 internal.listingsNamespace       = ""
