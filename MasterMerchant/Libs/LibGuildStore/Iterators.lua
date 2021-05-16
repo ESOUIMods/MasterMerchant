@@ -606,7 +606,7 @@ function internal:CleanOutBad()
     local itemlinkName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
     --[[
     if LibGuildStore_SavedVariables["updateAdditionalText"] then
-      local itemIndex = internal:MakeIndexFromLink(currentItemLink)
+      local itemIndex = internal.GetOrCreateIndexFromLink(currentItemLink)
       sales_data[theIID][itemIndex]['itemAdderText'] = internal:AddSearchToItem(currentItemLink)
       sales_data[theIID][itemIndex]['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
     end
@@ -621,7 +621,7 @@ function internal:CleanOutBad()
       return
     end
     local newid      = GetItemLinkItemId(currentItemLink)
-    local newversion = internal:MakeIndexFromLink(currentItemLink)
+    local newversion = internal.GetOrCreateIndexFromLink(currentItemLink)
     if type(saledata['id']) == 'number' then
       saledata['id']            = tostring(saledata['id'])
       extraData.eventIdIsNumber = extraData.eventIdIsNumber + 1

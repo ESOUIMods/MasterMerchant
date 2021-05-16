@@ -8,7 +8,7 @@ end
 
 -- alias for previous function
 function MasterMerchant.makeIndexFromLink(itemLink)
-  return internal:MakeIndexFromLink(itemLink)
+  return internal.GetOrCreateIndexFromLink(itemLink)
 end
 
 function MasterMerchant:TimeCheck()

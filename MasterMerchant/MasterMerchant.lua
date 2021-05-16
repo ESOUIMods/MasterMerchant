@@ -452,13 +452,13 @@ end
 
 function MasterMerchant:itemStats(itemLink, clickable)
   local itemID    = GetItemLinkItemId(itemLink)
-  local itemIndex = internal:MakeIndexFromLink(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   return MasterMerchant:toolTipStats(itemID, itemIndex, nil, nil, clickable)
 end
 
 function MasterMerchant:itemHasSales(itemLink)
   local itemID    = GetItemLinkItemId(itemLink)
-  local itemIndex = internal:MakeIndexFromLink(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   return sales_data[itemID] and sales_data[itemID][itemIndex] and sales_data[itemID][itemIndex]['sales'] and #sales_data[itemID][itemIndex]['sales'] > 0
 end
 
@@ -507,7 +507,7 @@ function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
   --switch to MM pricing Item style
   local mmStyleLink = zo_strmatch(switchItemLink, '|H.-:item:(.-):')
   if mmStyleLink then
-    mmStyleLink = mmStyleLink .. ':' .. internal:MakeIndexFromLink(switchItemLink)
+    mmStyleLink = mmStyleLink .. ':' .. internal.GetOrCreateIndexFromLink(switchItemLink)
     if MasterMerchant.virtualRecipe[mmStyleLink] then
       return #MasterMerchant.virtualRecipe[mmStyleLink]
     end
@@ -548,7 +548,7 @@ function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
 
   local mmStyleLink = zo_strmatch(switchItemLink, '|H.-:item:(.-):')
   if mmStyleLink then
-    mmStyleLink = mmStyleLink .. ':' .. internal:MakeIndexFromLink(switchItemLink)
+    mmStyleLink = mmStyleLink .. ':' .. internal.GetOrCreateIndexFromLink(switchItemLink)
     if MasterMerchant.virtualRecipe[mmStyleLink] then
       return MasterMerchant.virtualRecipe[mmStyleLink][i].item, MasterMerchant.virtualRecipe[mmStyleLink][i].required
     end
@@ -806,7 +806,7 @@ function MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect)
     --d(potencyNum .. '.' .. essenceNum .. '.' .. aspectNum)
     if (glyph ~= '') then
       local mmGlyph                         = zo_strmatch(glyph,
-        '|H.-:item:(.-):') .. ':' .. internal:MakeIndexFromLink(glyph)
+        '|H.-:item:(.-):') .. ':' .. internal.GetOrCreateIndexFromLink(glyph)
 
       MasterMerchant.virtualRecipe[mmGlyph] = {
         [1] = { ['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
@@ -990,7 +990,7 @@ function MasterMerchant.PostPendingItem(self)
     local _, stackCount, _                                             = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
 
     local theIID                                                       = GetItemLinkItemId(itemLink)
-    local itemIndex                                                    = internal:MakeIndexFromLink(itemLink)
+    local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
 
     MasterMerchant.systemSavedVariables.pricingData                    = MasterMerchant.systemSavedVariables.pricingData or {}
     MasterMerchant.systemSavedVariables.pricingData[theIID]            = MasterMerchant.systemSavedVariables.pricingData[theIID] or {}
@@ -2522,7 +2522,7 @@ function MasterMerchant.SetupPendingPost(self)
     local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
 
     local theIID           = GetItemLinkItemId(itemLink)
-    local itemIndex        = internal:MakeIndexFromLink(itemLink)
+    local itemIndex        = internal.GetOrCreateIndexFromLink(itemLink)
 
     if MasterMerchant.systemSavedVariables.pricingData and MasterMerchant.systemSavedVariables.pricingData[theIID] and MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] then
       self:SetPendingPostPrice(math.floor(MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] * stackCount))
@@ -2854,7 +2854,7 @@ function MasterMerchant:Initialize()
       if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
         local theLink     = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
         local theIID      = GetItemLinkItemId(theLink)
-        local theIData    = internal:MakeIndexFromLink(theLink)
+        local theIData    = internal.GetOrCreateIndexFromLink(theLink)
         local postedStats = self:toolTipStats(theIID, theIData)
         MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
         local floorPrice = 0
@@ -2909,7 +2909,7 @@ function MasterMerchant:Initialize()
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
         local theIID                                                       = GetItemLinkItemId(itemLink)
-        local itemIndex                                                    = internal:MakeIndexFromLink(itemLink)
+        local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
         MasterMerchant.systemSavedVariables.pricingData                    = MasterMerchant.systemSavedVariables.pricingData or {}
         MasterMerchant.systemSavedVariables.pricingData[theIID]            = MasterMerchant.systemSavedVariables.pricingData[theIID] or {}
         MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] = price / stackCount
@@ -3009,7 +3009,7 @@ function MasterMerchant:SwitchPrice(control, slot)
 
     if itemLink then
       local theIID    = GetItemLinkItemId(itemLink)
-      local itemIndex = internal:MakeIndexFromLink(itemLink)
+      local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
       local tipStats  = MasterMerchant:toolTipStats(theIID, itemIndex, true, true)
       if tipStats.avgPrice then
         --[[
@@ -3108,7 +3108,7 @@ MasterMerchant.GetDealInfo        = function(itemLink, purchasePrice, stackCount
     local setPrice   = nil
     local salesCount = 0
     local theIID     = GetItemLinkItemId(itemLink)
-    local itemIndex  = internal:MakeIndexFromLink(itemLink)
+    local itemIndex  = internal.GetOrCreateIndexFromLink(itemLink)
     local tipStats   = MasterMerchant:toolTipStats(theIID, itemIndex, true)
     if tipStats.avgPrice then
       setPrice   = tipStats['avgPrice']

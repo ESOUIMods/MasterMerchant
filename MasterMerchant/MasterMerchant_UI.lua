@@ -1480,7 +1480,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     local itemInfo = MasterMerchant.ItemCodeText(itemLink)
     --local itemInfo = zo_strmatch(itemLink, '|H.-:item:(.-):')
-    itemInfo       = itemInfo .. ' - ' .. internal:MakeIndexFromLink(itemLink)
+    itemInfo       = itemInfo .. ' - ' .. internal.GetOrCreateIndexFromLink(itemLink)
     itemInfo       = itemInfo .. ' - ' .. internal:AddSearchToItem(itemLink)
     --local itemType = GetItemLinkItemType(itemLink)
     --itemInfo = '(' .. itemType .. ')' .. itemInfo

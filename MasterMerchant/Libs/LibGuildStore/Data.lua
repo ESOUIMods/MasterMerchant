@@ -76,31 +76,41 @@ local function GetPotionPowerLevel(itemLink)
   end
   return CP
 end
+
 -- The index consists of the item's required level, required vet
 -- level, quality, and trait(if any), separated by colons.
-function internal:MakeIndexFromLink(itemLink)
-  --Standardize Level to 1 if the level is not relevent but is stored on some items (ex: recipes)
-  local levelReq                      = 1
-  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  if itemType ~= ITEMTYPE_RECIPE then
-    levelReq = GetItemLinkRequiredLevel(itemLink)
-  end
-  local vetReq      = GetItemLinkRequiredChampionPoints(itemLink) / 10
-  local itemQuality = GetItemLinkQuality(itemLink)
-  local itemTrait   = GetItemLinkTraitType(itemLink)
-  local theLastNumber
-  --Add final number in the link to handle item differences like 2 and 3 buff potions
-  if itemType == ITEMTYPE_MASTER_WRIT then
-    theLastNumber = 0
-  else
-    theLastNumber = zo_strmatch(itemLink, '|H.-:item:.-:(%d-)|h') or 0
-  end
-  if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
-    local value = GetPotionPowerLevel(itemLink)
-    itemTrait   = internal.potionVarientTable[value] or "0"
-  end
-  local index = levelReq .. ':' .. vetReq .. ':' .. itemQuality .. ':' .. itemTrait .. ':' .. theLastNumber
+local itemIndexCache = { }
 
+local function GetItemLinkParseData(itemLink, itemType)
+  if itemType ~= ITEMTYPE_MASTER_WRIT then
+    return zo_strmatch(itemLink, '|H.-:item:.-:(%d-)|h') or 0
+  end
+  return 0
+end
+
+local function GetItemTrait(itemLink, itemType)
+  if itemType ~= ITEMTYPE_POISON and itemType ~= ITEMTYPE_POTION then
+    return GetItemLinkTraitType(itemLink) or 0
+  end
+  local powerLevel = GetPotionPowerLevel(itemLink)
+  return MasterMerchant.potionVarientTable[powerLevel] or 0
+end
+
+local function GetRequiredLevel(itemLink, itemType)
+  return itemType ~= ITEMTYPE_RECIPE and GetItemLinkRequiredLevel(itemLink) or 1
+end
+
+local function CreateIndexFromLink(itemLink)
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+  return GetRequiredLevel(itemLink, itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkQuality(itemLink) .. ":" .. GetItemTrait(itemLink, itemType) .. ":" .. GetItemLinkParseData(itemLink, itemType)
+end
+
+function internal.GetOrCreateIndexFromLink(itemLink)
+  local index = itemIndexCache[itemLink]
+  if not index then
+    itemIndexCache[itemLink] = CreateIndexFromLink(itemLink)
+    index = itemIndexCache[itemLink]
+  end
   return index
 end
 
@@ -278,7 +288,7 @@ function internal:CheckForDuplicate(itemLink, eventID)
   ]]--
   local theIID = GetItemLinkItemId(itemLink)
   if theIID == nil or theIID == 0 then return end
-  local itemIndex = internal:MakeIndexFromLink(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
 
   if sales_data[theIID] and sales_data[theIID][itemIndex] then
     for k, v in pairs(sales_data[theIID][itemIndex]['sales']) do
@@ -342,7 +352,7 @@ function internal:addToHistoryTables(theEvent)
   --[[The quality effects itemIndex although the ID from the
   itemLink may be the same. We will keep them separate.
   ]]--
-  local itemIndex  = internal:MakeIndexFromLink(theEvent.itemLink)
+  local itemIndex  = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
   --[[theIID is used in the SRIndex so define it here.
   ]]--
   local theIID     = GetItemLinkItemId(theEvent.itemLink)
@@ -549,7 +559,7 @@ function internal:addListing(listing, addBuyer)
   local sellerHash = internal:AddSalesTableData("accountNames", listing.Seller)
   local guildHash  = internal:AddSalesTableData("guildNames", listing.Guild)
 
-  local itemIndex  = internal:MakeIndexFromLink(listing.itemLink)
+  local itemIndex  = internal.GetOrCreateIndexFromLink(listing.itemLink)
   local theIID     = GetItemLinkItemId(listing.itemLink)
   if theIID == nil or theIID == 0 then return end
 
@@ -636,10 +646,10 @@ function internal:DoReset()
   end
 
   internal:dm("Debug", "DoReset")
-  local sales_data                  = {}
-  local sr_index                    = {}
-  _G["LibGuildStore_SalesData"]     = sales_data
-  _G["LibGuildStore_SalesIndex"]    = sr_index
+  local sales_data                             = {}
+  local sr_index                               = {}
+  _G["LibGuildStore_SalesData"]                = sales_data
+  _G["LibGuildStore_SalesIndex"]               = sr_index
 
   GS00DataSavedVariables[internal.dataToReset] = {}
   GS01DataSavedVariables[internal.dataToReset] = {}
@@ -658,10 +668,10 @@ function internal:DoReset()
   GS14DataSavedVariables[internal.dataToReset] = {}
   GS15DataSavedVariables[internal.dataToReset] = {}
 
-  internal.guildPurchases               = {}
-  internal.guildSales                   = {}
-  internal.guildItems                   = {}
-  internal.myItems                      = {}
+  internal.guildPurchases                      = {}
+  internal.guildSales                          = {}
+  internal.guildItems                          = {}
+  internal.myItems                             = {}
   if MasterMerchantGuildWindow:IsHidden() then
     MasterMerchant.scrollList:RefreshData()
   else

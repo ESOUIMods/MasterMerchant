@@ -486,7 +486,7 @@ function internal:ReferenceATTSales(otherData)
       theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
     end
     local theIID    = GetItemLinkItemId(theEvent.itemLink)
-    local itemIndex = internal:MakeIndexFromLink(theEvent.itemLink)
+    local itemIndex = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
     if att_sales_data[theIID] == nil then att_sales_data[theIID] = {} end
     if att_sales_data[theIID][itemIndex] == nil then
       att_sales_data[theIID][itemIndex]               = {}
