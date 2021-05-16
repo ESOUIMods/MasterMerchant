@@ -760,13 +760,13 @@ function MasterMerchant:UpdateItemLink(itemLink)
 end
 
 -- Create a textual representation of a time interval
-function MasterMerchant.TextTimeSince(theTime, useLowercase)
+function MasterMerchant.TextTimeSince(theTime)
   local secsSince = GetTimeStamp() - theTime
 
-  if secsSince < 864000 then
+  if secsSince < ZO_ONE_DAY_IN_SECONDS then
     return ZO_FormatDurationAgo(secsSince)
   else
-    return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / 86400.0))
+    return zo_strformat(SK_TIME_DAYS, math.floor(secsSince / ZO_ONE_DAY_IN_SECONDS))
   end
 end
 
