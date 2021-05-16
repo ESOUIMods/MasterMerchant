@@ -259,7 +259,7 @@ function MMScrollList:SetupSalesRow(control, data)
   control.buyer:SetText(buyerString)
   -- If the seller is the player, color the buyer green.  Otherwise, blue.
   local acctName = GetDisplayName()
-  if string.lower(currentSeller) == string.lower(acctName) then
+  if zo_strlower(currentSeller) == zo_strlower(acctName) then
     control.buyer:SetNormalFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetPressedFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetMouseOverFontColor(0.32, 0.90, 0.18, 1)
@@ -378,7 +378,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
     control.seller:SetText(sellerString)
     -- If the seller is the player, color the buyer green.  Otherwise, blue.
     local acctName = GetDisplayName()
-    if string.lower(sellerString) == string.lower(acctName) then
+    if zo_strlower(sellerString) == zo_strlower(acctName) then
       control.seller:SetNormalFontColor(0.18, 0.77, 0.05, 1)
       control.seller:SetPressedFontColor(0.18, 0.77, 0.05, 1)
       control.seller:SetMouseOverFontColor(0.32, 0.90, 0.18, 1)
@@ -494,7 +494,7 @@ function MMScrollList:SetupListingsRow(control, data)
   control.buyer:SetText(buyerString)
   -- If the seller is the player, color the buyer green.  Otherwise, blue.
   local acctName = GetDisplayName()
-  if string.lower(currentSeller) == string.lower(acctName) then
+  if zo_strlower(currentSeller) == zo_strlower(acctName) then
     control.buyer:SetNormalFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetPressedFontColor(0.18, 0.77, 0.05, 1)
     control.buyer:SetMouseOverFontColor(0.32, 0.90, 0.18, 1)
@@ -634,7 +634,7 @@ function MMScrollList:FilterScrollList()
   else
     searchText = MasterMerchantListingWindowSearchBox:GetText()
   end
-  if searchText then searchText = string.gsub(string.lower(searchText), '^%s*(.-)%s*$', '%1') end
+  if searchText then searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1') end
 
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     -- return item sales
@@ -876,7 +876,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
+            matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
           end
           if matchesAll then
             local sellerData = g.sellers[GetDisplayName()] or nil
@@ -901,7 +901,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
+            matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
           end
           if matchesAll and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
             if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
@@ -918,9 +918,9 @@ function MMScrollList:FilterScrollList()
               searchWord = MasterMerchant.CleanupSearch(searchWord)
               local txt
               if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'item' then
-                txt = string.lower(MasterMerchant.concat(gn, sellerData.searchText))
+                txt = zo_strlower(MasterMerchant.concat(gn, sellerData.searchText))
               else
-                txt = string.lower(MasterMerchant.concat(gn, sellerData.sellerName))
+                txt = zo_strlower(MasterMerchant.concat(gn, sellerData.sellerName))
               end
               matchesAll = (matchesAll and string.find(txt, searchWord))
             end
@@ -1009,7 +1009,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
+            matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
           end
           if matchesAll then
             local sellerData = g.sellers[GetDisplayName()] or nil
@@ -1034,7 +1034,7 @@ function MMScrollList:FilterScrollList()
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
             searchWord = MasterMerchant.CleanupSearch(searchWord)
-            matchesAll = (matchesAll and string.find(string.lower(gn), searchWord))
+            matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
           end
           if matchesAll and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
             if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
@@ -1051,9 +1051,9 @@ function MMScrollList:FilterScrollList()
               searchWord = MasterMerchant.CleanupSearch(searchWord)
               local txt
               if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'item' then
-                txt = string.lower(MasterMerchant.concat(gn, sellerData.searchText))
+                txt = zo_strlower(MasterMerchant.concat(gn, sellerData.searchText))
               else
-                txt = string.lower(MasterMerchant.concat(gn, sellerData.sellerName))
+                txt = zo_strlower(MasterMerchant.concat(gn, sellerData.sellerName))
               end
               matchesAll = (matchesAll and string.find(txt, searchWord))
             end

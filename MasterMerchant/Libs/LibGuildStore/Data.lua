@@ -56,7 +56,7 @@ end
 
 -- uses mod to determine which save files to use
 function internal:MakeHashString(itemLink)
-  name       = string.lower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
+  name       = zo_strlower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
   local hash = 0
   for c in zo_strgmatch(name, '.') do
     if c then hash = hash + string.byte(c) end
@@ -191,7 +191,7 @@ function internal:AddSearchToItem(itemLink)
     end
   end
   adder = table.concat(resultTable)
-  return string.lower(adder)
+  return zo_strlower(adder)
 end
 
 function internal:BuildAccountNameLookup()
@@ -410,8 +410,8 @@ function internal:addToHistoryTables(theEvent)
   guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
     adderDescConcat)
 
-  local playerName = string.lower(GetDisplayName())
-  local isSelfSale = playerName == string.lower(theEvent.seller)
+  local playerName = zo_strlower(GetDisplayName())
+  local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
   if isSelfSale then
     guild                            = internal.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
@@ -439,7 +439,7 @@ function internal:addToHistoryTables(theEvent)
     else
       temp[12] = ''
     end
-    searchText = string.lower(table.concat(temp, ''))
+    searchText = zo_strlower(table.concat(temp, ''))
   end
 
   local searchByWords = zo_strgmatch(searchText, '%S+')
@@ -471,7 +471,7 @@ function internal:SetupListener(guildId)
         lastReceivedEventID                                          = eventId
       end
       local guildName           = GetGuildName(guildId)
-      local thePlayer           = string.lower(GetDisplayName())
+      local thePlayer           = zo_strlower(GetDisplayName())
       local added               = false
       --[[
       local theEvent = {
@@ -520,7 +520,7 @@ function internal:SetupListener(guildId)
         wasKiosk = false,
         id = Id64ToString(eventId)
       }
-      theEvent.wasKiosk         = (internal.guildMemberInfo[guildId][string.lower(theEvent.buyer)] == nil)
+      theEvent.wasKiosk         = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
 
       local daysOfHistoryToKeep = GetTimeStamp() - internal.oneDayInSeconds * LibGuildStore_SavedVariables["historyDepth"]
       if (theEvent.timestamp > daysOfHistoryToKeep) then
@@ -529,7 +529,7 @@ function internal:SetupListener(guildId)
           added = internal:addToHistoryTables(theEvent)
         end
         -- (doAlert and (internal.systemSavedVariables.showChatAlerts or internal.systemSavedVariables.showAnnounceAlerts))
-        if added and string.lower(theEvent.seller) == thePlayer then
+        if added and zo_strlower(theEvent.seller) == thePlayer then
           --internal:dm("Debug", "alertQueue updated")
           table.insert(internal.alertQueue[theEvent.guild], theEvent)
         end

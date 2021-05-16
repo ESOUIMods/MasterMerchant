@@ -33,7 +33,7 @@ function MMSeller:new(_guild, _name, _outsideBuyer, _searchText)
   o.stack        = {}
   o.rank         = {}
   o.outsideBuyer = _outsideBuyer
-  o.searchText   = string.lower(_searchText or '')
+  o.searchText   = zo_strlower(_searchText or '')
   return o
 end
 

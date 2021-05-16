@@ -153,7 +153,7 @@ local function Initilizze()
     for m = 1, GetNumGuildMembers(guildId) do
       local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildId, m)
       if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
-      internal.guildMemberInfo[guildId][string.lower(guildMemInfo)] = true
+      internal.guildMemberInfo[guildId][zo_strlower(guildMemInfo)] = true
     end
   end
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
@@ -365,7 +365,7 @@ function internal.Slash(allArgs)
     if argNum == 2 then guildNumber = tonumber(w) end
     if argNum == 3 then hoursBack = tonumber(w) end
   end
-  args = string.lower(args)
+  args = zo_strlower(args)
 
   if args == 'help' then
     internal:dm("Info", GetString(GS_HELP_DUPS))

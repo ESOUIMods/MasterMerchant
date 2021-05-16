@@ -347,7 +347,7 @@ function internal:InitItemHistory()
   if internal.myItems == nil then
     internal.myItems     = {}
     extradata.doMyItems  = true
-    extradata.playerName = string.lower(GetDisplayName())
+    extradata.playerName = zo_strlower(GetDisplayName())
   end
 
   if internal.guildSales == nil then
@@ -390,7 +390,7 @@ function internal:InitItemHistory()
             searchData)
         end
 
-        if (extradata.doMyItems and string.lower(currentSeller) == extradata.playerName) then
+        if (extradata.doMyItems and zo_strlower(currentSeller) == extradata.playerName) then
           internal.myItems[currentGuild] = internal.myItems[currentGuild] or MMGuild:new(currentGuild)
           local guild                    = internal.myItems[currentGuild]
           local _, firstsaledata         = next(versiondata.sales, nil)
@@ -483,7 +483,7 @@ function internal:indexHistoryTables()
   end
 
   local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local playerName = string.lower(GetDisplayName())
+  local playerName = zo_strlower(GetDisplayName())
 
   local loopfunc   = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
 
@@ -496,8 +496,8 @@ function internal:indexHistoryTables()
     local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['seller'])
 
     if LibGuildStore_SavedVariables["minimalIndexing"] then
-      if playerName == string.lower(currentSeller) then
-        searchText = string.lower(internal.PlayerSpecialText)
+      if playerName == zo_strlower(currentSeller) then
+        searchText = zo_strlower(internal.PlayerSpecialText)
       else
         searchText = ''
       end
@@ -512,12 +512,12 @@ function internal:indexHistoryTables()
       temp[6]                   = currentGuild or ''
       temp[8]                   = versiondata.itemDesc or ''
       temp[10]                  = versiondata.itemAdderText or ''
-      if playerName == string.lower(currentSeller) then
+      if playerName == zo_strlower(currentSeller) then
         temp[12] = internal.PlayerSpecialText
       else
         temp[12] = ''
       end
-      searchText = string.lower(table.concat(temp, ''))
+      searchText = zo_strlower(table.concat(temp, ''))
     end
 
     -- Index each word

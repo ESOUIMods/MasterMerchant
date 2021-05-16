@@ -3079,7 +3079,7 @@ function MasterMerchant:InitScrollLists()
     for m = 1, GetNumGuildMembers(guildID) do
       local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildID, m)
       if MasterMerchant.guildMemberInfo[guildID] == nil then MasterMerchant.guildMemberInfo[guildID] = {} end
-      MasterMerchant.guildMemberInfo[guildID][string.lower(guildMemInfo)] = true
+      MasterMerchant.guildMemberInfo[guildID][zo_strlower(guildMemInfo)] = true
     end
   end
 
@@ -3249,7 +3249,7 @@ function MasterMerchant.Slash(allArgs)
     if argNum == 2 then guildNumber = tonumber(w) end
     if argNum == 3 then hoursBack = tonumber(w) end
   end
-  args = string.lower(args)
+  args = zo_strlower(args)
 
   if args == 'help' then
     MasterMerchant:dm("Info", GetString(MM_HELP_WINDOW))
