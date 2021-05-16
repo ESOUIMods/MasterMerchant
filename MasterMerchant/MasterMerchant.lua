@@ -193,7 +193,7 @@ function stats.maxmin(t)
   for key, item in pairs(t) do
     local individualSale = item.price / item.quant
     max                  = math.max(max, individualSale)
-    min                  = math.min(min, individualSale)
+    min                  = zo_min(min, individualSale)
   end
 
   return max, min
@@ -412,7 +412,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
         avgPrice = avgPrice + item.price
       end
       legitSales = legitSales + 1
-      if lowPrice == nil then lowPrice = individualSale else lowPrice = math.min(lowPrice, individualSale) end
+      if lowPrice == nil then lowPrice = individualSale else lowPrice = zo_min(lowPrice, individualSale) end
       if highPrice == nil then highPrice = individualSale else highPrice = math.max(highPrice, individualSale) end
       if not skipDots then
         local tooltip = nil

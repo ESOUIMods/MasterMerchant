@@ -95,8 +95,8 @@ function MasterMerchant.concat(a, ...)
 end
 
 function MasterMerchant.ShowChildren(control, startNum, endNum)
-  local numChildren = math.min(control:GetNumChildren(), endNum)
-  local numStart    = math.min(startNum, numChildren)
+  local numChildren = zo_min(control:GetNumChildren(), endNum)
+  local numStart    = zo_min(startNum, numChildren)
   for i = numStart, numChildren do
     local child = control:GetChild(i)
 
