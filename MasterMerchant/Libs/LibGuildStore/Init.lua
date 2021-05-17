@@ -138,9 +138,14 @@ internal.myItems                 = nil
 internal.guildSales              = nil
 internal.guildPurchases          = nil
 internal.totalRecords            = 0
+internal.currentGuilds           = {}
 
 internal.GS_NA_NAMESPACE     = "datana"
 internal.GS_EU_NAMESPACE     = "dataeu"
+
+internal.NON_GUILD_MEMBER_PURCHACE = 0
+internal.GUILD_MEMBER_PURCHACE = 1
+internal.IMPORTED_PURCHACE = 2
 
 internal.GS_CHECK_ACCOUNTNAME    = "AccountNames"
 internal.GS_CHECK_ITEMLINK       = "ItemLink"

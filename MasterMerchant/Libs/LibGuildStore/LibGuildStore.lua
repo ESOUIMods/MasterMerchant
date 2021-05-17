@@ -148,6 +148,7 @@ local function Initilizze()
   for i = 1, GetNumGuilds() do
     local guildId   = GetGuildId(i)
     local guildName = GetGuildName(guildId)
+    internal.currentGuilds[guildId] = guildName
     if not LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] then LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] = "0" end
     internal.alertQueue[guildName] = {}
     for m = 1, GetNumGuildMembers(guildId) do
@@ -316,7 +317,7 @@ function internal:CheckArkadiusData()
   return false
 end
 
-function internal:ImportMMSales()
+function internal:SlashImportMMSales()
     if internal.isDatabaseBusy then
       internal:dm("Info", "LibGuildStore is busy")
       return
@@ -341,7 +342,7 @@ function internal:ImportMMSales()
     internal:ImportMasterMerchantSales()
 end
 
-function internal:ImportATTSales()
+function internal:SlashImportATTSales()
     if internal.isDatabaseBusy then
       internal:dm("Info", "LibGuildStore is busy")
       return
@@ -422,11 +423,11 @@ function internal.Slash(allArgs)
     return
   end
   if args == 'mmimport' then
-    internal:ImportMMSales()
+    internal:SlashImportMMSales()
     return
   end
   if args == 'attimport' then
-    internal:ImportATTSales()
+    internal:SlashImportATTSales()
     return
   end
   args = ""

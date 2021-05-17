@@ -124,7 +124,7 @@ function internal:LibAddonInit()
     name = GetString(GS_IMPORT_MM_NAME),
     tooltip = GetString(GS_IMPORT_MM_TIP),
     func = function()
-      internal:ImportMMSales()
+      internal:SlashImportMMSales()
     end,
   }
   optionsData[#optionsData + 1] = {
@@ -143,7 +143,7 @@ function internal:LibAddonInit()
     name = GetString(GS_IMPORT_ATT_NAME),
     tooltip = GetString(GS_IMPORT_ATT_TIP),
     func = function()
-      internal:ImportATTSales()
+      internal:SlashImportATTSales()
     end,
   }
   optionsData[#optionsData + 1] = {

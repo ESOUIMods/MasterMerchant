@@ -62,6 +62,7 @@ function internal:ImportMasterMerchantSales()
   end
 
   if not internal.isDatabaseBusy then
+    internal:dm("Debug", "ImportMasterMerchantSales")
     internal:IterateoverMMSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
@@ -118,6 +119,7 @@ function internal:ImportATTSales()
   end
 
   if not internal.isDatabaseBusy then
+    internal:dm("Debug", "ImportATTSales")
     internal:IterateoverATTSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
 
@@ -474,8 +476,23 @@ function internal:ReferenceATTSales(otherData)
       wasKiosk = false,
       id = tostring(saleId),
     }
+    --[[ TODO come up with a way to use wasKiosk when possible. The
+    issue is that you only have access to the guilds you belong to
+    for the account you are logged into at the time. Meaning, someone
+    on an NA server importing data from EU would not have access
+    to guild member information.
+
+    Likewise if someone is on account A and not account B then any guild
+    member names from account B will not be found, and wasKiosk won't
+    be accurate. Should possibly use 3 constants and update sales when
+    someone loggs into another account.
+
+    internal.NON_GUILD_MEMBER_PURCHACE = 0
+    internal.GUILD_MEMBER_PURCHACE = 1
+    internal.IMPORTED_PURCHACE = 2
+    ]]--
     local guildFound = false
-    for k, v in pairs(LibHistoire_GuildNames[attMegaserver]) do
+    for k, v in pairs(internal.currentGuilds) do
       if theEvent.guild == v then
         guildId    = k
         guildFound = true
