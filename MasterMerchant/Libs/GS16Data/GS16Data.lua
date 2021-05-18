@@ -5,6 +5,8 @@ lib.defaults = {
   ["itemLink"] = {},
   ["accountNames"] = {},
   ["guildNames"] = {},
+  ["visitedNATraders"] = {},
+  ["visitedEUTraders"] = {},
 }
 
 local function Initialize()

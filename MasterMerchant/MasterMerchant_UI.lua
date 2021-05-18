@@ -624,6 +624,8 @@ function MasterMerchant.CleanupSearch(term)
 end
 
 function MMScrollList:FilterScrollList()
+  -- this will error when the MM window is open and sr_index is empty
+  --if internal:is_empty_or_nil(sr_index) then return end
   local listData = ZO_ScrollList_GetDataList(self.list)
   ZO_ClearNumericallyIndexedTable(listData)
   local searchText = nil
@@ -1442,7 +1444,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
           graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice)
         if MasterMerchant.systemSavedVariables.displaySalesDetails then
           for _, point in ipairs(graphInfo.points) do
-            graph.points:AddPoint(point[1], point[2], point[3], point[4])
+            graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
           end
         else
           for _, point in ipairs(graphInfo.points) do
@@ -2172,6 +2174,18 @@ function MasterMerchant:SetupMasterMerchantWindow()
     }
   }
   ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetConfirmation', confirmDialog)
+  local confirmDialog = {
+    title    = { text = GetString(GS_RESET_LISTINGS_CONFIRM_TITLE) },
+    mainText = { text = GetString(GS_RESET_LISTINGS_CONFIRM_MAIN) },
+    buttons  = {
+      {
+        text     = SI_DIALOG_ACCEPT,
+        callback = function() internal:ResetListingsData() end
+      },
+      { text = SI_DIALOG_CANCEL }
+    }
+  }
+  ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetListingsConfirmation', confirmDialog)
 
   -- Stats buttons
   MasterMerchantWindowStatsButton:SetHandler('OnMouseEnter',

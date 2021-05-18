@@ -62,13 +62,23 @@ end
 
 local function SetNamespace()
   if GetWorldName() == 'NA Megaserver' then
-    internal.dataNamespace     = internal.GS_NA_NAMESPACE
-    internal.listingsNamespace = "listingsna"
     internal.firstrunNamespace = "firstRunNa"
+    internal.dataNamespace     = internal.GS_NA_NAMESPACE
+    internal.listingsNamespace = internal.GS_NA_LISTING_NAMESPACE
+    internal.purchasesNamespace = internal.GS_NA_PURCHASE_NAMESPACE
+    internal.postedNamespace      = internal.GS_NA_POSTED_NAMESPACE
+    internal.cancelledNamespace      = internal.GS_NA_CANCELLED_NAMESPACE
+    internal.visitedNamespace      = internal.GS_NA_VISIT_TRADERS_NAMESPACE
+    internal.pricingNamespace        = internal.GS_NA_PRICING_NAMESPACE
   else
-    internal.dataNamespace     = internal.GS_EU_NAMESPACE
-    internal.listingsNamespace = "listingseu"
     internal.firstrunNamespace = "firstRunEu"
+    internal.dataNamespace     = internal.GS_EU_NAMESPACE
+    internal.listingsNamespace = internal.GS_EU_LISTING_NAMESPACE
+    internal.purchasesNamespace = internal.GS_EU_PURCHASE_NAMESPACE
+    internal.postedNamespace      = internal.GS_EU_POSTED_NAMESPACE
+    internal.cancelledNamespace      = internal.GS_EU_CANCELLED_NAMESPACE
+    internal.visitedNamespace      = internal.GS_EU_VISIT_TRADERS_NAMESPACE
+    internal.pricingNamespace        = internal.GS_EU_PRICING_NAMESPACE
   end
 end
 
@@ -103,6 +113,29 @@ function internal:RefreshLibGuildStore()
 end
 
 local function SetupDefaults()
+--[[
+internal.GS_NA_NAMESPACE          = "datana"
+internal.GS_EU_NAMESPACE          = "dataeu"
+internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
+internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
+internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
+internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
+
+internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
+internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
+internal.GS_NA_CANCELLED_NAMESPACE = "cancelleditemsna"
+internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
+
+internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
+internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
+
+  ["purchases"] = {},
+  ["listings"] = {},
+  ["postedItems"] = {},
+  ["cancelledItems"] = {},
+
+]]--
+
   internal:dm("Debug", "SetupDefaults")
   if LibGuildStore_SavedVariables["firstRunNa"] == nil then LibGuildStore_SavedVariables["firstRunNa"] = true end
   if LibGuildStore_SavedVariables["firstRunEu"] == nil then LibGuildStore_SavedVariables["firstRunEu"] = true end
@@ -115,6 +148,25 @@ local function SetupDefaults()
   if LibGuildStore_SavedVariables["minimalIndexing"] == nil then LibGuildStore_SavedVariables["minimalIndexing"] = internal.defaults.minimalIndexing end
   if LibGuildStore_SavedVariables["useSalesHistory"] == nil then LibGuildStore_SavedVariables["useSalesHistory"] = internal.defaults.useSalesHistory end
 
+  --cleanup old vars and this can be removed for production
+  GS17DataSavedVariables["purchases"] = nil
+  GS17DataSavedVariables["listings"] = nil
+  GS17DataSavedVariables["postedItems"] = nil
+  GS17DataSavedVariables["cancelledItems"] = nil
+
+  if GS17DataSavedVariables["posteditemsna"] == nil then GS17DataSavedVariables["posteditemsna"] = {} end
+  if GS17DataSavedVariables["posteditemseu"] == nil then GS17DataSavedVariables["posteditemseu"] = {} end
+  if GS17DataSavedVariables["purchasena"] == nil then GS17DataSavedVariables["purchasena"] = {} end
+  if GS17DataSavedVariables["purchaseeu"] == nil then GS17DataSavedVariables["purchaseeu"] = {} end
+  if GS17DataSavedVariables["cancelleditemsna"] == nil then GS17DataSavedVariables["cancelleditemsna"] = {} end
+  if GS17DataSavedVariables["cancelleditemseu"] == nil then GS17DataSavedVariables["cancelleditemseu"] = {} end
+
+  if GS17DataSavedVariables["visitedNATraders"] == nil then GS17DataSavedVariables["visitedNATraders"] = {} end
+  if GS17DataSavedVariables["visitedEUTraders"] == nil then GS17DataSavedVariables["visitedEUTraders"] = {} end
+
+  if GS17DataSavedVariables["pricingdatana"] == nil then GS17DataSavedVariables["pricingdatana"] = {} end
+  if GS17DataSavedVariables["pricingdataeu"] == nil then GS17DataSavedVariables["pricingdataeu"] = {} end
+  
   SetNamespace()
 end
 
@@ -133,13 +185,14 @@ local function SetupData()
   LEQ:Add(function() internal:dm("Info", "LibGuildStore Initializing") end, "LibGuildStoreInitializing")
   LEQ:Add(function() internal:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
   LEQ:Add(function() internal:ReferencePurchaseData() end, 'ReferencePurchaseData')
+  LEQ:Add(function() internal:ReferencePostedItems() end, 'ReferencePurchaseData')
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   LEQ:Add(function() internal:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
   LEQ:Add(function() internal:TruncateHistory() end, 'TruncateHistory')
   LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
   LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
-  LEQ:Add(function() internal:indexHistoryTables() end, 'indexHistoryTables')
+  LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
   LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
   LEQ:Start()
 end
@@ -205,48 +258,29 @@ local function Initilizze()
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
-        local saveData = GS17DataSavedVariables["postedItems"]
-        local linkHash   = internal:AddSalesTableData("itemLink", itemLink)
-        local sellerHash = internal:AddSalesTableData("accountNames", GetDisplayName())
-        local guildHash  = internal:AddSalesTableData("guildNames", GetGuildName(guildId))
         local theEvent            = {
-          guild = guildHash,
-          itemLink = linkHash,
+          guild = GetGuildName(guildId),
+          itemLink = itemLink,
           quant = stackCount,
           timestamp = GetTimeStamp(),
           price = price,
-          seller = sellerHash,
+          seller = GetDisplayName(),
         }
-        table.insert(saveData, theEvent)
-        internal:dm("Debug", "AGS Item posted")
-        --gettext("You have cancelled your listing of <<1>>x <<t:2>> for <<3>> in <<4>>", stackCount, itemLink, price, guildName)
-        --internal:dm("Debug", guildId)
-        --internal:dm("Debug", itemLink)
-        --internal:dm("Debug", price)
-        --internal:dm("Debug", stackCount)
+        internal:addPostedItem(theEvent)
       end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_CANCELLED,
       function(guildId, itemLink, price, stackCount)
-        local saveData = GS17DataSavedVariables["cancelledItems"]
-        local linkHash   = internal:AddSalesTableData("itemLink", itemLink)
-        local sellerHash = internal:AddSalesTableData("accountNames", GetDisplayName())
-        local guildHash  = internal:AddSalesTableData("guildNames", GetGuildName(guildId))
+        -- opps needs the names since addCanceledItem handles the hasing
         local theEvent            = {
-          guild = guildHash,
-          itemLink = linkHash,
+          guild = GetGuildName(guildId),
+          itemLink = itemLink,
           quant = stackCount,
           timestamp = GetTimeStamp(),
           price = price,
-          seller = sellerHash,
+          seller = GetDisplayName(),
         }
-        table.insert(saveData, theEvent)
-        internal:dm("Debug", "AGS Item canceled")
-        --gettext("You have cancelled your listing of <<1>>x <<t:2>> for <<3>> in <<4>>", stackCount, itemLink, price, guildName)
-        --internal:dm("Debug", guildId)
-        --internal:dm("Debug", itemLink)
-        --internal:dm("Debug", price)
-        --internal:dm("Debug", stackCount)
+        internal:addCanceledItem(theEvent)
       end)
   else
     -- for vanilla without AwesomeGuildStore

@@ -1,11 +1,15 @@
-local lib            = _G["LibGuildStore"]
-local internal       = _G["LibGuildStore_Internal"]
-local sales_data     = _G["LibGuildStore_SalesData"]
-local sr_index       = _G["LibGuildStore_SalesIndex"]
-local purchases_data = _G["LibGuildStore_PurchaseData"]
-local pr_index       = _G["LibGuildStore_PurchaseIndex"]
-local listings_data  = _G["LibGuildStore_ListingsData"]
-local lr_index       = _G["LibGuildStore_ListingsIndex"]
+local lib               = _G["LibGuildStore"]
+local internal          = _G["LibGuildStore_Internal"]
+local sales_data        = _G["LibGuildStore_SalesData"]
+local sr_index          = _G["LibGuildStore_SalesIndex"]
+local purchases_data    = _G["LibGuildStore_PurchaseData"]
+local pr_index          = _G["LibGuildStore_PurchaseIndex"]
+local listings_data     = _G["LibGuildStore_ListingsData"]
+local lr_index          = _G["LibGuildStore_ListingsIndex"]
+local posted_items_data = _G["LibGuildStore_PostedItemsData"]
+local pir_index         = _G["LibGuildStore_PostedItemsIndex"]
+local cancelled_items_data = _G["LibGuildStore_CancelledItemsData"]
+local cr_index             = _G["LibGuildStore_CancelledItemsIndex"]
 
 local LGH           = LibHistoire
 
@@ -215,6 +219,7 @@ function internal:BuildAccountNameLookup()
     internal.accountNameByIdLookup[value] = key
   end
 end
+
 function internal:BuildItemLinkNameLookup()
   internal:dm("Debug", "BuildItemLinkNameLookup")
   if not GS16DataSavedVariables["itemLink"] then GS16DataSavedVariables["itemLink"] = {} end
@@ -228,6 +233,34 @@ function internal:BuildGuildNameLookup()
   for key, value in pairs(GS16DataSavedVariables["guildNames"]) do
     internal.guildNameByIdLookup[value] = key
   end
+end
+
+function internal:SetPurchaseData(theIID)
+  local dataTable   = _G["GS17DataSavedVariables"]
+  local savedVars   = dataTable[internal.purchasesNamespace]
+  savedVars[theIID] = {}
+  return savedVars[theIID]
+end
+
+function internal:SetPostedItmesData(theIID)
+  local dataTable   = _G["GS17DataSavedVariables"]
+  local savedVars   = dataTable[internal.postedNamespace]
+  savedVars[theIID] = {}
+  return savedVars[theIID]
+end
+
+function internal:SetCancelledItmesData(theIID)
+  local dataTable   = _G["GS17DataSavedVariables"]
+  local savedVars   = dataTable[internal.cancelledNamespace]
+  savedVars[theIID] = {}
+  return savedVars[theIID]
+end
+
+function internal:SetVisitedGuildsItmesData()
+  local dataTable   = _G["GS16DataSavedVariables"]
+  local savedVars   = dataTable[internal.visitedNamespace]
+  savedVars[theIID] = {}
+  return savedVars[theIID]
 end
 
 function internal:SetTraderListingData(itemLink, theIID)
@@ -246,12 +279,8 @@ function internal:SetGuildStoreData(itemLink, theIID)
   return savedVars[theIID], hash
 end
 
-function internal:setStorageTableData(key)
-  local savedVars  = GS16DataSavedVariables
-  local lookupData = savedVars[key]
-  return lookupData
-end
-
+-- /script d(LibGuildStore_Internal:AddSalesTableData("itemLink", "|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
+-- /script d(GS16DataSavedVariables["itemLink"]["|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"])
 function internal:AddSalesTableData(key, value)
   local saveData = GS16DataSavedVariables[key]
   if not saveData[value] then
@@ -272,18 +301,6 @@ function internal:AddSalesTableData(key, value)
   end
 end
 
-function internal:CheckForDuplicateUniqueId(purchasesData, itemUniqueId)
-  -- purchasesData is the table of data to verify against
-  local dupe = false
-  for k, v in pairs(purchasesData) do
-    if v.id == itemUniqueId then
-      dupe = true
-      break
-    end
-  end
-  return dupe
-end
-
 function internal:CheckForDuplicateSale(itemLink, eventID)
   --[[ we need to be able to calculate theIID and itemIndex
   when not used with addToHistoryTables() event though
@@ -303,7 +320,7 @@ function internal:CheckForDuplicateSale(itemLink, eventID)
   return false
 end
 
-function internal:CheckForDuplicateSale(itemLink, eventID)
+function internal:CheckForDuplicateListings(itemLink, eventID)
   --[[ we need to be able to calculate theIID and itemIndex
   when not used with addToHistoryTables() event though
   the function will calculate them.
@@ -312,122 +329,14 @@ function internal:CheckForDuplicateSale(itemLink, eventID)
   if theIID == nil or theIID == 0 then return end
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
 
-  if sales_data[theIID] and sales_data[theIID][itemIndex] then
-    for k, v in pairs(sales_data[theIID][itemIndex]['sales']) do
+  if listings_data[theIID] and listings_data[theIID][itemIndex] then
+    for k, v in pairs(listings_data[theIID][itemIndex]['sales']) do
       if v.id == eventID then
         return true
       end
     end
   end
   return false
-end
-
-function internal:IndexSalesData(theEvent, searchItemDesc, searchItemAdderText, insertedIndex)
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
-
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = theEvent.buyer or ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
-  local searchByWords = zo_strgmatch(searchText, '%S+')
-  local wordData      = { theIID, itemIndex, insertedIndex }
-
-  -- Index each word
-  for i in searchByWords do
-    if sr_index[i] == nil then sr_index[i] = {} end
-    table.insert(sr_index[i], wordData)
-  end
-end
-
-function internal:IndexPurchaseData(theEvent, searchItemDesc, searchItemAdderText, insertedIndex)
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
-
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = theEvent.buyer or ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
-  local searchByWords = zo_strgmatch(searchText, '%S+')
-  local wordData      = { theIID, itemIndex, insertedIndex }
-
-  -- Index each word
-  for i in searchByWords do
-    if pr_index[i] == nil then pr_index[i] = {} end
-    table.insert(pr_index[i], wordData)
-  end
-end
-
-function internal:IndexListingData(theEvent, searchItemDesc, searchItemAdderText, insertedIndex)
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
-
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = theEvent.buyer or ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
-  local searchByWords = zo_strgmatch(searchText, '%S+')
-  local wordData      = { theIID, itemIndex, insertedIndex }
-
-  -- Index each word
-  for i in searchByWords do
-    if lr_index[i] == nil then lr_index[i] = {} end
-    table.insert(lr_index[i], wordData)
-  end
 end
 
 function internal:SetupListener(guildId)
@@ -498,11 +407,11 @@ function internal:SetupListener(guildId)
       }
       theEvent.wasKiosk         = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
 
-      local daysOfHistoryToKeep = GetTimeStamp() - ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"]
+      local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
       if (theEvent.timestamp > daysOfHistoryToKeep) then
         local duplicate = internal:CheckForDuplicateSale(theEvent.itemLink, theEvent.id)
         if not duplicate then
-          added = internal:addToHistoryTables(theEvent)
+          added = internal:addSalesData(theEvent)
         end
         -- (doAlert and (internal.systemSavedVariables.showChatAlerts or internal.systemSavedVariables.showAnnounceAlerts))
         if added and zo_strlower(theEvent.seller) == thePlayer then
@@ -519,8 +428,12 @@ function internal:SetupListener(guildId)
   internal.LibHistoireListener[guildId]:Start()
 end
 
+----------------------------------------
+----- Adding New Data              -----
+----------------------------------------
+
 -- And here we add a new item
-function internal:addToHistoryTables(theEvent)
+function internal:addSalesData(theEvent)
 
   -- DEBUG  Stop Adding
   --do return end
@@ -608,10 +521,10 @@ function internal:addToHistoryTables(theEvent)
       insertedIndex = #sales_data[theIID][itemIndex]['sales']
     end
   else
-    searchItemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
-    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     if sales_data[theIID][itemIndex] == nil then sales_data[theIID][itemIndex] = {} end
     if sales_data[theIID][itemIndex]['sales'] == nil then sales_data[theIID][itemIndex]['sales'] = {} end
+    searchItemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
+    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     sales_data[theIID][itemIndex] = {
       itemIcon = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
@@ -648,28 +561,59 @@ function internal:addToHistoryTables(theEvent)
       adderDescConcat)
   end
 
-  internal:IndexSalesData(theEvent, searchItemDesc, searchItemAdderText, insertedIndex)
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local searchText = ""
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText
+    else
+      searchText = ''
+    end
+  else
+    temp[2]  = theEvent.buyer or ''
+    temp[4]  = theEvent.seller or ''
+    temp[6]  = theEvent.guild or ''
+    temp[8]  = searchItemDesc or ''
+    temp[10] = searchItemAdderText or ''
+    if isSelfSale then
+      temp[12] = internal.PlayerSpecialText
+    else
+      temp[12] = ''
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+
+  local searchByWords = zo_strgmatch(searchText, '%S+')
+  local wordData      = { theIID, itemIndex, insertedIndex }
+
+  -- Index each word
+  for i in searchByWords do
+    if sr_index[i] == nil then sr_index[i] = {} end
+    table.insert(sr_index[i], wordData)
+  end
 
   return true
 end
 
 function internal:addListingData(theEvent)
-  internal:dm("Debug", "alertQueue updated")
---[[
-      local theEvent            = {
-        guild = itemData.guildName,
-        itemLink = itemData.itemLink,
-        quant = itemData.stackCount,
-        timestamp = GetTimeStamp(),
-        price = itemData.purchasePrice,
-        seller = itemData.sellerName,
-        id = Id64ToString(itemData.itemUniqueId),
-        buyer = GetDisplayName()
-      }
+  --internal:dm("Debug", "addListingData")
+--[[ TODO use guild ID and name for lookup table
+  local theEvent            = {
+    guild = listing.guildName,
+    guildId = listing.guildId,
+    itemLink = listing.itemLink,
+    quant = listing.stackCount,
+    timestamp = listing.lastSeen,
+    listingTime = listedTime,
+    price = listing.purchasePrice,
+    seller = listing.sellerName,
+    id = Id64ToString(listing.itemUniqueId),
+    buyer
+  }
 ]]--
-  internal:dm("Debug", theEvent)
+  --internal:dm("Debug", theEvent)
+  -- /script d(LibGuildStore_Internal:AddSalesTableData("itemLink", "|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
   local linkHash   = internal:AddSalesTableData("itemLink", theEvent.itemLink)
-  local buyerHash  = internal:AddSalesTableData("accountNames", theEvent.buyer)
   local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
   local guildHash  = internal:AddSalesTableData("guildNames", theEvent.guild)
 
@@ -684,7 +628,6 @@ function internal:addListingData(theEvent)
 
   local newEvent            = ZO_DeepTableCopy(theEvent)
   newEvent.itemLink         = linkHash
-  newEvent.buyer            = buyerHash
   newEvent.seller           = sellerHash
   newEvent.guild            = guildHash
 
@@ -699,6 +642,8 @@ function internal:addListingData(theEvent)
   else
     if listings_data[theIID][itemIndex] == nil then listings_data[theIID][itemIndex] = {} end
     if listings_data[theIID][itemIndex]['sales'] == nil then listings_data[theIID][itemIndex]['sales'] = {} end
+    searchItemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
+    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     listings_data[theIID][itemIndex] = {
       itemIcon = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
@@ -709,13 +654,44 @@ function internal:addListingData(theEvent)
   
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
-  internal:IndexPurchaseData(theEvent, searchItemDesc, searchItemAdderText, isSelfSale)
+
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local searchText = ""
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText
+    else
+      searchText = ''
+    end
+  else
+    temp[2]  = ''
+    temp[4]  = theEvent.seller or ''
+    temp[6]  = theEvent.guild or ''
+    temp[8]  = searchItemDesc or ''
+    temp[10] = searchItemAdderText or ''
+    temp[12] = ''
+    if isSelfSale then
+      temp[12] = internal.PlayerSpecialText
+    else
+      temp[12] = ''
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+
+  local searchByWords = zo_strgmatch(searchText, '%S+')
+  local wordData      = { theIID, itemIndex, insertedIndex }
+
+  -- Index each word
+  for i in searchByWords do
+    if lr_index[i] == nil then lr_index[i] = {} end
+    table.insert(lr_index[i], wordData)
+  end
   
   return true
 end
 
 function internal:addPurchaseData(theEvent)
-  internal:dm("Debug", "alertQueue updated")
+  internal:dm("Debug", "addPurchaseData")
 --[[
       local theEvent            = {
         guild = itemData.guildName,
@@ -728,7 +704,7 @@ function internal:addPurchaseData(theEvent)
         buyer = GetDisplayName()
       }
 ]]--
-  internal:dm("Debug", theEvent)
+  --internal:dm("Debug", theEvent)
   local linkHash   = internal:AddSalesTableData("itemLink", theEvent.itemLink)
   local buyerHash  = internal:AddSalesTableData("accountNames", theEvent.buyer)
   local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
@@ -739,7 +715,7 @@ function internal:addPurchaseData(theEvent)
   if theIID == nil or theIID == 0 then return false end
 
   if not purchases_data[theIID] then
-    purchases_data[theIID] = {}
+    purchases_data[theIID] = internal:SetPurchaseData(theIID)
   end
   local newEvent            = ZO_DeepTableCopy(theEvent)
   newEvent.itemLink         = linkHash
@@ -758,6 +734,8 @@ function internal:addPurchaseData(theEvent)
   else
     if purchases_data[theIID][itemIndex] == nil then purchases_data[theIID][itemIndex] = {} end
     if purchases_data[theIID][itemIndex]['sales'] == nil then purchases_data[theIID][itemIndex]['sales'] = {} end
+    searchItemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
+    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     purchases_data[theIID][itemIndex] = {
       itemIcon = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
@@ -768,31 +746,264 @@ function internal:addPurchaseData(theEvent)
   
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
-  internal:IndexPurchaseData(theEvent, searchItemDesc, searchItemAdderText, isSelfSale)
+
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local searchText = ""
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText
+    else
+      searchText = ''
+    end
+  else
+    temp[2]  = theEvent.buyer or ''
+    temp[4]  = theEvent.seller or ''
+    temp[6]  = theEvent.guild or ''
+    temp[8]  = searchItemDesc or ''
+    temp[10] = searchItemAdderText or ''
+    if isSelfSale then
+      temp[12] = internal.PlayerSpecialText
+    else
+      temp[12] = ''
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+
+  local searchByWords = zo_strgmatch(searchText, '%S+')
+  local wordData      = { theIID, itemIndex, insertedIndex }
+
+  -- Index each word
+  for i in searchByWords do
+    if pr_index[i] == nil then pr_index[i] = {} end
+    table.insert(pr_index[i], wordData)
+  end
   
   return true
 end
 
+function internal:addPostedItem(theEvent)
+  internal:dm("Debug", "addPostedItem")
+--[[
+        local theEvent            = {
+          guild = guildHash,
+          itemLink = linkHash,
+          quant = stackCount,
+          timestamp = GetTimeStamp(),
+          price = price,
+          seller = sellerHash,
+          buyer
+        }
+]]--
+  --internal:dm("Debug", theEvent)
+  local linkHash   = internal:AddSalesTableData("itemLink", theEvent.itemLink)
+  local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
+  local guildHash  = internal:AddSalesTableData("guildNames", theEvent.guild)
+
+  local itemIndex  = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
+  local theIID     = GetItemLinkItemId(theEvent.itemLink)
+  if theIID == nil or theIID == 0 then return false end
+
+  if not posted_items_data[theIID] then
+    posted_items_data[theIID] = internal:SetPostedItmesData(theIID)
+  end
+  local newEvent            = ZO_DeepTableCopy(theEvent)
+  newEvent.itemLink         = linkHash
+  newEvent.seller           = sellerHash
+  newEvent.guild            = guildHash
+
+  local insertedIndex       = 1
+  local searchItemDesc      = ""
+  local searchItemAdderText = ""
+  if posted_items_data[theIID][itemIndex] then
+    searchItemDesc      = posted_items_data[theIID][itemIndex].itemDesc
+    searchItemAdderText = posted_items_data[theIID][itemIndex].itemAdderText
+    table.insert(posted_items_data[theIID][itemIndex]['sales'], newEvent)
+    insertedIndex = #posted_items_data[theIID][itemIndex]['sales']
+  else
+    if posted_items_data[theIID][itemIndex] == nil then posted_items_data[theIID][itemIndex] = {} end
+    if posted_items_data[theIID][itemIndex]['sales'] == nil then posted_items_data[theIID][itemIndex]['sales'] = {} end
+    searchItemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
+    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
+    posted_items_data[theIID][itemIndex] = {
+      itemIcon = GetItemLinkInfo(theEvent.itemLink),
+      itemAdderText = searchItemAdderText,
+      itemDesc = searchItemDesc,
+      sales = { newEvent } }
+    --internal:dm("Debug", newEvent)
+  end
+  
+  local playerName = zo_strlower(GetDisplayName())
+  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local searchText = ""
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText
+    else
+      searchText = ''
+    end
+  else
+    temp[2]  = ''
+    temp[4]  = theEvent.seller or ''
+    temp[6]  = theEvent.guild or ''
+    temp[8]  = searchItemDesc or ''
+    temp[10] = searchItemAdderText or ''
+    if isSelfSale then
+      temp[12] = internal.PlayerSpecialText
+    else
+      temp[12] = ''
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+
+  local searchByWords = zo_strgmatch(searchText, '%S+')
+  local wordData      = { theIID, itemIndex, insertedIndex }
+
+  -- Index each word
+  for i in searchByWords do
+    if pir_index[i] == nil then pir_index[i] = {} end
+    table.insert(pir_index[i], wordData)
+  end
+  
+  return true
+end
+
+function internal:addCanceledItem(theEvent)
+  internal:dm("Debug", "addCanceledItem")
+--[[
+        local theEvent            = {
+          guild = guildHash,
+          itemLink = linkHash,
+          quant = stackCount,
+          timestamp = GetTimeStamp(),
+          price = price,
+          seller = sellerHash,
+          buyer
+        }
+]]--
+  --internal:dm("Debug", theEvent)
+  local linkHash   = internal:AddSalesTableData("itemLink", theEvent.itemLink)
+  local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
+  local guildHash  = internal:AddSalesTableData("guildNames", theEvent.guild)
+
+  local itemIndex  = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
+  local theIID     = GetItemLinkItemId(theEvent.itemLink)
+  if theIID == nil or theIID == 0 then return false end
+
+  if not cancelled_items_data[theIID] then
+    cancelled_items_data[theIID] = internal:SetCancelledItmesData(theIID)
+  end
+  local newEvent            = ZO_DeepTableCopy(theEvent)
+  newEvent.itemLink         = linkHash
+  newEvent.seller           = sellerHash
+  newEvent.guild            = guildHash
+
+  local insertedIndex       = 1
+  local searchItemDesc      = ""
+  local searchItemAdderText = ""
+  if cancelled_items_data[theIID][itemIndex] then
+    searchItemDesc      = cancelled_items_data[theIID][itemIndex].itemDesc
+    searchItemAdderText = cancelled_items_data[theIID][itemIndex].itemAdderText
+    table.insert(cancelled_items_data[theIID][itemIndex]['sales'], newEvent)
+    insertedIndex = #cancelled_items_data[theIID][itemIndex]['sales']
+  else
+    if cancelled_items_data[theIID][itemIndex] == nil then cancelled_items_data[theIID][itemIndex] = {} end
+    if cancelled_items_data[theIID][itemIndex]['sales'] == nil then cancelled_items_data[theIID][itemIndex]['sales'] = {} end
+    searchItemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
+    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
+    cancelled_items_data[theIID][itemIndex] = {
+      itemIcon = GetItemLinkInfo(theEvent.itemLink),
+      itemAdderText = searchItemAdderText,
+      itemDesc = searchItemDesc,
+      sales = { newEvent } }
+    --internal:dm("Debug", newEvent)
+  end
+  
+  local playerName = zo_strlower(GetDisplayName())
+  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local searchText = ""
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText
+    else
+      searchText = ''
+    end
+  else
+    temp[2]  = ''
+    temp[4]  = theEvent.seller or ''
+    temp[6]  = theEvent.guild or ''
+    temp[8]  = searchItemDesc or ''
+    temp[10] = searchItemAdderText or ''
+    if isSelfSale then
+      temp[12] = internal.PlayerSpecialText
+    else
+      temp[12] = ''
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+
+  local searchByWords = zo_strgmatch(searchText, '%S+')
+  local wordData      = { theIID, itemIndex, insertedIndex }
+
+  -- Index each word
+  for i in searchByWords do
+    if cr_index[i] == nil then cr_index[i] = {} end
+    table.insert(cr_index[i], wordData)
+  end
+  
+  return true
+end
+
+----------------------------------------
+----- Event Functions              -----
+----------------------------------------
+
 function internal:onTradingHouseEvent(eventCode, slotId, isPending)
+  -- this is for vanilla
+  internal:dm("Debug", "onTradingHouseEvent")
   if not AwesomeGuildStore then
-    local CurrentPurchase                                                                                                          = {}
+    local CurrentPurchase = {}
     local icon, itemName, displayQuality, quantity, seller, timeRemaining, price, currencyType, itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo(slotId)
-    local guildId, guild, guildAlliance                                                                                            = GetCurrentTradingHouseGuildDetails()
-    CurrentPurchase.ItemLink                                                                                                       = GetTradingHouseSearchResultItemLink(slotId)
-    CurrentPurchase.Quantity                                                                                                       = quantity
-    CurrentPurchase.Price                                                                                                          = price
-    CurrentPurchase.Seller                                                                                                         = seller
-    CurrentPurchase.Guild                                                                                                          = guild
-    CurrentPurchase.id                                                                                                             = Id64ToString(itemUniqueId)
-    CurrentPurchase.TimeStamp                                                                                                      = GetTimeStamp()
-    internal:addListing(CurrentPurchase, addBuyer)
+    local guildId, guild, guildAlliance = GetCurrentTradingHouseGuildDetails()
+    local listedTime = GetTimeStamp() - (2592000 - timeRemaining)
+    local theEvent            = {
+      guild = guild,
+      guildId = guildId,
+      itemLink = GetTradingHouseSearchResultItemLink(slotId),
+      quant = quantity,
+      timestamp = GetTimeStamp(),
+      listingTime = listedTime,
+      price = price,
+      seller = seller,
+      id = Id64ToString(itemUniqueId),
+    }
+    internal:addListingData(theEvent)
     --ShoppingList.List:Refresh()
   end
 end
 
 function internal:AddAwesomeGuildStoreListing(listing)
-  internal:dm("Debug", "AddAwesomeGuildStoreListing")
-  internal:dm("Debug", listing)
+  --internal:dm("Debug", "AddAwesomeGuildStoreListing")
+  local listedTime = GetTimeStamp() - (2592000 - listing.timeRemaining)
+  local theEvent            = {
+    guild = listing.guildName,
+    guildId = listing.guildId,
+    itemLink = listing.itemLink,
+    quant = listing.stackCount,
+    timestamp = listing.lastSeen,
+    listingTime = listedTime,
+    price = listing.purchasePrice,
+    seller = listing.sellerName,
+    id = Id64ToString(listing.itemUniqueId),
+  }
+  local added = false
+  local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
+  if not duplicate then
+    added = internal:addListingData(theEvent)
+  end
 end
 
 function internal:processAwesomeGuildStore(itemDatabase)
@@ -804,7 +1015,6 @@ function internal:processAwesomeGuildStore(itemDatabase)
       local index = Id64ToString(dataIndex)
       --internal:dm("Debug", index)
       internal:AddAwesomeGuildStoreListing(listingData)
-      break
     end
   end
   --[[
@@ -821,6 +1031,10 @@ function internal:processAwesomeGuildStore(itemDatabase)
   ]]--
   --ShoppingList.List:Refresh()
 end
+
+----------------------------------------
+----- Reset Data Functions         -----
+----------------------------------------
 
 -- Handle the reset button - clear out the search and scan tables,
 -- and set the time of the last scan to nil, then force a scan.
@@ -876,4 +1090,27 @@ function internal:DoReset()
   internal:RefreshLibGuildStore()
   internal:SetupListenerLibHistoire()
   internal:StartQueue()
+end
+
+-- Handle the reset button - clear out the search and scan tables,
+-- and set the time of the last scan to nil, then force a scan.
+function internal:ResetListingsData()
+  internal:dm("Debug", "ResetListingsData")
+
+  GS00DataSavedVariables[internal.listingsToReset] = {}
+  GS01DataSavedVariables[internal.listingsToReset] = {}
+  GS02DataSavedVariables[internal.listingsToReset] = {}
+  GS03DataSavedVariables[internal.listingsToReset] = {}
+  GS04DataSavedVariables[internal.listingsToReset] = {}
+  GS05DataSavedVariables[internal.listingsToReset] = {}
+  GS06DataSavedVariables[internal.listingsToReset] = {}
+  GS07DataSavedVariables[internal.listingsToReset] = {}
+  GS08DataSavedVariables[internal.listingsToReset] = {}
+  GS09DataSavedVariables[internal.listingsToReset] = {}
+  GS10DataSavedVariables[internal.listingsToReset] = {}
+  GS11DataSavedVariables[internal.listingsToReset] = {}
+  GS12DataSavedVariables[internal.listingsToReset] = {}
+  GS13DataSavedVariables[internal.listingsToReset] = {}
+  GS14DataSavedVariables[internal.listingsToReset] = {}
+  GS15DataSavedVariables[internal.listingsToReset] = {}
 end

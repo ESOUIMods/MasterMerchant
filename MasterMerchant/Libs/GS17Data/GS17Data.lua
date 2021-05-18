@@ -2,10 +2,15 @@ local libName, libVersion = "GS17Data", 100
 local lib = {}
 lib.libName = libName
 lib.defaults = {
-  ["purchases"] = {},
-  ["listings"] = {},
-  ["postedItems"] = {},
-  ["cancelledItems"] = {},
+  ["purchasena"] = {},
+  ["purchaseeu"] = {},
+  ["posteditemsna"] = {},
+  ["posteditemseu"] = {},
+  ["cancelleditemsna"] = {},
+  ["cancelleditemseu"] = {},
+  ["cancelleditemseu"] = {},
+  ["pricingdatana"] = {},
+  ["pricingdataeu"] = {},
 }
 
 local function Initialize()

@@ -105,7 +105,33 @@ function MM_Graph:Initialize(xStartLabelText, xEndLabelText, yStartLabelText, yE
   self.textAdjustmentY = self.xStartLabel:GetFontHeight() / 4
 end
 
-function MM_Graph:AddPoint(x, y, color, tipText)
+function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
+  MasterMerchant:dm("Debug", "Menu Option Chosen")
+  local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
+  local lengthSellerName = string.len(sellerName) + 2
+  if lengthBlacklist + lengthSellerName > 2000 then
+    MasterMerchant:v(1, "Can not append account name. The Blacklist would exceed 2000 characters.")
+  else
+    if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
+      MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
+    end
+  end
+end
+
+function MM_Graph:MyGraphPointClickHandler(self, mouseButton, upInside, sellerName)
+  MasterMerchant:dm("Debug", "MyGraphPointClickHandler")
+  if upInside and mouseButton == MOUSE_BUTTON_INDEX_RIGHT then
+    MasterMerchant:dm("Debug", "Show Click Handler Menu")
+
+    ClearMenu()
+
+    AddMenuItem("Add Seller to Blacklist", function() MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName) end)
+
+    ShowMenu()
+  end
+end
+
+function MM_Graph:AddPoint(x, y, color, tipText, sellerName)
   local point = self.pointPool:AcquireObject()
 
   point:SetText('.')
@@ -128,6 +154,12 @@ function MM_Graph:AddPoint(x, y, color, tipText)
 
     point:SetHandler("OnMouseEnter", ZO_Options_OnMouseEnter)
     point:SetHandler("OnMouseExit", ZO_Options_OnMouseExit)
+    point:SetHandler("OnMouseUp", function(self, mouseButton, upInside, shift, ctrl, alt, command)
+      --code here
+      if mouseButton == MOUSE_BUTTON_INDEX_RIGHT then
+        MM_Graph:MyGraphPointClickHandler(self, mouseButton, upInside, sellerName)
+      end
+    end)
   end
 
 end

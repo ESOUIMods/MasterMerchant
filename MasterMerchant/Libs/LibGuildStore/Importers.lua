@@ -1,9 +1,17 @@
 local lib            = _G["LibGuildStore"]
 local internal       = _G["LibGuildStore_Internal"]
-local sr_index       = _G["LibGuildStore_SalesIndex"]
 local mm_sales_data  = _G["LibGuildStore_MM_SalesData"]
 local att_sales_data = _G["LibGuildStore_ATT_SalesData"]
-local purchases_data = _G["LibGuildStore_PurchaseData"]
+local sales_data        = _G["LibGuildStore_SalesData"]
+local sr_index          = _G["LibGuildStore_SalesIndex"]
+local purchases_data    = _G["LibGuildStore_PurchaseData"]
+local pr_index          = _G["LibGuildStore_PurchaseIndex"]
+local listings_data     = _G["LibGuildStore_ListingsData"]
+local lr_index          = _G["LibGuildStore_ListingsIndex"]
+local posted_items_data = _G["LibGuildStore_PostedItemsData"]
+local pir_index         = _G["LibGuildStore_PostedItemsIndex"]
+local cancelled_items_data = _G["LibGuildStore_CancelledItemsData"]
+local cr_index             = _G["LibGuildStore_CancelledItemsIndex"]
 
 local ASYNC          = LibAsync
 
@@ -29,7 +37,7 @@ function internal:ImportMasterMerchantSales()
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
       local duplicate = internal:CheckForDuplicateSale(saledata['itemLink'], saledata['id'])
       if not duplicate then
-        local added = internal:addToHistoryTables(saledata)
+        local added = internal:addSalesData(saledata)
       end
     end
     extraData.totalSales = extraData.totalSales + 1
@@ -52,7 +60,7 @@ function internal:ImportMasterMerchantSales()
       internal.myItems               = {}
       LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
       LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
-      LEQ:Add(function() internal:indexHistoryTables() end, 'indexHistoryTables')
+      LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
 
@@ -86,7 +94,7 @@ function internal:ImportATTSales()
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
       local duplicate = internal:CheckForDuplicateSale(saledata['itemLink'], saledata['id'])
       if not duplicate then
-        local added = internal:addToHistoryTables(saledata)
+        local added = internal:addSalesData(saledata)
       end
     end
     extraData.totalSales = extraData.totalSales + 1
@@ -109,7 +117,7 @@ function internal:ImportATTSales()
       internal.myItems               = {}
       LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
       LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
-      LEQ:Add(function() internal:indexHistoryTables() end, 'indexHistoryTables')
+      LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
 
@@ -529,6 +537,71 @@ end
 ----------------------------------------
 
 function internal:ReferencePurchaseData()
-  local savedVars = GS17DataSavedVariables["purchases"]
-  purchases_data = savedVars
+  local savedVars = GS17DataSavedVariables[internal.purchasesNamespace]
+  for itemid, versionlist in pairs(savedVars) do
+    if purchases_data[itemid] then
+      for versionid, versiondata in pairs(versionlist) do
+        if purchases_data[itemid][versionid] then
+          if versiondata.sales then
+            purchases_data[itemid][versionid].sales = purchases_data[itemid][versionid].sales or {}
+            -- IPAIRS
+            for saleid, saledata in pairs(versiondata.sales) do
+              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
+                table.insert(purchases_data[itemid][versionid].sales, saledata)
+              end
+            end
+            local _, first = next(versiondata.sales, nil)
+            if first then
+              purchases_data[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
+              purchases_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
+              purchases_data[itemid][versionid].itemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME,
+                GetItemLinkName(first.itemLink))
+            end
+          end
+        else
+          purchases_data[itemid][versionid] = versiondata
+        end
+      end
+      savedVars[itemid] = nil
+    else
+      purchases_data[itemid] = versionlist
+    end
+  end
+end
+
+----------------------------------------
+----- Reference Purchase Data      -----
+----------------------------------------
+
+function internal:ReferencePostedItems()
+  local savedVars = GS17DataSavedVariables[internal.postedNamespace]
+  for itemid, versionlist in pairs(savedVars) do
+    if posted_items_data[itemid] then
+      for versionid, versiondata in pairs(versionlist) do
+        if posted_items_data[itemid][versionid] then
+          if versiondata.sales then
+            posted_items_data[itemid][versionid].sales = posted_items_data[itemid][versionid].sales or {}
+            -- IPAIRS
+            for saleid, saledata in pairs(versiondata.sales) do
+              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
+                table.insert(posted_items_data[itemid][versionid].sales, saledata)
+              end
+            end
+            local _, first = next(versiondata.sales, nil)
+            if first then
+              posted_items_data[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
+              posted_items_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
+              posted_items_data[itemid][versionid].itemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME,
+                GetItemLinkName(first.itemLink))
+            end
+          end
+        else
+          posted_items_data[itemid][versionid] = versiondata
+        end
+      end
+      savedVars[itemid] = nil
+    else
+      posted_items_data[itemid] = versionlist
+    end
+  end
 end

@@ -1,8 +1,5 @@
 local lib           = _G["LibGuildStore"]
 local internal      = _G["LibGuildStore_Internal"]
-local sales_data    = _G["LibGuildStore_SalesData"]
-local listings_data = _G["LibGuildStore_ListingsData"]
-local sr_index      = _G["LibGuildStore_SalesIndex"]
 local LAM           = LibAddonMenu2
 
 function internal:StartQueue()
@@ -47,8 +44,8 @@ function internal:LibAddonInit()
     type = 'slider',
     name = GetString(GS_HISTORY_DEPTH_NAME),
     tooltip = GetString(GS_HISTORY_DEPTH_TIP),
-    min = 1,
-    max = MasterMerchant.oneYearInSeconds,
+    min = 15,
+    max = 365,
     getFunc = function() return LibGuildStore_SavedVariables.historyDepth end,
     setFunc = function(value) LibGuildStore_SavedVariables.historyDepth = value end,
     default = internal.defaults.historyDepth,
@@ -205,6 +202,26 @@ function internal:LibAddonInit()
     func = function()
       internal.dataToReset             = internal.GS_EU_NAMESPACE
       ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation")
+    end,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(GS_RESET_LISTINGS_BUTTON),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    title = "Reset Listings Data",
+    text = [[This will only reset listings for the current server type NA or EU.]]
+  }
+  optionsData[#optionsData + 1] = {
+    type = "button",
+    name = GetString(GS_RESET_LISTINGS_NAME),
+    tooltip = GetString(GS_RESET_LISTINGS_TIP),
+    func = function()
+      internal.listingsToReset             = internal.listingsNamespace
+      ZO_Dialogs_ShowDialog("MasterMerchantResetListingsConfirmation")
     end,
   }
 

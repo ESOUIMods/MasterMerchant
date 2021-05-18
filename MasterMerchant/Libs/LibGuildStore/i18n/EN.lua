@@ -9,6 +9,12 @@ ZO_CreateStringId("GS_RESET_NA_TIP", "Reset all LibGuildStore data for NA.")
 ZO_CreateStringId("GS_RESET_EU_NAME", "Reset EU")
 ZO_CreateStringId("GS_RESET_EU_TIP", "Reset all LibGuildStore data for EU.")
 
+ZO_CreateStringId("GS_RESET_LISTINGS_BUTTON", "Reset Listings")
+ZO_CreateStringId("GS_RESET_LISTINGS_NAME", "Reset Listings Data")
+ZO_CreateStringId("GS_RESET_LISTINGS_TIP", "Reset all LibGuildStore listings.")
+ZO_CreateStringId("GS_RESET_LISTINGS_CONFIRM_TITLE", "Confirm Listings Reset")
+ZO_CreateStringId("GS_RESET_LISTINGS_CONFIRM_MAIN", "Are you sure you wish to reset your Listings Data? You will need to visit traders to collect new data.")
+
 ZO_CreateStringId("GS_IMPORT_MM_BUTTON", "Import MM Data")
 ZO_CreateStringId("GS_IMPORT_MM_NAME", "Import MM Data")
 ZO_CreateStringId("GS_IMPORT_MM_TIP", "Import all MM data into LibGuildStore.")

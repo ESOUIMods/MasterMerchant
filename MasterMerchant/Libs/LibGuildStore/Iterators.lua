@@ -1,9 +1,17 @@
 local lib            = _G["LibGuildStore"]
 local internal       = _G["LibGuildStore_Internal"]
-local sales_data     = _G["LibGuildStore_SalesData"]
-local listings_data  = _G["LibGuildStore_ListingsData"]
-local sr_index       = _G["LibGuildStore_SalesIndex"]
 local att_sales_data = _G["LibGuildStore_ATT_SalesData"]
+local sales_data        = _G["LibGuildStore_SalesData"]
+local sr_index          = _G["LibGuildStore_SalesIndex"]
+local purchases_data    = _G["LibGuildStore_PurchaseData"]
+local pr_index          = _G["LibGuildStore_PurchaseIndex"]
+local listings_data     = _G["LibGuildStore_ListingsData"]
+local lr_index          = _G["LibGuildStore_ListingsIndex"]
+local posted_items_data = _G["LibGuildStore_PostedItemsData"]
+local pir_index         = _G["LibGuildStore_PostedItemsIndex"]
+local cancelled_items_data = _G["LibGuildStore_CancelledItemsData"]
+local cr_index             = _G["LibGuildStore_CancelledItemsIndex"]
+
 local ASYNC          = LibAsync
 local LGH            = LibHistoire
 
@@ -461,93 +469,6 @@ function internal:InitItemHistory()
   end
 end
 
--- For faster searching of large histories, we'll maintain an inverted
--- index of search terms - here we build the indexes from the existing table
-function internal:indexHistoryTables()
-
-  -- DEBUG  Stop Indexing
-  --do return end
-
-  local prefunc    = function(extraData)
-    if LibGuildStore_SavedVariables["minimalIndexing"] then
-      internal:dm("Info", GetString(GS_MINIMAL_INDEXING))
-    else
-      internal:dm("Info", GetString(GS_FULL_INDEXING))
-    end
-    extraData.start             = GetTimeStamp()
-    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
-    extraData.indexCount        = 0
-    extraData.wordsIndexCount   = 0
-    extraData.wasAltered        = false
-    internal:DatabaseBusy(true)
-  end
-
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local playerName = zo_strlower(GetDisplayName())
-
-  local loopfunc   = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
-
-    extraData.indexCount  = extraData.indexCount + 1
-
-    local searchText
-    local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, soldItem['itemLink'])
-    local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, soldItem['guild'])
-    local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['buyer'])
-    local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['seller'])
-
-    if LibGuildStore_SavedVariables["minimalIndexing"] then
-      if playerName == zo_strlower(currentSeller) then
-        searchText = zo_strlower(internal.PlayerSpecialText)
-      else
-        searchText = ''
-      end
-    else
-      versiondata.itemAdderText = versiondata.itemAdderText or internal:AddSearchToItem(currentItemLink)
-      versiondata.itemDesc      = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
-        GetItemLinkName(currentItemLink))
-      versiondata.itemIcon      = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
-
-      temp[2]                   = currentBuyer or ''
-      temp[4]                   = currentSeller or ''
-      temp[6]                   = currentGuild or ''
-      temp[8]                   = versiondata.itemDesc or ''
-      temp[10]                  = versiondata.itemAdderText or ''
-      if playerName == zo_strlower(currentSeller) then
-        temp[12] = internal.PlayerSpecialText
-      else
-        temp[12] = ''
-      end
-      searchText = zo_strlower(table.concat(temp, ''))
-    end
-
-    -- Index each word
-    local searchByWords = zo_strgmatch(searchText, '%S+')
-    local wordData      = { numberID, itemData, itemIndex }
-    for i in searchByWords do
-      if sr_index[i] == nil then
-        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        sr_index[i]               = {}
-      end
-      table.insert(sr_index[i], wordData)
-    end
-
-  end
-
-  local postfunc   = function(extraData)
-    internal:DatabaseBusy(false)
-    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
-      internal:dm("Info",
-        string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
-          extraData.wordsIndexCount))
-    end
-  end
-
-  if not internal.isDatabaseBusy then
-    internal:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
-  end
-
-end
-
 ----------------------------------------
 ----- CleanOutBad                  -----
 ----------------------------------------
@@ -675,7 +596,7 @@ function internal:CleanOutBad()
         wasKiosk = saledata.wasKiosk,
         id = Id64ToString(saledata.id)
       }
-      internal:addToHistoryTables(theEvent)
+      internal:addSalesData(theEvent)
       extraData.moveCount          = extraData.moveCount + 1
       -- Remove it from it's current location
       versiondata['sales'][saleid] = nil
@@ -710,7 +631,7 @@ function internal:CleanOutBad()
       internal.myItems               = {}
       LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
       LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
-      LEQ:Add(function() internal:indexHistoryTables() end, 'indexHistoryTables')
+      LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
 
@@ -740,7 +661,7 @@ local function FinalizePurge(count)
     internal.guildItems            = {}
     internal.myItems               = {}
     LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
-    LEQ:Add(function() internal:indexHistoryTables() end, 'indexHistoryTables')
+    LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
   end
   LEQ:Add(function()
     internal:DatabaseBusy(false);
@@ -896,6 +817,40 @@ function internal:ReferenceSales(otherData)
   end
 end
 
+function internal:ReferenceListings(otherData)
+  local savedVars = otherData[internal.listingsNamespace]
+
+  for itemid, versionlist in pairs(savedVars) do
+    if listings_data[itemid] then
+      for versionid, versiondata in pairs(versionlist) do
+        if listings_data[itemid][versionid] then
+          if versiondata.sales then
+            listings_data[itemid][versionid].sales = listings_data[itemid][versionid].sales or {}
+            -- IPAIRS
+            for saleid, saledata in pairs(versiondata.sales) do
+              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
+                table.insert(listings_data[itemid][versionid].sales, saledata)
+              end
+            end
+            local _, first = next(versiondata.sales, nil)
+            if first then
+              listings_data[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
+              listings_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
+              listings_data[itemid][versionid].itemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME,
+                GetItemLinkName(first.itemLink))
+            end
+          end
+        else
+          listings_data[itemid][versionid] = versiondata
+        end
+      end
+      savedVars[itemid] = nil
+    else
+      listings_data[itemid] = versionlist
+    end
+  end
+end
+
 function internal:RenewExtraData(otherData)
   local savedVars = otherData[internal.dataNamespace]
 
@@ -969,6 +924,27 @@ function internal:AddNewData(otherData)
       end
     end
   end
+end
+
+-- Bring seperate lists together we can still access the sales history all together
+function internal:ReferenceListingsAllContainers()
+  internal:dm("Debug", "Bring LibGuildStore data together")
+  internal:ReferenceSales(GS00DataSavedVariables)
+  internal:ReferenceSales(GS01DataSavedVariables)
+  internal:ReferenceSales(GS02DataSavedVariables)
+  internal:ReferenceSales(GS03DataSavedVariables)
+  internal:ReferenceSales(GS04DataSavedVariables)
+  internal:ReferenceSales(GS05DataSavedVariables)
+  internal:ReferenceSales(GS06DataSavedVariables)
+  internal:ReferenceSales(GS07DataSavedVariables)
+  internal:ReferenceSales(GS08DataSavedVariables)
+  internal:ReferenceSales(GS09DataSavedVariables)
+  internal:ReferenceSales(GS10DataSavedVariables)
+  internal:ReferenceSales(GS11DataSavedVariables)
+  internal:ReferenceSales(GS12DataSavedVariables)
+  internal:ReferenceSales(GS13DataSavedVariables)
+  internal:ReferenceSales(GS14DataSavedVariables)
+  internal:ReferenceSales(GS15DataSavedVariables)
 end
 
 -- Bring seperate lists together we can still access the sales history all together
@@ -1217,3 +1193,94 @@ end
 	Line 17332: * GetTradingHouseSearchResultItemLinkAsFurniturePreviewVariationDisplayName(*string* _itemLink_, *luaindex* _variation_)
   internal:concat("weapon", "weapon")
 ]]--
+
+----------------------------------------
+----- Indexers at Startup          -----
+----------------------------------------
+
+-- For faster searching of large histories, we'll maintain an inverted
+-- index of search terms - here we build the indexes from the existing table
+function internal:IndexSalesData()
+
+  -- DEBUG  Stop Indexing
+  --do return end
+
+  local prefunc    = function(extraData)
+    if LibGuildStore_SavedVariables["minimalIndexing"] then
+      internal:dm("Info", GetString(GS_MINIMAL_INDEXING))
+    else
+      internal:dm("Info", GetString(GS_FULL_INDEXING))
+    end
+    extraData.start             = GetTimeStamp()
+    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
+    extraData.indexCount        = 0
+    extraData.wordsIndexCount   = 0
+    extraData.wasAltered        = false
+    internal:DatabaseBusy(true)
+  end
+
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local playerName = zo_strlower(GetDisplayName())
+
+  local loopfunc   = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
+
+    extraData.indexCount  = extraData.indexCount + 1
+
+    local searchText
+    local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, soldItem['itemLink'])
+    local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, soldItem['guild'])
+    local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['buyer'])
+    local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['seller'])
+
+    if LibGuildStore_SavedVariables["minimalIndexing"] then
+      if playerName == zo_strlower(currentSeller) then
+        searchText = zo_strlower(internal.PlayerSpecialText)
+      else
+        searchText = ''
+      end
+    else
+      versiondata.itemAdderText = versiondata.itemAdderText or internal:AddSearchToItem(currentItemLink)
+      versiondata.itemDesc      = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
+        GetItemLinkName(currentItemLink))
+      versiondata.itemIcon      = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
+
+      temp[2]                   = currentBuyer or ''
+      temp[4]                   = currentSeller or ''
+      temp[6]                   = currentGuild or ''
+      temp[8]                   = versiondata.itemDesc or ''
+      temp[10]                  = versiondata.itemAdderText or ''
+      if playerName == zo_strlower(currentSeller) then
+        temp[12] = internal.PlayerSpecialText
+      else
+        temp[12] = ''
+      end
+      searchText = zo_strlower(table.concat(temp, ''))
+    end
+
+    -- Index each word
+    local searchByWords = zo_strgmatch(searchText, '%S+')
+    local wordData      = { numberID, itemData, itemIndex }
+    for i in searchByWords do
+      if sr_index[i] == nil then
+        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
+        sr_index[i]               = {}
+      end
+      table.insert(sr_index[i], wordData)
+    end
+
+  end
+
+  local postfunc   = function(extraData)
+    internal:DatabaseBusy(false)
+    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+      internal:dm("Info",
+        string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
+          extraData.wordsIndexCount))
+    end
+  end
+
+  if not internal.isDatabaseBusy then
+    internal:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
+  end
+
+end

@@ -421,6 +421,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
       if highPrice == nil then highPrice = individualSale else highPrice = math.max(highPrice, individualSale) end
       if not skipDots then
         local tooltip = nil
+        local sellerName = nil
         --[[ clickable probably means to add the tooltip to the dot
         rather then actually click anything
         ]]--
@@ -438,8 +439,9 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
               string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
                 zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
           end
+          sellerName = currentSeller
         end -- clickable
-        table.insert(salesPoints, { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip })
+        table.insert(salesPoints, { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, sellerName })
       end -- end skip dots
     end -- end new loop
     if timeInterval > ZO_ONE_DAY_IN_SECONDS then
@@ -997,9 +999,9 @@ function MasterMerchant.PostPendingItem(self)
     local theIID                                                       = GetItemLinkItemId(itemLink)
     local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
 
-    MasterMerchant.systemSavedVariables.pricingData                    = MasterMerchant.systemSavedVariables.pricingData or {}
-    MasterMerchant.systemSavedVariables.pricingData[theIID]            = MasterMerchant.systemSavedVariables.pricingData[theIID] or {}
-    MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
+    GS17DataSavedVariables[internal.pricingNamespace]                    = GS17DataSavedVariables[internal.pricingNamespace] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][theIID] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
       local selectedGuildId = GetSelectedTradingHouseGuildId()
@@ -2529,8 +2531,8 @@ function MasterMerchant.SetupPendingPost(self)
     local theIID           = GetItemLinkItemId(itemLink)
     local itemIndex        = internal.GetOrCreateIndexFromLink(itemLink)
 
-    if MasterMerchant.systemSavedVariables.pricingData and MasterMerchant.systemSavedVariables.pricingData[theIID] and MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] then
-      self:SetPendingPostPrice(math.floor(MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] * stackCount))
+    if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace][theIID] and GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] then
+      self:SetPendingPostPrice(math.floor(GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] * stackCount))
     else
       local tipStats = MasterMerchant:itemStats(itemLink, false)
       if (tipStats.avgPrice) then
@@ -2915,9 +2917,9 @@ function MasterMerchant:Initialize()
       function(guildId, itemLink, price, stackCount)
         local theIID                                                       = GetItemLinkItemId(itemLink)
         local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
-        MasterMerchant.systemSavedVariables.pricingData                    = MasterMerchant.systemSavedVariables.pricingData or {}
-        MasterMerchant.systemSavedVariables.pricingData[theIID]            = MasterMerchant.systemSavedVariables.pricingData[theIID] or {}
-        MasterMerchant.systemSavedVariables.pricingData[theIID][itemIndex] = price / stackCount
+        GS17DataSavedVariables[internal.pricingNamespace]                    = GS17DataSavedVariables[internal.pricingNamespace] or {}
+        GS17DataSavedVariables[internal.pricingNamespace][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][theIID] or {}
+        GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] = price / stackCount
       end)
   else
     if TRADING_HOUSE then
@@ -3097,6 +3099,11 @@ function MasterMerchant:InitScrollLists()
     ]]--
   else
     MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
+  end
+
+  -- for mods using the old syntax
+  if GS17DataSavedVariables then
+    MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace] or {}
   end
 
   MasterMerchant.isInitialized = true
@@ -3326,7 +3333,7 @@ function MasterMerchant.Slash(allArgs)
   end
 
   if args == 'clearprices' then
-    MasterMerchant.systemSavedVariables.pricingData = {}
+    GS17DataSavedVariables[internal.pricingNamespace] = {}
     MasterMerchant:dm("Info", GetString(MM_CLEAR_SAVED_PRICES))
     return
   end

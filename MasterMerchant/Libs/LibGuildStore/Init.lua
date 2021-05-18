@@ -9,6 +9,10 @@ local purchases_data              = {}
 local pr_index                    = {}
 local listings_data               = {}
 local lr_index                    = {}
+local posted_items_data           = {}
+local pir_index                   = {}
+local cancelled_items_data           = {}
+local cr_index                   = {}
 _G["LibGuildStore"]               = lib
 _G["LibGuildStore_Internal"]      = internal
 _G["LibGuildStore_MM_SalesData"]  = mm_sales_data
@@ -19,6 +23,10 @@ _G["LibGuildStore_PurchaseData"]  = purchases_data
 _G["LibGuildStore_PurchaseIndex"] = pr_index
 _G["LibGuildStore_ListingsData"]  = listings_data
 _G["LibGuildStore_ListingsIndex"] = lr_index
+_G["LibGuildStore_PostedItemsData"]  = posted_items_data
+_G["LibGuildStore_PostedItemsIndex"] = pir_index
+_G["LibGuildStore_CancelledItemsData"]  = cancelled_items_data
+_G["LibGuildStore_CancelledItemsIndex"] = cr_index
 
 lib.libName                       = libName
 lib.libVersion                    = libVersion
@@ -121,8 +129,21 @@ function internal:is_empty_or_nil(t)
   return type(t) == "table" and ZO_IsTableEmpty(t) or false
 end
 
+-- for main LGS saved vars
 internal.saveVarsDefaults = {
   lastReceivedEventID = {},
+}
+-- other defaults not sure why I have both
+internal.defaults                = {
+  -- ["firstRun"] = true not needed when reset
+  updateAdditionalText = false,
+  historyDepth = 30,
+  minItemCount = 20,
+  maxItemCount = 5000,
+  showGuildInitSummary = false,
+  showIndexingSummary = false,
+  minimalIndexing = false,
+  useSalesHistory = false,
 }
 
 if not LibGuildStore_SavedVariables then LibGuildStore_SavedVariables = internal.saveVarsDefaults end
@@ -146,8 +167,23 @@ internal.guildPurchases          = nil
 internal.totalRecords            = 0
 internal.currentGuilds           = {}
 
-internal.GS_NA_NAMESPACE     = "datana"
-internal.GS_EU_NAMESPACE     = "dataeu"
+internal.GS_NA_NAMESPACE          = "datana"
+internal.GS_EU_NAMESPACE          = "dataeu"
+internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
+internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
+internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
+internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
+
+internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
+internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
+internal.GS_NA_CANCELLED_NAMESPACE = "cancelleditemsna"
+internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
+
+internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
+internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
+
+internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
+internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
 
 internal.NON_GUILD_MEMBER_PURCHACE = 0
 internal.GUILD_MEMBER_PURCHACE = 1
@@ -158,10 +194,16 @@ internal.GS_CHECK_ITEMLINK       = "ItemLink"
 internal.GS_CHECK_GUILDNAME      = "GuildNames"
 internal.PlayerSpecialText       = 'hfdkkdfunlajjamdhsiwsuwj'
 internal.dataToReset             = ""
+internal.listingsToReset         = ""
 
 internal.dataNamespace           = ""
 internal.listingsNamespace       = ""
+internal.purchasesNamespace      = ""
 internal.firstrunNamespace       = ""
+internal.postedNamespace         = ""
+internal.cancelledNamespace      = ""
+internal.visitedNamespace        = ""
+internal.pricingNamespace        = ""
 
 lib.guildStoreReady              = false -- when no more events are pending
 
@@ -189,18 +231,6 @@ internal.potionVarientTable      = {
   [134] = 8,
   [307] = 9, -- health potion I commonly find
   [308] = 9,
-}
-
-internal.defaults                = {
-  -- ["firstRun"] = true not needed when reset
-  updateAdditionalText = false,
-  historyDepth = 30,
-  minItemCount = 20,
-  maxItemCount = 5000,
-  showGuildInitSummary = false,
-  showIndexingSummary = false,
-  minimalIndexing = false,
-  useSalesHistory = false,
 }
 
 --[[ sr_index, originally SRIndex is an inverted indexe of the
