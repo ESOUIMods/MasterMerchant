@@ -285,6 +285,13 @@ function stats.evaluateQuartileRangeTable(list, quartile1, quartile3, quartileRa
   return dataList, count, oldestTime, newestTime
 end
 
+function MasterMerchant:GetWritCount(itemLink)
+  local writcount = 0
+  local quotient, remainder = math.modf(tonumber(zo_strmatch(itemLink, ':(%d-)$')) / 10000)
+  writcount = quotient + math.floor(0.5+remainder)
+  return writcount
+end
+
 -- Computes the weighted moving average across available data
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
   -- 10000 for numDays is more or less like saying it is undefined

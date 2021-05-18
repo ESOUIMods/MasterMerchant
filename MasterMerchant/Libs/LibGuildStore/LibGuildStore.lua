@@ -132,6 +132,7 @@ local function SetupData()
   LEQ:Add(function() BuildLookupTables() end, 'BuildLookupTables')
   LEQ:Add(function() internal:dm("Info", "LibGuildStore Initializing") end, "LibGuildStoreInitializing")
   LEQ:Add(function() internal:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
+  LEQ:Add(function() internal:ReferencePurchaseData() end, 'ReferencePurchaseData')
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   LEQ:Add(function() internal:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
@@ -168,15 +169,17 @@ local function Initilizze()
   if AwesomeGuildStore then
     -- register for purchace
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_PURCHASED, function(itemData)
-      local CurrentPurchase        = {}
-      CurrentPurchase.ItemLink     = itemData.itemLink
-      CurrentPurchase.Quantity     = itemData.stackCount
-      CurrentPurchase.Price        = itemData.purchasePrice
-      CurrentPurchase.Seller       = itemData.sellerName
-      CurrentPurchase.Guild        = itemData.guildName
-      CurrentPurchase.itemUniqueId = Id64ToString(itemData.itemUniqueId)
-      CurrentPurchase.TimeStamp    = GetTimeStamp()
-      internal:addListing(CurrentPurchase)
+      local theEvent            = {
+        guild = itemData.guildName,
+        itemLink = itemData.itemLink,
+        quant = itemData.stackCount,
+        timestamp = GetTimeStamp(),
+        price = itemData.purchasePrice,
+        seller = itemData.sellerName,
+        id = Id64ToString(itemData.itemUniqueId),
+        buyer = GetDisplayName()
+      }
+      internal:addPurchaseData(theEvent)
       --ShoppingList.List:Refresh()
     end)
 
@@ -203,13 +206,19 @@ local function Initilizze()
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
         local saveData = GS17DataSavedVariables["postedItems"]
-        table.insert(saveData, {
-          ItemLink = itemLink,
-          Quantity = stackCount,
-          Price = price,
-          Guild = GetGuildName(guildId),
-          TimeStamp = GetTimeStamp()
-        })
+        local linkHash   = internal:AddSalesTableData("itemLink", itemLink)
+        local sellerHash = internal:AddSalesTableData("accountNames", GetDisplayName())
+        local guildHash  = internal:AddSalesTableData("guildNames", GetGuildName(guildId))
+        local theEvent            = {
+          guild = guildHash,
+          itemLink = linkHash,
+          quant = stackCount,
+          timestamp = GetTimeStamp(),
+          price = price,
+          seller = sellerHash,
+        }
+        table.insert(saveData, theEvent)
+        internal:dm("Debug", "AGS Item posted")
         --gettext("You have cancelled your listing of <<1>>x <<t:2>> for <<3>> in <<4>>", stackCount, itemLink, price, guildName)
         --internal:dm("Debug", guildId)
         --internal:dm("Debug", itemLink)
@@ -220,56 +229,62 @@ local function Initilizze()
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_CANCELLED,
       function(guildId, itemLink, price, stackCount)
         local saveData = GS17DataSavedVariables["cancelledItems"]
-        table.insert(saveData, {
-          ItemLink = itemLink,
-          Quantity = stackCount,
-          Price = price,
-          Guild = GetGuildName(guildId),
-          TimeStamp = GetTimeStamp()
-        })
+        local linkHash   = internal:AddSalesTableData("itemLink", itemLink)
+        local sellerHash = internal:AddSalesTableData("accountNames", GetDisplayName())
+        local guildHash  = internal:AddSalesTableData("guildNames", GetGuildName(guildId))
+        local theEvent            = {
+          guild = guildHash,
+          itemLink = linkHash,
+          quant = stackCount,
+          timestamp = GetTimeStamp(),
+          price = price,
+          seller = sellerHash,
+        }
+        table.insert(saveData, theEvent)
+        internal:dm("Debug", "AGS Item canceled")
         --gettext("You have cancelled your listing of <<1>>x <<t:2>> for <<3>> in <<4>>", stackCount, itemLink, price, guildName)
         --internal:dm("Debug", guildId)
         --internal:dm("Debug", itemLink)
         --internal:dm("Debug", price)
         --internal:dm("Debug", stackCount)
       end)
+  else
+    -- for vanilla without AwesomeGuildStore
+    EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE,
+      function(...) internal:onTradingHouseEvent(...) end)
   end
   --[[
-  AGS.callback.BEFORE_INITIAL_SETUP = "BeforeInitialSetup"
-  AGS.callback.AFTER_INITIAL_SETUP = "AfterInitialSetup"
-  AGS.callback.AFTER_FILTER_SETUP = "AfterFilterSetup"
+    AGS.callback.BEFORE_INITIAL_SETUP = "BeforeInitialSetup"
+    AGS.callback.AFTER_INITIAL_SETUP = "AfterInitialSetup"
+    AGS.callback.AFTER_FILTER_SETUP = "AfterFilterSetup"
 
-  AGS.callback.STORE_TAB_CHANGED = "StoreTabChanged"
-  AGS.callback.GUILD_SELECTION_CHANGED = "SelectedGuildChanged"
-  AGS.callback.AVAILABLE_GUILDS_CHANGED = "AvailableGuildsChanged"
-  AGS.callback.SELECTED_SEARCH_CHANGED = "SelectedSearchChanged"
-  AGS.callback.SEARCH_LIST_CHANGED = "SearchChangedChanged"
-  AGS.callback.SEARCH_LOCK_STATE_CHANGED = "SearchLockStateChanged"
-  AGS.callback.ITEM_DATABASE_UPDATE = "ItemDatabaseUpdated"
-  AGS.callback.CURRENT_ACTIVITY_CHANGED = "CurrentActivityChanged"
-  AGS.callback.SEARCH_RESULT_UPDATE = "SearchResultUpdate"
-  AGS.callback.SEARCH_RESULTS_RECEIVED = "SearchResultsReceived"
+    AGS.callback.STORE_TAB_CHANGED = "StoreTabChanged"
+    AGS.callback.GUILD_SELECTION_CHANGED = "SelectedGuildChanged"
+    AGS.callback.AVAILABLE_GUILDS_CHANGED = "AvailableGuildsChanged"
+    AGS.callback.SELECTED_SEARCH_CHANGED = "SelectedSearchChanged"
+    AGS.callback.SEARCH_LIST_CHANGED = "SearchChangedChanged"
+    AGS.callback.SEARCH_LOCK_STATE_CHANGED = "SearchLockStateChanged"
+    AGS.callback.ITEM_DATABASE_UPDATE = "ItemDatabaseUpdated"
+    AGS.callback.CURRENT_ACTIVITY_CHANGED = "CurrentActivityChanged"
+    AGS.callback.SEARCH_RESULT_UPDATE = "SearchResultUpdate"
+    AGS.callback.SEARCH_RESULTS_RECEIVED = "SearchResultsReceived"
 
-  -- fires when a filter value has changed
-  -- filterId, ... (filter values)
-  AGS.callback.FILTER_VALUE_CHANGED = "FilterValueChanged"
-  -- fires when a filter is attached or detached
-  -- filter
-  AGS.callback.FILTER_ACTIVE_CHANGED = "FilterActiveChanged"
-  -- fires on the next frame after any filter has changed. In other words after all FILTER_VALUE_CHANGED and FILTER_ACTIVE_CHANGED callbacks have fired
-  -- activeFilters
-  AGS.callback.FILTER_UPDATE = "FilterUpdate"
-  AGS.callback.FILTER_PREPARED = "FilterPrepared"
+    -- fires when a filter value has changed
+    -- filterId, ... (filter values)
+    AGS.callback.FILTER_VALUE_CHANGED = "FilterValueChanged"
+    -- fires when a filter is attached or detached
+    -- filter
+    AGS.callback.FILTER_ACTIVE_CHANGED = "FilterActiveChanged"
+    -- fires on the next frame after any filter has changed. In other words after all FILTER_VALUE_CHANGED and FILTER_ACTIVE_CHANGED callbacks have fired
+    -- activeFilters
+    AGS.callback.FILTER_UPDATE = "FilterUpdate"
+    AGS.callback.FILTER_PREPARED = "FilterPrepared"
 
-  AGS.callback.ITEM_PURCHASED = "ItemPurchased"
-  AGS.callback.ITEM_PURCHASE_FAILED = "ItemPurchaseFailed"
-  AGS.callback.ITEM_CANCELLED = "ItemCancelled"
-  AGS.callback.ITEM_POSTED = "ItemPosted"  ]]--
-
-  -- for vanilla without AwesomeGuildStore
-  EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE,
-    function(...) internal:onTradingHouseEvent(...) end)
-
+    AGS.callback.ITEM_PURCHASED = "ItemPurchased"
+    AGS.callback.ITEM_PURCHASE_FAILED = "ItemPurchaseFailed"
+    AGS.callback.ITEM_CANCELLED = "ItemCancelled"
+    AGS.callback.ITEM_POSTED = "ItemPosted"
+  ]]--
 end
 
 local function CheckImportStatus()

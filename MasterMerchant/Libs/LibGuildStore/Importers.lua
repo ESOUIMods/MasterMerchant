@@ -3,6 +3,7 @@ local internal       = _G["LibGuildStore_Internal"]
 local sr_index       = _G["LibGuildStore_SalesIndex"]
 local mm_sales_data  = _G["LibGuildStore_MM_SalesData"]
 local att_sales_data = _G["LibGuildStore_ATT_SalesData"]
+local purchases_data = _G["LibGuildStore_PurchaseData"]
 
 local ASYNC          = LibAsync
 
@@ -26,7 +27,7 @@ function internal:ImportMasterMerchantSales()
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
     local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
-      local duplicate = internal:CheckForDuplicate(saledata['itemLink'], saledata['id'])
+      local duplicate = internal:CheckForDuplicateSale(saledata['itemLink'], saledata['id'])
       if not duplicate then
         local added = internal:addToHistoryTables(saledata)
       end
@@ -83,7 +84,7 @@ function internal:ImportATTSales()
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
     local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
-      local duplicate = internal:CheckForDuplicate(saledata['itemLink'], saledata['id'])
+      local duplicate = internal:CheckForDuplicateSale(saledata['itemLink'], saledata['id'])
       if not duplicate then
         local added = internal:addToHistoryTables(saledata)
       end
@@ -521,4 +522,13 @@ function internal:ReferenceATTSales(otherData)
     end
     table.insert(att_sales_data[theIID][itemIndex]["sales"], theEvent)
   end
+end
+
+----------------------------------------
+----- Reference Purchase Data      -----
+----------------------------------------
+
+function internal:ReferencePurchaseData()
+  local savedVars = GS17DataSavedVariables["purchases"]
+  purchases_data = savedVars
 end
