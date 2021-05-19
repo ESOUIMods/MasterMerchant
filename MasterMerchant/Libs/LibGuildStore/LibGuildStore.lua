@@ -147,6 +147,8 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
   if LibGuildStore_SavedVariables["showIndexingSummary"] == nil then LibGuildStore_SavedVariables["showIndexingSummary"] = internal.defaults.showIndexingSummary end
   if LibGuildStore_SavedVariables["minimalIndexing"] == nil then LibGuildStore_SavedVariables["minimalIndexing"] = internal.defaults.minimalIndexing end
   if LibGuildStore_SavedVariables["useSalesHistory"] == nil then LibGuildStore_SavedVariables["useSalesHistory"] = internal.defaults.useSalesHistory end
+  if LibGuildStore_SavedVariables["overrideMMImport"] == nil then LibGuildStore_SavedVariables["overrideMMImport"] = internal.defaults.overrideMMImport end
+  if LibGuildStore_SavedVariables["historyDepthSL"] == nil then LibGuildStore_SavedVariables["historyDepthSL"] = internal.defaults.historyDepthSL end
 
   --cleanup old vars and this can be removed for production
   GS17DataSavedVariables["purchases"] = nil
@@ -189,7 +191,8 @@ local function SetupData()
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   LEQ:Add(function() internal:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
-  LEQ:Add(function() internal:TruncateHistory() end, 'TruncateHistory')
+  LEQ:Add(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
+  LEQ:Add(function() internal:TruncateShoppinglistHistory() end, 'TruncateShoppinglistHistory')
   LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
   LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
   LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
@@ -362,13 +365,13 @@ function internal:SlashImportMMSales()
       internal:dm("Info", "Old Master Merchant sales not detected.")
       return
     end
-    if CheckImportStatus() then
+    if CheckImportStatus() and not LibGuildStore_SavedVariables.overrideMMImport then
       internal:dm("Info", "Your MM data contains values from both NA and EU servers.")
       internal:dm("Info", "All versions prior to 3.6.x did not separate NA and EU sales data.")
       internal:dm("Info", "You must override this in the LibGuildStore settings.")
       return
     end
-    if CheckServerImportType() then
+    if CheckServerImportType() and not LibGuildStore_SavedVariables.overrideMMImport then
       internal:dm("Info", "You are attempting to import NA or EU MM data,")
       internal:dm("Info", "however you logged into a different server type.")
       internal:dm("Info", "You must override this in the LibGuildStore settings.")

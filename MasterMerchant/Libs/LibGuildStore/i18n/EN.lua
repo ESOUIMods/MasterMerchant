@@ -18,9 +18,16 @@ ZO_CreateStringId("GS_RESET_LISTINGS_CONFIRM_MAIN", "Are you sure you wish to re
 ZO_CreateStringId("GS_IMPORT_MM_BUTTON", "Import MM Data")
 ZO_CreateStringId("GS_IMPORT_MM_NAME", "Import MM Data")
 ZO_CreateStringId("GS_IMPORT_MM_TIP", "Import all MM data into LibGuildStore.")
+ZO_CreateStringId("GS_IMPORT_MM_OVERRIDE_NAME", "Override MM Import")
+ZO_CreateStringId("GS_IMPORT_MM_OVERRIDE_TIP", "Override importing MM data from NA to EU or when your old data contains both NA and EU sales.")
+
 ZO_CreateStringId("GS_IMPORT_ATT_BUTTON", "Import ATT Data")
 ZO_CreateStringId("GS_IMPORT_ATT_NAME", "Import ATT Data")
 ZO_CreateStringId("GS_IMPORT_ATT_TIP", "Import all ATT data into LibGuildStore.")
+
+ZO_CreateStringId("GS_IMPORT_SL_BUTTON", "Import Shoppinglist Data")
+ZO_CreateStringId("GS_IMPORT_SL_NAME", "Import Shoppinglist")
+ZO_CreateStringId("GS_IMPORT_SL_TIP", "Import Shoppinglist data into LibGuildStore.")
 
 ZO_CreateStringId("GS_HELP_DUPS", "/lgs dups  - scans your history to purge duplicate entries")
 ZO_CreateStringId("GS_HELP_CLEAN", "/lgs clean - cleans out bad sales records (invalid information)")
@@ -35,9 +42,13 @@ ZO_CreateStringId("GS_COLOR_PURPLE", "purple")
 ZO_CreateStringId("GS_COLOR_GOLD", "gold")
 ZO_CreateStringId("GS_COLOR_ORANGE", "orange")
 
+ZO_CreateStringId("GS_SALES_MANAGEMENT_NAME", "Sales Management Options")
+ZO_CreateStringId("GS_SHOPPINGLIST_MANAGEMENT_NAME", "ShoppingList Management Options")
+ZO_CreateStringId("GS_SHOPPINGLIST_DEPTH_NAME", "ShoppingList History Size")
+ZO_CreateStringId("GS_SHOPPINGLIST_DEPTH_TIP", "How many days of purchase data should be stored in ShoppingList.")
+
 ZO_CreateStringId("GS_APP_NAME", "LibGuildStore")
 ZO_CreateStringId("GS_APP_AUTHOR", "Sharlikran")
-ZO_CreateStringId("GS_DATA_MANAGEMENT_NAME", "Data Management Options")
 ZO_CreateStringId("GS_DAYS_ONLY_NAME", "Use Sales History Size Only")
 ZO_CreateStringId("GS_DAYS_ONLY_TIP", "Will use Sales History Size only when trimming sales history. This will ignore min and max count.")
 ZO_CreateStringId("GS_HISTORY_DEPTH_NAME", "Sales History Size")

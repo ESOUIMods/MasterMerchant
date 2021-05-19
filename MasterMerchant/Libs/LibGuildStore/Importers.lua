@@ -16,6 +16,45 @@ local cr_index             = _G["LibGuildStore_CancelledItemsIndex"]
 local ASYNC          = LibAsync
 
 ----------------------------------------
+----- ImportShoppingList           -----
+----------------------------------------
+
+function internal:ImportShoppingList()
+  if not ShoppingList then return end
+  internal:dm("Debug", "ImportShoppingList")
+  shoppingList = {}
+
+  --[[
+  ["Buyer"] = 1,
+  ["itemUniqueId"] = "4872182274625497492",
+  ["Price"] = 130,
+  ["Quantity"] = 1,
+  ["Guild"] = 30,
+  ["TimeStamp"] = 1616280476,
+  ["Seller"] = 60,
+  ["ItemLink"] = 58,
+  ]]--
+  for i = 1, #ShoppingListVar.Default.ShoppingList["$AccountWide"].Purchases do
+    local purchase = {}
+    local theEvent            = {
+      guild = ShoppingList.SavedData.System.Tables["Guilds"][ShoppingList.SavedData.System.Purchases[i]["Guild"]],
+      itemLink = ShoppingList.SavedData.System.Tables["ItemLinks"][ShoppingList.SavedData.System.Purchases[i]["ItemLink"]],
+      quant = ShoppingList.SavedData.System.Purchases[i]["Quantity"],
+      timestamp = ShoppingList.SavedData.System.Purchases[i]["TimeStamp"],
+      price = ShoppingList.SavedData.System.Purchases[i]["Price"],
+      seller = ShoppingList.SavedData.System.Tables["Sellers"][ShoppingList.SavedData.System.Purchases[i]["Seller"]],
+      buyer = ShoppingList.SavedData.System.Tables["Buyers"][ShoppingList.SavedData.System.Purchases[i]["Buyer"]],
+      id = ShoppingList.SavedData.System.Purchases[i]["itemUniqueId"],
+    }
+    local duplicate = internal:CheckForDuplicatePurchase(theEvent.itemLink, theEvent.id)
+    if not duplicate then
+      added = internal:addPurchaseData(theEvent)
+    end
+  end
+  ShoppingList.List:Refresh()
+end
+
+----------------------------------------
 ----- iterateOverSalesData         -----
 ----------------------------------------
 
@@ -496,9 +535,9 @@ function internal:ReferenceATTSales(otherData)
     be accurate. Should possibly use 3 constants and update sales when
     someone loggs into another account.
 
-    internal.NON_GUILD_MEMBER_PURCHACE = 0
-    internal.GUILD_MEMBER_PURCHACE = 1
-    internal.IMPORTED_PURCHACE = 2
+    internal.NON_GUILD_MEMBER_PURCHASE = 0
+    internal.GUILD_MEMBER_PURCHASE = 1
+    internal.IMPORTED_PURCHASE = 2
     ]]--
     local guildFound = false
     for k, v in pairs(internal.currentGuilds) do

@@ -26,7 +26,7 @@ function internal:LibAddonInit()
   local optionsData             = {}
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(GS_DATA_MANAGEMENT_NAME),
+    name = GetString(GS_SALES_MANAGEMENT_NAME),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DataManagementOptions",
   }
@@ -85,6 +85,23 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
+    name = GetString(GS_SHOPPINGLIST_MANAGEMENT_NAME),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#DataManagementOptions",
+  }
+  -- Size shoppinglist history
+  optionsData[#optionsData + 1] = {
+    type = 'slider',
+    name = GetString(GS_SHOPPINGLIST_DEPTH_NAME),
+    tooltip = GetString(GS_SHOPPINGLIST_DEPTH_TIP),
+    min = 15,
+    max = 180,
+    getFunc = function() return LibGuildStore_SavedVariables.historyDepthSL end,
+    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthSL = value end,
+    default = internal.defaults.historyDepthSL,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
     name = GetString(GS_DEBUG_OPTIONS),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
@@ -124,6 +141,15 @@ function internal:LibAddonInit()
       internal:SlashImportMMSales()
     end,
   }
+  -- Skip Indexing?
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(GS_IMPORT_MM_OVERRIDE_NAME),
+    tooltip = GetString(GS_IMPORT_MM_OVERRIDE_TIP),
+    getFunc = function() return LibGuildStore_SavedVariables.overrideMMImport end,
+    setFunc = function(value) LibGuildStore_SavedVariables.overrideMMImport = value end,
+    default = internal.defaults.overrideMMImport,
+  }
   optionsData[#optionsData + 1] = {
     type = "header",
     name = GetString(GS_IMPORT_ATT_BUTTON),
@@ -162,6 +188,25 @@ function internal:LibAddonInit()
       internal:RefreshLibGuildStore()
       internal:SetupListenerLibHistoire()
       internal:StartQueue()
+    end,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(GS_IMPORT_SL_BUTTON),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    title = "Import ShoppingList",
+    text = [[Import ShoppingList data into LibGuildStore. Previous ShoppingList data did not save the unique ID for the purchase, you may have some duplicates until the purchase is older and becomes trimmed.]]
+  }
+  optionsData[#optionsData + 1] = {
+    type = "button",
+    name = GetString(GS_IMPORT_SL_NAME),
+    tooltip = GetString(GS_IMPORT_SL_TIP),
+    func = function()
+      internal:ImportShoppingList()
     end,
   }
   optionsData[#optionsData + 1] = {

@@ -144,6 +144,8 @@ internal.defaults                = {
   showIndexingSummary = false,
   minimalIndexing = false,
   useSalesHistory = false,
+  overrideMMImport = false,
+  historyDepthSL = 60,
 }
 
 if not LibGuildStore_SavedVariables then LibGuildStore_SavedVariables = internal.saveVarsDefaults end
@@ -185,9 +187,9 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
 internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
 internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
 
-internal.NON_GUILD_MEMBER_PURCHACE = 0
-internal.GUILD_MEMBER_PURCHACE = 1
-internal.IMPORTED_PURCHACE = 2
+internal.NON_GUILD_MEMBER_PURCHASE = 0
+internal.GUILD_MEMBER_PURCHASE = 1
+internal.IMPORTED_PURCHASE = 2
 
 internal.GS_CHECK_ACCOUNTNAME    = "AccountNames"
 internal.GS_CHECK_ITEMLINK       = "ItemLink"

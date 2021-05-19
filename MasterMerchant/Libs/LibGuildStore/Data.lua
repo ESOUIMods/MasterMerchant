@@ -339,6 +339,21 @@ function internal:CheckForDuplicateListings(itemLink, eventID)
   return false
 end
 
+function internal:CheckForDuplicatePurchase(itemLink, eventID)
+  local theIID = GetItemLinkItemId(itemLink)
+  if theIID == nil or theIID == 0 then return end
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+
+  if purchases_data[theIID] and purchases_data[theIID][itemIndex] then
+    for k, v in pairs(purchases_data[theIID][itemIndex]['sales']) do
+      if v.id == eventID then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 function internal:SetupListener(guildId)
   -- listener
   internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
@@ -651,7 +666,7 @@ function internal:addListingData(theEvent)
       sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
-  
+
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
@@ -686,7 +701,7 @@ function internal:addListingData(theEvent)
     if lr_index[i] == nil then lr_index[i] = {} end
     table.insert(lr_index[i], wordData)
   end
-  
+
   return true
 end
 
@@ -743,7 +758,7 @@ function internal:addPurchaseData(theEvent)
       sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
-  
+
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
@@ -777,7 +792,7 @@ function internal:addPurchaseData(theEvent)
     if pr_index[i] == nil then pr_index[i] = {} end
     table.insert(pr_index[i], wordData)
   end
-  
+
   return true
 end
 
@@ -831,7 +846,7 @@ function internal:addPostedItem(theEvent)
       sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
-  
+
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
@@ -865,7 +880,7 @@ function internal:addPostedItem(theEvent)
     if pir_index[i] == nil then pir_index[i] = {} end
     table.insert(pir_index[i], wordData)
   end
-  
+
   return true
 end
 
@@ -919,7 +934,7 @@ function internal:addCanceledItem(theEvent)
       sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
-  
+
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
@@ -953,7 +968,7 @@ function internal:addCanceledItem(theEvent)
     if cr_index[i] == nil then cr_index[i] = {} end
     table.insert(cr_index[i], wordData)
   end
-  
+
   return true
 end
 
