@@ -196,25 +196,6 @@ function MasterMerchant.LocalizedNumber(amount)
 	return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
 end
 
-function MasterMerchant:UpdateItemLink(itemLink)
-  if GetAPIVersion() == 100011 then
-    local linkTable = { ZO_LinkHandler_ParseLink(itemLink) }
-    if #linkTable == 23 and linkTable[3] == ITEM_LINK_TYPE then
-      linkTable[24] = linkTable[23]
-      linkTable[23] = linkTable[22]
-      linkTable[22] = '0'
-      if linkTable[4] == '32311' then
-        itemLink = '|H1:collectible:34|hSkeleton Polymorph|h'
-      else
-        itemLink     = ('|H%d:%s|h%s|h'):format(linkTable[2], table.concat(linkTable, ':', 3), '')
-        linkTable[1] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-        itemLink     = ("|H%d:%s|h%s|h"):format(linkTable[2], table.concat(linkTable, ':', 3), linkTable[1])
-      end
-    end
-  end
-  return itemLink
-end
-
 -- Create a textual representation of a time interval
 function MasterMerchant.TextTimeSince(theTime, useLowercase)
   local secsSince = GetTimeStamp() - theTime

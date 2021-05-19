@@ -12,7 +12,6 @@ local sr_index                  = _G["LibGuildStore_SalesIndex"]
 local internal                  = _G["LibGuildStore_Internal"]
 
 local OriginalSetupPendingPost
-g_slotActions                   = nil
 
 local ITEMS                     = 'full'
 local GUILDS                    = 'half'
@@ -314,7 +313,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     local initCount      = 0
     local list           = sales_data[theIID][itemIndex]['sales']
 
-    timeCheck, daysRange = self:CheckTime()
+    local timeCheck, daysRange = self:CheckTime()
 
     if timeCheck == -1 then return returnData end
 
@@ -3138,13 +3137,6 @@ function MasterMerchant:SendNote(gold)
   ZO_MailSendSubjectField:SetText('Master Merchant')
   QueueMoneyAttachment(gold)
   ZO_MailSendBodyField:TakeFocus()
-end
-
-Original_ZO_InventorySlotActions_Show = ZO_InventorySlotActions.Show
-
-function ZO_InventorySlotActions:Show()
-  g_slotActions = self
-  Original_ZO_InventorySlotActions_Show(self)
 end
 
 function OnItemSelected()
