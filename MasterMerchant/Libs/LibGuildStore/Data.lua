@@ -965,6 +965,7 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
   -- this is for vanilla
   internal:dm("Debug", "onTradingHouseEvent")
   if not AwesomeGuildStore then
+    internal:dm("Debug", "not AwesomeGuildStore")
     local CurrentPurchase = {}
     local icon, itemName, displayQuality, quantity, seller, timeRemaining, price, currencyType, itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo(slotId)
     local guildId, guild, guildAlliance = GetCurrentTradingHouseGuildDetails()
@@ -979,8 +980,10 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
       price = price,
       seller = seller,
       id = Id64ToString(itemUniqueId),
+      buyer = GetDisplayName()
     }
-    internal:addListingData(theEvent)
+    internal:dm("Debug", theEvent)
+    internal:addPurchaseData(theEvent)
     --ShoppingList.List:Refresh()
   end
 end
@@ -1017,19 +1020,6 @@ function internal:processAwesomeGuildStore(itemDatabase)
       internal:AddAwesomeGuildStoreListing(listingData)
     end
   end
-  --[[
-  local icon, itemName, displayQuality, quantity, seller, timeRemaining, price, currencyType, itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo(slotId)
-  local guildId, guild, guildAlliance = GetCurrentTradingHouseGuildDetails()
-  CurrentPurchase.ItemLink = GetTradingHouseSearchResultItemLink(slotId)
-  CurrentPurchase.Quantity = quantity
-  CurrentPurchase.Price = price
-  CurrentPurchase.Seller = seller:gsub("|c.-$", "")
-  CurrentPurchase.Guild = guild
-  CurrentPurchase.itemUniqueId = Id64ToString(itemUniqueId)
-  CurrentPurchase.TimeStamp = GetTimeStamp()
-  internal:addListing(CurrentPurchase)
-  ]]--
-  --ShoppingList.List:Refresh()
 end
 
 ----------------------------------------

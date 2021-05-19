@@ -241,19 +241,6 @@ local function Initilizze()
         internal.guildStoreSearchResults = itemDatabase
         local allData                    = itemDatabase.data
         internal:processAwesomeGuildStore(allData)
-        --[[
-        local CurrentPurchase = {}
-        CurrentPurchase.ItemLink = itemData.itemLink
-        CurrentPurchase.Quantity = itemData.stackCount
-        CurrentPurchase.Price = itemData.purchasePrice
-        CurrentPurchase.Seller = itemData.sellerName
-        CurrentPurchase.Guild = itemData.guildName
-        CurrentPurchase.itemUniqueId = Id64ToString(itemData.itemUniqueId)
-        CurrentPurchase.TimeStamp = GetTimeStamp()
-        internal:dm("Debug", CurrentPurchase)
-        ]]--
-        --internal:addListing(CurrentPurchase)
-        --ShoppingList.List:Refresh()
       end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
