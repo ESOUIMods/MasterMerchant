@@ -667,7 +667,6 @@ function MMScrollList:FilterScrollList()
         local tconcat   = table.concat
         local tinsert   = table.insert
         local tolower   = string.lower
-        local temp      = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
 
         for k, v in pairs(sr_index[internal.PlayerSpecialText]) do
           local k        = v[1]
@@ -679,18 +678,14 @@ function MMScrollList:FilterScrollList()
           local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
           local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
           local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
+          
           if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
             --d('Bad Item:')
             --d(item)
           else
             if (item.timestamp > timeCheck) then
               local matchesAll    = true
-              temp[2]             = currentBuyer or ''
-              temp[4]             = currentSeller or ''
-              temp[6]             = currentGuild or ''
-              temp[8]             = dataList['itemDesc'] or ''
-              temp[10]            = dataList['itemAdderText'] or ''
-              local gn            = tolower(tconcat(temp, ''))
+              local gn            = internal:GetSearchText(currentBuyer, currentSeller, currentGuild, (dataList['itemDesc'] or ''), (dataList['itemAdderText'] or ''), false)
               local searchByWords = zo_strgmatch(searchText, '%S+')
               for searchWord in searchByWords do
                 searchWord = MasterMerchant.CleanupSearch(searchWord)
@@ -709,7 +704,6 @@ function MMScrollList:FilterScrollList()
         local tconcat   = table.concat
         local tinsert   = table.insert
         local tolower   = string.lower
-        local temp      = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
         for k, v in pairs(sales_data) do
           for j, dataList in pairs(v) do
             for i, item in pairs(dataList['sales']) do
@@ -723,12 +717,7 @@ function MMScrollList:FilterScrollList()
               else
                 if (item.timestamp > timeCheck) then
                   local matchesAll    = true
-                  temp[2]             = currentBuyer or ''
-                  temp[4]             = currentSeller or ''
-                  temp[6]             = currentGuild or ''
-                  temp[8]             = dataList['itemDesc'] or ''
-                  temp[10]            = dataList['itemAdderText'] or ''
-                  local gn            = tolower(tconcat(temp, ''))
+                  local gn            = internal:GetSearchText(currentBuyer, currentSeller, currentGuild, (dataList['itemDesc'] or ''), (dataList['itemAdderText'] or ''), false)
                   local searchByWords = zo_strgmatch(searchText, '%S+')
                   for searchWord in searchByWords do
                     searchWord = MasterMerchant.CleanupSearch(searchWord)

@@ -1409,9 +1409,6 @@ function internal:IndexSalesData()
     internal:DatabaseBusy(true)
   end
 
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local playerName = zo_strlower(GetDisplayName())
-
   local loopfunc   = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
 
     extraData.indexCount  = extraData.indexCount + 1
@@ -1422,30 +1419,7 @@ function internal:IndexSalesData()
     local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['buyer'])
     local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['seller'])
 
-    if LibGuildStore_SavedVariables["minimalIndexing"] then
-      if playerName == zo_strlower(currentSeller) then
-        searchText = zo_strlower(internal.PlayerSpecialText)
-      else
-        searchText = ''
-      end
-    else
-      versiondata.itemAdderText = versiondata.itemAdderText or internal:AddSearchToItem(currentItemLink)
-      versiondata.itemDesc      = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
-        GetItemLinkName(currentItemLink))
-      versiondata.itemIcon      = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
-
-      temp[2]                   = currentBuyer or ''
-      temp[4]                   = currentSeller or ''
-      temp[6]                   = currentGuild or ''
-      temp[8]                   = versiondata.itemDesc or ''
-      temp[10]                  = versiondata.itemAdderText or ''
-      if playerName == zo_strlower(currentSeller) then
-        temp[12] = internal.PlayerSpecialText
-      else
-        temp[12] = ''
-      end
-      searchText = zo_strlower(table.concat(temp, ''))
-    end
+    local searchText = internal:GetSearchText(currentBuyer, currentSeller, currentGuild, versiondata.itemDesc, versiondata.itemAdderText, true)
 
     -- Index each word
     local searchByWords = zo_strgmatch(searchText, '%S+')

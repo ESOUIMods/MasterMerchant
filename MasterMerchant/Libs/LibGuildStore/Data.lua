@@ -60,6 +60,7 @@ function internal:GetStringByIndex(key, index)
     if internal:is_empty_or_nil(internal.guildNameByIdLookup[index]) then return nil end
     return internal.guildNameByIdLookup[index]
   end
+  return ""
 end
 
 -- uses mod to determine which save files to use
@@ -443,6 +444,29 @@ function internal:SetupListener(guildId)
   internal.LibHistoireListener[guildId]:Start()
 end
 
+
+function internal:GetSearchText(buyer, seller, guild, itemDesc, adderText, addPlayer)
+  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
+  local playerName = GetDisplayName()
+  local searchText = ""
+  local selfSale = playerName == seller
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if selfSale and addPlayer then
+      searchText = internal.PlayerSpecialText
+    end
+  else
+    temp[2]  = buyer or ''
+    temp[4]  = seller or ''
+    temp[6]  = guild or ''
+    temp[8]  = itemDesc or ''
+    temp[10] = adderText or ''
+    if selfSale and addPlayer then
+      temp[12] = internal.PlayerSpecialText
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+  return searchText
+end
 ----------------------------------------
 ----- Adding New Data              -----
 ----------------------------------------
@@ -576,28 +600,7 @@ function internal:addSalesData(theEvent)
       adderDescConcat)
   end
 
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = theEvent.buyer or ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
+  local searchText = internal:GetSearchText(theEvent.buyer, theEvent.seller, theEvent.guild, searchItemDesc, searchItemAdderText, true)
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
@@ -670,29 +673,7 @@ function internal:addListingData(theEvent)
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    temp[12] = ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
+  local searchText = internal:GetSearchText(theEvent.buyer, theEvent.seller, theEvent.guild, searchItemDesc, searchItemAdderText, true)
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
@@ -762,28 +743,7 @@ function internal:addPurchaseData(theEvent)
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = theEvent.buyer or ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
+  local searchText = internal:GetSearchText(theEvent.buyer, theEvent.seller, theEvent.guild, searchItemDesc, searchItemAdderText, true)
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
@@ -850,28 +810,7 @@ function internal:addPostedItem(theEvent)
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
+  local searchText = internal:GetSearchText(theEvent.buyer, theEvent.seller, theEvent.guild, searchItemDesc, searchItemAdderText, true)
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
@@ -938,28 +877,7 @@ function internal:addCanceledItem(theEvent)
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
-  local temp       = { 'b', '', ' s', '', ' ', '', ' ', '', ' ', '', ' ', '' }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    else
-      searchText = ''
-    end
-  else
-    temp[2]  = ''
-    temp[4]  = theEvent.seller or ''
-    temp[6]  = theEvent.guild or ''
-    temp[8]  = searchItemDesc or ''
-    temp[10] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[12] = internal.PlayerSpecialText
-    else
-      temp[12] = ''
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
-
+  local searchText = internal:GetSearchText(theEvent.buyer, theEvent.seller, theEvent.guild, searchItemDesc, searchItemAdderText, true)
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
