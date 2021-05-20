@@ -2157,7 +2157,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
     buttons  = {
       {
         text     = SI_DIALOG_ACCEPT,
-        callback = function() internal:DoReset() end
+        callback = function() internal:ResetSalesData() end
       },
       { text = SI_DIALOG_CANCEL }
     }

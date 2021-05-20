@@ -6,8 +6,6 @@ local sales_data        = _G["LibGuildStore_SalesData"]
 local sr_index          = _G["LibGuildStore_SalesIndex"]
 local purchases_data    = _G["LibGuildStore_PurchaseData"]
 local pr_index          = _G["LibGuildStore_PurchaseIndex"]
-local listings_data     = _G["LibGuildStore_ListingsData"]
-local lr_index          = _G["LibGuildStore_ListingsIndex"]
 local posted_items_data = _G["LibGuildStore_PostedItemsData"]
 local pir_index         = _G["LibGuildStore_PostedItemsIndex"]
 local cancelled_items_data = _G["LibGuildStore_CancelledItemsData"]
@@ -55,7 +53,7 @@ function internal:ImportShoppingList()
 end
 
 ----------------------------------------
------ iterateOverSalesData         -----
+----- ImportMasterMerchantSales    -----
 ----------------------------------------
 
 function internal:ImportMasterMerchantSales()
@@ -571,76 +569,23 @@ function internal:ReferenceATTSales(otherData)
   end
 end
 
-----------------------------------------
------ Reference Purchase Data      -----
-----------------------------------------
-
-function internal:ReferencePurchaseData()
-  local savedVars = GS17DataSavedVariables[internal.purchasesNamespace]
-  for itemid, versionlist in pairs(savedVars) do
-    if purchases_data[itemid] then
-      for versionid, versiondata in pairs(versionlist) do
-        if purchases_data[itemid][versionid] then
-          if versiondata.sales then
-            purchases_data[itemid][versionid].sales = purchases_data[itemid][versionid].sales or {}
-            -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
-              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(purchases_data[itemid][versionid].sales, saledata)
-              end
-            end
-            local _, first = next(versiondata.sales, nil)
-            if first then
-              purchases_data[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
-              purchases_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
-              purchases_data[itemid][versionid].itemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME,
-                GetItemLinkName(first.itemLink))
-            end
-          end
+-- /script LibGuildStore_Internal:CompareItemIds(GS00DataSavedVariables)
+-- loops over item IDs and reports duplicates
+-- DEBUG
+function internal:CompareSalesIds()
+  internal:dm("Debug", "CompareSalesIds")
+  local mmsaveData = dataset[internal.dataNamespace]
+  local itemIds    = {}
+  for itemID, itemData in pairs(att_sales_data) do
+    for itemIndex, itemIndexData in pairs(itemData) do
+      for key, sale in pairs(itemIndexData['sales']) do
+        if not itemIds[sale.id] then
+          itemIds[sale.id] = true
         else
-          purchases_data[itemid][versionid] = versiondata
+          internal:dm("Debug", "Duplicate ID")
         end
       end
-      savedVars[itemid] = nil
-    else
-      purchases_data[itemid] = versionlist
     end
   end
-end
-
-----------------------------------------
------ Reference Purchase Data      -----
-----------------------------------------
-
-function internal:ReferencePostedItems()
-  local savedVars = GS17DataSavedVariables[internal.postedNamespace]
-  for itemid, versionlist in pairs(savedVars) do
-    if posted_items_data[itemid] then
-      for versionid, versiondata in pairs(versionlist) do
-        if posted_items_data[itemid][versionid] then
-          if versiondata.sales then
-            posted_items_data[itemid][versionid].sales = posted_items_data[itemid][versionid].sales or {}
-            -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
-              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(posted_items_data[itemid][versionid].sales, saledata)
-              end
-            end
-            local _, first = next(versiondata.sales, nil)
-            if first then
-              posted_items_data[itemid][versionid].itemIcon      = GetItemLinkInfo(first.itemLink)
-              posted_items_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
-              posted_items_data[itemid][versionid].itemDesc      = zo_strformat(SI_TOOLTIP_ITEM_NAME,
-                GetItemLinkName(first.itemLink))
-            end
-          end
-        else
-          posted_items_data[itemid][versionid] = versiondata
-        end
-      end
-      savedVars[itemid] = nil
-    else
-      posted_items_data[itemid] = versionlist
-    end
-  end
+  internal:dm("Debug", "CompareSalesIds Done")
 end

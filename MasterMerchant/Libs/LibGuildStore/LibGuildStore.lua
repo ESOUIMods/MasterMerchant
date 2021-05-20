@@ -1,8 +1,5 @@
 local lib           = _G["LibGuildStore"]
 local internal      = _G["LibGuildStore_Internal"]
-local sales_data    = _G["LibGuildStore_SalesData"]
-local listings_data = _G["LibGuildStore_ListingsData"]
-local sr_index      = _G["LibGuildStore_SalesIndex"]
 
 --/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal.LibHistoireListener[622389]:GetPendingEventMetrics())
 function internal:CheckStatus()
@@ -168,7 +165,7 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
 
   if GS17DataSavedVariables["pricingdatana"] == nil then GS17DataSavedVariables["pricingdatana"] = {} end
   if GS17DataSavedVariables["pricingdataeu"] == nil then GS17DataSavedVariables["pricingdataeu"] = {} end
-  
+
   SetNamespace()
 end
 
@@ -185,17 +182,41 @@ local function SetupData()
   local LEQ = LibExecutionQueue:new()
   LEQ:Add(function() BuildLookupTables() end, 'BuildLookupTables')
   LEQ:Add(function() internal:dm("Info", "LibGuildStore Initializing") end, "LibGuildStoreInitializing")
-  LEQ:Add(function() internal:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
-  LEQ:Add(function() internal:ReferencePurchaseData() end, 'ReferencePurchaseData')
-  LEQ:Add(function() internal:ReferencePostedItems() end, 'ReferencePurchaseData')
+  -- Place data into containers
+  LEQ:Add(function() internal:ReferenceSalesDataContainer() end, 'ReferenceSalesDataContainer')
+  LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
+  LEQ:Add(function() internal:ReferencePurchaseDataContainer() end, 'ReferencePurchaseDataContainer')
+  LEQ:Add(function() internal:ReferencePostedItemsDataContainer() end, 'ReferencePostedItemsDataContainer')
+  LEQ:Add(function() internal:ReferenceCancelledItemDataContainer() end, 'ReferenceCancelledItemDataContainer')
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
+  LEQ:Add(function() internal:dm("Info", "LibGuildStore Build Reference Tables Finished...") end, "LibGuildStoreReferenceTables")
+  -- AddNewData, which adds counts
   LEQ:Add(function() internal:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
+  -- Truncate
   LEQ:Add(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
-  LEQ:Add(function() internal:TruncateShoppinglistHistory() end, 'TruncateShoppinglistHistory')
+  LEQ:Add(function() internal:TruncatePurchaseHistory() end, 'TruncatePurchaseHistory')
+  LEQ:Add(function() internal:TruncateListingsHistory() end, 'TruncateListingsHistory')
+  LEQ:Add(function() internal:TruncatePostedItemsHistory() end, 'TruncatePostedItemsHistory')
+  LEQ:Add(function() internal:TruncateCancelledItemHistory() end, 'TruncateCancelledItemHistory')
+  -- RenewExtraData, if was altered
   LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
+  -- and...
   LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
-  LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
+  -- Index Data, like sr_index
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    LEQ:Add(function() internal:dm("Info", GetString(GS_MINIMAL_INDEXING)) end, "LibGuildStoreIndexData")
+  else
+    LEQ:Add(function() internal:dm("Info", GetString(GS_FULL_INDEXING)) end, "LibGuildStoreIndexData")
+  end
+  LEQ:Add(function() internal:IndexSalesData() end, 'IndexSalesData')
+  LEQ:Add(function() internal:IndexListingsData() end, 'IndexListingsData')
+  LEQ:Add(function() internal:IndexPurchaseData() end, 'IndexPurchaseData')
+  LEQ:Add(function() internal:IndexPostedItemsData() end, 'IndexPostedItemsData')
+  LEQ:Add(function() internal:IndexCancelledItemData() end, 'IndexCancelledItemData')
+
+  LEQ:Add(function() internal:dm("Info", "LibGuildStore Index Data Finished...") end, "LibGuildStoreIndexData")
+  -- and...
   LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
   LEQ:Start()
 end
@@ -273,7 +294,7 @@ local function Initilizze()
         internal:addCanceledItem(theEvent)
       end)
   else
-    -- for vanilla without AwesomeGuildStore
+    -- for vanilla without AwesomeGuildStore to add purchace data
     EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE,
       function(...) internal:onTradingHouseEvent(...) end)
   end

@@ -234,10 +234,3 @@ internal.potionVarientTable      = {
   [307] = 9, -- health potion I commonly find
   [308] = 9,
 }
-
---[[ sr_index, originally SRIndex is an inverted indexe of the
-ScanResults table. Each key is a word found in one of the sales
-items' searched fields (buyer, guild, item name) and a table
-of the sales_data, originally SalesData indexes that contain
-that word.
-]]--

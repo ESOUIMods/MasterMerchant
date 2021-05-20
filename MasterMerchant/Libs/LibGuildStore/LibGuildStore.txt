@@ -13,7 +13,12 @@
 Init.lua
 i18n\en.lua
 Data.lua
-Iterators.lua
+Iterators\Iterators_Cancelled.lua
+Iterators\Iterators_General.lua
+Iterators\Iterators_Listings.lua
+Iterators\Iterators_Posted.lua
+Iterators\Iterators_Purchase.lua
+Iterators\Iterators_Sales.lua
 Importers.lua
 Settings.lua
 LibGuildStore.lua
