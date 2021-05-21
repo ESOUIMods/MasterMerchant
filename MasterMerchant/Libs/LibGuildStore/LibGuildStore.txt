@@ -1,8 +1,8 @@
 ## APIVersion: 100033 100035
 ## Title: LibGuildStore
 ## Description: Addon to store all Guild Store related data accress multiple mods
-## Version 1.00
-## AddOnVersion: 100
+## Version 1.01
+## AddOnVersion: 101
 ## SavedVariables: LibGuildStore_SavedVariables
 ## DependsOn: GS00Data GS01Data GS02Data GS03Data GS04Data GS05Data GS06Data GS07Data GS08Data GS09Data GS10Data
 ## DependsOn: GS11Data GS12Data GS13Data GS14Data GS15Data GS16Data GS17Data LibHistoire>=450

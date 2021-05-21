@@ -16,6 +16,7 @@ local OriginalSetupPendingPost
 local ITEMS                     = 'full'
 local GUILDS                    = 'half'
 local LISTINGS                  = 'listings'
+local PURCHASES                 = 'purchases'
 
 CSA_EVENT_SMALL_TEXT            = 1
 CSA_EVENT_LARGE_TEXT            = 2

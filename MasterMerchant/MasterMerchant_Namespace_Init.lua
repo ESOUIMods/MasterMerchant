@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant         = { }
 MasterMerchant.name    = 'MasterMerchant'
-MasterMerchant.version = '3.6.05'
+MasterMerchant.version = '3.6.06'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -171,8 +171,8 @@ end
 
 -- We do 'lazy' updates on the scroll lists, this is used to
 -- mark whether we need to RefreshData() before showing
--- ITEMS, GUILDS, LISTINGS
-MasterMerchant.listIsDirty                   = { ['full'] = false, ['guild'] = false, ['listing'] = false }
+-- ITEMS, GUILDS, LISTINGS, PURCHASES
+MasterMerchant.listIsDirty                   = { ['full'] = false, ['guild'] = false, ['listings'] = false, ['purchases'] = false }
 MasterMerchant.scrollList                    = nil
 MasterMerchant.guildScrollList               = nil
 MasterMerchant.listingsScrollList            = nil

@@ -257,7 +257,7 @@ local function Initilizze()
         buyer = GetDisplayName()
       }
       internal:addPurchaseData(theEvent)
-      --ShoppingList.List:Refresh()
+      ShoppingList.List:Refresh()
     end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_DATABASE_UPDATE,

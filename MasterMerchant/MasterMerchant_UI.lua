@@ -1853,8 +1853,40 @@ function MasterMerchant.ToggleMasterMerchantWindow()
     MasterMerchantWindow:SetHidden(true)
     MasterMerchantGuildWindow:SetHidden(true)
   end
+  if Bonanza and not BonanzaWindow:IsHidden() then
+    BonanzaWindow:SetHidden(true)
+    MasterMerchantWindow:SetHidden(true)
+    MasterMerchantGuildWindow:SetHidden(true)
+  end
 end
 
+function MasterMerchant.ToggleMasterMerchantPurchases()
+  if not ShoppingList then 
+    MasterMerchant:dm("Info", "ShoppingList not active")
+    return 
+  end
+  ShoppingListWindow:SetDrawLayer(DL_OVERLAY)
+  ShoppingListWindow:SetHidden(not ShoppingListWindow:IsHidden())
+  if Bonanza then
+    BonanzaWindow:SetHidden(true)
+  end
+  MasterMerchantWindow:SetHidden(true)
+  MasterMerchantGuildWindow:SetHidden(true)
+end
+
+function MasterMerchant.ToggleMasterMerchantListings()
+  if not Bonanza then
+    MasterMerchant:dm("Info", "Bonanza not active")
+    return 
+  end
+  BonanzaWindow:SetDrawLayer(DL_OVERLAY)
+  BonanzaWindow:SetHidden(not BonanzaWindow:IsHidden())
+  if ShoppingList then
+    ShoppingListWindow:SetHidden(true)
+  end
+  MasterMerchantWindow:SetHidden(true)
+  MasterMerchantGuildWindow:SetHidden(true)
+end
 -- Set the visibility status of the feebback window to the opposite of its current status
 function MasterMerchant.ToggleMasterMerchantFeedback()
   MasterMerchantFeedback:SetDrawLayer(DL_OVERLAY)
