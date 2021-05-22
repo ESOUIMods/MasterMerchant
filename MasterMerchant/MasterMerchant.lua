@@ -1250,7 +1250,7 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithMail end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.openWithMail = value
-        local theFragment                                = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.uiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
+        local theFragment                                = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.salesUiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
         if value then
           -- Register for the mail scenes
           MAIL_INBOX_SCENE:AddFragment(theFragment)
@@ -1271,7 +1271,7 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithStore end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.openWithStore = value
-        local theFragment                                 = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.uiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
+        local theFragment                                 = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.salesUiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
         if value then
           -- Register for the store scene
           TRADING_HOUSE_SCENE:AddFragment(theFragment)
@@ -2798,8 +2798,10 @@ function MasterMerchant:Initialize()
 
   -- Add the MasterMerchant window to the mail and trading house scenes if the
   -- player's settings indicate they want that behavior
-  self.uiFragment      = ZO_FadeSceneFragment:New(MasterMerchantWindow)
-  self.guildUiFragment = ZO_FadeSceneFragment:New(MasterMerchantGuildWindow)
+  self.salesUiFragment    = ZO_FadeSceneFragment:New(MasterMerchantWindow)
+  self.guildUiFragment    = ZO_FadeSceneFragment:New(MasterMerchantGuildWindow)
+  self.ListingUiFragment  = ZO_FadeSceneFragment:New(MasterMerchantListingWindow)
+  self.PurchaseUiFragment = ZO_FadeSceneFragment:New(MasterMerchantPurchaseWindow)
 
   LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, self.LinkHandler_OnLinkMouseUp)
 

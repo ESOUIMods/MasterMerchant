@@ -57,57 +57,6 @@ else
 end
 MasterMerchant.supported_lang      = MasterMerchant.client_lang == MasterMerchant.effective_lang
 
-MasterMerchant.personalSalesViewMode = 'self_vm'
-MasterMerchant.guildSalesViewMode    = 'guild_vm'
-MasterMerchant.listingsViewMode      = 'listings_vm'
-MasterMerchant.purchasesViewMode     = 'purchases_vm'
-
-MasterMerchant.itemsViewSize         = 'items_vs'
-MasterMerchant.guildsViewSize        = 'guild_vs'
-MasterMerchant.listingsViewSize      = 'listings_vs'
-MasterMerchant.purchasesViewSize     = 'purchases_vs'
-
--- default is self
-MasterMerchant.viewMode            = MasterMerchant.personalSalesViewMode
-MasterMerchant.isInitialized       = false -- added 8-25 used
-MasterMerchant.guildMemberInfo     = { } -- added 10-17 used as lookup
-MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
-MasterMerchant.systemDefault       = {} -- added 11-26 placeholder for init routine
-MasterMerchant.fontListChoices     = {} -- added 12-16 but always there
-MasterMerchant.isFirstScan         = false -- added again 5-14-2021 but used previously
-MasterMerchant.a_test              = {}
-
-if AwesomeGuildStore then
-  MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
-else
-  MasterMerchant.AwesomeGuildStoreDetected = false -- added 12-2
-end
---[[TODO
-local currencyFormatDealOptions = {
-    [0] = { color = ZO_ColorDef:New(0.98, 0.01, 0.01) },
-    [ITEM_DISPLAY_QUALITY_NORMAL] = { color = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, ITEM_DISPLAY_QUALITY_NORMAL)) },
---- the other qualities
-}
-]]--
-MasterMerchant.potionVarientTable = {
-  [0] = 0,
-  [1] = 0,
-  [3] = 1,
-  [10] = 2,
-  [19] = 2, -- level 19 pots I found
-  [20] = 3,
-  [24] = 3, -- level 24 pots I found
-  [30] = 4,
-  [39] = 4, -- level 39 pots I found
-  [40] = 5,
-  [44] = 5, -- level 44 pots I found
-  [125] = 6,
-  [129] = 7,
-  [134] = 8,
-  [307] = 9, -- health potion I commonly find
-  [308] = 9,
-}
-
 if LibDebugLogger then
   local logger          = LibDebugLogger.Create(MasterMerchant.name)
   MasterMerchant.logger = logger
@@ -178,6 +127,62 @@ function MasterMerchant:dm(log_type, ...)
     end
   end
 end
+
+-------------------------------------------------
+----- MasterMerchant Constants              -----
+-------------------------------------------------
+
+MasterMerchant.personalSalesViewMode = 'self_vm'
+MasterMerchant.guildSalesViewMode    = 'guild_vm'
+MasterMerchant.listingsViewMode      = 'listings_vm'
+MasterMerchant.purchasesViewMode     = 'purchases_vm'
+
+MasterMerchant.itemsViewSize         = 'items_vs'
+MasterMerchant.guildsViewSize        = 'guild_vs'
+MasterMerchant.listingsViewSize      = 'listings_vs'
+MasterMerchant.purchasesViewSize     = 'purchases_vs'
+
+-- default is self
+MasterMerchant.viewMode            = MasterMerchant.personalSalesViewMode
+MasterMerchant.isInitialized       = false -- added 8-25 used
+MasterMerchant.guildMemberInfo     = { } -- added 10-17 used as lookup
+MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
+MasterMerchant.systemDefault       = {} -- added 11-26 placeholder for init routine
+MasterMerchant.fontListChoices     = {} -- added 12-16 but always there
+MasterMerchant.isFirstScan         = false -- added again 5-14-2021 but used previously
+MasterMerchant.a_test              = {}
+MasterMerchant.aa_test              = {}
+
+if AwesomeGuildStore then
+  MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
+else
+  MasterMerchant.AwesomeGuildStoreDetected = false -- added 12-2
+end
+--[[TODO
+local currencyFormatDealOptions = {
+    [0] = { color = ZO_ColorDef:New(0.98, 0.01, 0.01) },
+    [ITEM_DISPLAY_QUALITY_NORMAL] = { color = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, ITEM_DISPLAY_QUALITY_NORMAL)) },
+--- the other qualities
+}
+]]--
+MasterMerchant.potionVarientTable = {
+  [0] = 0,
+  [1] = 0,
+  [3] = 1,
+  [10] = 2,
+  [19] = 2, -- level 19 pots I found
+  [20] = 3,
+  [24] = 3, -- level 24 pots I found
+  [30] = 4,
+  [39] = 4, -- level 39 pots I found
+  [40] = 5,
+  [44] = 5, -- level 44 pots I found
+  [125] = 6,
+  [129] = 7,
+  [134] = 8,
+  [307] = 9, -- health potion I commonly find
+  [308] = 9,
+}
 
 -- We do 'lazy' updates on the scroll lists, this is used to
 -- mark whether we need to RefreshData() before showing

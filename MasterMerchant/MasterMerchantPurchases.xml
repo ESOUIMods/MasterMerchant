@@ -48,7 +48,7 @@
           <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds"
                     mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"/>
           <OnClicked>
-            MasterMerchantGuildWindow:SetHidden(true)
+            MasterMerchantPurchaseWindow:SetHidden(true)
           </OnClicked>
         </Button>
         <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="TOP"
@@ -84,7 +84,8 @@
                 horizontalAlignment="CENTER">
           <Anchor point="LEFT" relativeTo="$(parent)ViewSizeButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="48" y="48"/>
-          <Textures normal="ESOUI/art/bank/bank_tabicon_withdraw_up.dds" mouseOver="ESOUI/art/bank/bank_tabicon_withdraw_down.dds"/>
+          <Textures normal="ESOUI/art/bank/bank_tabicon_withdraw_up.dds"
+                    mouseOver="ESOUI/art/bank/bank_tabicon_withdraw_down.dds"/>
           <OnClicked>
             MasterMerchant.ToggleMasterMerchantPurchases()
           </OnClicked>
@@ -96,7 +97,8 @@
                 horizontalAlignment="CENTER">
           <Anchor point="LEFT" relativeTo="$(parent)PurchaseButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="48" y="48"/>
-          <Textures normal="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds" mouseOver="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"/>
+          <Textures normal="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"
+                    mouseOver="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"/>
           <OnClicked>
             MasterMerchant.ToggleMasterMerchantListings()
           </OnClicked>
@@ -124,6 +126,15 @@
           <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="51"/>
           <Dimensions y="32"/>
           <Controls>
+            <Button name="$(parent)NameSwitch">
+              <Anchor point="TOPLEFT"/>
+              <Textures normal="ESOUI/art/chatwindow/chat_friendsonline_up.dds"
+                        mouseOver="ESOUI/art/chatwindow/chat_friendsonline_over.dds"/>
+              <Dimensions x="32" y="32"/>
+              <OnClicked>
+                MasterMerchant:ToggleBuyerSeller()
+              </OnClicked>
+            </Button>
             <Button name="$(parent)Seller" mouseEnabled="true">
               <Anchor point="TOPLEFT" offsetX="32"/>
               <Dimensions x="54" y="32"/>
@@ -175,8 +186,19 @@
         </Control>
         <Control name="$(parent)List" inherits="ZO_ScrollList">
           <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="1"/>
-          <Anchor point="BOTTOMRIGHT" offsetY="-3" offsetX="-3"/>
+          <Anchor point="BOTTOMRIGHT" offsetY="-40" offsetX="-3"/>
         </Control>
+        <Button name="MasterMerchantPurchaseWindowPriceSwitchButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5"/>
+          <Dimensions x="180"/>
+          <OnClicked>
+            MasterMerchant:SwitchPriceMode()
+          </OnClicked>
+        </Button>
+        <Texture name="$(parent)LoadingIcon" textureFile="EsoUI/Art/Miscellaneous/wait_icon.dds" hidden="true">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-3"/>
+          <Dimensions x="32" y="32"/>
+        </Texture>
       </Controls>
     </TopLevelControl>
 
@@ -192,9 +214,9 @@
           <Anchor point="TOPLEFT" offsetX="0" offsetY="-5"/>
         </Label>
         <Button name="$(parent)Seller" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT"
-                text="Buyer">
+                text="Seller">
           <Anchor point="TOPLEFT" offsetX="5" offsetY="5"/>
-          <Dimensions x="110" y="26"/>
+          <Dimensions x="140" y="26"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER"

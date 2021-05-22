@@ -48,7 +48,7 @@
           <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds"
                     mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"/>
           <OnClicked>
-            MasterMerchantGuildWindow:SetHidden(true)
+            MasterMerchantListingWindow:SetHidden(true)
           </OnClicked>
         </Button>
         <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="TOP"
@@ -84,7 +84,8 @@
                 horizontalAlignment="CENTER">
           <Anchor point="LEFT" relativeTo="$(parent)ViewSizeButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="48" y="48"/>
-          <Textures normal="ESOUI/art/bank/bank_tabicon_withdraw_up.dds" mouseOver="ESOUI/art/bank/bank_tabicon_withdraw_up.dds"/>
+          <Textures normal="ESOUI/art/bank/bank_tabicon_withdraw_up.dds"
+                    mouseOver="ESOUI/art/bank/bank_tabicon_withdraw_up.dds"/>
           <OnClicked>
             MasterMerchant.ToggleMasterMerchantPurchases()
           </OnClicked>
@@ -96,7 +97,8 @@
                 horizontalAlignment="CENTER">
           <Anchor point="LEFT" relativeTo="$(parent)PurchaseButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="48" y="48"/>
-          <Textures normal="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds" mouseOver="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"/>
+          <Textures normal="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"
+                    mouseOver="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"/>
           <OnClicked>
             MasterMerchant.ToggleMasterMerchantListings()
           </OnClicked>
@@ -196,7 +198,7 @@
           <Anchor point="TOPLEFT" offsetX="0" offsetY="-5"/>
         </Label>
         <Label name="$(parent)Seller" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT"
-                text="Seller">
+               text="Seller">
           <Anchor point="TOPLEFT" offsetX="5" offsetY="5"/>
           <Dimensions x="110" y="26"/>
         </Label>
