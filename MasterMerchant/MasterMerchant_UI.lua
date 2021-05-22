@@ -49,6 +49,13 @@ function MasterMerchant:ActiveWindow()
          (MasterMerchant.systemSavedVariables.viewSize == PURCHASES and MasterMerchantPurchaseWindow))
 end
 
+function MasterMerchant:ActiveFragment()
+  return ((MasterMerchant.systemSavedVariables.viewSize == ITEMS and self.salesUiFragment) or 
+          (MasterMerchant.systemSavedVariables.viewSize == GUILDS and self.guildUiFragment) or 
+          (MasterMerchant.systemSavedVariables.viewSize == LISTINGS and self.listingUiFragment) or 
+          (MasterMerchant.systemSavedVariables.viewSize == PURCHASES and self.purchaseUiFragment))
+end
+
 function MasterMerchant:SortByPrice(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
 
@@ -1951,53 +1958,6 @@ function MasterMerchant:UpdateRosterWindow(rankIndex)
   GUILD_ROSTER_MANAGER:RefreshData()
 end
 
-
--- Switch Sales window to display buyer or seller
-function MasterMerchant:ToggleBuyerSeller()
-  --[[TODO Make this also change the title of the window
-  ]]--
-  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
-    if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
-      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'seller'
-      MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-    else
-      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'buyer'
-      MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
-    end
-
-    MasterMerchant.scrollList:RefreshFilters()
-  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
-    if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
-      MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'seller'
-      MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-      MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_SALES_COLUMN))
-    elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
-      MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'item'
-      MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_ITEM_COLUMN))
-      MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_SALES_COLUMN))
-    else
-      MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'buyer'
-      MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
-      MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_PURCHASES_COLUMN))
-    end
-
-    MasterMerchant.guildScrollList:RefreshFilters()
-  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
-    if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
-      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'seller'
-      MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-    else
-      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'buyer'
-      MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
-    end
-
-    MasterMerchant.purchasesScrollList:RefreshFilters()
-  else
-    internal:dm("Warn", "Shit Hit the fan ToggleBuyerSeller")
-    MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
-  end
-end
-
 -- Update all the fields of the stats window based on the response from SalesStats()
 function MasterMerchant:UpdateStatsWindow(guildName)
   if not guildName or guildName == '' then guildName = 'SK_STATS_TOTAL' end
@@ -2047,6 +2007,52 @@ function MasterMerchant:UpdateStatsWindow(guildName)
 
 end
 
+-- Switch Sales window to display buyer or seller
+function MasterMerchant:ToggleBuyerSeller()
+  --[[TODO Make this also change the title of the window
+  ]]--
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
+    if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
+      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'seller'
+      MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
+    else
+      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'buyer'
+      MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
+    end
+
+    MasterMerchant.scrollList:RefreshFilters()
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
+    if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
+      MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'seller'
+      MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
+      MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_SALES_COLUMN))
+    elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
+      MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'item'
+      MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_ITEM_COLUMN))
+      MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_SALES_COLUMN))
+    else
+      MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'buyer'
+      MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
+      MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_PURCHASES_COLUMN))
+    end
+
+    MasterMerchant.guildScrollList:RefreshFilters()
+  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
+    if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
+      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'seller'
+      MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
+    else
+      MasterMerchant.systemSavedVariables.viewBuyerSeller = 'buyer'
+      MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
+    end
+
+    MasterMerchant.purchasesScrollList:RefreshFilters()
+  else
+    internal:dm("Warn", "Shit Hit the fan ToggleBuyerSeller")
+    MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
+  end
+end
+
 -- Switches the main window between full and half size.  Really this is hiding one
 -- and showing the other, but close enough ;)  Also makes the scene adjustments
 -- necessary to maintain the desired mail/trading house behaviors.  Copies the
@@ -2054,110 +2060,105 @@ end
 -- same on the other window when it appears.
 function MasterMerchant:ToggleViewMode()
   -- Switching to 'guild_vs' view
-  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
+  local theFragment = MasterMerchant:ActiveFragment()
+  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS or MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
+    MasterMerchant:ToggleMasterMerchantWindow()
+    MAIL_INBOX_SCENE:RemoveFragment(theFragment)
+    MAIL_SEND_SCENE:RemoveFragment(theFragment)
+    TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     MasterMerchant.systemSavedVariables.viewSize = GUILDS
-    MasterMerchantWindow:SetHidden(true)
+  end
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
+    MasterMerchant:ActiveWindow():SetHidden(true)
+    MasterMerchant.systemSavedVariables.viewSize = GUILDS
     if not self.listIsDirty['guild_vm'] then self.guildScrollList:RefreshFilters() end
-    MasterMerchantGuildWindow:SetHidden(false)
+    MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
-      MAIL_INBOX_SCENE:RemoveFragment(self.salesUiFragment)
-      MAIL_SEND_SCENE:RemoveFragment(self.salesUiFragment)
       MAIL_INBOX_SCENE:AddFragment(self.guildUiFragment)
       MAIL_SEND_SCENE:AddFragment(self.guildUiFragment)
     end
 
     if MasterMerchant.systemSavedVariables.openWithStore then
-      TRADING_HOUSE_SCENE:RemoveFragment(self.salesUiFragment)
       TRADING_HOUSE_SCENE:AddFragment(self.guildUiFragment)
     end
     -- Switching to 'items_vs' view
   elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
+    MasterMerchant:ActiveWindow():SetHidden(true)
     MasterMerchant.systemSavedVariables.viewSize = ITEMS
-    MasterMerchantGuildWindow:SetHidden(true)
     if not self.listIsDirty['self_vm'] then self.scrollList:RefreshFilters() end
-    MasterMerchantWindow:SetHidden(false)
+    MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
-      MAIL_INBOX_SCENE:RemoveFragment(self.guildUiFragment)
-      MAIL_SEND_SCENE:RemoveFragment(self.guildUiFragment)
       MAIL_INBOX_SCENE:AddFragment(self.salesUiFragment)
       MAIL_SEND_SCENE:AddFragment(self.salesUiFragment)
     end
 
     if MasterMerchant.systemSavedVariables.openWithStore then
-      TRADING_HOUSE_SCENE:RemoveFragment(self.guildUiFragment)
       TRADING_HOUSE_SCENE:AddFragment(self.salesUiFragment)
     end
+  else
+    MasterMerchant:dm("Warn", "Shit Hit the fan ToggleViewMode")
   end
 end
 
 -- Set the visibility status of the main window to the opposite of its current status
-function MasterMerchant.ToggleMasterMerchantWindow()
-  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
-    MasterMerchantGuildWindow:SetHidden(true)
-    MasterMerchantWindow:SetHidden(not MasterMerchantWindow:IsHidden())
-  else
-    MasterMerchantWindow:SetHidden(true)
-    MasterMerchantGuildWindow:SetHidden(not MasterMerchantGuildWindow:IsHidden())
-  end
-  if ShoppingList and not ShoppingListWindow:IsHidden() then
-    ShoppingListWindow:SetHidden(true)
-    MasterMerchantWindow:SetHidden(true)
-    MasterMerchantGuildWindow:SetHidden(true)
-  end
-  if Bonanza and not BonanzaWindow:IsHidden() then
-    BonanzaWindow:SetHidden(true)
-    MasterMerchantWindow:SetHidden(true)
-    MasterMerchantGuildWindow:SetHidden(true)
-  end
+function MasterMerchant:ToggleMasterMerchantWindow()
+  MasterMerchant:ActiveWindow():SetHidden(not MasterMerchant:ActiveWindow():IsHidden())
 end
 
-function MasterMerchant.ToggleMasterMerchantListings()
-  if not Bonanza then
-    MasterMerchant:dm("Info", "Bonanza not active")
-    return
+function MasterMerchant:ToggleMasterMerchantListings()
+  local theFragment = MasterMerchant:ActiveFragment()
+  MasterMerchant:ActiveWindow():SetHidden(true)
+  MasterMerchant.systemSavedVariables.viewSize = LISTINGS
+  if MasterMerchant.systemSavedVariables.openWithMail then
+    MAIL_INBOX_SCENE:RemoveFragment(theFragment)
+    MAIL_SEND_SCENE:RemoveFragment(theFragment)
+    MAIL_INBOX_SCENE:AddFragment(self.listingUiFragment)
+    MAIL_SEND_SCENE:AddFragment(self.listingUiFragment)
   end
-  BonanzaWindow:SetDrawLayer(DL_OVERLAY)
-  BonanzaWindow:SetHidden(not BonanzaWindow:IsHidden())
-  if ShoppingList then
-    ShoppingListWindow:SetHidden(true)
+
+  if MasterMerchant.systemSavedVariables.openWithStore then
+    TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
+    TRADING_HOUSE_SCENE:AddFragment(self.listingUiFragment)
   end
-  MasterMerchantWindow:SetHidden(true)
-  MasterMerchantGuildWindow:SetHidden(true)
+  MasterMerchant.listingsScrollList:RefreshFilters()
+  MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
-function MasterMerchant.ToggleMasterMerchantPurchases()
-  if not ShoppingList then
-    MasterMerchant:dm("Info", "ShoppingList not active")
-    return
-  end
-  ShoppingListWindow:SetDrawLayer(DL_OVERLAY)
-  ShoppingListWindow:SetHidden(true)
-  if Bonanza then
-    BonanzaWindow:SetHidden(true)
-  end
-  MasterMerchantWindow:SetHidden(true)
-  MasterMerchantGuildWindow:SetHidden(true)
+function MasterMerchant:ToggleMasterMerchantPurchases()
+  local theFragment = MasterMerchant:ActiveFragment()
+  MasterMerchant:ActiveWindow():SetHidden(true)
   MasterMerchant.systemSavedVariables.viewSize = PURCHASES
-  MasterMerchant.purchasesScrollList:RefreshData()
-  MasterMerchantPurchaseWindow:SetHidden(false)
+  if MasterMerchant.systemSavedVariables.openWithMail then
+    MAIL_INBOX_SCENE:RemoveFragment(theFragment)
+    MAIL_SEND_SCENE:RemoveFragment(theFragment)
+    MAIL_INBOX_SCENE:AddFragment(self.purchaseUiFragment)
+    MAIL_SEND_SCENE:AddFragment(self.purchaseUiFragment)
+  end
+
+  if MasterMerchant.systemSavedVariables.openWithStore then
+    TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
+    TRADING_HOUSE_SCENE:AddFragment(self.purchaseUiFragment)
+  end
+  MasterMerchant.purchasesScrollList:RefreshFilters()
+  MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
 -- Set the visibility status of the feebback window to the opposite of its current status
-function MasterMerchant.ToggleMasterMerchantFeedback()
+function MasterMerchant:ToggleMasterMerchantFeedback()
   MasterMerchantFeedback:SetDrawLayer(DL_OVERLAY)
   MasterMerchantFeedback:SetHidden(not MasterMerchantFeedback:IsHidden())
 end
 
 -- Set the visibility status of the stats window to the opposite of its current status
-function MasterMerchant.ToggleMasterMerchantStatsWindow()
+function MasterMerchant:ToggleMasterMerchantStatsWindow()
   if MasterMerchantStatsWindow:IsHidden() then MasterMerchant:UpdateStatsWindow('SK_STATS_TOTAL') end
   MasterMerchantStatsWindow:SetHidden(not MasterMerchantStatsWindow:IsHidden())
 end
 
 -- Set the visibility status of the stats window to the opposite of its current status
-function MasterMerchant.ToggleMasterMerchantPricingHistoryGraph()
+function MasterMerchant:ToggleMasterMerchantPricingHistoryGraph()
   MasterMerchant.systemSavedVariables.showGraph = not MasterMerchant.systemSavedVariables.showGraph
 end
 

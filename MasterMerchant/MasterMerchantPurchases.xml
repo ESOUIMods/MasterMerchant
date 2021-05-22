@@ -61,7 +61,7 @@
           <Textures normal="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds"
                     mouseOver="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds"/>
           <OnClicked>
-            MasterMerchant.ToggleMasterMerchantStatsWindow()
+            MasterMerchant:ToggleMasterMerchantStatsWindow()
           </OnClicked>
           <OnMouseExit>
             ZO_Tooltips_HideTextTooltip()
@@ -87,7 +87,7 @@
           <Textures normal="ESOUI/art/bank/bank_tabicon_withdraw_up.dds"
                     mouseOver="ESOUI/art/bank/bank_tabicon_withdraw_down.dds"/>
           <OnClicked>
-            MasterMerchant.ToggleMasterMerchantPurchases()
+            MasterMerchant:ToggleMasterMerchantPurchases()
           </OnClicked>
           <OnMouseExit>
             ZO_Tooltips_HideTextTooltip()
@@ -100,7 +100,7 @@
           <Textures normal="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"
                     mouseOver="ESOUI/art/icons/servicemappins/servicepin_guildkiosk.dds"/>
           <OnClicked>
-            MasterMerchant.ToggleMasterMerchantListings()
+            MasterMerchant:ToggleMasterMerchantListings()
           </OnClicked>
           <OnMouseExit>
             ZO_Tooltips_HideTextTooltip()
@@ -112,7 +112,7 @@
           <Dimensions x="48" y="48"/>
           <Textures normal="ESOUI/art/chatwindow/chat_mail_up.dds" mouseOver="ESOUI/art/chatwindow/chat_mail_over.dds"/>
           <OnClicked>
-            MasterMerchant.ToggleMasterMerchantFeedback()
+            MasterMerchant:ToggleMasterMerchantFeedback()
           </OnClicked>
           <OnMouseExit>
             ZO_Tooltips_HideTextTooltip()

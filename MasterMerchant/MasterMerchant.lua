@@ -1250,7 +1250,7 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithMail end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.openWithMail = value
-        local theFragment                                = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.salesUiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
+        local theFragment                                = MasterMerchant:ActiveFragment()
         if value then
           -- Register for the mail scenes
           MAIL_INBOX_SCENE:AddFragment(theFragment)
@@ -1271,7 +1271,7 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithStore end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.openWithStore = value
-        local theFragment                                 = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.salesUiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
+        local theFragment                                = MasterMerchant:ActiveFragment()
         if value then
           -- Register for the store scene
           TRADING_HOUSE_SCENE:AddFragment(theFragment)
@@ -2800,15 +2800,16 @@ function MasterMerchant:Initialize()
   -- player's settings indicate they want that behavior
   self.salesUiFragment    = ZO_FadeSceneFragment:New(MasterMerchantWindow)
   self.guildUiFragment    = ZO_FadeSceneFragment:New(MasterMerchantGuildWindow)
-  self.ListingUiFragment  = ZO_FadeSceneFragment:New(MasterMerchantListingWindow)
-  self.PurchaseUiFragment = ZO_FadeSceneFragment:New(MasterMerchantPurchaseWindow)
+  self.listingUiFragment  = ZO_FadeSceneFragment:New(MasterMerchantListingWindow)
+  self.purchaseUiFragment = ZO_FadeSceneFragment:New(MasterMerchantPurchaseWindow)
 
   LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, self.LinkHandler_OnLinkMouseUp)
 
   ZO_PreHook('ZO_InventorySlot_ShowContextMenu',
     function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
 
-  local theFragment = ((MasterMerchant.systemSavedVariables.viewSize == ITEMS) and self.uiFragment) or ((MasterMerchant.systemSavedVariables.viewSize == GUILDS) and self.guildUiFragment) or self.listingUiFragment
+  local theFragment = MasterMerchant:ActiveFragment()
+
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:AddFragment(theFragment)
     MAIL_SEND_SCENE:AddFragment(theFragment)

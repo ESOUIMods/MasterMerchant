@@ -200,8 +200,10 @@ MasterMerchant.guildColor                    = { }
 
 MasterMerchant.curSort                       = { 'time', 'desc' }
 MasterMerchant.curGuildSort                  = { 'rank', 'asc' }
-MasterMerchant.uiFragment                    = { }
+MasterMerchant.salesUiFragment               = { }
 MasterMerchant.guildUiFragment               = { }
+MasterMerchant.listingUiFragment               = { }
+MasterMerchant.purchaseUiFragment               = { }
 MasterMerchant.statsFragment                 = { }
 MasterMerchant.activeTip                     = nil
 MasterMerchant.tippingControl                = nil

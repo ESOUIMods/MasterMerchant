@@ -93,7 +93,7 @@ function internal:addPurchaseData(theEvent)
 end
 
 ----------------------------------------
------ iterateOverShoppinglistData  -----
+----- iterateOverPurchaseData  -----
 ----------------------------------------
 
 function internal:iterateOverPurchaseData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)

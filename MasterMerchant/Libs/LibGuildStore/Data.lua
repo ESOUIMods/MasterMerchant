@@ -430,7 +430,7 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
     }
     --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
-    ShoppingList.List:Refresh()
+    MasterMerchant.purchasesScrollList:RefreshFilters()
   end
 end
 
@@ -467,7 +467,7 @@ function internal:processAwesomeGuildStore(itemDatabase)
       internal:AddAwesomeGuildStoreListing(listingData)
     end
   end
-  Bonanza.List:Refresh()
+  MasterMerchant.listingsScrollList:RefreshFilters()
 end
 
 -- Handle the reset button - clear out the search and scan tables,

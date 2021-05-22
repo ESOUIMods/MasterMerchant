@@ -49,7 +49,7 @@ function internal:ImportShoppingList()
       added = internal:addPurchaseData(theEvent)
     end
   end
-  ShoppingList.List:Refresh()
+  MasterMerchant.purchasesScrollList:RefreshFilters()
 end
 
 ----------------------------------------
