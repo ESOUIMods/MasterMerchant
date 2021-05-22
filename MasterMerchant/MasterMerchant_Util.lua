@@ -60,27 +60,6 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
   return inputTable
 end
 
-function MasterMerchant:is_empty_or_nil(t)
-  if not t then return true end
-  if type(t) == "table" then
-    if next(t) == nil then
-      return true
-    else
-      return false
-    end
-  elseif type(t) == "string" then
-    if t == nil then
-      return true
-    elseif t == "" then
-      return true
-    else
-      return false
-    end
-  elseif type(t) == "nil" then
-    return true
-  end
-end
-
 function MasterMerchant.concat(a, ...)
   if a == nil and ... == nil then
     return ''
@@ -152,29 +131,6 @@ function MasterMerchant:playSounds(lastIndex)
   end
 end
 
-function MasterMerchant:Expected(eventID)
-  for itemNumber, itemNumberData in pairs(sales_data) do
-    for itemIndex, itemData in pairs(itemNumberData) do
-      if itemData['sales'] then
-        for _, checking in pairs(itemData['sales']) do
-          local checkIdString = checking.id
-          if type(checking.id) ~= 'string' then
-            checkIdString = tostring(checking.id)
-          end
-          if checkIdString == eventID then
-            local itemType, specializedItemType = GetItemLinkItemType(checking.itemLink)
-            MasterMerchant:dm("Debug", "Expected: " .. checking.itemLink .. " found in " .. itemIndex)
-            if (specializedItemType ~= 0) then
-              MasterMerchant:dm("Debug", MasterMerchant.concat("For",
-                zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType))))
-            end
-          end
-        end
-      end
-    end
-  end
-end
-
 -- the result as a string.
 -- ||cffffff38||r
 -- ||u0:6%:currency:||u
@@ -205,20 +161,6 @@ function MasterMerchant.TextTimeSince(theTime, useLowercase)
   else
     return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / ZO_ONE_DAY_IN_SECONDS))
   end
-end
-
--- Grabs the first and last events in guildID's sales history and compares the secsSince
--- values returned.  Returns true if the first event (ID 1) is newer than the last event,
--- false otherwise.
-function MasterMerchant.IsNewestFirst(guildID)
-  local numEvents                           = GetNumGuildEvents(guildID, GUILD_HISTORY_STORE)
-  local _, secsSinceFirst, _, _, _, _, _, _ = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, 1)
-  local _, secsSinceLast, _, _, _, _, _, _  = GetGuildEventInfo(guildID, GUILD_HISTORY_STORE, numEvents)
-  return (secsSinceFirst < secsSinceLast)
-end
-
-function MasterMerchant:ActiveWindow()
-  return ((MasterMerchant.systemSavedVariables.viewSize == 'full' and MasterMerchantWindow) or MasterMerchantGuildWindow)
 end
 
 -- A utility function to grab all the keys of the sound table

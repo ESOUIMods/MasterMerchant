@@ -338,6 +338,77 @@ function internal:IndexListingsData()
 
 end
 
+function internal:InitListingHistory()
+  internal:dm("Info", GetString(GS_INIT_ITEM_HISTORY))
+
+  local extradata = {}
+
+  if internal.listedItems == nil then
+    internal.listedItems    = {}
+  end
+
+  if internal.listedSellers == nil then
+    internal.listedSellers    = {}
+  end
+
+  local prefunc  = function(extraData)
+    extraData.start = GetTimeStamp()
+    internal:DatabaseBusy(true)
+    extraData.totalRecords = 0
+  end
+
+  local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
+    extraData.totalRecords = extraData.totalRecords + 1
+    if (not (saledata == {})) and saledata.guild then
+      local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
+      local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
+      local currentBuyer  = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
+
+      internal.listedItems[currentGuild] = internal.listedItems[currentGuild] or MMGuild:new(currentGuild)
+      local guild                       = internal.listedItems[currentGuild]
+      local _, firstsaledata            = next(versiondata.sales, nil)
+      local firstsaledataItemLink       = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK,
+        firstsaledata.itemLink)
+      local searchDataDesc              = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
+        GetItemLinkName(firstsaledataItemLink))
+      local searchDataAdder             = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
+      local searchData                  = searchDataDesc .. ' ' .. searchDataAdder
+      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil,
+        searchData)
+
+      internal.listedSellers[currentGuild] = internal.listedSellers[currentGuild] or MMGuild:new(currentGuild)
+      local guild                       = internal.listedSellers[currentGuild]
+      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
+
+    end
+    return false
+  end
+
+  local postfunc = function(extraData)
+
+    for _, guild in pairs(internal.listedItems) do
+      guild:sort()
+    end
+
+    for guildName, guild in pairs(internal.listedSellers) do
+      guild:sort()
+    end
+
+    internal:DatabaseBusy(false)
+
+    internal.totalListings = extraData.totalRecords
+    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+      internal:dm("Info", string.format(GetString(GS_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
+        internal.totalListings))
+    end
+  end
+
+  if not internal.isDatabaseBusy then
+    internal:iterateOverListingsData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata)
+  end
+
+end
+
 -- Bring seperate lists together we can still access the sales history all together
 function internal:ReferenceListingsDataContainer()
   internal:dm("Debug", "Bring LibGuildStore data together")

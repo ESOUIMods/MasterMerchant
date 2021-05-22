@@ -23,7 +23,7 @@ end
 ----------------------------------------
 
 function internal:addPostedItem(theEvent)
-  internal:dm("Debug", "addPostedItem")
+  --internal:dm("Debug", "addPostedItem")
 --[[
         local theEvent            = {
           guild = guildHash,

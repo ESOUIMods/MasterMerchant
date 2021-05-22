@@ -442,7 +442,6 @@ function internal:IndexSalesData()
 
 end
 
--- TODO is sr_index important here
 function internal:InitItemHistory()
   internal:dm("Info", GetString(GS_INIT_ITEM_HISTORY))
 
@@ -556,10 +555,10 @@ function internal:InitItemHistory()
 
       internal:DatabaseBusy(false)
 
-      internal.totalRecords = extraData.totalRecords
+      internal.totalSales = extraData.totalRecords
       if LibGuildStore_SavedVariables["showGuildInitSummary"] then
         internal:dm("Info", string.format(GetString(GS_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
-          internal.totalRecords))
+          internal.totalSales))
       end
     end
 
@@ -992,5 +991,64 @@ function internal:ResetSalesData()
   internal:RefreshLibGuildStore()
   internal:SetupListenerLibHistoire()
   internal:StartQueue()
+end
+
+function internal:Expected(eventID)
+  for itemNumber, itemNumberData in pairs(sales_data) do
+    for itemIndex, itemData in pairs(itemNumberData) do
+      if itemData['sales'] then
+        for _, checking in pairs(itemData['sales']) do
+          local checkIdString = checking.id
+          if type(checking.id) ~= 'string' then
+            checkIdString = tostring(checking.id)
+          end
+          if checkIdString == eventID then
+            local itemType, specializedItemType = GetItemLinkItemType(checking.itemLink)
+            internal:dm("Debug", "Expected: " .. checking.itemLink .. " found in " .. itemIndex)
+            if (specializedItemType ~= 0) then
+              internal:dm("Debug", internal:concat("For",
+                zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType))))
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+-- TODO not updated
+-- DEBUG
+function internal:checkForDoubles()
+
+  local dataList = {
+    [0] = GS00DataSavedVariables,
+    [1] = GS01DataSavedVariables,
+    [2] = GS02DataSavedVariables,
+    [3] = GS03DataSavedVariables,
+    [4] = GS04DataSavedVariables,
+    [5] = GS05DataSavedVariables,
+    [6] = GS06DataSavedVariables,
+    [7] = GS07DataSavedVariables,
+    [8] = GS08DataSavedVariables,
+    [9] = GS09DataSavedVariables,
+    [10] = GS10DataSavedVariables,
+    [11] = GS11DataSavedVariablesa,
+    [12] = GS12DataSavedVariables,
+    [13] = GS13DataSavedVariables,
+    [14] = GS14DataSavedVariables,
+    [15] = GS15DataSavedVariables,
+  }
+
+  for i = 0, 14, 1 do
+    for itemid, versionlist in pairs(dataList[i]) do
+      for versionid, _ in pairs(versionlist) do
+        for j = i + 1, 15, 1 do
+          if dataList[j][itemid] and dataList[j][itemid][versionid] then
+            MasterMerchant:dm("Info", itemid .. '/' .. versionid .. ' is in ' .. i .. ' and ' .. j .. '.')
+          end
+        end
+      end
+    end
+  end
 end
 

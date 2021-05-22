@@ -9,16 +9,16 @@
 <GuiXml>
   <Controls>
 
-    <!-- Guild Main Window -->
+    <!-- Guilds Main Window guild_vm -->
     <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantGuildWindow" hidden="true">
       <Dimensions x="900" y="692"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)
       </OnMoveStop>
       <OnShow>
-        if MasterMerchant.listIsDirty["guild"] then
+        if MasterMerchant.listIsDirty["guild_vm"] then
         MasterMerchant.guildScrollList:RefreshData()
-        MasterMerchant.listIsDirty["guild"] = false
+        MasterMerchant.listIsDirty["guild_vm"] = false
         end
         SetGameCameraUIMode(true)
       </OnShow>

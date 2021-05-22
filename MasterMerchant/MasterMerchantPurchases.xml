@@ -9,16 +9,16 @@
 <GuiXml>
   <Controls>
 
-    <!-- Purchases Main Window -->
+    <!-- Purchases Main Window purchases_vm -->
     <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantPurchaseWindow" hidden="true">
       <Dimensions x="900" y="692"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)
       </OnMoveStop>
       <OnShow>
-        if MasterMerchant.listIsDirty["purchases"] then
-        MasterMerchant.listingsScrollList:RefreshData()
-        MasterMerchant.listIsDirty["purchases"] = false
+        if MasterMerchant.listIsDirty["purchases_vm"] then
+        MasterMerchant.purchasesScrollList:RefreshData()
+        MasterMerchant.listIsDirty["purchases_vm"] = false
         end
         SetGameCameraUIMode(true)
       </OnShow>
@@ -37,7 +37,7 @@
             <EditBox name="MasterMerchantPurchaseWindowSearchBox" inherits="ZO_DefaultEditForBackdrop">
               <OnEnter>
                 self:LoseFocus()
-                MasterMerchant.listingsScrollList:RefreshFilters()
+                MasterMerchant.purchasesScrollList:RefreshFilters()
               </OnEnter>
             </EditBox>
           </Controls>

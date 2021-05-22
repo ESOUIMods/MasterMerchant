@@ -9,16 +9,16 @@
 <GuiXml>
   <Controls>
 
-    <!-- Listings Main Window -->
+    <!-- Listings Main Window listings_vm -->
     <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantListingWindow" hidden="true">
       <Dimensions x="900" y="692"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)
       </OnMoveStop>
       <OnShow>
-        if MasterMerchant.listIsDirty["listings"] then
+        if MasterMerchant.listIsDirty["listings_vm"] then
         MasterMerchant.listingsScrollList:RefreshData()
-        MasterMerchant.listIsDirty["listings"] = false
+        MasterMerchant.listIsDirty["listings_vm"] = false
         end
         SetGameCameraUIMode(true)
       </OnShow>
@@ -177,6 +177,10 @@
           <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="1"/>
           <Anchor point="BOTTOMRIGHT" offsetY="-3" offsetX="-3"/>
         </Control>
+        <Texture name="$(parent)LoadingIcon" textureFile="EsoUI/Art/Miscellaneous/wait_icon.dds" hidden="true">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-3"/>
+          <Dimensions x="32" y="32"/>
+        </Texture>
       </Controls>
     </TopLevelControl>
 
@@ -191,12 +195,11 @@
                horizontalAlignment="RIGHT" text="1">
           <Anchor point="TOPLEFT" offsetX="0" offsetY="-5"/>
         </Label>
-        <Button name="$(parent)Seller" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT"
-                text="Buyer">
+        <Label name="$(parent)Seller" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                text="Seller">
           <Anchor point="TOPLEFT" offsetX="5" offsetY="5"/>
           <Dimensions x="110" y="26"/>
-          <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
-        </Button>
+        </Label>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER"
                horizontalAlignment="LEFT" text="Guild">
           <Anchor point="TOPLEFT" offsetX="118" offsetY="5"/>

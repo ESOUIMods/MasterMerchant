@@ -57,8 +57,18 @@ else
 end
 MasterMerchant.supported_lang      = MasterMerchant.client_lang == MasterMerchant.effective_lang
 
+MasterMerchant.personalSalesViewMode = 'self_vm'
+MasterMerchant.guildSalesViewMode    = 'guild_vm'
+MasterMerchant.listingsViewMode      = 'listings_vm'
+MasterMerchant.purchasesViewMode     = 'purchases_vm'
+
+MasterMerchant.itemsViewSize         = 'items_vs'
+MasterMerchant.guildsViewSize        = 'guild_vs'
+MasterMerchant.listingsViewSize      = 'listings_vs'
+MasterMerchant.purchasesViewSize     = 'purchases_vs'
+
 -- default is self
-MasterMerchant.viewMode            = 'self'
+MasterMerchant.viewMode            = MasterMerchant.personalSalesViewMode
 MasterMerchant.isInitialized       = false -- added 8-25 used
 MasterMerchant.guildMemberInfo     = { } -- added 10-17 used as lookup
 MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
@@ -172,10 +182,11 @@ end
 -- We do 'lazy' updates on the scroll lists, this is used to
 -- mark whether we need to RefreshData() before showing
 -- ITEMS, GUILDS, LISTINGS, PURCHASES
-MasterMerchant.listIsDirty                   = { ['full'] = false, ['guild'] = false, ['listings'] = false, ['purchases'] = false }
+MasterMerchant.listIsDirty                   = { [MasterMerchant.personalSalesViewMode] = false, [MasterMerchant.guildSalesViewMode] = false, [MasterMerchant.listingsViewMode] = false, [MasterMerchant.purchasesViewMode] = false }
 MasterMerchant.scrollList                    = nil
 MasterMerchant.guildScrollList               = nil
 MasterMerchant.listingsScrollList            = nil
+MasterMerchant.purchasesScrollList            = nil
 MasterMerchant.calcInput                     = nil
 
 MasterMerchant.guildSales                    = nil

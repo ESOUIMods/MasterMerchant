@@ -19,7 +19,7 @@ function internal:CheckForDuplicateCancelledItem(itemLink, eventID)
 end
 
 function internal:addCancelledItem(theEvent)
-  internal:dm("Debug", "addCancelledItem")
+  --internal:dm("Debug", "addCancelledItem")
 --[[
         local theEvent            = {
           guild = guildHash,

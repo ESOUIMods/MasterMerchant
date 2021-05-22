@@ -13,10 +13,10 @@ local internal                  = _G["LibGuildStore_Internal"]
 
 local OriginalSetupPendingPost
 
-local ITEMS                     = 'full'
-local GUILDS                    = 'half'
-local LISTINGS                  = 'listings'
-local PURCHASES                 = 'purchases'
+local ITEMS                     = MasterMerchant.itemsViewSize
+local GUILDS                    = MasterMerchant.guildsViewSize
+local LISTINGS                  = MasterMerchant.listingsViewSize
+local PURCHASES                 = MasterMerchant.purchasesViewSize
 
 CSA_EVENT_SMALL_TEXT            = 1
 CSA_EVENT_LARGE_TEXT            = 2
@@ -1293,6 +1293,7 @@ function MasterMerchant:LibAddonInit()
         MasterMerchant.listIsDirty[ITEMS]                 = true
         MasterMerchant.listIsDirty[GUILDS]                = true
         MasterMerchant.listIsDirty[LISTINGS]              = true
+        MasterMerchant.listIsDirty[PURCHASES]             = true
       end,
       default = MasterMerchant.systemDefault.showFullPrice,
     },
@@ -1752,40 +1753,6 @@ function MasterMerchant:LibAddonInit()
   LAM:RegisterOptionControls('MasterMerchantOptions', optionsData)
 end
 
-function MasterMerchant:checkForDoubles()
-
-  local dataList = {
-    [0] = MM00Data.savedVariables.SalesData,
-    [1] = MM01Data.savedVariables.SalesData,
-    [2] = MM02Data.savedVariables.SalesData,
-    [3] = MM03Data.savedVariables.SalesData,
-    [4] = MM04Data.savedVariables.SalesData,
-    [5] = MM05Data.savedVariables.SalesData,
-    [6] = MM06Data.savedVariables.SalesData,
-    [7] = MM07Data.savedVariables.SalesData,
-    [8] = MM08Data.savedVariables.SalesData,
-    [9] = MM09Data.savedVariables.SalesData,
-    [10] = MM10Data.savedVariables.SalesData,
-    [11] = MM11Data.savedVariables.SalesData,
-    [12] = MM12Data.savedVariables.SalesData,
-    [13] = MM13Data.savedVariables.SalesData,
-    [14] = MM14Data.savedVariables.SalesData,
-    [15] = MM15Data.savedVariables.SalesData
-  }
-
-  for i = 0, 14, 1 do
-    for itemid, versionlist in pairs(dataList[i]) do
-      for versionid, _ in pairs(versionlist) do
-        for j = i + 1, 15, 1 do
-          if dataList[j][itemid] and dataList[j][itemid][versionid] then
-            MasterMerchant:dm("Info", itemid .. '/' .. versionid .. ' is in ' .. i .. ' and ' .. j .. '.')
-          end
-        end
-      end
-    end
-  end
-end
-
 function MasterMerchant:SpecialMessage(force)
   if GetDisplayName() == '@sylviermoone' or (GetDisplayName() == '@Philgo68' and force) then
     local daysCount = math.floor(((GetTimeStamp() - (1460980800 + 38 * ZO_ONE_DAY_IN_SECONDS + 19 * ZO_ONE_HOUR_IN_SECONDS)) / ZO_ONE_DAY_IN_SECONDS) * 4) / 4
@@ -1944,6 +1911,7 @@ function MasterMerchant:RefreshMasterMerchantWindow()
     end
     self.listIsDirty[GUILDS]   = true
     self.listIsDirty[LISTINGS] = true
+    self.listIsDirty[PURCHASES] = true
   elseif currentView == GUILDS then
     if not MasterMerchantGuildWindow:IsHidden() and not internal.isDatabaseBusy then
       self.guildScrollList:RefreshData()
@@ -1952,14 +1920,26 @@ function MasterMerchant:RefreshMasterMerchantWindow()
     end
     self.listIsDirty[ITEMS]    = true
     self.listIsDirty[LISTINGS] = true
-  else
+    self.listIsDirty[PURCHASES] = true
+  elseif currentView == LISTINGS then
     if not MasterMerchantListingWindow:IsHidden() and not internal.isDatabaseBusy then
-      self.listingscrolllist:RefreshData()
+      self.listingsScrollList:RefreshData()
     else
       self.listIsDirty[LISTINGS] = true
     end
     self.listIsDirty[ITEMS]  = true
     self.listIsDirty[GUILDS] = true
+    self.listIsDirty[PURCHASES] = true
+  elseif currentView == PURCHASES then
+    if not MasterMerchantPurchaseWindow:IsHidden() and not internal.isDatabaseBusy then
+      self.purchasesScrollList:RefreshData()
+    else
+      self.listIsDirty[PURCHASES] = true
+    end
+    self.listIsDirty[ITEMS]  = true
+    self.listIsDirty[GUILDS] = true
+    self.listIsDirty[LISTINGS] = true
+  else
   end
 end
 
@@ -1968,6 +1948,7 @@ function MasterMerchant:SetMasterMerchantWindowDirty()
   self.listIsDirty[ITEMS]    = true
   self.listIsDirty[GUILDS]   = true
   self.listIsDirty[LISTINGS] = true
+  self.listIsDirty[PURCHASES] = true
 end
 
 -- Called after store scans complete, re-creates indexes if need be,
@@ -2634,10 +2615,14 @@ function MasterMerchant:Initialize()
     openWithMail = true,
     openWithStore = true,
     showFullPrice = true,
-    winLeft = 30,
-    winTop = 85,
+    salesWinLeft = 30, -- winLeft
+    salesWinTop = 85, -- winTop
     guildWinLeft = 30,
     guildWinTop = 85,
+    listingWinLeft = 30,
+    listingWinTop = 85,
+    purchaseWinLeft = 30,
+    purchaseWinTop = 85,
     statsWinLeft = 720,
     statsWinTop = 820,
     feedbackWinLeft = 720,
@@ -2675,7 +2660,6 @@ function MasterMerchant:Initialize()
     saucy = false,
     displayListingMessage = false,
     -- settingsToUse
-    viewSize = ITEMS,
     customTimeframe = 90,
     customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS),
     diplayGuildInfo = false,
@@ -2788,11 +2772,11 @@ function MasterMerchant:Initialize()
   end
 
   -- Blacklist
-  if not MasterMerchant:is_empty_or_nil(self.acctSavedVariables.blacklist) then
+  if not internal:is_empty_or_nil(self.acctSavedVariables.blacklist) then
     MasterMerchant.systemSavedVariables.blacklist = self.acctSavedVariables.blacklist
     self.acctSavedVariables.blacklist             = nil
   end
-  if not MasterMerchant:is_empty_or_nil(self.savedVariables.blacklist) then
+  if not internal:is_empty_or_nil(self.savedVariables.blacklist) then
     MasterMerchant.systemSavedVariables.blacklist = self.savedVariables.blacklist
     self.savedVariables.blacklist                 = nil
   end
@@ -3090,7 +3074,7 @@ function MasterMerchant:InitScrollLists()
     end
   end
 
-  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalRecords))
+  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales))
 
   if NonContiguousCount(sales_data) > 0 then
     --[[ Sales exist, but no way to know from what source
@@ -3335,9 +3319,9 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
     MasterMerchantGuildWindow:ClearAnchors()
     MasterMerchantGuildWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
-    MasterMerchant.systemSavedVariables.winLeft      = 30
+    MasterMerchant.systemSavedVariables.salesWinLeft      = 30
     MasterMerchant.systemSavedVariables.guildWinLeft = 30
-    MasterMerchant.systemSavedVariables.winTop       = 85
+    MasterMerchant.systemSavedVariables.salesWinTop  = 85
     MasterMerchant.systemSavedVariables.guildWinTop  = 85
     MasterMerchant:dm("Info", GetString(MM_RESET_POSITION))
     return

@@ -23,7 +23,7 @@ end
 ----------------------------------------
 
 function internal:addPurchaseData(theEvent)
-  internal:dm("Debug", "addPurchaseData")
+  --internal:dm("Debug", "addPurchaseData")
 --[[
       local theEvent            = {
         guild = itemData.guildName,
@@ -332,6 +332,77 @@ function internal:IndexPurchaseData()
 
   if not internal.isDatabaseBusy then
     internal:iterateOverPurchaseData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
+  end
+
+end
+
+function internal:InitPurchaseHistory()
+  internal:dm("Info", GetString(GS_INIT_ITEM_HISTORY))
+
+  local extradata = {}
+
+  if internal.purchasedItems == nil then
+    internal.purchasedItems    = {}
+  end
+
+  if internal.purchasedSellers == nil then
+    internal.purchasedSellers    = {}
+  end
+
+  local prefunc  = function(extraData)
+    extraData.start = GetTimeStamp()
+    internal:DatabaseBusy(true)
+    extraData.totalRecords = 0
+  end
+
+  local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
+    extraData.totalRecords = extraData.totalRecords + 1
+    if (not (saledata == {})) and saledata.guild then
+      local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
+      local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
+      local currentBuyer  = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
+
+      internal.purchasedItems[currentGuild] = internal.purchasedItems[currentGuild] or MMGuild:new(currentGuild)
+      local guild                       = internal.purchasedItems[currentGuild]
+      local _, firstsaledata            = next(versiondata.sales, nil)
+      local firstsaledataItemLink       = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK,
+        firstsaledata.itemLink)
+      local searchDataDesc              = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
+        GetItemLinkName(firstsaledataItemLink))
+      local searchDataAdder             = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
+      local searchData                  = searchDataDesc .. ' ' .. searchDataAdder
+      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil,
+        searchData)
+
+      internal.purchasedSellers[currentGuild] = internal.purchasedSellers[currentGuild] or MMGuild:new(currentGuild)
+      local guild                       = internal.purchasedSellers[currentGuild]
+      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
+
+    end
+    return false
+  end
+
+  local postfunc = function(extraData)
+
+    for _, guild in pairs(internal.purchasedItems) do
+      guild:sort()
+    end
+
+    for guildName, guild in pairs(internal.purchasedSellers) do
+      guild:sort()
+    end
+
+    internal:DatabaseBusy(false)
+
+    internal.totalPurchases = extraData.totalRecords
+    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+      internal:dm("Info", string.format(GetString(GS_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
+        internal.totalPurchases))
+    end
+  end
+
+  if not internal.isDatabaseBusy then
+    internal:iterateOverPurchaseData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata)
   end
 
 end

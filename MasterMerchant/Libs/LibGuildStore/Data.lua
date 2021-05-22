@@ -410,9 +410,9 @@ end
 
 -- this is for vanilla to add purchace data
 function internal:onTradingHouseEvent(eventCode, slotId, isPending)
-  internal:dm("Debug", "onTradingHouseEvent")
+  --internal:dm("Debug", "onTradingHouseEvent")
   if not AwesomeGuildStore then
-    internal:dm("Debug", "not AwesomeGuildStore")
+    --internal:dm("Debug", "not AwesomeGuildStore")
     local icon, itemName, displayQuality, quantity, seller, timeRemaining, price, currencyType, itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo(slotId)
     local guildId, guild, guildAlliance = GetCurrentTradingHouseGuildDetails()
     local listedTime = GetTimeStamp() - (2592000 - timeRemaining)
@@ -428,7 +428,7 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
       id = Id64ToString(itemUniqueId),
       buyer = GetDisplayName()
     }
-    internal:dm("Debug", theEvent)
+    --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
     ShoppingList.List:Refresh()
   end

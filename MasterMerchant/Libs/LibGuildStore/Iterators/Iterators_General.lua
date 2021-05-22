@@ -268,17 +268,17 @@ function internal:DatabaseBusy(start)
   if not start then
     MasterMerchantWindowLoadingIcon.animation:Stop()
     MasterMerchantGuildWindowLoadingIcon.animation:Stop()
-    MasterMerchantGuildWindowLoadingIcon.animation:Stop()
+    MasterMerchantListingWindowLoadingIcon.animation:Stop()
   end
 
   MasterMerchantWindowLoadingIcon:SetHidden(not start)
   MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
-  MasterMerchantGuildWindowLoadingIcon:SetHidden(not start)
+  MasterMerchantListingWindowLoadingIcon:SetHidden(not start)
 
   if start then
     MasterMerchantWindowLoadingIcon.animation:PlayForward()
     MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
-    MasterMerchantGuildWindowLoadingIcon.animation:PlayForward()
+    MasterMerchantListingWindowLoadingIcon.animation:PlayForward()
   end
 end
 

@@ -170,7 +170,6 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
 end
 
 local function BuildLookupTables()
-  internal:dm("Debug", "BuildLookupTables")
   -- Build lookup tables
   internal:BuildAccountNameLookup()
   internal:BuildItemLinkNameLookup()
@@ -203,6 +202,8 @@ local function SetupData()
   LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
   -- and...
   LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
+  LEQ:Add(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
+  LEQ:Add(function() internal:InitListingHistory() end, 'InitPurchaseHistory')
   -- Index Data, like sr_index
   if LibGuildStore_SavedVariables["minimalIndexing"] then
     LEQ:Add(function() internal:dm("Info", GetString(GS_MINIMAL_INDEXING)) end, "LibGuildStoreIndexData")

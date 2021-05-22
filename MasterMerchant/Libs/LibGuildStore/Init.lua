@@ -166,8 +166,16 @@ internal.guildItems              = nil
 internal.myItems                 = nil
 internal.guildSales              = nil
 internal.guildPurchases          = nil
-internal.totalRecords            = 0
 internal.currentGuilds           = {}
+
+internal.totalSales              = 0
+internal.totalPurchases          = 0
+internal.totalListings           = 0
+
+internal.purchasedItems          = nil
+internal.purchasedSellers        = nil
+internal.listedItems             = nil
+internal.listedSellers           = nil
 
 internal.GS_NA_NAMESPACE          = "datana"
 internal.GS_EU_NAMESPACE          = "dataeu"

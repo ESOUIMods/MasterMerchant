@@ -3,6 +3,7 @@
 -- Written February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
+local internal       = _G["LibGuildStore_Internal"]
 specialDWCount  = 0
 
 local mfloor    = math.floor
@@ -289,4 +290,9 @@ function MMGuild:sort()
   self:sortRankIndex(9)
 end
 
-
+function MMGuild:addPurchaseByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)
+  if sellerName == nil then return end
+  if timestamp == nil then return end
+  if type(timestamp) ~= 'number' then return end
+  self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText)
+end
