@@ -184,7 +184,7 @@
           <Anchor point="BOTTOMRIGHT" offsetY="-40" offsetX="-3"/>
         </Control>
         <Button name="MasterMerchantGuildSwitchViewButton" inherits="ZO_DefaultButton">
-          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-5"/>
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5"/>
           <Dimensions x="180"/>
           <OnClicked>
             MasterMerchant:SwitchViewMode()

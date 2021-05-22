@@ -177,8 +177,15 @@
         </Control>
         <Control name="$(parent)List" inherits="ZO_ScrollList">
           <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="1"/>
-          <Anchor point="BOTTOMRIGHT" offsetY="-3" offsetX="-3"/>
+          <Anchor point="BOTTOMRIGHT" offsetY="-40" offsetX="-3"/>
         </Control>
+        <Button name="MasterMerchantListingWindowPriceSwitchButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5"/>
+          <Dimensions x="180"/>
+          <OnClicked>
+            MasterMerchant:SwitchPriceMode()
+          </OnClicked>
+        </Button>
         <Texture name="$(parent)LoadingIcon" textureFile="EsoUI/Art/Miscellaneous/wait_icon.dds" hidden="true">
           <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-3"/>
           <Dimensions x="32" y="32"/>
@@ -197,11 +204,12 @@
                horizontalAlignment="RIGHT" text="1">
           <Anchor point="TOPLEFT" offsetX="0" offsetY="-5"/>
         </Label>
-        <Label name="$(parent)Seller" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT"
-               text="Seller">
+        <Button name="$(parent)Seller" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT"
+                text="Seller">
           <Anchor point="TOPLEFT" offsetX="5" offsetY="5"/>
-          <Dimensions x="110" y="26"/>
-        </Label>
+          <Dimensions x="140" y="26"/>
+          <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
+        </Button>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER"
                horizontalAlignment="LEFT" text="Guild">
           <Anchor point="TOPLEFT" offsetX="118" offsetY="5"/>
