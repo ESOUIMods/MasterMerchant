@@ -37,6 +37,9 @@ ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Показывает предупреж�
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Оффлайн отчет")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Выводит предупреждение в чат о проданных, пока вы были оффлайн, предметах при логине.")
 
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
+
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Игнорировать подозрительные цены")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Игнорировать сделки с ценами, сильно отклоняющимися от привычных.")
 
@@ -59,6 +62,7 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
+ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Цена за штуку")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Общая цена")
@@ -66,6 +70,10 @@ ZO_CreateStringId("SK_BUYER_COLUMN", "Покупатель")
 ZO_CreateStringId("SK_GUILD_COLUMN", "Гильдия")
 ZO_CreateStringId("SK_ITEM_COLUMN", "Предмет")
 ZO_CreateStringId("SK_TIME_COLUMN", "Время продажи")
+ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Listed Item")
+ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Time Seen")
+ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Цена")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "Цена(шт.)")
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Двойной клик на предмете - ссылка в чат.")
@@ -196,6 +204,7 @@ ZO_CreateStringId("MM_SAUCY_NAME", "Показывать прибыль вмес
 ZO_CreateStringId("MM_SAUCY_TIP", "В магазине отображает потенциальную прибыль, вместо процента наценки.")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "Фильтр по прибыли")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Добавляет в аддон АGS дополнительный фильтр, основаный на прибыли.")
+
 ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d предмете/%d проданных]>>")
 
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_NAME", "Мин. кол-во предметов")

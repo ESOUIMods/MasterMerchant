@@ -4,6 +4,7 @@
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
+-- Translation provided by Urbs/Balver - EU Server
 
 -- Options Menu
 ZO_CreateStringId("SK_ALERT_ANNOUNCE_NAME", "On-Screen Alerts")
@@ -36,6 +37,9 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Chat Alerts")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Show sales alerts in your chat box.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Offline Sales Report")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Show alerts in chat for items you sold while offline when you log in next.")
+
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
 
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Ignore Outlier Prices")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Ignore transactions with prices way outside standard deviation.")

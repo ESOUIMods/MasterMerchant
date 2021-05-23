@@ -18,7 +18,10 @@ local ASYNC          = LibAsync
 ----------------------------------------
 
 function internal:ImportShoppingList()
-  if not ShoppingList then return end
+  if not ShoppingList then
+    internal:dm("Info", "ShoppingList Not Active")
+    return
+  end
   internal:dm("Debug", "ImportShoppingList")
   shoppingList = {}
 
@@ -33,7 +36,7 @@ function internal:ImportShoppingList()
   ["ItemLink"] = 58,
   ]]--
   for i = 1, #ShoppingListVar.Default.ShoppingList["$AccountWide"].Purchases do
-    local purchase = {}
+    local added = false
     local theEvent            = {
       guild = ShoppingList.SavedData.System.Tables["Guilds"][ShoppingList.SavedData.System.Purchases[i]["Guild"]],
       itemLink = ShoppingList.SavedData.System.Tables["ItemLinks"][ShoppingList.SavedData.System.Purchases[i]["ItemLink"]],
@@ -50,6 +53,7 @@ function internal:ImportShoppingList()
     end
   end
   MasterMerchant.purchasesScrollList:RefreshFilters()
+  internal:dm("Info", "ShoppingList data imported.")
 end
 
 ----------------------------------------

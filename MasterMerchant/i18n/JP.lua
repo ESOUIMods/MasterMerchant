@@ -37,6 +37,9 @@ ZO_CreateStringId("SK_ALERT_CHAT_TIP", "セールスアラートをチャット�
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "オフラインセールスレポート")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "次にログインした時、オフライン時に売れたアイテムのアラートをチャットに表示します。")
 
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
+
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "以上な価格を無視")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "スタンダード偏差から遠い価格の取引を無視します。")
 
@@ -59,6 +62,7 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
+ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "単価を表示")
 ZO_CreateStringId("SK_SHOW_TOTAL", "合計価格を表示")
@@ -66,6 +70,10 @@ ZO_CreateStringId("SK_BUYER_COLUMN", "購入者")
 ZO_CreateStringId("SK_GUILD_COLUMN", "ギルド")
 ZO_CreateStringId("SK_ITEM_COLUMN", "売れたアイテム")
 ZO_CreateStringId("SK_TIME_COLUMN", "販売時間")
+ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Listed Item")
+ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Time Seen")
+ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "価格")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "価格(1個 )")
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "アイテムをダブルクリックすることでチャットに表示します。")

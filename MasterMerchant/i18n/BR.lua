@@ -37,6 +37,9 @@ ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Mostra alertas de vendas na sua janela d
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Relatório de Vendas Offline")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Mostra alertas no chat para itens que você vendeu enquanto não estava no jogo na próxima vez que você entrar.")
 
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
+
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Ignora Preços Atípicos")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Ignora transações com preços fora do desvio padrão.")
 
@@ -59,6 +62,7 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
+ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Mostra Preço Unitário")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Mostra Preço Total")
@@ -66,6 +70,10 @@ ZO_CreateStringId("SK_BUYER_COLUMN", "Comprador")
 ZO_CreateStringId("SK_GUILD_COLUMN", "Guilda")
 ZO_CreateStringId("SK_ITEM_COLUMN", "Item Vendido")
 ZO_CreateStringId("SK_TIME_COLUMN", "Tempo de Venda")
+ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Listed Item")
+ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Time Seen")
+ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Preço")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "Preço(unit.)")
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Dê duplo-clique no item para colocá-lo no chat.")
@@ -178,6 +186,7 @@ ZO_CreateStringId("MM_CTRLSHIFT_TIME_TIP", "Número de dias que o histórico usa
 ZO_CreateStringId("MM_RANGE_ALL", "Tudo")
 ZO_CreateStringId("MM_RANGE_FOCUS1", "Foco 1")
 ZO_CreateStringId("MM_RANGE_FOCUS2", "Foco 2")
+ZO_CreateStringId("MM_RANGE_FOCUS3", "Foco 3")
 ZO_CreateStringId("MM_RANGE_NONE", "Nenhum")
 ZO_CreateStringId("MM_BLACKLIST_NAME", "Lista Negra de Jogadores e Guildas")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "Lista os nomes dos jogadores e guildes que você quer que o MM ignore durante os cálculos.")

@@ -37,6 +37,9 @@ ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Show sales alerts in your chat box.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Offline Sales Report")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Show alerts in chat for items you sold while offline when you log in next.")
 
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
+
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Ignoruj ​​wartości odstające")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Ignoruj ​​transakcje, których ceny znacznie wykraczają poza odchylenie standardowe.")
 
@@ -59,6 +62,7 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
+ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Show Unit Price")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Show Total Price")
@@ -66,6 +70,10 @@ ZO_CreateStringId("SK_BUYER_COLUMN", "Buyer")
 ZO_CreateStringId("SK_GUILD_COLUMN", "Guild")
 ZO_CreateStringId("SK_ITEM_COLUMN", "Item Sold")
 ZO_CreateStringId("SK_TIME_COLUMN", "Sale Time")
+ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Listed Item")
+ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Time Seen")
+ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Price")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "Price(ea.)")
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Right-click on an item to link it in chat.")
@@ -79,7 +87,7 @@ ZO_CreateStringId("SK_TIME_DAYS", "<<1[Yesterday/%d days ago]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ",")
 
 -- Chat and center screen alerts/messages
-ZO_CreateStringId("SK_FIRST_SCAN", "Scanning your guilds for the first time.  This can take a few minutes!")
+ZO_CreateStringId("SK_FIRST_SCAN", "There is no data in LibGuildStore. Requesting data from LibHistoire. This can take a few minutes!")
 ZO_CreateStringId("SK_REFRESH_LABEL", "Refresh")
 ZO_CreateStringId("SK_REFRESH_START", "Starting refresh.")
 ZO_CreateStringId("SK_REFRESH_DONE", "Refresh complete.")

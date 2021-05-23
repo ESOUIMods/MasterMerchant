@@ -54,6 +54,8 @@ function internal:QueueCheckStatus()
     internal:dm("Info", "LibGuildStore Refresh Finished")
     lib.guildStoreReady                                      = true
     LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
+    internal:DatabaseBusy(false)
+    MasterMerchant:RefreshDataAllData()
   end
 end
 
@@ -100,6 +102,7 @@ end
 
 function internal:RefreshLibGuildStore()
   internal:dm("Debug", "RefreshLibGuildStore")
+  internal:DatabaseBusy(true)
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     internal.LibHistoireListener[guildId]:Stop()
@@ -375,6 +378,26 @@ function internal:CheckArkadiusData()
      not ArkadiusTradeToolsSalesData10 and not ArkadiusTradeToolsSalesData11 and not ArkadiusTradeToolsSalesData12 and
      not ArkadiusTradeToolsSalesData13 and not ArkadiusTradeToolsSalesData14 and not ArkadiusTradeToolsSalesData15 and
      not ArkadiusTradeToolsSalesData16 then return true end
+  return false
+end
+
+function internal:MasterMerchantDataActive()
+  if MM00DataSavedVariables or MM01DataSavedVariables or MM02DataSavedVariables or
+     MM03DataSavedVariables or MM04DataSavedVariables or MM05DataSavedVariables or
+     MM06DataSavedVariables or MM07DataSavedVariables or MM08DataSavedVariables or
+     MM09DataSavedVariables or MM10DataSavedVariables or MM11DataSavedVariables or
+     MM12DataSavedVariables or MM13DataSavedVariables or MM14DataSavedVariables and
+     MM15DataSavedVariables then return true end
+  return false
+end
+
+function internal:ArkadiusDataActive()
+  if ArkadiusTradeToolsSalesData01 or ArkadiusTradeToolsSalesData02 or ArkadiusTradeToolsSalesData03 or
+     ArkadiusTradeToolsSalesData04 or ArkadiusTradeToolsSalesData05 or ArkadiusTradeToolsSalesData06 or
+     ArkadiusTradeToolsSalesData07 or ArkadiusTradeToolsSalesData08 or ArkadiusTradeToolsSalesData09 or
+     ArkadiusTradeToolsSalesData10 or ArkadiusTradeToolsSalesData11 or ArkadiusTradeToolsSalesData12 or
+     ArkadiusTradeToolsSalesData13 or ArkadiusTradeToolsSalesData14 or ArkadiusTradeToolsSalesData15 or
+     ArkadiusTradeToolsSalesData16 then return true end
   return false
 end
 

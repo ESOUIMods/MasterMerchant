@@ -158,31 +158,6 @@ if AwesomeGuildStore then
 else
   MasterMerchant.AwesomeGuildStoreDetected = false -- added 12-2
 end
---[[TODO
-local currencyFormatDealOptions = {
-    [0] = { color = ZO_ColorDef:New(0.98, 0.01, 0.01) },
-    [ITEM_DISPLAY_QUALITY_NORMAL] = { color = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, ITEM_DISPLAY_QUALITY_NORMAL)) },
---- the other qualities
-}
-]]--
-MasterMerchant.potionVarientTable = {
-  [0] = 0,
-  [1] = 0,
-  [3] = 1,
-  [10] = 2,
-  [19] = 2, -- level 19 pots I found
-  [20] = 3,
-  [24] = 3, -- level 24 pots I found
-  [30] = 4,
-  [39] = 4, -- level 39 pots I found
-  [40] = 5,
-  [44] = 5, -- level 44 pots I found
-  [125] = 6,
-  [129] = 7,
-  [134] = 8,
-  [307] = 9, -- health potion I commonly find
-  [308] = 9,
-}
 
 -- We do 'lazy' updates on the scroll lists, this is used to
 -- mark whether we need to RefreshData() before showing
@@ -222,6 +197,32 @@ MasterMerchant.originalRosterBuildMasterList = nil
 ----------------------------------------
 ----- Setup                        -----
 ----------------------------------------
+
+--[[TODO
+local currencyFormatDealOptions = {
+    [0] = { color = ZO_ColorDef:New(0.98, 0.01, 0.01) },
+    [ITEM_DISPLAY_QUALITY_NORMAL] = { color = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, ITEM_DISPLAY_QUALITY_NORMAL)) },
+--- the other qualities
+}
+]]--
+MasterMerchant.potionVarientTable = {
+  [0] = 0,
+  [1] = 0,
+  [3] = 1,
+  [10] = 2,
+  [19] = 2, -- level 19 pots I found
+  [20] = 3,
+  [24] = 3, -- level 24 pots I found
+  [30] = 4,
+  [39] = 4, -- level 39 pots I found
+  [40] = 5,
+  [44] = 5, -- level 44 pots I found
+  [125] = 6,
+  [129] = 7,
+  [134] = 8,
+  [307] = 9, -- health potion I commonly find
+  [308] = 9,
+}
 
 -- Gap values for Shell sort
 MasterMerchant.shellGaps                     = {

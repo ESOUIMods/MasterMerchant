@@ -1747,6 +1747,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
     },
+    [27] = {
+      type = 'checkbox',
+      name = GetString(MM_DISABLE_ATT_WARN_NAME),
+      tooltip = GetString(MM_DISABLE_ATT_WARN_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.disableAttWarn end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.disableAttWarn = value end,
+      default = MasterMerchant.systemDefault.disableAttWarn,
+    },
   }
 
   -- And make the options panel
@@ -1949,6 +1957,13 @@ function MasterMerchant:SetMasterMerchantWindowDirty()
   self.listIsDirty[GUILDS]   = true
   self.listIsDirty[LISTINGS] = true
   self.listIsDirty[PURCHASES] = true
+end
+
+function MasterMerchant:RefreshDataAllData()
+  self.scrollList:RefreshData()
+  self.guildScrollList:RefreshData()
+  self.listingsScrollList:RefreshData()
+  self.purchasesScrollList:RefreshData()
 end
 
 -- Called after store scans complete, re-creates indexes if need be,
@@ -2686,6 +2701,7 @@ function MasterMerchant:Initialize()
     historyDepth = 30,
     minItemCount = 20,
     maxItemCount = 5000,
+    disableAttWarn = false,
   }
 
   -- Finished setting up defaults, assign to global
@@ -2722,6 +2738,16 @@ function MasterMerchant:Initialize()
     if key ~= "version" and systemDefault[key] == nil then
       sv[key] = nil
     end
+  end
+
+  local oldViewSizeValues = {
+    "full",
+    "half",
+    "self",
+    "all",
+  }
+  if internal:is_in(MasterMerchant.systemSavedVariables.viewSize, oldViewSizeValues) then
+    MasterMerchant.systemSavedVariables.viewSize = ITEMS
   end
 
   self.currentGuildID                                 = GetGuildId(1) or 0
@@ -2809,6 +2835,7 @@ function MasterMerchant:Initialize()
     function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
 
   local theFragment = MasterMerchant:ActiveFragment()
+  if not theFragment then theFragment = self.salesUiFragment end
 
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:AddFragment(theFragment)
@@ -2991,6 +3018,27 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
     LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
+    LEQ:Add(function()
+      if internal:MasterMerchantDataActive() then
+        MasterMerchant:dm("Info", "The old MMxxData modules are only needed for importing MM data.")
+        MasterMerchant:dm("Info", "Please disable all MMxxData modules to increase performance and reduce load times.")
+      end
+    end, 'MasterMerchantDataActive')
+    LEQ:Add(function()
+      if internal:MasterMerchantDataActive() then
+        if not MasterMerchant.systemSavedVariables.disableAttWarn then
+          MasterMerchant:dm("Info", "ATT is an effective and modular framework that provides sales information to users.")
+          MasterMerchant:dm("Info", "While you can use both ATT and MM simultaneously importing your current ATT data,")
+          MasterMerchant:dm("Info", "and disabling ATT will increase performance and reduce load times.")
+        end
+      end
+    end, 'ArkadiusDataActive')
+    LEQ:Add(function()
+      if ShoppingList then
+        MasterMerchant:dm("Info", "ShoppingList is only needed for importing old data")
+        MasterMerchant:dm("Info", "Please disable ShoppingList after you import its data.")
+      end
+    end, 'ArkadiusDataActive')
     LEQ:Start()
   end, 10)
 end

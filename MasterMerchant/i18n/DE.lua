@@ -4,7 +4,6 @@
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in accompanying this file.
 -- Distribution without license is prohibited!
--- Translation provided by Urbs/Balver - EU Server
 
 -- Options Menu
 ZO_CreateStringId("SK_ALERT_ANNOUNCE_NAME", "Bildschirmanzeige von Meldungen")
@@ -38,6 +37,9 @@ ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Zeigt Meldungen \195\188ber Verk\195\164
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Offline Verkaufsreport")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Zeigt Meldungen im Chat für Verkäufe während man offline war.")
 
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
+
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Ignoriere Preisausreisser")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Ignoriert Verkäufe deren Preis weit ausserhalb des üblichen Durchschnitts liegt.")
 
@@ -60,6 +62,7 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
+ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Zeigt St\195\188ckpreis")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Zeigt Gesamtpreis")
@@ -67,6 +70,10 @@ ZO_CreateStringId("SK_BUYER_COLUMN", "K\195\164ufer")
 ZO_CreateStringId("SK_GUILD_COLUMN", "Gilde")
 ZO_CreateStringId("SK_ITEM_COLUMN", "Verkaufte Gegenst\195\164nde")
 ZO_CreateStringId("SK_TIME_COLUMN", "Zeitpunkt")
+ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Listed Item")
+ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Time Seen")
+ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Preis")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "St\195\188ckpreis")
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Doppelklick auf einen Gegenstand f\195\188gt einen Link auf diesen im Chat ein.")
