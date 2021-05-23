@@ -112,7 +112,7 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_GUILD_ITEM_SUMMARY_TIP),
     getFunc = function() return LibGuildStore_SavedVariables.showGuildInitSummary end,
     setFunc = function(value) LibGuildStore_SavedVariables.showGuildInitSummary = value end,
-    default = MasterMerchant.systemDefault.showGuildInitSummary,
+    default = internal.defaults.showGuildInitSummary,
   }
   optionsData[#optionsData + 1] = {
     type = 'checkbox',

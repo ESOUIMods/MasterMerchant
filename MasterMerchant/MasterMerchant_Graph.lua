@@ -125,7 +125,7 @@ function MM_Graph:MyGraphPointClickHandler(self, mouseButton, upInside, sellerNa
 
     ClearMenu()
 
-    AddMenuItem("Add Seller to Blacklist", function() MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName) end)
+    AddMenuItem(GetString(MM_BLACKLIST_MENU), function() MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName) end)
 
     ShowMenu()
   end

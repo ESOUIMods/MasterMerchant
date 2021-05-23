@@ -129,10 +129,16 @@ internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
 internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
 internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
 
-  ["purchases"] = {},
-  ["listings"] = {},
-  ["postedItems"] = {},
-  ["cancelledItems"] = {},
+  updateAdditionalText = false,
+  historyDepth = 30,
+  minItemCount = 20,
+  maxItemCount = 5000,
+  showGuildInitSummary = false,
+  showIndexingSummary = false,
+  minimalIndexing = false,
+  useSalesHistory = false,
+  overrideMMImport = false,
+  historyDepthSL = 60,
 
 ]]--
 
