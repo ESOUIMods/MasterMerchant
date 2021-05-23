@@ -990,6 +990,28 @@ function MasterMerchant:my_NameHandler_OnLinkMouseUp(player, button, control)
   end
 end
 
+function MasterMerchant:my_Test_Function(zoneName)
+  MasterMerchant:dm("Debug", "Feature not fully implemented")
+end
+
+function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildName, button, control)
+  if (button == 2 and player ~= '') then
+    local guildIndex = internal.traderIdByNameLookup[guildName]
+    if guildIndex then
+      local zoneName = GS17DataSavedVariables[internal.visitedNamespace][guildIndex].zone
+      if zoneName then
+        ClearMenu()
+        AddMenuItem(string.format(GetString(MM_TRAVEL_TO_ZONE_TEXT), zoneName), function() MasterMerchant:my_Test_Function(zoneName) end)
+        ShowMenu(control)
+      else
+        MasterMerchant:dm("Info", "Guild Information not collected.")
+      end
+    else
+      MasterMerchant:dm("Info", "Guild Information not collected.")
+    end
+  end
+end
+
 function MasterMerchant.PostPendingItem(self)
   MasterMerchant:dm("Debug", "PostPendingItem")
   if self.pendingItemSlot and self.pendingSaleIsValid then

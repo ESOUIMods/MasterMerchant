@@ -50,9 +50,9 @@ function MasterMerchant:ActiveWindow()
 end
 
 function MasterMerchant:ActiveFragment()
-  return ((MasterMerchant.systemSavedVariables.viewSize == ITEMS and self.salesUiFragment) or 
-          (MasterMerchant.systemSavedVariables.viewSize == GUILDS and self.guildUiFragment) or 
-          (MasterMerchant.systemSavedVariables.viewSize == LISTINGS and self.listingUiFragment) or 
+  return ((MasterMerchant.systemSavedVariables.viewSize == ITEMS and self.salesUiFragment) or
+          (MasterMerchant.systemSavedVariables.viewSize == GUILDS and self.guildUiFragment) or
+          (MasterMerchant.systemSavedVariables.viewSize == LISTINGS and self.listingUiFragment) or
           (MasterMerchant.systemSavedVariables.viewSize == PURCHASES and self.purchaseUiFragment))
 end
 
@@ -336,7 +336,6 @@ function MMScrollList:SetupSalesRow(control, data)
   control.icon:SetHidden(false)
   control.icon:SetTexture(actualItemIcon)
 
-
   -- Item name cell
   control.itemName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.itemName:SetText(zo_strformat('<<t:1>>', currentItemLink))
@@ -573,6 +572,10 @@ function MMScrollList:SetupListingsRow(control, data)
   -- Guild cell
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(currentGuild)
+  control.guild:SetMouseEnabled(true)
+  control.guild:SetHandler('OnMouseUp', function(self, upInside)
+    MasterMerchant:my_GuildColumn_OnLinkMouseUp(currentGuild, upInside, self)
+  end)
 
   -- Item Icon
   control.icon:SetHidden(false)
@@ -2052,6 +2055,11 @@ end
 function MasterMerchant:HeaderToolTip(control, tipString)
   InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -5)
   SetTooltipText(InformationTooltip, tipString)
+end
+
+function MasterMerchant:GuildLocationToolTip(toolTipText)
+  InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -5)
+  SetTooltipText(InformationTooltip, toolTipText)
 end
 
 -- Update Guild Sales window to use the selected date range

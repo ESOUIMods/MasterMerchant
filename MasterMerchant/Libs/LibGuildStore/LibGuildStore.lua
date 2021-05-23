@@ -183,6 +183,7 @@ local function BuildLookupTables()
   internal:BuildAccountNameLookup()
   internal:BuildItemLinkNameLookup()
   internal:BuildGuildNameLookup()
+  internal:BuildTraderNameLookup()
 end
 
 local function SetupData()
@@ -267,6 +268,10 @@ local function Initilizze()
         buyer = GetDisplayName()
       }
       internal:addPurchaseData(theEvent)
+      if not MasterMerchant.isInitialized then
+        internal:dm("Info", "LibGuildStore not initialized. Information will not be refreshed.")
+        return
+      end
       MasterMerchant.purchasesScrollList:RefreshFilters()
     end)
 

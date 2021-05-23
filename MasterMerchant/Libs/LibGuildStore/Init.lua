@@ -153,6 +153,7 @@ internal.LibHistoireListener     = { } -- added for debug on 10-31
 internal.alertQueue              = { }
 internal.guildMemberInfo         = { }
 internal.accountNameByIdLookup   = { }
+internal.traderIdByNameLookup   = { }
 internal.itemLinkNameByIdLookup  = { }
 internal.guildNameByIdLookup     = { }
 internal.guildStoreSearchResults = { }

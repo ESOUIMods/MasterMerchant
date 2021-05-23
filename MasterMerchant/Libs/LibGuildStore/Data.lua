@@ -203,6 +203,16 @@ function internal:AddSearchToItem(itemLink)
   return zo_strlower(adder)
 end
 
+function internal:BuildTraderNameLookup()
+  internal:dm("Debug", "BuildAccountNameLookup")
+  if not GS17DataSavedVariables[internal.visitedNamespace] then GS17DataSavedVariables[internal.visitedNamespace] = {} end
+  for key, value in pairs(GS17DataSavedVariables[internal.visitedNamespace]) do
+    local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, value.guildName)
+    internal:dm("Debug", currentGuild)
+    internal.traderIdByNameLookup[currentGuild] = key
+  end
+end
+
 function internal:BuildAccountNameLookup()
   internal:dm("Debug", "BuildAccountNameLookup")
   if not GS16DataSavedVariables["accountNames"] then GS16DataSavedVariables["accountNames"] = {} end
@@ -430,6 +440,10 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
     }
     --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
+    if not MasterMerchant.isInitialized then
+      internal:dm("Info", "LibGuildStore not initialized. Information will not be refreshed.")
+      return
+    end
     MasterMerchant.purchasesScrollList:RefreshFilters()
   end
 end
@@ -448,6 +462,7 @@ function internal:AddAwesomeGuildStoreListing(listing)
     seller = listing.sellerName,
     id = Id64ToString(listing.itemUniqueId),
   }
+  internal:addTraderInfo(listing.guildId, listing.guildName)
   local added = false
   local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
   if not duplicate then
@@ -466,6 +481,10 @@ function internal:processAwesomeGuildStore(itemDatabase)
       --internal:dm("Debug", index)
       internal:AddAwesomeGuildStoreListing(listingData)
     end
+  end
+  if not MasterMerchant.isInitialized then
+      internal:dm("Info", "LibGuildStore not initialized. Information will not be refreshed.")
+    return
   end
   MasterMerchant.listingsScrollList:RefreshFilters()
 end
@@ -491,4 +510,19 @@ function internal:ResetListingsData()
   GS13DataSavedVariables[internal.listingsToReset] = {}
   GS14DataSavedVariables[internal.listingsToReset] = {}
   GS15DataSavedVariables[internal.listingsToReset] = {}
+end
+
+function internal:addTraderInfo(guildId, guildName)
+  local zone = GetUnitZone("player")
+  local local_x, local_y = GetMapPlayerPosition("player")
+  local guildHash  = internal:AddSalesTableData("guildNames", guildName)
+  local theInfo = {
+    guildName = guildHash,
+    local_x = local_x,
+    local_y = local_y,
+    zone = zone,
+  }
+  if GS17DataSavedVariables[internal.visitedNamespace] == nil then GS17DataSavedVariables[internal.visitedNamespace] = {} end
+  if GS17DataSavedVariables[internal.visitedNamespace][guildId] == nil then GS17DataSavedVariables[internal.visitedNamespace][guildId] = {} end
+  GS17DataSavedVariables[internal.visitedNamespace][guildId] = theInfo
 end
