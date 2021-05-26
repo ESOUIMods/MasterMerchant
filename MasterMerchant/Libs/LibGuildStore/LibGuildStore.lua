@@ -306,7 +306,7 @@ local function Initilizze()
           price = price,
           seller = GetDisplayName(),
         }
-        internal:addCanceledItem(theEvent)
+        internal:addCancelledItem(theEvent)
       end)
   else
     -- for vanilla without AwesomeGuildStore to add purchace data

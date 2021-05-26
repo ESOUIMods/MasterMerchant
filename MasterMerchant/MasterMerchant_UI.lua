@@ -491,6 +491,7 @@ function MMScrollList:SetupListingsRow(control, data)
 
   control.rowId    = GetControl(control, 'RowId')
   control.seller   = GetControl(control, 'Seller')
+  control.location = GetControl(control, 'Location')
   control.guild    = GetControl(control, 'Guild')
   control.icon     = GetControl(control, 'ItemIcon')
   control.quant    = GetControl(control, 'Quantity')
@@ -536,6 +537,16 @@ function MMScrollList:SetupListingsRow(control, data)
   local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, actualItem['guild'])
   local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['seller'])
   local actualItemIcon = listings_data[data[1]][data[2]]['itemIcon']
+  local guildZone = nil
+  local guildSubZone = nil
+  local guildLocationInfo = {}
+  local guildLocationKey = nil
+  if internal.traderIdByNameLookup[currentGuild] then
+    guildLocationKey = internal.traderIdByNameLookup[currentGuild]
+    guildLocationInfo = GS17DataSavedVariables[internal.visitedNamespace][guildLocationKey]
+    guildZone = guildLocationInfo.zoneName
+    guildSubZone = guildLocationInfo.subzoneName
+  end
 
   --[[
   local controlName = control:GetName()
@@ -551,6 +562,7 @@ function MMScrollList:SetupListingsRow(control, data)
   control.rowId:SetFont(string.format(fontString, 12))
   control.seller:SetFont(string.format(fontString, 15))
   control.guild:SetFont(string.format(fontString, 15))
+  control.location:SetFont(string.format(fontString, 15))
   control.quant:SetFont(string.format(fontString, 15) .. '|soft-shadow-thin')
   control.itemName:SetFont(string.format(fontString, 15))
   control.listTime:SetFont(string.format(fontString, 15))
@@ -558,12 +570,8 @@ function MMScrollList:SetupListingsRow(control, data)
 
   control.rowId:SetText(data.sortIndex)
 
-  control.seller:GetLabelControl():SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.seller:SetText(currentSeller)
   -- If the seller is the player, color the seller green.  Otherwise, blue.
-  control.seller:SetNormalFontColor(0.21, 0.54, 0.94, 1)
-  control.seller:SetPressedFontColor(0.21, 0.54, 0.94, 1)
-  control.seller:SetMouseOverFontColor(0.34, 0.67, 1, 1)
 
   control.seller:SetHandler('OnMouseUp', function(self, upInside)
     MasterMerchant:my_NameHandler_OnLinkMouseUp(currentSeller, upInside, self)
@@ -572,10 +580,14 @@ function MMScrollList:SetupListingsRow(control, data)
   -- Guild cell
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(currentGuild)
-  control.guild:SetMouseEnabled(true)
-  control.guild:SetHandler('OnMouseUp', function(self, upInside)
-    MasterMerchant:my_GuildColumn_OnLinkMouseUp(currentGuild, upInside, self)
-  end)
+
+  -- Location cell
+  local locationText = guildZone or ""
+  local subZoneText = guildSubZone or ""
+  control.location:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+  control.location:SetText(locationText)
+  control.location:SetHandler('OnMouseEnter', function() ZO_Tooltips_ShowTextTooltip(control.location, TOP, subZoneText) end)
+  control.location:SetHandler('OnMouseExit', function() ClearTooltip(InformationTooltip) end)
 
   -- Item Icon
   control.icon:SetHidden(false)
@@ -852,11 +864,11 @@ function MMScrollList:FilterScrollList()
   ZO_ClearNumericallyIndexedTable(listData)
   local searchText = nil
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
-    searchText = MasterMerchantWindowSearchBox:GetText()
+    searchText = MasterMerchantWindowMenuHeaderSearchEditBox:GetText()
   elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     searchText = MasterMerchantGuildWindowSearchBox:GetText()
   elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
-    searchText = MasterMerchantListingWindowSearchBox:GetText()
+    searchText = MasterMerchantListingWindowMenuHeaderSearchEditBox:GetText()
   elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
     searchText = MasterMerchantPurchaseWindowSearchBox:GetText()
   end
@@ -1481,10 +1493,10 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
   MasterMerchantWindowHeadersSellTime:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
   MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-  MasterMerchantWindowSearchBox:SetFont(string.format(fontString, mainButtonLabel))
-  MasterMerchantWindowTitle:SetFont(string.format(fontString, mainTitle))
-  MasterMerchantSwitchViewButton:SetFont(string.format(fontString, mainButtonLabel))
-  MasterMerchantPriceSwitchButton:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantWindowMenuHeaderTitle:SetFont(string.format(fontString, mainTitle))
+  MasterMerchantWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, mainButtonLabel))
   --[[ TODO this may be used for something else
   MasterMerchantResetButton:SetFont(string.format(fontString, mainButtonLabel))
   MasterMerchantRefreshButton:SetFont(string.format(fontString, mainButtonLabel))
@@ -1507,11 +1519,12 @@ function MasterMerchant:UpdateFonts()
   ]]--
 
   -- Listing Window
-  MasterMerchantListingWindowSearchBox:SetFont(string.format(fontString, listingButtonLabel))
-  MasterMerchantListingWindowTitle:SetFont(string.format(fontString, listingTitle))
-  MasterMerchantListingWindowPriceSwitchButton:SetFont(string.format(fontString, listingButtonLabel))
+  MasterMerchantListingWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, listingButtonLabel))
+  MasterMerchantListingWindowMenuHeaderTitle:SetFont(string.format(fontString, listingTitle))
+  MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, listingButtonLabel))
   MasterMerchantListingWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
   MasterMerchantListingWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
+  MasterMerchantListingWindowHeadersLocation:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
   MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
   MasterMerchantListingWindowHeadersListingTime:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
   MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
@@ -2057,11 +2070,6 @@ function MasterMerchant:HeaderToolTip(control, tipString)
   SetTooltipText(InformationTooltip, tipString)
 end
 
-function MasterMerchant:GuildLocationToolTip(toolTipText)
-  InitializeTooltip(InformationTooltip, control, BOTTOM, 0, -5)
-  SetTooltipText(InformationTooltip, toolTipText)
-end
-
 -- Update Guild Sales window to use the selected date range
 function MasterMerchant:UpdateGuildWindow(rankIndex)
   if not rankIndex or rankIndex == 0 then rankIndex = 1 end
@@ -2299,14 +2307,14 @@ function MasterMerchant:SwitchViewMode()
 
   if self.viewMode == MasterMerchant.personalSalesViewMode then
     -- switching to All Guild Sales
-    MasterMerchantSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
-    MasterMerchantWindowTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
+    MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
+    MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
     MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
     MasterMerchantGuildWindowTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.viewMode = MasterMerchant.guildSalesViewMode
   else
-    MasterMerchantSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
-    MasterMerchantWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
+    MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
+    MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
     MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
     MasterMerchantGuildWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.viewMode = MasterMerchant.personalSalesViewMode
@@ -2344,17 +2352,17 @@ end
 function MasterMerchant:SwitchPriceMode()
   if MasterMerchant.systemSavedVariables.showUnitPrice then
     MasterMerchant.systemSavedVariables.showUnitPrice = false
-    MasterMerchantPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
     MasterMerchantPurchaseWindowPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
-    MasterMerchantListingWindowPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
     MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_COLUMN))
     MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_COLUMN))
     MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_COLUMN))
   else
     MasterMerchant.systemSavedVariables.showUnitPrice = true
-    MasterMerchantPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
     MasterMerchantPurchaseWindowPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
-    MasterMerchantListingWindowPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
     MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_EACH_COLUMN))
     MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_EACH_COLUMN))
     MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_EACH_COLUMN))
@@ -2486,6 +2494,10 @@ function MasterMerchant:SetupMasterMerchantWindow()
 
   -- listings Seller: first column
   MasterMerchantListingWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
+  ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name',
+    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  -- listings Location: first column
+  MasterMerchantListingWindowHeadersLocation:GetNamedChild('Name'):SetText(GetString(SK_LOCATION_COLUMN))
   -- listings Guild: second column
   MasterMerchantListingWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName',
@@ -2508,9 +2520,9 @@ function MasterMerchant:SetupMasterMerchantWindow()
   end
   -- Total / unit price switch button
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    MasterMerchantListingWindowPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
   else
-    MasterMerchantListingWindowPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
   end
 
   -- Purchase Seller: first column
@@ -2615,9 +2627,9 @@ function MasterMerchant:SetupMasterMerchantWindow()
   WindowTitle - Item Info
   GuildWindowTitle - Seller Info
   ]]--
-  MasterMerchantWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
+  MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
   MasterMerchantGuildWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
-  MasterMerchantListingWindowTitle:SetText(GetString(MM_EXTENSION_BONANZA_NAME) .. ' - ' .. GetString(SK_LISTING_REPORT_TITLE))
+  MasterMerchantListingWindowMenuHeaderTitle:SetText(GetString(MM_EXTENSION_BONANZA_NAME) .. ' - ' .. GetString(SK_LISTING_REPORT_TITLE))
   MasterMerchantPurchaseWindowTitle:SetText(GetString(MM_EXTENSION_SHOPPINGLIST_NAME) .. ' - ' .. GetString(SK_PURCHASES_COLUMN))
 
   -- And set the stats window title and slider label from translation
@@ -2632,23 +2644,23 @@ function MasterMerchant:SetupMasterMerchantWindow()
   --ZO_SortHeader_SetTooltip(MasterMerchantGuildWindowHeadersPrice, GetString(SK_SORT_PRICE_TOOLTIP))
 
   -- View switch button
-  MasterMerchantSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
+  MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
   MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
 
   -- Total / unit price switch button
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    MasterMerchantPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
   else
-    MasterMerchantPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
   end
 
   -- Spinny animations that display while SK is scanning
-  MasterMerchantWindowLoadingIcon.animation      = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
-    MasterMerchantWindowLoadingIcon)
+  MasterMerchantWindowMenuFooterLoadingIcon.animation      = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
+    MasterMerchantWindowMenuFooterLoadingIcon)
   MasterMerchantGuildWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
     MasterMerchantGuildWindowLoadingIcon)
-  MasterMerchantListingWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
-    MasterMerchantListingWindowLoadingIcon)
+  MasterMerchantListingWindowMenuFooterLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
+    MasterMerchantListingWindowMenuFooterLoadingIcon)
   MasterMerchantPurchaseWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
     MasterMerchantPurchaseWindowLoadingIcon)
 
@@ -2687,13 +2699,13 @@ function MasterMerchant:SetupMasterMerchantWindow()
   ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetListingsConfirmation', confirmDialog)
 
   -- Stats buttons
-  MasterMerchantWindowStatsButton:SetHandler('OnMouseEnter',
+  MasterMerchantWindowMenuHeaderStatsButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_STATS_TOOLTIP)) end)
   MasterMerchantGuildWindowStatsButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_STATS_TOOLTIP)) end)
 
   -- View size change buttons
-  MasterMerchantWindowViewSizeButton:SetHandler('OnMouseEnter',
+  MasterMerchantWindowMenuHeaderViewSizeButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_SELLER_TOOLTIP)) end)
   MasterMerchantGuildWindowViewSizeButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_ITEMS_TOOLTIP)) end)

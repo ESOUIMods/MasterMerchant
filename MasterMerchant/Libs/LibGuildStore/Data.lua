@@ -207,8 +207,7 @@ function internal:BuildTraderNameLookup()
   internal:dm("Debug", "BuildAccountNameLookup")
   if not GS17DataSavedVariables[internal.visitedNamespace] then GS17DataSavedVariables[internal.visitedNamespace] = {} end
   for key, value in pairs(GS17DataSavedVariables[internal.visitedNamespace]) do
-    local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, value.guildName)
-    internal:dm("Debug", currentGuild)
+    local currentGuild  = value.guildName
     internal.traderIdByNameLookup[currentGuild] = key
   end
 end
@@ -513,16 +512,27 @@ function internal:ResetListingsData()
 end
 
 function internal:addTraderInfo(guildId, guildName)
-  local zone = GetUnitZone("player")
+  -- GetPlayerActiveSubzoneName() Southpoint in Grahtwood
+  -- GetPlayerActiveZoneName() Grahtwood
+  -- GetUnitZone("player") Grahtwood
+  -- GetMapName() Grahtwood
+  -- GetPlayerLocationName() Southpoint in Grahtwood
+
+  local zoneName = GetPlayerActiveZoneName()
+  local subzoneName = GetPlayerActiveSubzoneName()
   local local_x, local_y = GetMapPlayerPosition("player")
-  local guildHash  = internal:AddSalesTableData("guildNames", guildName)
+  local zoneIndex = GetCurrentMapZoneIndex()
+  local zoneId = GetZoneId(zoneIndex)
   local theInfo = {
-    guildName = guildHash,
+    guildName = guildName,
     local_x = local_x,
     local_y = local_y,
-    zone = zone,
+    zoneName = zoneName,
+    subzoneName = subzoneName,
+    zoneId = zoneId,
   }
   if GS17DataSavedVariables[internal.visitedNamespace] == nil then GS17DataSavedVariables[internal.visitedNamespace] = {} end
   if GS17DataSavedVariables[internal.visitedNamespace][guildId] == nil then GS17DataSavedVariables[internal.visitedNamespace][guildId] = {} end
   GS17DataSavedVariables[internal.visitedNamespace][guildId] = theInfo
+  internal.traderIdByNameLookup[guildName] = guildId
 end
