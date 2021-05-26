@@ -73,7 +73,7 @@
                 <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop">
                   <OnEnter>
                     self:LoseFocus()
-                    MasterMerchant.scrollList:RefreshFilters()
+                    MasterMerchant.listingsScrollList:RefreshFilters()
                   </OnEnter>
                 </EditBox>
               </Controls>
