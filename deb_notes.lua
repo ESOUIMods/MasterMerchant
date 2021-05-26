@@ -30,6 +30,57 @@ So if you use the same func for them all they should all hide their respective p
 ]]--
 
 --[[
+@Sharlikran
+
+--In your rowSetupcallback, where the data table of the row is build, add data.tooltip ="MyTooltipText" or something like data.tooltip = data.location e.g.
+
+--The OnMouseEnter of the rows
+control.location:SetHandler('OnMouseEnter', function(controlLocationWeMouseOverAtThisMoment) 
+   local rowData = ZO_ScrollList_GetData(controlLocationWeMouseOverAtThisMoment)
+   if not data.tooltip then return end 
+   ZO_Tooltips_ShowTextTooltip(data.tooltip, TOP, guildSubZone) --not sure where guildSubZone comes from but if it needs to be depenent on the row you mouse over also put it into the data table at the setup function, or determine it WITHIN the OnMouseEnter callback function, so that it get's build for the ACTUAL row you mouse over at the time you mouse over
+end)
+
+    but for the ZO_SortList whatever to work the child has to be $(parent)Headers.
+
+It's for the ZO_SortFilterList and yes, it's using an XML template that expects you to specify and create a "Header" and a "List" control
+Where header is a ZO_SortHeader control and List is the ZO_SortList used to draw the scroll list with it's rows
+That names are fixed as the XML template of that kind of virtual template uses them
+And the lua code of the ZO_SortFilterList as well
+e.g. https://github.com/esoui/esoui/blob/master/esoui/libraries/zo_sortfilterlist/zo_sortfilterlist.lua#L37
+The lua code searches for the control "List"
+and "Headers" for teh sort header: https://github.com/esoui/esoui/blob/master/esoui/libraries/zo_sortfilterlist/zo_sortfilterlist.lua#L40
+Baertram
+@Baertram
+07:51
+If you want to change this you need to inherit the exisitng class ZO_SortFilterList again to your own class, like it does it itsself upon ZO_SortFilterListBase:Subclass:
+
+ZO_SortFilterList = ZO_SortFilterListBase:Subclass()
+--Create your own class
+ZO_MyOwnSortFilterList = ZO_SortFilterList:Subclass()
+--After that overwrite the functions that you want to recreate, like 
+function ZO_MyOwnSortFilterList:InitializeSortFilterList(control)
+ self.control = control
+    self.list = GetControl(control, "MyOwnListXMLTemplateControlName") 
+    ZO_ScrollList_AddResizeOnScreenResize(self.list)
+
+    self.headersContainer = GetControl(control, "MyOwnHeaderXMLTemplateControlName")end
+...
+
+    <OnInitialized>
+
+It's just needed if you want to call code as your control initializes
+MM probably does not need/use it in the TopLevelControl, but maybe in the List control or somewhere else in the XML. If not, it can also be done within the lua code
+
+About "rowSetupcallback" I had mentioned above in my example code with rowData:
+ZO_ScrollList_AddDataType(scrollListControl, dataTypeId, templateName, rowHeight, setupFunction, rowHideCallback, dataTypeSelectSound, resetControlCallback)
+I meant the parameter "setupFunction" you pass in here as you define the ZO_SortList's datatype
+It's called for each row, using the XML template "templateName", defining it's rowHeight and then setupFunction can be used to transfer stuff from the data of the row to the output XML conrols like columns of the row
+or to add stuff to the data tables of the row, which other functions are able to use later on via ZO_ScrollList_GetData(controlLocationWeMouseOverAtThisMoment)
+Or you add the data to the datatable as you build the "masterlist" of the ZO_SortList (ZO_SortList example addon -> see :Populate function)
+]]--
+
+--[[
 btw, if you want to find the virtual templates like ZO_ScrollList, just search in ESOUI source code (github or local) for
 
 name="ZO_ScrollList"
