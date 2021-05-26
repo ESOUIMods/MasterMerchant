@@ -36,7 +36,7 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Alertas no Chat")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Mostra alertas de vendas na sua janela de chat.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Relatório de Vendas Offline")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Mostra alertas no chat para itens que você vendeu enquanto não estava no jogo na próxima vez que você entrar.")
-ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To %s")
+ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To...")
 
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")

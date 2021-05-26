@@ -539,6 +539,7 @@ function MMScrollList:SetupListingsRow(control, data)
   local actualItemIcon = listings_data[data[1]][data[2]]['itemIcon']
   local guildZone = nil
   local guildSubZone = nil
+  local guildZoneId = nil
   local guildLocationInfo = {}
   local guildLocationKey = nil
   if internal.traderIdByNameLookup[currentGuild] then
@@ -546,6 +547,7 @@ function MMScrollList:SetupListingsRow(control, data)
     guildLocationInfo = GS17DataSavedVariables[internal.visitedNamespace][guildLocationKey]
     guildZone = guildLocationInfo.zoneName
     guildSubZone = guildLocationInfo.subzoneName
+    guildZoneId = guildLocationInfo.zoneId
   end
 
   --[[
@@ -584,10 +586,12 @@ function MMScrollList:SetupListingsRow(control, data)
   -- Location cell
   local locationText = guildZone or ""
   local subZoneText = guildSubZone or ""
+  local assignedZoneId = guildZoneId or 0
   control.location:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.location:SetText(locationText)
   control.location:SetHandler('OnMouseEnter', function() ZO_Tooltips_ShowTextTooltip(control.location, TOP, subZoneText) end)
   control.location:SetHandler('OnMouseExit', function() ClearTooltip(InformationTooltip) end)
+  control.location:SetHandler('OnMouseUp', function(self, upInside) MasterMerchant:my_GuildColumn_OnLinkMouseUp(assignedZoneId, upInside, self) end)
 
   -- Item Icon
   control.icon:SetHidden(false)
@@ -600,8 +604,7 @@ function MMScrollList:SetupListingsRow(control, data)
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
   --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
   --end)
-  control.itemName:SetHandler('OnMouseEnter',
-    function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
+  control.itemName:SetHandler('OnMouseEnter', function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
   control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
 
   -- Quantity cell

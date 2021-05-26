@@ -1,4 +1,4 @@
--- MasterMerchant Polish Localization File - Taziff (Skrybowie Tamriel)
+﻿-- MasterMerchant Polish Localization File - Taziff (Skrybowie Tamriel)
 -- Last Updated April 11, 2021
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
@@ -36,7 +36,7 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Powiadomienia czatu")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Pokaż powiadomienia w oknie czatu.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Raport sprzedaży offline")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Pokaż powiadomienia na czacie dla sprzedanych przedmiotów podczas bycia offline, gdy następnym razem się zalogujesz.")
-ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To %s")
+ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To...")
 
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")

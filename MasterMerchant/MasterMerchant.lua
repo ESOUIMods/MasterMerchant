@@ -994,21 +994,19 @@ function MasterMerchant:my_Test_Function(zoneName)
   MasterMerchant:dm("Debug", "Feature not fully implemented")
 end
 
-function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildName, button, control)
+function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, control)
+  if not guildZoneId or guildZoneId == 0 then
+    MasterMerchant:dm("Info", "ZoneId invalid or not assigned.")
+    return
+  end
+  if not Teleporter then
+    MasterMerchant:dm("Info", "BeamMeUp is not active.")
+    return
+  end
   if (button == 2 and player ~= '') then
-    local guildIndex = internal.traderIdByNameLookup[guildName]
-    if guildIndex then
-      local zoneName = GS17DataSavedVariables[internal.visitedNamespace][guildIndex].zone
-      if zoneName then
-        ClearMenu()
-        AddMenuItem(string.format(GetString(MM_TRAVEL_TO_ZONE_TEXT), zoneName), function() MasterMerchant:my_Test_Function(zoneName) end)
-        ShowMenu(control)
-      else
-        MasterMerchant:dm("Info", "Guild Information not collected.")
-      end
-    else
-      MasterMerchant:dm("Info", "Guild Information not collected.")
-    end
+    ClearMenu()
+    AddMenuItem(GetString(MM_TRAVEL_TO_ZONE_TEXT), function() Teleporter.sc_porting(guildZoneId) end)
+    ShowMenu(control)
   end
 end
 
