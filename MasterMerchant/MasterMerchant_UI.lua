@@ -166,11 +166,40 @@ function MasterMerchant:SortByName(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
   if not ordering then
     MasterMerchant.shellSort(listData, function(sortA, sortB)
-      return (sortA.data[2] or 0) > (sortB.data[2] or 0)
+      MasterMerchant.a_test              = sortA.data
+      MasterMerchant.aa_test              = sortB.data
+      return (cleanNameA or 0) > (cleanNameB or 0)
     end)
   else
     MasterMerchant.shellSort(listData, function(sortA, sortB)
-      return (sortA.data[2] or 0) < (sortB.data[2] or 0)
+      MasterMerchant.a_test              = sortA.data
+      MasterMerchant.aa_test              = sortB.data
+      return (cleanNameA or 0) < (cleanNameB or 0)
+    end)
+  end
+end
+
+function MasterMerchant:SortByPurchaseAccountName(ordering, scrollList)
+  local listData = ZO_ScrollList_GetDataList(scrollList.list)
+  if not ordering then
+    MasterMerchant.shellSort(listData, function(sortA, sortB)
+      local actualItemA = purchases_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]
+      local actualItemB = purchases_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]
+      local nameA = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemA['seller'])
+      local nameB = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemB['seller'])
+      MasterMerchant.a_test              = nameA
+      MasterMerchant.aa_test              = nameB
+      return (nameA or 0) > (nameB or 0)
+    end)
+  else
+    MasterMerchant.shellSort(listData, function(sortA, sortB)
+      local actualItemA = purchases_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]
+      local actualItemB = purchases_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]
+      local nameA = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemA['seller'])
+      local nameB = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemB['seller'])
+      MasterMerchant.a_test              = nameA
+      MasterMerchant.aa_test              = nameB
+      return (nameA or 0) < (nameB or 0)
     end)
   end
 end
@@ -869,11 +898,11 @@ function MMScrollList:FilterScrollList()
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     searchText = MasterMerchantWindowMenuHeaderSearchEditBox:GetText()
   elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
-    searchText = MasterMerchantGuildWindowSearchBox:GetText()
+    searchText = MasterMerchantGuildWindowMenuHeaderSearchEditBox:GetText()
   elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
     searchText = MasterMerchantListingWindowMenuHeaderSearchEditBox:GetText()
   elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
-    searchText = MasterMerchantPurchaseWindowSearchBox:GetText()
+    searchText = MasterMerchantPurchaseWindowMenuHeaderSearchEditBox:GetText()
   end
   if searchText then searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1') end
 
@@ -1345,7 +1374,11 @@ function MMScrollList:SortScrollList()
   elseif self.currentSortKey == 'tax' then
     MasterMerchant:SortByTax(self.currentSortOrder, self)
   elseif self.currentSortKey == 'name' then
-    MasterMerchant:SortByName(self.currentSortOrder, self)
+    if MasterMerchant.systemSavedVariables.viewSize == GUILDS then
+      MasterMerchant:SortByName(self.currentSortOrder, self)
+    elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
+      MasterMerchant:SortByPurchaseAccountName(self.currentSortOrder, self)
+    end
   elseif self.currentSortKey == 'itemGuildName' then
     if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
       MasterMerchant:SortByListingItemGuildName(self.currentSortOrder, self)
@@ -1479,58 +1512,54 @@ function MasterMerchant:UpdateFonts()
   MasterMerchant:RegisterFonts()
   local font             = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
   local fontString       = font .. '|%d'
-  local mainButtonLabel  = 14
-  local mainTitle        = 26
-  local mainHeader       = 17
-  local guildButtonLabel = 14
-  local guildTitle       = 26
-  local guildHeader      = 17
-  local guildQuant       = 10
-  local listingButtonLabel  = 14
-  local listingTitle        = 26
-  local listingHeader       = 17
+  local windowTitle       = 26
+  local windowButtonLabel = 14
+  local windowHeader      = 17
+  local windowQuant       = 10
+  local windowEditBox     = 19
 
   -- Main Window (Sales)
-  MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-  MasterMerchantWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-  MasterMerchantWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-  MasterMerchantWindowHeadersSellTime:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-  MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, mainHeader))
-  MasterMerchantWindowMenuHeaderTitle:SetFont(string.format(fontString, mainTitle))
-  MasterMerchantWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, mainButtonLabel))
-  MasterMerchantWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, mainButtonLabel))
-  MasterMerchantWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
+  MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantWindowHeadersSellTime:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   --[[ TODO this may be used for something else
   MasterMerchantResetButton:SetFont(string.format(fontString, mainButtonLabel))
   MasterMerchantRefreshButton:SetFont(string.format(fontString, mainButtonLabel))
   ]]--
 
   -- Guild Window
-  MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-  MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-  MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-  MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-  MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
-  MasterMerchantGuildWindowSearchBox:SetFont(string.format(fontString, guildButtonLabel))
-  MasterMerchantGuildWindowTitle:SetFont(string.format(fontString, guildTitle))
-  MasterMerchantGuildSwitchViewButton:SetFont(string.format(fontString, guildButtonLabel))
+  MasterMerchantGuildWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantGuildWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantGuildWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
+  MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, windowQuant))
+  MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   --[[ TODO this may be used for something else
   MasterMerchantGuildResetButton:SetFont(string.format(fontString, guildButtonLabel))
   MasterMerchantGuildRefreshButton:SetFont(string.format(fontString, guildButtonLabel))
   ]]--
 
   -- Listing Window
-  MasterMerchantListingWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, listingButtonLabel))
-  MasterMerchantListingWindowMenuHeaderTitle:SetFont(string.format(fontString, listingTitle))
-  MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, listingButtonLabel))
-  MasterMerchantListingWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantListingWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantListingWindowHeadersLocation:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantListingWindowHeadersListingTime:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
+  MasterMerchantListingWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantListingWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
+  MasterMerchantListingWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantListingWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantListingWindowHeadersLocation:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantListingWindowHeadersListingTime:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   --[[ TODO this may be used for something else
   MasterMerchantListingWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
   MasterMerchantListingWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
@@ -1543,14 +1572,14 @@ function MasterMerchant:UpdateFonts()
   ]]--
 
   -- Purchase Window
-  MasterMerchantPurchaseWindowSearchBox:SetFont(string.format(fontString, listingButtonLabel))
-  MasterMerchantPurchaseWindowTitle:SetFont(string.format(fontString, listingTitle))
-  MasterMerchantPurchaseWindowPriceSwitchButton:SetFont(string.format(fontString, listingButtonLabel))
-  MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantPurchaseWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantPurchaseWindowHeadersPurchaseTime:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
-  MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, listingHeader))
+  MasterMerchantPurchaseWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantPurchaseWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
+  MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantPurchaseWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantPurchaseWindowHeadersPurchaseTime:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   --[[ TODO this may be used for something else
   MasterMerchantListingWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
   MasterMerchantListingWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
@@ -1563,17 +1592,17 @@ function MasterMerchant:UpdateFonts()
   ]]--
 
   -- Stats Window
-  MasterMerchantStatsWindowTitle:SetFont(string.format(fontString, mainTitle))
-  MasterMerchantStatsWindowGuildChooserLabel:SetFont(string.format(fontString, mainHeader))
-  MasterMerchantStatsGuildChooser.m_comboBox:SetFont(string.format(fontString, mainHeader))
-  MasterMerchantStatsWindowItemsSoldLabel:SetFont(string.format(fontString, mainHeader))
-  MasterMerchantStatsWindowTotalGoldLabel:SetFont(string.format(fontString, mainHeader))
-  MasterMerchantStatsWindowBiggestSaleLabel:SetFont(string.format(fontString, mainHeader))
-  MasterMerchantStatsWindowSliderSettingLabel:SetFont(string.format(fontString, mainHeader))
-  MasterMerchantStatsWindowSliderLabel:SetFont(string.format(fontString, mainButtonLabel))
+  MasterMerchantStatsWindowTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantStatsWindowSliderLabel:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantStatsWindowGuildChooserLabel:SetFont(string.format(fontString, windowHeader))
+  MasterMerchantStatsGuildChooser.m_comboBox:SetFont(string.format(fontString, windowHeader))
+  MasterMerchantStatsWindowItemsSoldLabel:SetFont(string.format(fontString, windowHeader))
+  MasterMerchantStatsWindowTotalGoldLabel:SetFont(string.format(fontString, windowHeader))
+  MasterMerchantStatsWindowBiggestSaleLabel:SetFont(string.format(fontString, windowHeader))
+  MasterMerchantStatsWindowSliderSettingLabel:SetFont(string.format(fontString, windowHeader))
 
-  MasterMerchantFeedbackTitle:SetFont(string.format(fontString, mainTitle))
-  MasterMerchantFeedbackNote:SetFont(string.format(fontString, mainHeader))
+  MasterMerchantFeedbackTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantFeedbackNote:SetFont(string.format(fontString, windowHeader))
   MasterMerchantFeedbackNote:SetText("I hope you are enjoying Master Merchant. Your feedback is always welcome. If you have wondered if there is some way you could help me get a Starbucks or a burger, maybe even help me in updating my computer so I can continue working on mods you can visit: https://sharlikran.github.io/")
 end
 
@@ -2312,14 +2341,14 @@ function MasterMerchant:SwitchViewMode()
     -- switching to All Guild Sales
     MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
     MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
-    MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
-    MasterMerchantGuildWindowTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
+    MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
+    MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.viewMode = MasterMerchant.guildSalesViewMode
   else
     MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
     MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
-    MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
-    MasterMerchantGuildWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
+    MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
+    MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.viewMode = MasterMerchant.personalSalesViewMode
   end
 
@@ -2342,9 +2371,11 @@ function MasterMerchant:SwitchViewMode()
     self.guildScrollList:RefreshFilters()
     ZO_Scroll_ResetToTop(self.guildScrollList.list)
   elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
-    internal:dm("Warn", LISTINGS)
+    self.listingsScrollList:RefreshFilters()
+    ZO_Scroll_ResetToTop(self.listingsScrollList.list)
   elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
-    internal:dm("Warn", PURCHASES)
+    self.purchasesScrollList:RefreshFilters()
+    ZO_Scroll_ResetToTop(self.purchasesScrollList.list)
   else
     internal:dm("Warn", "Shit Hit the fan SwitchViewMode")
     MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
@@ -2356,7 +2387,7 @@ function MasterMerchant:SwitchPriceMode()
   if MasterMerchant.systemSavedVariables.showUnitPrice then
     MasterMerchant.systemSavedVariables.showUnitPrice = false
     MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
-    MasterMerchantPurchaseWindowPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
     MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
     MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_COLUMN))
     MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_COLUMN))
@@ -2364,7 +2395,7 @@ function MasterMerchant:SwitchPriceMode()
   else
     MasterMerchant.systemSavedVariables.showUnitPrice = true
     MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
-    MasterMerchantPurchaseWindowPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
     MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
     MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_EACH_COLUMN))
     MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_EACH_COLUMN))
@@ -2466,7 +2497,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantGuildTimeChooser', MasterMerchantGuildWindow,
     'MasterMerchantStatsGuildDropdown')
   MasterMerchantGuildTime:SetDimensions(180, 25)
-  MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildSwitchViewButton, RIGHT, 5, 0)
+  MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildWindowMenuFooterSwitchViewButton, RIGHT, 5, 0)
   MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
 
   MasterMerchant.systemSavedVariables.rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
@@ -2530,6 +2561,8 @@ function MasterMerchant:SetupMasterMerchantWindow()
 
   -- Purchase Seller: first column
   MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
+  ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name',
+    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- Purchase Guild: second column
   MasterMerchantPurchaseWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName',
@@ -2552,9 +2585,9 @@ function MasterMerchant:SetupMasterMerchantWindow()
   end
   -- Purchase Total / unit price switch button
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    MasterMerchantPurchaseWindowPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
   else
-    MasterMerchantPurchaseWindowPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
   end
 
   MasterMerchantWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
@@ -2631,9 +2664,9 @@ function MasterMerchant:SetupMasterMerchantWindow()
   GuildWindowTitle - Seller Info
   ]]--
   MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
-  MasterMerchantGuildWindowTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
+  MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
   MasterMerchantListingWindowMenuHeaderTitle:SetText(GetString(MM_EXTENSION_BONANZA_NAME) .. ' - ' .. GetString(SK_LISTING_REPORT_TITLE))
-  MasterMerchantPurchaseWindowTitle:SetText(GetString(MM_EXTENSION_SHOPPINGLIST_NAME) .. ' - ' .. GetString(SK_PURCHASES_COLUMN))
+  MasterMerchantPurchaseWindowMenuHeaderTitle:SetText(GetString(MM_EXTENSION_SHOPPINGLIST_NAME) .. ' - ' .. GetString(SK_PURCHASES_COLUMN))
 
   -- And set the stats window title and slider label from translation
   MasterMerchantStatsWindowTitle:SetText(GetString(MM_APP_NAME) .. ' - ' .. GetString(SK_STATS_TITLE))
@@ -2648,7 +2681,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
 
   -- View switch button
   MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
-  MasterMerchantGuildSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
+  MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
 
   -- Total / unit price switch button
   if MasterMerchant.systemSavedVariables.showUnitPrice then
@@ -2660,12 +2693,12 @@ function MasterMerchant:SetupMasterMerchantWindow()
   -- Spinny animations that display while SK is scanning
   MasterMerchantWindowMenuFooterLoadingIcon.animation      = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
     MasterMerchantWindowMenuFooterLoadingIcon)
-  MasterMerchantGuildWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
-    MasterMerchantGuildWindowLoadingIcon)
+  MasterMerchantGuildWindowMenuFooterLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
+    MasterMerchantGuildWindowMenuFooterLoadingIcon)
   MasterMerchantListingWindowMenuFooterLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
     MasterMerchantListingWindowMenuFooterLoadingIcon)
-  MasterMerchantPurchaseWindowLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
-    MasterMerchantPurchaseWindowLoadingIcon)
+  MasterMerchantPurchaseWindowMenuFooterLoadingIcon.animation = ANIMATION_MANAGER:CreateTimelineFromVirtual('LoadIconAnimation',
+    MasterMerchantPurchaseWindowMenuFooterLoadingIcon)
 
   --[[ TODO this may be used for something else
   -- Refresh button
@@ -2704,13 +2737,13 @@ function MasterMerchant:SetupMasterMerchantWindow()
   -- Stats buttons
   MasterMerchantWindowMenuHeaderStatsButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_STATS_TOOLTIP)) end)
-  MasterMerchantGuildWindowStatsButton:SetHandler('OnMouseEnter',
+  MasterMerchantGuildWindowMenuHeaderStatsButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_STATS_TOOLTIP)) end)
 
   -- View size change buttons
   MasterMerchantWindowMenuHeaderViewSizeButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_SELLER_TOOLTIP)) end)
-  MasterMerchantGuildWindowViewSizeButton:SetHandler('OnMouseEnter',
+  MasterMerchantGuildWindowMenuHeaderViewSizeButton:SetHandler('OnMouseEnter',
     function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_ITEMS_TOOLTIP)) end)
 
   -- Slider setup

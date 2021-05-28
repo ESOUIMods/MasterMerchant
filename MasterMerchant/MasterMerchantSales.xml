@@ -29,13 +29,13 @@
           <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
           <Controls>
             <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" alpha="1">
-              <Dimensions x="40" y="40"/>
+              <Dimensions x="35" y="35"/>
               <Anchor point="TOPLEFT" relativeTo="$(parent)MenuHeader" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
               <TextureCoords left="0" right="1" top="0" bottom="1"/>
             </Texture>
             <Backdrop name="$(parent)Search" inherits="ZO_EditBackdrop">
               <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="230" y="40"/>
+              <Dimensions x="230" y="35"/>
               <Controls>
                 <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop">
                   <OnEnter>
@@ -243,12 +243,12 @@
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <TextureCoords left="0" right="1" top="0" bottom="1"/>
         </Texture>
-        <Label name="$(parent)Quantity" inheritAlpha="true" color="FFFFFF" text="1">
-          <Dimensions x="15" y="26"/>
-          <Anchor point="CENTER" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" color="FFFFFF" text="1">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
         </Label>
         <Label name="$(parent)ItemName" inheritAlpha="true" text="Item Name" verticalAlignment="CENTER" linkEnabled="true" mouseEnabled="true">
-          <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="10" offsetY="0"/>
+          <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
           <Dimensions x="330" y="26"/>
           <OnLinkMouseUp>
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
@@ -258,7 +258,7 @@
           <Dimensions x="105" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)Price" inheritAlpha="true" color="D5B526" text="Price">
+        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
           <Dimensions x="80" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)SellTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>

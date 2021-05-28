@@ -982,8 +982,7 @@ function MasterMerchant:my_NameHandler_OnLinkMouseUp(player, button, control)
   if (type(player) == 'string' and #player > 0) then
     if (button == 2 and player ~= '') then
       ClearMenu()
-      AddMenuItem(GetString(SI_SOCIAL_LIST_SEND_MESSAGE),
-        function() StartChatInput(nil, CHAT_CHANNEL_WHISPER, player) end)
+      AddMenuItem(GetString(SI_SOCIAL_LIST_SEND_MESSAGE), function() StartChatInput(nil, CHAT_CHANNEL_WHISPER, player) end)
       AddMenuItem(GetString(SI_SOCIAL_MENU_SEND_MAIL), function() MAIL_SEND:ComposeMailTo(player) end)
       ShowMenu(control)
     end
