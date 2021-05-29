@@ -289,7 +289,7 @@ local function Initilizze()
       function(itemDatabase, guildId, hasAnyResultAlreadyStored)
         internal.guildStoreSearchResults = itemDatabase
         local allData                    = itemDatabase.data
-        internal:processAwesomeGuildStore(allData)
+        internal:processAwesomeGuildStore(allData, guildId)
       end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,

@@ -88,7 +88,7 @@ ZO_CreateStringId("SK_TIME_DAYS", "<<1[昨日/%d日前]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ",")
 
 -- Chat and center screen alerts/messages
-ZO_CreateStringId("SK_FIRST_SCAN", "最初にギルドをスキャンしています。これは数分かかることがあります！")
+ZO_CreateStringId("SK_FIRST_SCAN", "LibGuildStore にデータがありません。情報の保存方法によっては、LibHistoire からのデータのリクエストに時間がかかる場合があります。")
 ZO_CreateStringId("SK_REFRESH_LABEL", "更新")
 ZO_CreateStringId("SK_REFRESH_START", "更新を開始しました。")
 ZO_CreateStringId("SK_REFRESH_DONE", "更新が完了しました。")

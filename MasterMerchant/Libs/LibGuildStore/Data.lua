@@ -470,15 +470,16 @@ function internal:AddAwesomeGuildStoreListing(listing)
 end
 
 -- this should loop over the data from AGS to be converted to theEvent
-function internal:processAwesomeGuildStore(itemDatabase)
+function internal:processAwesomeGuildStore(itemDatabase, guildId)
   local guildCounts = {}
   for guildIndex, guildData in pairs(itemDatabase) do
     local guildName        = GetGuildName(guildIndex)
     guildCounts[guildName] = internal:NonContiguousNonNilCount(itemDatabase[guildIndex])
     for dataIndex, listingData in pairs(guildData) do
       local index = Id64ToString(dataIndex)
-      --internal:dm("Debug", index)
-      internal:AddAwesomeGuildStoreListing(listingData)
+      if listingData.guildId == guildId then
+        internal:AddAwesomeGuildStoreListing(listingData)
+      end
     end
   end
   if not MasterMerchant.isInitialized then

@@ -89,7 +89,7 @@ ZO_CreateStringId("SK_TIME_DAYS", "<<1[Hier/Il y a %d jours]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ".")
 
 -- Chat and center screen alerts/messages
-ZO_CreateStringId("SK_FIRST_SCAN", "Scan de vos guildes en cours pour la premi\195\168re fois. Ceci peut prendre quelques minutes!")
+ZO_CreateStringId("SK_FIRST_SCAN", "Il n'y a pas de données dans LibGuildStore. La demande de données à LibHistoire peut prendre un certain temps selon la façon dont les informations sont stockées.")
 ZO_CreateStringId("SK_REFRESH_LABEL", "Rafraichir")
 ZO_CreateStringId("SK_REFRESH_START", "Rafraichissement des donn\195\169es en cours.")
 ZO_CreateStringId("SK_REFRESH_DONE", "Rafraichissement des donn\195\169es termin\195\169.")
