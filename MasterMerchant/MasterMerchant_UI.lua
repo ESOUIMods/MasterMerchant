@@ -1629,15 +1629,18 @@ function MasterMerchant:remStatsItemTooltip()
 end
 
 function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
-
+  local bonanzaPriceFound = false
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
+  local xBonanza = "" 
   local tipLine, avePrice, graphInfo, bonanzaPrice = self:itemPriceTip(itemLink, false, clickable)
   local craftCostLine                = self:itemCraftPriceTip(itemLink, false)
 
   if not tooltip.textPool then
     tooltip.textPool = ZO_ControlPool:New('MMGraphLabel', tooltip, 'Text')
   end
+  
+  if bonanzaPrice then bonanzaPriceFound = true end
 
   if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and not tooltip.mmQualityDown then
     tooltip.mmQualityDown = tooltip.textPool:AcquireObject()
@@ -1849,14 +1852,19 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
           graphInfo.high = avePrice + 1
         end
 
-        if graphInfo.high < bonanzaPrice then
+        if bonanzaPriceFound then
+          if graphInfo.high < bonanzaPrice then
             graphInfo.high = bonanzaPrice + 1
+          end
+          xBonanza = MasterMerchant.LocalizedNumber(bonanzaPrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        else
+          xBonanza = nil
+          bonanzaPrice = nil
         end
 
         local xLow   = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         local xHigh  = MasterMerchant.LocalizedNumber(graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         local xPrice = MasterMerchant.LocalizedNumber(avePrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        local xBonanza = MasterMerchant.LocalizedNumber(bonanzaPrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
         -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice, x_bonanzaPriceText, x_bonanzaPriceValue)
         graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh,
