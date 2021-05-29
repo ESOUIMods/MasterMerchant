@@ -88,6 +88,9 @@ function internal:SetupListenerLibHistoire()
     internal.LibHistoireListener[guildId] = {}
     internal:SetupListener(guildId)
   end
+  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
+    internal:QueueCheckStatus()
+  end
 end
 
 local function SetupLibGuildStore()
@@ -109,6 +112,15 @@ function internal:RefreshLibGuildStore()
     LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] = "0"
     internal.eventsNeedProcessing[guildId]                       = true
     internal.timeEstimated[guildId]                              = false
+  end
+end
+
+local function SetupLibHistoireContainers()
+  internal:dm("Debug", "SetupLibHistoireContainers")
+  for i = 1, GetNumGuilds() do
+    local guildId   = GetGuildId(i)
+    local guildName = GetGuildName(guildId)
+    internal.LibHistoireListener[guildId] = {}
   end
 end
 
@@ -175,7 +187,9 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
   if GS17DataSavedVariables["pricingdatana"] == nil then GS17DataSavedVariables["pricingdatana"] = {} end
   if GS17DataSavedVariables["pricingdataeu"] == nil then GS17DataSavedVariables["pricingdataeu"] = {} end
 
+  SetupLibHistoireContainers()
   SetNamespace()
+  SetupLibGuildStore()
 end
 
 local function BuildLookupTables()
@@ -245,10 +259,6 @@ local function Initilizze()
       if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
       internal.guildMemberInfo[guildId][zo_strlower(guildMemInfo)] = true
     end
-  end
-  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
-    SetupLibGuildStore()
-    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
   end
   SetupData()
 
