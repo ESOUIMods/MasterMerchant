@@ -498,7 +498,7 @@ function MasterMerchant:itemHasSales(itemLink)
 end
 
 function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
-
+  -- TODO add Bonanza price
   local tipStats = MasterMerchant:itemStats(itemLink, clickable)
   if tipStats.avgPrice then
 
