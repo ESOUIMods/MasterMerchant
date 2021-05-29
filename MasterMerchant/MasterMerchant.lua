@@ -10,6 +10,7 @@ local ASYNC                     = LibAsync
 local sales_data                = _G["LibGuildStore_SalesData"]
 local sr_index                  = _G["LibGuildStore_SalesIndex"]
 local internal                  = _G["LibGuildStore_Internal"]
+local listings_data             = _G["LibGuildStore_ListingsData"]
 
 local OriginalSetupPendingPost
 
@@ -303,8 +304,10 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
   are the same. However, when you do not modify the data, then daysRange
   is 10000 and daysHistory is however many days you have.
   ]]--
-  local legitSales  = 0
-  local daysHistory = 0
+  local legitSales   = 0
+  local bonanzaSales = 0
+  local bonanzaPrice = nil
+  local daysHistory  = 0
 
   -- make sure we have a list of sales to work with
   if sales_data[theIID] and sales_data[theIID][itemIndex] and sales_data[theIID][itemIndex]['sales'] and #sales_data[theIID][itemIndex]['sales'] > 0 then
@@ -319,6 +322,17 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     if timeCheck == -1 then return returnData end
 
     list, initCount, oldestTime, newestTime = RemoveSalesPerBlacklist(list)
+
+    local bonanzaList = {}
+    if listings_data[theIID] and listings_data[theIID][itemIndex] and listings_data[theIID][itemIndex]['sales'] and #listings_data[theIID][itemIndex]['sales'] > 0 then
+      bonanzaList = listings_data[theIID][itemIndex]['sales']
+      bonanzaList = RemoveSalesPerBlacklist(list)
+      local bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange = stats.interquartileRange(bonanzaList)
+      if #bonanzaList >= 3 then
+        bonanzaList = stats.evaluateQuartileRangeTable(bonanzaList, bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange)
+        bonanzaList = RemoveSalesPerBlacklist(bonanzaList)
+      end
+    end
 
     if daysRange ~= 10000 then
       list, initCount, oldestTime, newestTime = UseSalesByTimestamp(list, timeCheck)
@@ -449,8 +463,22 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
     else
       avgPrice = avgPrice / countSold
     end
+    local bonanzaCount = 0
+    for i, item in pairs(bonanzaList) do
+      local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item['itemLink'])
+      local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
+      local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
+      local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
+      bonanzaCount          = bonanzaCount + item.quant
+      if bonanzaPrice == nil then bonanzaPrice = 0 end
+      bonanzaPrice = bonanzaPrice + item.price
+      bonanzaSales = bonanzaSales + 1
+    end -- end bonanza loop
+    if bonanzaSales >= 1 then
+      bonanzaPrice = bonanzaPrice / bonanzaCount
+    end
     if legitSales >= 1 then
-      returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+      returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold, ['bonanzaPrice'] = bonanzaPrice,
                      ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
     end
   end
@@ -490,8 +518,7 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     if tipStats['numSales'] ~= tipStats['numItems'] then
       salesString = salesString .. zo_strformat(GetString(MM_PRICETIP_ITEMS), tipStats['numItems'])
     end
-    return string.format(tipFormat, salesString, tipStats['numDays'],
-      avePriceString), tipStats['avgPrice'], tipStats['graphInfo']
+    return string.format(tipFormat, salesString, tipStats['numDays'], avePriceString), tipStats['avgPrice'], tipStats['graphInfo'], tipStats['bonanzaPrice']
     --return string.format(tipFormat, zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales']), tipStats['numDays'], tipStats['avgPrice']), tipStats['avgPrice'], tipStats['graphInfo']
   else
     return nil, tipStats['numDays'], nil
@@ -1079,6 +1106,7 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
     local bag, index = ZO_Inventory_GetBagAndIndex(inventorySlot)
     link             = GetItemLink(bag, index)
   end
+  MasterMerchant.a_test = GetItemUniqueId(bag, index)
   if st == SLOT_TYPE_TRADING_HOUSE_ITEM_RESULT then
     link = GetTradingHouseSearchResultItemLink(ZO_Inventory_GetSlotIndex(inventorySlot))
   end
