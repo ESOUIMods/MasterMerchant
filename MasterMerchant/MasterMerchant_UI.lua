@@ -16,7 +16,6 @@ local listings_data = _G["LibGuildStore_ListingsData"]
 local lr_index = _G["LibGuildStore_ListingsIndex"]
 local purchases_data = _G["LibGuildStore_PurchaseData"]
 local pr_index = _G["LibGuildStore_PurchaseIndex"]
-local filter_items_data = _G["LibGuildStore_FilteredItemsData"]
 
   --[[ TODO Verify this
   when viewSize is 'full': then you are viewing the seller information

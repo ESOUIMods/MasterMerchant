@@ -13,7 +13,6 @@ local posted_items_data           = {}
 local pir_index                   = {}
 local cancelled_items_data        = {}
 local cr_index                    = {}
-local filter_items_data           = {}
 _G["LibGuildStore"]               = lib
 _G["LibGuildStore_Internal"]      = internal
 _G["LibGuildStore_MM_SalesData"]  = mm_sales_data
@@ -28,7 +27,6 @@ _G["LibGuildStore_PostedItemsData"]  = posted_items_data
 _G["LibGuildStore_PostedItemsIndex"] = pir_index
 _G["LibGuildStore_CancelledItemsData"]  = cancelled_items_data
 _G["LibGuildStore_CancelledItemsIndex"] = cr_index
-_G["LibGuildStore_FilteredItemsData"] = filter_items_data
 
 lib.libName                       = libName
 lib.libVersion                    = libVersion

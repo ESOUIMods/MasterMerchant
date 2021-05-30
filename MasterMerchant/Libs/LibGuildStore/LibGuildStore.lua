@@ -1,6 +1,5 @@
 local lib           = _G["LibGuildStore"]
 local internal      = _G["LibGuildStore_Internal"]
-local filter_items_data = _G["LibGuildStore_FilteredItemsData"]
 
 --/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal.LibHistoireListener[622389]:GetPendingEventMetrics())
 function internal:CheckStatus()
@@ -218,7 +217,6 @@ local function SetupData()
   LEQ:Add(function() internal:ReferencePurchaseDataContainer() end, 'ReferencePurchaseDataContainer')
   LEQ:Add(function() internal:ReferencePostedItemsDataContainer() end, 'ReferencePostedItemsDataContainer')
   LEQ:Add(function() internal:ReferenceCancelledItemDataContainer() end, 'ReferenceCancelledItemDataContainer')
-  LEQ:Add(function() internal:ReferenceFilterTable() end, 'ReferenceFilterTable')
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   LEQ:Add(function() internal:dm("Info", "LibGuildStore Build Reference Tables Finished...") end, "LibGuildStoreReferenceTables")

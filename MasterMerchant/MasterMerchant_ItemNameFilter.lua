@@ -1,5 +1,4 @@
 local internal       = _G["LibGuildStore_Internal"]
-local filter_items_data = _G["LibGuildStore_FilteredItemsData"]
 local LMP                               = LibMediaProvider
 
 IFScrollList           = ZO_SortFilterList:Subclass()
@@ -10,9 +9,23 @@ IFScrollList.SORT_KEYS = {
 }
 ITEM_DATA = 1
 
+function MasterMerchant:SortByItemFilterName(ordering, scrollList)
+  local listData = ZO_ScrollList_GetDataList(scrollList.list)
+  if not ordering then
+    MasterMerchant.shellSort(listData, function(sortA, sortB)
+      return (sortA.data.itemName or 0) > (sortB.data.itemName or 0)
+    end)
+  else
+    MasterMerchant.shellSort(listData, function(sortA, sortB)
+      return (sortA.data.itemName or 0) < (sortB.data.itemName or 0)
+    end)
+  end
+end
+
 function IFScrollList:BuildMasterList()
   self.masterList = {}
-  for name, link in pairs(filter_items_data) do
+  local saveData = GS17DataSavedVariables[internal.nameFilterNamespace]
+  for name, link in pairs(saveData) do
     table.insert(self.masterList, { itemName = name, itemLink = link })
   end
   local listControl = self:GetListControl()
@@ -25,7 +38,7 @@ end
 
 function IFScrollList:SortScrollList()
   if self.currentSortKey == 'name' then
-    MasterMerchant:SortByName(self.currentSortOrder, self)
+    MasterMerchant:SortByItemFilterName(self.currentSortOrder, self)
   else
     internal:dm("Warn", "Shit Hit the fan IFScrollList:SortScrollList")
     internal:dm("Warn", self.currentSortKey)
@@ -89,8 +102,7 @@ function MasterMerchant:AddToFilterTable(itemLink)
   local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
   local linkHash   = internal:AddSalesTableData("itemLink", itemLink)
 
-  if not filter_items_data[itemName] then
-    filter_items_data[itemName] = linkHash
+  if not GS17DataSavedVariables[internal.nameFilterNamespace][itemName] then
     GS17DataSavedVariables[internal.nameFilterNamespace][itemName] = linkHash
   end
   MasterMerchant.nameFilterScrollList:RefreshData()

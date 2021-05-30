@@ -1,6 +1,5 @@
 local lib               = _G["LibGuildStore"]
 local internal          = _G["LibGuildStore_Internal"]
-local filter_items_data = _G["LibGuildStore_FilteredItemsData"]
 
 local LGH           = LibHistoire
 
@@ -557,10 +556,4 @@ function internal:addTraderInfo(guildId, guildName)
   if GS17DataSavedVariables[internal.visitedNamespace][guildId] == nil then GS17DataSavedVariables[internal.visitedNamespace][guildId] = {} end
   GS17DataSavedVariables[internal.visitedNamespace][guildId] = theInfo
   internal.traderIdByNameLookup[guildName] = guildId
-end
-
-function internal:ReferenceFilterTable()
-  for itemIndex, itemData in pairs(GS17DataSavedVariables[internal.nameFilterNamespace]) do
-    filter_items_data[itemIndex] = itemData
-  end
 end
