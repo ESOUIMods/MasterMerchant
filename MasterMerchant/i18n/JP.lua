@@ -64,6 +64,8 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
 ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
+-- endTimeFrameText on MM Graph
+ZO_CreateStringId("MM_ENDTIMEFRAME_TEXT", "Now")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "単価を表示")
 ZO_CreateStringId("SK_SHOW_TOTAL", "合計価格を表示")

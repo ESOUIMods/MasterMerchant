@@ -64,6 +64,8 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Sprzedaż gildyjna")
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Raport przedmiotu")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Raport sprzedawcy")
 ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
+-- endTimeFrameText on MM Graph
+ZO_CreateStringId("MM_ENDTIMEFRAME_TEXT", "Now")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Pokaż cenę jednostkową")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Pokaż cenę całkowitą")

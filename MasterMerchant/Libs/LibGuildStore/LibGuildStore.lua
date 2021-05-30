@@ -318,6 +318,12 @@ local function Initilizze()
         }
         internal:addCancelledItem(theEvent)
       end)
+    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.GUILD_SELECTION_CHANGED,
+      function(guildData)
+        local selectedGuildId = guildData.guildId
+        MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+        internal:dm("Debug", MasterMerchant.systemSavedVariables.pricingData)
+      end)
   else
     -- for vanilla without AwesomeGuildStore to add purchace data
     EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE,

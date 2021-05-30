@@ -1044,13 +1044,14 @@ function MasterMerchant.PostPendingItem(self)
 
     local theIID                                                       = GetItemLinkItemId(itemLink)
     local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
+    local selectedGuildId = GetSelectedTradingHouseGuildId()
 
-    GS17DataSavedVariables[internal.pricingNamespace]                    = GS17DataSavedVariables[internal.pricingNamespace] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][theIID] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
+    GS17DataSavedVariables[internal.pricingNamespace]                                     = GS17DataSavedVariables[internal.pricingNamespace] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId]                    = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
-      local selectedGuildId = GetSelectedTradingHouseGuildId()
       MasterMerchant:dm("Info",
         string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
           zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
@@ -2573,9 +2574,15 @@ function MasterMerchant.SetupPendingPost(self)
 
     local theIID           = GetItemLinkItemId(itemLink)
     local itemIndex        = internal.GetOrCreateIndexFromLink(itemLink)
+    local selectedGuildId  = GetSelectedTradingHouseGuildId()
+    local pricingData      = nil
 
-    if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace][theIID] and GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] then
-      self:SetPendingPostPrice(math.floor(GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] * stackCount))
+    if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] then
+      pricingData      = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex]
+    end
+
+    if pricingData then
+      self:SetPendingPostPrice(math.floor(pricingData * stackCount))
     else
       local tipStats = MasterMerchant:itemStats(itemLink, false)
       if (tipStats.avgPrice) then
@@ -2893,6 +2900,11 @@ function MasterMerchant:Initialize()
     TRADING_HOUSE_SCENE:AddFragment(theFragment)
   end
 
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_SELECTED_GUILD_CHANGED, function()
+    local selectedGuildId = GetSelectedTradingHouseGuildId()
+    MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+  end)
+
   -- Because we allow manual toggling of the MasterMerchant window in those scenes (without
   -- making that setting permanent), we also have to hide the window on closing them
   -- if they're not part of the scene.
@@ -2902,6 +2914,9 @@ function MasterMerchant:Initialize()
       MasterMerchantStatsWindow:SetHidden(true)
     end
   end)
+
+  --[[TODO Trader tracking if it was banker or kiosk
+  ]]--
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_TRADING_HOUSE, function()
     MasterMerchant.ClearDealInfoCache()
     if not MasterMerchant.systemSavedVariables.openWithStore then
@@ -2934,7 +2949,8 @@ function MasterMerchant:Initialize()
       else MasterMerchantPriceCalculator:SetHidden(true) end
     end)
 
-  --TODO see if this or something else can be used in Gamepad mode
+  --[[TODO see if this or something else can be used in Gamepad mode
+  ]]--
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_RESPONSE_RECEIVED, function(_, responseType, result)
     if responseType == TRADING_HOUSE_RESULT_POST_PENDING and result == TRADING_HOUSE_RESULT_SUCCESS then MasterMerchantPriceCalculator:SetHidden(true) end
     -- Set up guild store buying advice
@@ -2978,9 +2994,13 @@ function MasterMerchant:Initialize()
       function(guildId, itemLink, price, stackCount)
         local theIID                                                       = GetItemLinkItemId(itemLink)
         local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
-        GS17DataSavedVariables[internal.pricingNamespace]                    = GS17DataSavedVariables[internal.pricingNamespace] or {}
-        GS17DataSavedVariables[internal.pricingNamespace][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][theIID] or {}
-        GS17DataSavedVariables[internal.pricingNamespace][theIID][itemIndex] = price / stackCount
+        local selectedGuildId = GetSelectedTradingHouseGuildId()
+
+        GS17DataSavedVariables[internal.pricingNamespace]                                     = GS17DataSavedVariables[internal.pricingNamespace] or {}
+        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId]                    = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
+        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = price / stackCount
+
       end)
   else
     if TRADING_HOUSE then
@@ -3185,7 +3205,8 @@ function MasterMerchant:InitScrollLists()
 
   -- for mods using the old syntax
   if GS17DataSavedVariables then
-    MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace] or {}
+    local selectedGuildId = GetSelectedTradingHouseGuildId()
+    MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
   end
 
   MasterMerchant.isInitialized = true

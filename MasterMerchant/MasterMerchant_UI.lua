@@ -1865,9 +1865,10 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
         local xLow   = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         local xHigh  = MasterMerchant.LocalizedNumber(graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         local xPrice = MasterMerchant.LocalizedNumber(avePrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        local endTimeFrameText = GetString(MM_ENDTIMEFRAME_TEXT)
         -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
         -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice, x_bonanzaPriceText, x_bonanzaPriceValue)
-        graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh,
+        graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), endTimeFrameText, xLow, xHigh,
           graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice, xBonanza, bonanzaPrice)
         if MasterMerchant.systemSavedVariables.displaySalesDetails then
           for _, point in ipairs(graphInfo.points) do
