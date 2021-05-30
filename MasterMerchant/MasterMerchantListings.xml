@@ -268,9 +268,6 @@
         <Label name="$(parent)ItemName" inheritAlpha="true" text="Item Name" verticalAlignment="CENTER" linkEnabled="true" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
           <Dimensions x="260" y="26"/>
-          <OnLinkMouseUp>
-            ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
-          </OnLinkMouseUp>
         </Label>
         <Label name="$(parent)ListingTime" inheritAlpha="true" color="FFFFFF" text="Time">
           <Dimensions x="120" y="26"/>

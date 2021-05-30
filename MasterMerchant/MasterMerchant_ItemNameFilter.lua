@@ -8,14 +8,18 @@ IFScrollList.defaults  = { }
 IFScrollList.SORT_KEYS = {
   ['name'] = { isNumeric = false, tiebreaker = "name" },
 }
+ITEM_DATA = 1
 
-function IFScrollList:FilterScrollList()
-  -- this will error when the MM window is open and sr_index is empty
-  --if internal:is_empty_or_nil(sr_index) then return end
-  local listData = ZO_ScrollList_GetDataList(self.list)
-  ZO_ClearNumericallyIndexedTable(listData)
-  for itemIndex, itemData in pairs(filter_items_data) do
-    table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { itemIndex, itemData } ))
+function IFScrollList:BuildMasterList()
+  self.masterList = {}
+  for name, link in pairs(filter_items_data) do
+    table.insert(self.masterList, { itemName = name, itemLink = link })
+  end
+  local listControl = self:GetListControl()
+  ZO_ScrollList_Clear(listControl)
+  local scrollDataList = ZO_ScrollList_GetDataList(listControl)
+  for i, itemData in ipairs(self.masterList) do
+      table.insert(scrollDataList, ZO_ScrollList_CreateDataEntry(ITEM_DATA, itemData))
   end
 end
 
@@ -29,22 +33,14 @@ function IFScrollList:SortScrollList()
 end
 
 function IFScrollList:SetupNameFiltersRow(control, data)
-
   control.icon         = GetControl(control, GetString(MM_ITEM_ICON_COLUMN))
   control.itemName     = GetControl(control, GetString(MM_ITEMNAME_COLUMN))
 
-  if (filter_items_data[data[1]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('--------')
-    return
-  end
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
   control.itemName:SetFont(string.format(fontString, 15))
 
-  local itemName = data[1]
-  local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, data[2])
+  local itemName = data.itemName
+  local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, data.itemLink)
   local itemIcon = GetItemLinkInfo(itemLink)
 
   -- Draw itemIcon
@@ -89,43 +85,13 @@ function IFScrollList:New(control)
   return skList
 end
 
---[[
-function INFList:SetupUnitRow(control, data)
-  control.data = data
-  control.icon = GetControl(control, GetString(MM_ITEM_ICON_COLUMN))
-  control.itemName = GetControl(control, GetString(MM_ITEMNAME_COLUMN))
-
-  local icon = GetItemLinkInfo(data.item)
-
-  --- Set text ---
-  control.itemName:SetText(data.item)
-
-  ZO_SortFilterList.SetupRow(self, control, data)
-end
-
-function INFList:BuildMasterList()
-  internal:dm("Debug", "BuildMasterList")
-  self.masterList = {}
-
-  for itemName, itemLink in pairs(filter_items_data) do
-    local filter = {}
-    filter["itemName"] = itemName
-    filter["itemLink"] = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, itemLink)
-    table.insert(self.masterList, filter)
-  end
-end
-]]--
 function MasterMerchant:AddToFilterTable(itemLink)
   local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-  local filter = {}
-  filter["itemName"] = itemName
   local linkHash   = internal:AddSalesTableData("itemLink", itemLink)
-  filter["itemLink"] = linkHash
+
   if not filter_items_data[itemName] then
     filter_items_data[itemName] = linkHash
     GS17DataSavedVariables[internal.nameFilterNamespace][itemName] = linkHash
   end
   MasterMerchant.nameFilterScrollList:RefreshData()
-  -- GS17DataSavedVariables[internal.nameFilterNamespace]
-  -- filter_items_data
 end

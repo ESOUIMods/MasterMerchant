@@ -2918,6 +2918,8 @@ function MasterMerchant:Initialize()
     if not MasterMerchant.systemSavedVariables.openWithMail then
       self:ActiveWindow():SetHidden(true)
       MasterMerchantStatsWindow:SetHidden(true)
+      MasterMerchantFilterByNameWindow:SetHidden(true)
+      MasterMerchantFilterByTypeWindow:SetHidden(true)
     end
   end)
 
@@ -2928,6 +2930,8 @@ function MasterMerchant:Initialize()
     if not MasterMerchant.systemSavedVariables.openWithStore then
       self:ActiveWindow():SetHidden(true)
       MasterMerchantStatsWindow:SetHidden(true)
+      MasterMerchantFilterByNameWindow:SetHidden(true)
+      MasterMerchantFilterByTypeWindow:SetHidden(true)
     end
   end)
 
@@ -2936,6 +2940,8 @@ function MasterMerchant:Initialize()
     self:ActiveWindow():SetHidden(true)
     MasterMerchantStatsWindow:SetHidden(true)
     MasterMerchantFeedback:SetHidden(true)
+    MasterMerchantFilterByNameWindow:SetHidden(true)
+    MasterMerchantFilterByTypeWindow:SetHidden(true)
   end)
 
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_PENDING_ITEM_UPDATE,
@@ -2966,23 +2972,29 @@ function MasterMerchant:Initialize()
 
   -- I could do this with action layer pop/push, but it's kind've a pain
   -- when it's just these I want to hook
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_BANK, function() self:ActiveWindow():SetHidden(true) end)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_BANK, function()
+    self:ActiveWindow():SetHidden(true)
+    MasterMerchantFilterByNameWindow:SetHidden(true)
+    MasterMerchantFilterByTypeWindow:SetHidden(true)
+  end)
   --    MasterMerchantWindow:SetHidden(true)
   --    MasterMerchantGuildWindow:SetHidden(true)
   --  end)
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_GUILD_BANK, function() self:ActiveWindow():SetHidden(true) end)
-  --    MasterMerchantWindow:SetHidden(true)
-  --    MasterMerchantGuildWindow:SetHidden(true)
-  --  end)
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_STORE, function() self:ActiveWindow():SetHidden(true) end)
-  --    MasterMerchantWindow:SetHidden(true)
-  --    MasterMerchantGuildWindow:SetHidden(true)
-  --  end)
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_END_CRAFTING_STATION_INTERACT,
-    function() self:ActiveWindow():SetHidden(true) end)
-  --    MasterMerchantWindow:SetHidden(true)
-  --    MasterMerchantGuildWindow:SetHidden(true)
-  --  end)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_GUILD_BANK, function()
+    self:ActiveWindow():SetHidden(true)
+    MasterMerchantFilterByNameWindow:SetHidden(true)
+    MasterMerchantFilterByTypeWindow:SetHidden(true)
+  end)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_STORE, function()
+    self:ActiveWindow():SetHidden(true)
+    MasterMerchantFilterByNameWindow:SetHidden(true)
+    MasterMerchantFilterByTypeWindow:SetHidden(true)
+  end)
+  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_END_CRAFTING_STATION_INTERACT, function()
+    self:ActiveWindow():SetHidden(true)
+    MasterMerchantFilterByNameWindow:SetHidden(true)
+    MasterMerchantFilterByTypeWindow:SetHidden(true)
+  end)
 
   -- We'll add stats to tooltips for items we have data for, if desired
   ZO_PreHookHandler(PopupTooltip, 'OnUpdate', function() self:addStatsPopupTooltip(PopupTooltip) end)
