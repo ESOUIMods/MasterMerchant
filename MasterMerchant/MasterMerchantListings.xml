@@ -211,6 +211,24 @@
               <Anchor point="BOTTOM" relativeTo="$(parent)MenuFooter" relativePoint="BOTTOM" offsetX="0" offsetY="-5"/>
               <Dimensions x="32" y="32"/>
             </Texture>
+            <Button name="$(parent)OpenFilterByTypeButton" inheritAlpha="true">
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)MenuFooter" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="48" y="48"/>
+              <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds"
+                        mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"/>
+              <OnClicked>
+                MasterMerchant:ToggleMasterMerchantTypeFilterWindow()
+              </OnClicked>
+            </Button>
+            <Button name="$(parent)OpenFilterByNameButton" inheritAlpha="true">
+              <Anchor point="RIGHT" relativeTo="$(parent)OpenFilterByTypeButton" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+              <Dimensions x="48" y="48"/>
+              <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds"
+                        mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"/>
+              <OnClicked>
+                MasterMerchant:ToggleMasterMerchantNameFilterWindow()
+              </OnClicked>
+            </Button>
           </Controls>
         </Control>
       </Controls>

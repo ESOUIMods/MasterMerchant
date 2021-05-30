@@ -1,5 +1,6 @@
 local lib           = _G["LibGuildStore"]
 local internal      = _G["LibGuildStore_Internal"]
+local filter_items_data = _G["LibGuildStore_FilteredItemsData"]
 
 --/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal.LibHistoireListener[622389]:GetPendingEventMetrics())
 function internal:CheckStatus()
@@ -69,6 +70,7 @@ local function SetNamespace()
     internal.cancelledNamespace      = internal.GS_NA_CANCELLED_NAMESPACE
     internal.visitedNamespace      = internal.GS_NA_VISIT_TRADERS_NAMESPACE
     internal.pricingNamespace        = internal.GS_NA_PRICING_NAMESPACE
+    internal.nameFilterNamespace= internal.GS_NA_NAME_FILTER_NAMESPACE
   else
     internal.firstrunNamespace = "firstRunEu"
     internal.dataNamespace     = internal.GS_EU_NAMESPACE
@@ -78,6 +80,7 @@ local function SetNamespace()
     internal.cancelledNamespace      = internal.GS_EU_CANCELLED_NAMESPACE
     internal.visitedNamespace      = internal.GS_EU_VISIT_TRADERS_NAMESPACE
     internal.pricingNamespace        = internal.GS_EU_PRICING_NAMESPACE
+    internal.nameFilterNamespace= internal.GS_EU_NAME_FILTER_NAMESPACE
   end
 end
 
@@ -187,8 +190,12 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
   if GS17DataSavedVariables["pricingdatana"] == nil then GS17DataSavedVariables["pricingdatana"] = {} end
   if GS17DataSavedVariables["pricingdataeu"] == nil then GS17DataSavedVariables["pricingdataeu"] = {} end
 
+  if GS17DataSavedVariables["namefilterna"] == nil then GS17DataSavedVariables["namefilterna"] = {} end
+  if GS17DataSavedVariables["namefiltereu"] == nil then GS17DataSavedVariables["namefiltereu"] = {} end
+
   SetupLibHistoireContainers()
   SetNamespace()
+
   SetupLibGuildStore()
 end
 
@@ -211,6 +218,7 @@ local function SetupData()
   LEQ:Add(function() internal:ReferencePurchaseDataContainer() end, 'ReferencePurchaseDataContainer')
   LEQ:Add(function() internal:ReferencePostedItemsDataContainer() end, 'ReferencePostedItemsDataContainer')
   LEQ:Add(function() internal:ReferenceCancelledItemDataContainer() end, 'ReferenceCancelledItemDataContainer')
+  LEQ:Add(function() internal:ReferenceFilterTable() end, 'ReferenceFilterTable')
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   LEQ:Add(function() internal:dm("Info", "LibGuildStore Build Reference Tables Finished...") end, "LibGuildStoreReferenceTables")

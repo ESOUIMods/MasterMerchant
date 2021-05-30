@@ -168,6 +168,7 @@ MasterMerchant.guildScrollList               = nil
 MasterMerchant.listingsScrollList            = nil
 MasterMerchant.purchasesScrollList            = nil
 MasterMerchant.calcInput                     = nil
+MasterMerchant.nameFilterScrollList          = nil
 
 MasterMerchant.guildSales                    = nil
 MasterMerchant.guildPurchases                = nil
@@ -175,6 +176,7 @@ MasterMerchant.guildColor                    = { }
 
 MasterMerchant.curSort                       = { 'time', 'desc' }
 MasterMerchant.curGuildSort                  = { 'rank', 'asc' }
+MasterMerchant.curFilterSort                  = { 'name', 'asc' }
 MasterMerchant.salesUiFragment               = { }
 MasterMerchant.guildUiFragment               = { }
 MasterMerchant.listingUiFragment               = { }

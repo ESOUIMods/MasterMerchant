@@ -13,6 +13,7 @@ local posted_items_data           = {}
 local pir_index                   = {}
 local cancelled_items_data        = {}
 local cr_index                    = {}
+local filter_items_data           = {}
 _G["LibGuildStore"]               = lib
 _G["LibGuildStore_Internal"]      = internal
 _G["LibGuildStore_MM_SalesData"]  = mm_sales_data
@@ -27,6 +28,7 @@ _G["LibGuildStore_PostedItemsData"]  = posted_items_data
 _G["LibGuildStore_PostedItemsIndex"] = pir_index
 _G["LibGuildStore_CancelledItemsData"]  = cancelled_items_data
 _G["LibGuildStore_CancelledItemsIndex"] = cr_index
+_G["LibGuildStore_FilteredItemsData"] = filter_items_data
 
 lib.libName                       = libName
 lib.libVersion                    = libVersion
@@ -184,6 +186,8 @@ internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
 internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
 internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
 internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
+internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
+internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
 
 internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
 internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
@@ -215,6 +219,7 @@ internal.postedNamespace         = ""
 internal.cancelledNamespace      = ""
 internal.visitedNamespace        = ""
 internal.pricingNamespace        = ""
+internal.nameFilterNamespace     = ""
 
 lib.guildStoreReady              = false -- when no more events are pending
 

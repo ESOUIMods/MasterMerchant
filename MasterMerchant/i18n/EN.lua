@@ -350,3 +350,12 @@ ZO_CreateStringId("MM_GUILD_ITEM_SUMMARY_TIP", "Show Guild and Item totals after
 
 ZO_CreateStringId("MM_INDEXING_NAME", "Enable Indexing Summary")
 ZO_CreateStringId("MM_INDEXING_TIP", "Show Indexing totals after process is complete.")
+
+-- Bonanza filter windows
+ZO_CreateStringId("MM_FILTERBY_LINK_TITLE", "Filter By Item Name")
+ZO_CreateStringId("MM_FILTERBY_TYPE_TITLE", "Filter By Item Type")
+ZO_CreateStringId("MM_ITEMNAME_COLUMN", "ItemName")
+ZO_CreateStringId("MM_ITEM_ICON_COLUMN", "ItemIcon")
+ZO_CreateStringId("MM_ITEMNAME_TEXT", "Item Name")
+ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
+ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")

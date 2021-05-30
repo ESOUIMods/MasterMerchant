@@ -16,6 +16,7 @@ local listings_data = _G["LibGuildStore_ListingsData"]
 local lr_index = _G["LibGuildStore_ListingsIndex"]
 local purchases_data = _G["LibGuildStore_PurchaseData"]
 local pr_index = _G["LibGuildStore_PurchaseIndex"]
+local filter_items_data = _G["LibGuildStore_FilteredItemsData"]
 
   --[[ TODO Verify this
   when viewSize is 'full': then you are viewing the seller information
@@ -635,6 +636,7 @@ function MMScrollList:SetupListingsRow(control, data)
   --end)
   control.itemName:SetHandler('OnMouseEnter', function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
   control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
+  control.itemName:SetHandler('OnMouseUp', function(self, upInside) MasterMerchant:my_AddFilterHandler_OnLinkMouseUp(currentItemLink, upInside, self) end)
 
   -- Quantity cell
   if actualItem.quant == 1 then control.quant:SetHidden(true)
@@ -1604,6 +1606,12 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantFeedbackTitle:SetFont(string.format(fontString, windowTitle))
   MasterMerchantFeedbackNote:SetFont(string.format(fontString, windowHeader))
   MasterMerchantFeedbackNote:SetText("I hope you are enjoying Master Merchant. Your feedback is always welcome. If you have wondered if there is some way you could help me get a Starbucks or a burger, maybe even help me in updating my computer so I can continue working on mods you can visit: https://sharlikran.github.io/")
+
+  --[[TODO Setup New Filter windows
+  ]]--
+  MasterMerchantFilterByTypeWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantFilterByNameWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+
 end
 
 function MasterMerchant:updateCalc()
@@ -1632,14 +1640,14 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   local bonanzaPriceFound = false
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
-  local xBonanza = "" 
+  local xBonanza = ""
   local tipLine, avePrice, graphInfo, bonanzaPrice = self:itemPriceTip(itemLink, false, clickable)
   local craftCostLine                = self:itemCraftPriceTip(itemLink, false)
 
   if not tooltip.textPool then
     tooltip.textPool = ZO_ControlPool:New('MMGraphLabel', tooltip, 'Text')
   end
-  
+
   if bonanzaPrice then bonanzaPriceFound = true end
 
   if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and not tooltip.mmQualityDown then
@@ -2355,6 +2363,17 @@ function MasterMerchant:ToggleMasterMerchantStatsWindow()
   MasterMerchantStatsWindow:SetHidden(not MasterMerchantStatsWindow:IsHidden())
 end
 
+function MasterMerchant:ToggleMasterMerchantNameFilterWindow()
+  MasterMerchantFilterByTypeWindow:SetHidden(true)
+  MasterMerchantFilterByNameWindow:SetHidden(not MasterMerchantFilterByNameWindow:IsHidden())
+end
+
+-- Set the visibility status of the stats window to the opposite of its current status
+function MasterMerchant:ToggleMasterMerchantTypeFilterWindow()
+  MasterMerchantFilterByNameWindow:SetHidden(true)
+  MasterMerchantFilterByTypeWindow:SetHidden(not MasterMerchantFilterByTypeWindow:IsHidden())
+end
+
 -- Set the visibility status of the stats window to the opposite of its current status
 function MasterMerchant:ToggleMasterMerchantPricingHistoryGraph()
   MasterMerchant.systemSavedVariables.showGraph = not MasterMerchant.systemSavedVariables.showGraph
@@ -2543,6 +2562,12 @@ function MasterMerchant:SetupMasterMerchantWindow()
   local font            = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
   fontString            = font .. '|17'
   guildFontString       = font .. '|17'
+
+  --[[TODO Setup New Filter windows
+  ]]--
+  MasterMerchantFilterByTypeWindowMenuHeaderTitle:SetText(GetString(MM_FILTERBY_TYPE_TITLE))
+  MasterMerchantFilterByNameWindowMenuHeaderTitle:SetText(GetString(MM_FILTERBY_LINK_TITLE))
+  MasterMerchantFilterByNameWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(MM_ITEMNAME_TEXT))
 
   if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
     MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
@@ -2846,4 +2871,7 @@ function MasterMerchant:SetupScrollLists()
   ZO_PostHookHandler(MasterMerchantListingWindowHeadersItemName, 'OnMouseEnter', function()
     MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   end)
+
+  -- setup filter window
+  self.nameFilterScrollList = IFScrollList:New(MasterMerchantFilterByNameWindow)
 end

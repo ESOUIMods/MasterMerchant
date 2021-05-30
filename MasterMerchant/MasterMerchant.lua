@@ -927,8 +927,7 @@ function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, 
         AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
       end
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
-      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end,
-        MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
 
       ShowMenu()
     end)
@@ -1016,8 +1015,17 @@ function MasterMerchant:my_NameHandler_OnLinkMouseUp(player, button, control)
   end
 end
 
-function MasterMerchant:my_Test_Function(zoneName)
-  MasterMerchant:dm("Debug", "Feature not fully implemented")
+function MasterMerchant:my_AddFilterHandler_OnLinkMouseUp(itemLink, button, control)
+  if (button == 2 and itemLink ~= '') then
+    ClearMenu()
+    if MasterMerchant:itemCraftPrice(itemLink) then
+      AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(itemLink) end, MENU_ADD_OPTION_LABEL)
+    end
+    AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(itemLink) end, MENU_ADD_OPTION_LABEL)
+    AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(itemLink) end, MENU_ADD_OPTION_LABEL)
+    AddMenuItem(GetString(MM_FILTER_MENU_ADD_ITEM), function() MasterMerchant:AddToFilterTable(itemLink) end)
+    ShowMenu(control)
+  end
 end
 
 function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, control)
@@ -1119,10 +1127,8 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
       if MasterMerchant:itemCraftPrice(link) then
         AddMenuItem("Craft Cost to Chat", function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
       end
-      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end,
-        MENU_ADD_OPTION_LABEL)
-      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(link) end,
-        MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(link) end, MENU_ADD_OPTION_LABEL)
       ShowMenu(self)
     end, 50)
   end

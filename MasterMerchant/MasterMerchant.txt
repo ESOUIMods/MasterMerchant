@@ -22,6 +22,7 @@
 ## OptionalDependsOn: BeamMeUp
 
 MasterMerchantListings.xml
+MasterMerchantFilters.xml
 MasterMerchantGuilds.xml
 MasterMerchantMisc.xml
 MasterMerchantPurchases.xml
@@ -37,6 +38,7 @@ MasterMerchant_Guild.lua
 MasterMerchant_Graph.lua
 MasterMerchant_ItemManipulation.lua
 MasterMerchant_GuildListings.lua
+MasterMerchant_ItemNameFilter.lua
 i18n\en.lua
 i18n\$(language).lua
 MasterMerchant.lua
