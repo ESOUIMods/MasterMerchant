@@ -18,6 +18,37 @@ function internal:CheckForDuplicatePurchase(itemLink, eventID)
   return false
 end
 
+function internal:CheckForDuplicateATTPurchase(theEvent)
+  local theIID = GetItemLinkItemId(itemLink)
+  if theIID == nil or theIID == 0 then return end
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  --[[
+    theEvent         = {
+      buyer = saleData["buyerName"],
+      guild = saleData["guildName"],
+      itemLink = saleData["itemLink"],
+      quant = saleData["quantity"],
+      timestamp = saleData["timeStamp"],
+      price = saleData["price"],
+      seller = saleData["sellerName"],
+    }
+  ]]--
+  if purchases_data[theIID] and purchases_data[theIID][itemIndex] then
+    for k, v in pairs(purchases_data[theIID][itemIndex]['sales']) do
+      if v.buyer == theEvent.buyer and
+         v.guild == theEvent.guild and
+         v.itemLink == theEvent.itemLink and
+         v.quant == theEvent.quant and
+         v.timestamp == theEvent.timestamp and
+         v.price == theEvent.price and
+         v.seller == theEvent.seller then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 ----------------------------------------
 ----- Adding New Data              -----
 ----------------------------------------

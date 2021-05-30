@@ -593,3 +593,56 @@ function internal:CompareSalesIds()
   end
   internal:dm("Debug", "CompareSalesIds Done")
 end
+
+function internal:ImportATTPurchases()
+  if not ArkadiusTradeToolsPurchasesData then
+    internal:dm("Info", "Arkadius Trade Tools Purchases Data Not Found.")
+    return
+  end
+  local attMegaserver = ""
+  if GetWorldName() == 'NA Megaserver' then
+    attMegaserver = "NA Megaserver"
+  else
+    attMegaserver = "EU Megaserver"
+  end
+  local savedVars    = ArkadiusTradeToolsPurchasesData["purchases"][attMegaserver]
+
+  --[[
+  [1] =
+  {
+      ["buyerName"] = "@Sharlikran",
+      ["timeStamp"] = 1621734922,
+      ["unitPrice"] = 2500,
+      ["quantity"] = 1,
+      ["price"] = 2500,
+      ["guildName"] = "The Descendants",
+      ["itemLink"] = "|H0:item:167362:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      ["sellerName"] = "@mscherer400",
+  },
+  ]]--
+  local theEvent     = {}
+  local addedCount   = 0
+  local skippedCount = 0
+  local guildId      = 0
+  for saleId, saleData in pairs(savedVars) do
+    theEvent         = {
+      buyer = saleData["buyerName"],
+      guild = saleData["guildName"],
+      itemLink = saleData["itemLink"],
+      quant = saleData["quantity"],
+      timestamp = saleData["timeStamp"],
+      price = saleData["price"],
+      seller = saleData["sellerName"],
+    }
+    local theIID    = GetItemLinkItemId(theEvent.itemLink)
+    local itemIndex = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
+
+    local duplicate = internal:CheckForDuplicateATTPurchase(theEvent)
+    if not duplicate then
+      added = internal:addPurchaseData(theEvent)
+    end
+  end
+  MasterMerchant.purchasesScrollList:RefreshFilters()
+  internal:dm("Info", "ATT Purchase data imported.")
+end
+

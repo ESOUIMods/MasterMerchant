@@ -171,6 +171,25 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
+    name = GetString(GS_IMPORT_ATT_PURCHASE_BUTTON),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    title = "Import ATT Purchases",
+    text = [[Arkadius Trade Tools purchases data does not save the specific purchace ID. You may unintentionally import a duplicate purchace. Which could include a purchase made while both ATT and the ShoppingList (stand alone version) were active.]]
+  }
+  optionsData[#optionsData + 1] = {
+    type = "button",
+    name = GetString(GS_IMPORT_ATT_PURCHASE_NAME),
+    tooltip = GetString(GS_IMPORT_ATT_PURCHASE_TIP),
+    func = function()
+      internal:ImportATTPurchases()
+    end,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
     name = GetString(GS_REFRESH_BUTTON),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",

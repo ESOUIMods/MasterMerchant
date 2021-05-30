@@ -31,6 +31,10 @@ ZO_CreateStringId("GS_IMPORT_ATT_BUTTON", "Import ATT Data")
 ZO_CreateStringId("GS_IMPORT_ATT_NAME", "Import ATT Data")
 ZO_CreateStringId("GS_IMPORT_ATT_TIP", "Import all ATT data into LibGuildStore.")
 
+ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_BUTTON", "Import ATT Purchases")
+ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_NAME", "Import ATT Purchases")
+ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_TIP", "Import ATT Purchases data into LibGuildStore.")
+
 ZO_CreateStringId("GS_IMPORT_SL_BUTTON", "Import Shoppinglist Data")
 ZO_CreateStringId("GS_IMPORT_SL_NAME", "Import Shoppinglist")
 ZO_CreateStringId("GS_IMPORT_SL_TIP", "Import Shoppinglist data into LibGuildStore.")
