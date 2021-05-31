@@ -89,7 +89,7 @@
               <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds"
                         mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"/>
               <OnClicked>
-                MasterMerchantListingWindow:SetHidden(true)
+                MasterMerchant:CloseMasterMerchantListingWindow()
               </OnClicked>
             </Button>
             <Button name="$(parent)FeedbackButton" inheritAlpha="true">

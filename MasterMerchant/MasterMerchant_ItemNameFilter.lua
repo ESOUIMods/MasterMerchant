@@ -45,6 +45,14 @@ function IFScrollList:SortScrollList()
   end
 end
 
+function MasterMerchant:my_RemoveFilterHandler_OnLinkMouseUp(itemName, button, control)
+  if (button == 2 and itemName ~= '') then
+    ClearMenu()
+    AddMenuItem(GetString(MM_FILTER_MENU_REMOVE_ITEM), function() MasterMerchant:RemoveFilterFromTable(itemName) end)
+    ShowMenu(control)
+  end
+end
+
 function IFScrollList:SetupNameFiltersRow(control, data)
   control.icon         = GetControl(control, GetString(MM_ITEM_ICON_COLUMN))
   control.itemName     = GetControl(control, GetString(MM_ITEMNAME_COLUMN))
@@ -65,6 +73,9 @@ function IFScrollList:SetupNameFiltersRow(control, data)
   control.itemName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.itemName:SetFont(string.format(fontString, 15))
   control.itemName:SetText(zo_strformat('<<t:1>>', itemLink))
+  control.itemName:SetHandler('OnMouseEnter', function() MasterMerchant.ShowToolTip(itemLink, control.itemName) end)
+  control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
+  control.itemName:SetHandler('OnMouseUp', function(self, upInside) MasterMerchant:my_RemoveFilterHandler_OnLinkMouseUp(itemName, upInside, self) end)
 end
 
 function IFScrollList:InitializeDataType(controlName)
@@ -106,4 +117,13 @@ function MasterMerchant:AddToFilterTable(itemLink)
     GS17DataSavedVariables[internal.nameFilterNamespace][itemName] = linkHash
   end
   MasterMerchant.nameFilterScrollList:RefreshData()
+  MasterMerchant.listingsScrollList:RefreshFilters()
+end
+
+function MasterMerchant:RemoveFilterFromTable(itemName)
+  if GS17DataSavedVariables[internal.nameFilterNamespace][itemName] then
+    GS17DataSavedVariables[internal.nameFilterNamespace][itemName] = nil
+  end
+  MasterMerchant.nameFilterScrollList:RefreshData()
+  MasterMerchant.listingsScrollList:RefreshFilters()
 end

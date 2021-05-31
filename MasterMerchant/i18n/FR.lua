@@ -359,4 +359,5 @@ ZO_CreateStringId("MM_ITEM_ICON_COLUMN", "ItemIcon")
 ZO_CreateStringId("MM_ITEMNAME_TEXT", "Item Name")
 ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
 ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")
+ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
 

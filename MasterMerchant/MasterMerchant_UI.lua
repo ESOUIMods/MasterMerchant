@@ -1210,9 +1210,11 @@ function MMScrollList:FilterScrollList()
               --d('Bad Item:')
               --d(item)
             else
-              if (item.timestamp > timeCheck) then
-                table.insert(listData,
-                  ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
+              local saveData = GS17DataSavedVariables[internal.nameFilterNamespace]
+              local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item.itemLink)
+              local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+              if (item.timestamp > timeCheck) and not saveData[itemName] then
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
           end
@@ -1269,8 +1271,12 @@ function MMScrollList:FilterScrollList()
         for j, subval in pairs(val) do
           for i in pairs(subval) do
             local actualItem = listings_data[k][j]['sales'][i]
-            table.insert(listData,
-              ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
+            local saveData = GS17DataSavedVariables[internal.nameFilterNamespace]
+            local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem.itemLink)
+            local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+            if not saveData[itemName] then
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
+            end
           end
         end
       end
@@ -2093,7 +2099,7 @@ function MasterMerchant:addStatsItemTooltip()
     -- MasterMerchant windows
   else
     local mocGP = skMoc:GetParent():GetParent()
-    if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or mocGP:GetName() == 'MasterMerchantGuildWindowListContents' or mocGP:GetName() == 'MasterMerchantPurchaseWindowListContents' or mocGP:GetName() == 'MasterMerchantListingWindowListContents') then
+    if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or mocGP:GetName() == 'MasterMerchantGuildWindowListContents' or mocGP:GetName() == 'MasterMerchantPurchaseWindowListContents' or mocGP:GetName() == 'MasterMerchantListingWindowListContents'or mocGP:GetName() == 'MasterMerchantFilterByNameWindowListContents') then
       local itemLabel = skMoc --:GetLabelControl()
       if itemLabel and itemLabel.GetText then
         itemLink = itemLabel:GetText()
@@ -2305,6 +2311,12 @@ function MasterMerchant:ToggleViewMode()
   else
     MasterMerchant:dm("Warn", "Shit Hit the fan ToggleViewMode")
   end
+end
+
+function MasterMerchant:CloseMasterMerchantListingWindow()
+  MasterMerchantListingWindow:SetHidden(true)
+  MasterMerchantFilterByNameWindow:SetHidden(true)
+  MasterMerchantFilterByTypeWindow:SetHidden(true)
 end
 
 -- Set the visibility status of the main window to the opposite of its current status
