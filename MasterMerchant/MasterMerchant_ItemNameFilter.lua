@@ -5,7 +5,7 @@ IFScrollList           = ZO_SortFilterList:Subclass()
 IFScrollList.defaults  = { }
 -- Sort keys for the scroll lists
 IFScrollList.SORT_KEYS = {
-  ['name'] = { isNumeric = false, tiebreaker = "name" },
+  ['itemName'] = { isNumeric = false, tiebreaker = "itemName" },
 }
 ITEM_DATA = 1
 
@@ -37,7 +37,7 @@ function IFScrollList:BuildMasterList()
 end
 
 function IFScrollList:SortScrollList()
-  if self.currentSortKey == 'name' then
+  if self.currentSortKey == 'itemName' then
     MasterMerchant:SortByItemFilterName(self.currentSortOrder, self)
   else
     internal:dm("Warn", "Shit Hit the fan IFScrollList:SortScrollList")
@@ -87,6 +87,8 @@ function IFScrollList:InitializeDataType(controlName)
     internal:dm("Warn", "Shit Hit the fan IFScrollList:InitializeDataType")
     internal:dm("Warn", controlName)
   end
+  self.currentSortKey = "itemName"
+  self.currentSortOrder = ZO_SORT_ORDER_UP
   self:RefreshData()
 end
 
