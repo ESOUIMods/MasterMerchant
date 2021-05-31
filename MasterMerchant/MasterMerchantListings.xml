@@ -89,7 +89,7 @@
               <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds"
                         mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"/>
               <OnClicked>
-                MasterMerchant:CloseMasterMerchantListingWindow()
+                MasterMerchant:ActiveWindow():SetHidden(true)
               </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_CLOSE_TOOLTIP))
@@ -132,7 +132,7 @@
               <Textures normal="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds"
                         mouseOver="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds"/>
               <OnClicked>
-                MasterMerchant:ToggleMasterMerchantListings()
+                MasterMerchant:SwitchToMasterMerchantListingsView()
               </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_BONANZA_TOOLTIP))
@@ -148,7 +148,7 @@
               <Textures normal="/esoui/art/bank/bank_tabicon_withdraw_up.dds"
                         mouseOver="/esoui/art/bank/bank_tabicon_withdraw_over.dds"/>
               <OnClicked>
-                MasterMerchant:ToggleMasterMerchantPurchases()
+                MasterMerchant:SwitchToMasterMerchantPurchaseView()
               </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_PURCHASE_TOOLTIP))
@@ -163,6 +163,9 @@
               <Dimensions x="42" y="42"/>
               <Textures normal="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_up.dds"
                         mouseOver="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_over.dds"/>
+              <OnClicked>
+                MasterMerchant:SwitchToMasterMerchantSalesView()
+              </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_SALES_TOOLTIP))
               </OnMouseEnter>
@@ -176,11 +179,8 @@
               <Dimensions x="42" y="42"/>
               <Textures normal="/esoui/art/campaign/campaign_tabicon_leaderboard_up.dds"
                         mouseOver="/esoui/art/campaign/campaign_tabicon_leaderboard_over.dds"/>
-              <OnClicked>
-                MasterMerchant:ToggleViewMode()
-              </OnClicked>
               <OnMouseEnter>
-                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_SELLER_TOOLTIP))
+                ZO_Tooltips_ShowTextTooltip(self, TOP, "No Listing Rank View")
               </OnMouseEnter>
               <OnMouseExit>
                 ZO_Tooltips_HideTextTooltip()

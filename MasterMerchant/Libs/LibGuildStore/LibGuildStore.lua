@@ -328,7 +328,6 @@ local function Initilizze()
       function(guildData)
         local selectedGuildId = guildData.guildId
         MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
-        internal:dm("Debug", MasterMerchant.systemSavedVariables.pricingData)
       end)
   else
     -- for vanilla without AwesomeGuildStore to add purchace data

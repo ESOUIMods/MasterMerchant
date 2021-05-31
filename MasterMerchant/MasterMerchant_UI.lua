@@ -2325,26 +2325,35 @@ function MasterMerchant:ToggleMasterMerchantWindow()
   MasterMerchant:ActiveWindow():SetHidden(not MasterMerchant:ActiveWindow():IsHidden())
 end
 
-function MasterMerchant:ToggleMasterMerchantListings()
+function MasterMerchant:SwitchToMasterMerchantSalesView()
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then return end
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
-  MasterMerchant.systemSavedVariables.viewSize = LISTINGS
+  MasterMerchant.systemSavedVariables.viewSize = ITEMS
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:RemoveFragment(theFragment)
     MAIL_SEND_SCENE:RemoveFragment(theFragment)
-    MAIL_INBOX_SCENE:AddFragment(self.listingUiFragment)
-    MAIL_SEND_SCENE:AddFragment(self.listingUiFragment)
+    MAIL_INBOX_SCENE:AddFragment(self.salesUiFragment)
+    MAIL_SEND_SCENE:AddFragment(self.salesUiFragment)
   end
 
   if MasterMerchant.systemSavedVariables.openWithStore then
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
-    TRADING_HOUSE_SCENE:AddFragment(self.listingUiFragment)
+    TRADING_HOUSE_SCENE:AddFragment(self.salesUiFragment)
   end
-  MasterMerchant.listingsScrollList:RefreshFilters()
+  MasterMerchant.purchasesScrollList:RefreshFilters()
+
+  MasterMerchantGuildWindow:SetHidden(true)
+  MasterMerchantListingWindow:SetHidden(true)
+  MasterMerchantPurchaseWindow:SetHidden(true)
+  MasterMerchantFilterByNameWindow:SetHidden(true)
+  MasterMerchantFilterByTypeWindow:SetHidden(true)
+
   MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
-function MasterMerchant:ToggleMasterMerchantPurchases()
+function MasterMerchant:SwitchToMasterMerchantPurchaseView()
+  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then return end
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
   MasterMerchant.systemSavedVariables.viewSize = PURCHASES
@@ -2360,6 +2369,40 @@ function MasterMerchant:ToggleMasterMerchantPurchases()
     TRADING_HOUSE_SCENE:AddFragment(self.purchaseUiFragment)
   end
   MasterMerchant.purchasesScrollList:RefreshFilters()
+
+  MasterMerchantWindow:SetHidden(true)
+  MasterMerchantGuildWindow:SetHidden(true)
+  MasterMerchantListingWindow:SetHidden(true)
+  MasterMerchantFilterByNameWindow:SetHidden(true)
+  MasterMerchantFilterByTypeWindow:SetHidden(true)
+
+  MasterMerchant:ActiveWindow():SetHidden(false)
+end
+
+function MasterMerchant:SwitchToMasterMerchantListingsView()
+  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then return end
+  local theFragment = MasterMerchant:ActiveFragment()
+  MasterMerchant:ActiveWindow():SetHidden(true)
+  MasterMerchant.systemSavedVariables.viewSize = LISTINGS
+  if MasterMerchant.systemSavedVariables.openWithMail then
+    MAIL_INBOX_SCENE:RemoveFragment(theFragment)
+    MAIL_SEND_SCENE:RemoveFragment(theFragment)
+    MAIL_INBOX_SCENE:AddFragment(self.listingUiFragment)
+    MAIL_SEND_SCENE:AddFragment(self.listingUiFragment)
+  end
+
+  if MasterMerchant.systemSavedVariables.openWithStore then
+    TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
+    TRADING_HOUSE_SCENE:AddFragment(self.listingUiFragment)
+  end
+  MasterMerchant.listingsScrollList:RefreshFilters()
+
+  MasterMerchantWindow:SetHidden(true)
+  MasterMerchantGuildWindow:SetHidden(true)
+  MasterMerchantPurchaseWindow:SetHidden(true)
+  MasterMerchantFilterByNameWindow:SetHidden(true)
+  MasterMerchantFilterByTypeWindow:SetHidden(true)
+
   MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
