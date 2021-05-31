@@ -303,7 +303,9 @@ function internal:TruncatePurchaseHistory()
 
   local postfunc = function(extraData)
     internal:DatabaseBusy(false)
-    internal:dm("Info", string.format(GetString(GS_TRUNCATE_PURCHASE_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    if LibGuildStore_SavedVariables["showTruncateSummary"] then
+      internal:dm("Info", string.format(GetString(GS_TRUNCATE_PURCHASE_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    end
   end
 
   if not internal.isDatabaseBusy then
@@ -354,7 +356,7 @@ function internal:IndexPurchaseData()
 
   local postfunc   = function(extraData)
     internal:DatabaseBusy(false)
-    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+    if LibGuildStore_SavedVariables["showIndexingSummary"] then
       internal:dm("Info",
         string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
           extraData.wordsIndexCount))
@@ -368,7 +370,7 @@ function internal:IndexPurchaseData()
 end
 
 function internal:InitPurchaseHistory()
-  internal:dm("Info", GetString(GS_INIT_ITEM_HISTORY))
+  internal:dm("Debug", "InitPurchaseHistory")
 
   local extradata = {}
 
@@ -427,7 +429,7 @@ function internal:InitPurchaseHistory()
 
     internal.totalPurchases = extraData.totalRecords
     if LibGuildStore_SavedVariables["showGuildInitSummary"] then
-      internal:dm("Info", string.format(GetString(GS_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
+      internal:dm("Info", string.format(GetString(GS_INIT_PURCHASES_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
         internal.totalPurchases))
     end
   end
@@ -443,7 +445,7 @@ end
 ----------------------------------------
 
 function internal:ReferencePurchaseDataContainer()
-  internal:dm("Debug", "ReferencePurchaseDataContainer")
+  internal:dm("Debug", "Reference Purchase Data Container")
   local savedVars = GS17DataSavedVariables[internal.purchasesNamespace]
   for itemid, versionlist in pairs(savedVars) do
     if purchases_data[itemid] then

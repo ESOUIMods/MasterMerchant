@@ -265,7 +265,9 @@ function internal:TruncateCancelledItemHistory()
 
   local postfunc = function(extraData)
     internal:DatabaseBusy(false)
-    internal:dm("Info", string.format(GetString(GS_TRUNCATE_CANCELLED_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    if LibGuildStore_SavedVariables["showTruncateSummary"] then
+      internal:dm("Info", string.format(GetString(GS_TRUNCATE_CANCELLED_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    end
   end
 
   if not internal.isDatabaseBusy then
@@ -315,7 +317,7 @@ function internal:IndexCancelledItemData()
 
   local postfunc   = function(extraData)
     internal:DatabaseBusy(false)
-    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+    if LibGuildStore_SavedVariables["showIndexingSummary"] then
       internal:dm("Info",
         string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
           extraData.wordsIndexCount))
@@ -329,7 +331,7 @@ function internal:IndexCancelledItemData()
 end
 
 function internal:ReferenceCancelledItemDataContainer()
-  internal:dm("Debug", "ReferenceCancelledItemDataContainer")
+  internal:dm("Debug", "Reference Cancelled Item Data Container")
   local savedVars = GS17DataSavedVariables[internal.cancelledNamespace]
   for itemid, versionlist in pairs(savedVars) do
     if cancelled_items_data[itemid] then

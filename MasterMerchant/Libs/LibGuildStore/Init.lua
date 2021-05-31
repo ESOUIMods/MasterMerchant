@@ -142,6 +142,7 @@ internal.defaults                = {
   maxItemCount = 5000,
   showGuildInitSummary = false,
   showIndexingSummary = false,
+  showTruncateSummary = false,
   minimalIndexing = false,
   useSalesHistory = false,
   overrideMMImport = false,

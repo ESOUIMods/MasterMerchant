@@ -116,6 +116,27 @@ function RemoveSalesPerBlacklist(list)
   return dataList, count, oldestTime, newestTime
 end
 
+function RemoveListingsPerBlacklist(list)
+  local dataList       = { }
+  local count          = 0
+  local lowerBlacklist = MasterMerchant.systemSavedVariables.blacklist and MasterMerchant.systemSavedVariables.blacklist:lower() or ""
+  local oldestTime     = nil
+  local newestTime     = nil
+  for i, item in pairs(list) do
+    local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
+    local currentBuyer  = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
+    local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
+    if (not zo_plainstrfind(lowerBlacklist, currentSeller:lower())) and
+      (not zo_plainstrfind(lowerBlacklist, currentGuild:lower())) then
+      if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+      if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+      count = count + 1
+      table.insert(dataList, item)
+    end
+  end
+  return dataList, count, oldestTime, newestTime
+end
+
 function UseSalesByTimestamp(list, timeCheck)
   local dataList   = { }
   local count      = 0
@@ -308,6 +329,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
   local bonanzaSales = 0
   local bonanzaPrice = nil
   local daysHistory  = 0
+  local bonanzaList = {}
 
   -- make sure we have a list of sales to work with
   if sales_data[theIID] and sales_data[theIID][itemIndex] and sales_data[theIID][itemIndex]['sales'] and #sales_data[theIID][itemIndex]['sales'] > 0 then
@@ -323,14 +345,12 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
 
     list, initCount, oldestTime, newestTime = RemoveSalesPerBlacklist(list)
 
-    local bonanzaList = {}
     if listings_data[theIID] and listings_data[theIID][itemIndex] and listings_data[theIID][itemIndex]['sales'] and #listings_data[theIID][itemIndex]['sales'] > 0 then
       bonanzaList = listings_data[theIID][itemIndex]['sales']
-      bonanzaList = RemoveSalesPerBlacklist(list)
-      local bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange = stats.interquartileRange(bonanzaList)
+      bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
       if #bonanzaList >= 3 then
+        local bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange = stats.interquartileRange(bonanzaList)
         bonanzaList = stats.evaluateQuartileRangeTable(bonanzaList, bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange)
-        bonanzaList = RemoveSalesPerBlacklist(bonanzaList)
       end
     end
 
@@ -478,7 +498,8 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
       bonanzaPrice = bonanzaPrice / bonanzaCount
     end
     if legitSales >= 1 then
-      returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold, ['bonanzaPrice'] = bonanzaPrice,
+      returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                     ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
                      ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
     end
   end
@@ -497,32 +518,71 @@ function MasterMerchant:itemHasSales(itemLink)
   return sales_data[itemID] and sales_data[itemID][itemIndex] and sales_data[itemID][itemIndex]['sales'] and #sales_data[itemID][itemIndex]['sales'] > 0
 end
 
+--[[TODO refine this, I don't see why we need so many ways to get the
+average price and the graph information
+
+Returns:
+
+Formated avgPrice String
+Formated bonanzaPrice String
+numDays
+avgPrice
+bonanzaPrice
+graphInfo
+]]--
 function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
   -- TODO add Bonanza price
   local tipStats = MasterMerchant:itemStats(itemLink, clickable)
+  local avgPrice = nil
+  local bonanzaPrice = nil
+  local graphInfo = nil
+  local formatedPriceString = nil
+  local formatedBonanzaString = nil
+  tipFormat = GetString(MM_TIP_FORMAT_MULTI)
   if tipStats.avgPrice then
-
-    local tipFormat
-    if tipStats['numDays'] < 2 then
-      tipFormat = GetString(MM_TIP_FORMAT_SINGLE)
-    else
-      tipFormat = GetString(MM_TIP_FORMAT_MULTI)
-    end
-
-    local avePriceString = self.LocalizedNumber(tipStats['avgPrice'])
-    tipFormat            = string.gsub(tipFormat, '.2f', 's')
-    tipFormat            = string.gsub(tipFormat, 'M.M.', 'MM')
-    -- chatText
-    if not chatText then tipFormat = tipFormat .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
-    local salesString = zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales'])
-    if tipStats['numSales'] ~= tipStats['numItems'] then
-      salesString = salesString .. zo_strformat(GetString(MM_PRICETIP_ITEMS), tipStats['numItems'])
-    end
-    return string.format(tipFormat, salesString, tipStats['numDays'], avePriceString), tipStats['avgPrice'], tipStats['graphInfo'], tipStats['bonanzaPrice']
-    --return string.format(tipFormat, zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales']), tipStats['numDays'], tipStats['avgPrice']), tipStats['avgPrice'], tipStats['graphInfo']
-  else
-    return nil, tipStats['numDays'], nil
+    avgPrice = tipStats.avgPrice
   end
+  if tipStats.bonanzaPrice then
+    bonanzaPrice = tipStats.bonanzaPrice
+  end
+  if tipStats.graphInfo then
+    graphInfo = tipStats.graphInfo
+  end
+  -- change only when needed
+  if tipStats['numDays'] < 2 then
+    tipFormat = GetString(MM_TIP_FORMAT_SINGLE)
+  end
+
+  -- ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s")
+  -- ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "MM price (%s sales/%s items, %s days): %s")
+
+  -- ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s listings/%s items): %s")
+
+  -- ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
+  -- MM price (128 sales/7159 items): 340g
+
+  -- MM price (128 sales/7159 items, 90 days): 340g
+  -- MM price (%s sales/%s items, %s days): %s
+
+  --[[ returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                      ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
+                      ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+  ]]--
+
+  if avgPrice then
+    local avePriceString = self.LocalizedNumber(avgPrice)
+    -- chatText
+    if not chatText then avePriceString = avePriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+    formatedPriceString = string.format(tipFormat, tipStats['numSales'], tipStats['numItems'], tipStats['numDays'], avePriceString)
+  end
+  if bonanzaPrice then
+    local avePriceString = self.LocalizedNumber(bonanzaPrice)
+    -- chatText
+    if not chatText then avePriceString = avePriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+    formatedBonanzaString = string.format(GetString(MM_BONANZA_TIP), tipStats['bonanzaSales'], tipStats['bonanzaCount'], avePriceString)
+  end
+
+  return formatedPriceString, formatedBonanzaString, tipStats['numDays'], tipStats['avgPrice'], tipStats['bonanzaPrice'], tipStats['graphInfo']
 end
 
 function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
@@ -879,22 +939,24 @@ end
 -- The above copyright notice and this permission notice shall be
 -- included in all copies or substantial portions of the Software.
 
+-- |H1:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
+-- |H0:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
 function MasterMerchant:onItemActionLinkStatsLink(itemLink)
-  local tipLine, days = MasterMerchant:itemPriceTip(itemLink, true)
+  -- formatedPriceString, formatedBonanzaString, tipStats['numDays'], tipStats['avgPrice'], tipStats['bonanzaPrice'], tipStats['graphInfo']
+  local tipLine, bonanzaTipline, numDays = MasterMerchant:itemPriceTip(itemLink, true, false)
   if not tipLine then
     -- 10000 for numDays is more or less like saying it is undefined
-    if days == 10000 then
+    if numDays == 10000 then
       tipLine = GetString(MM_TIP_FORMAT_NONE)
     else
-      tipLine = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), days)
+      tipLine = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), numDays)
     end
   end
   if tipLine then
-    tipLine               = string.gsub(tipLine, 'M.M.', 'MM')
     local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
     if (not ChatEditControl:HasFocus()) then StartChatInput() end
     local itemText = string.gsub(itemLink, '|H0', '|H1')
-    ChatEditControl:InsertText(MasterMerchant.concat(tipLine, GetString(MM_TIP_FOR), itemText))
+    ChatEditControl:InsertText(MasterMerchant.concat(tipLine, bonanzaTipline, GetString(MM_TIP_FOR), itemText))
   end
 end
 
@@ -1679,8 +1741,17 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showPricing = value end,
       default = MasterMerchant.systemDefault.showPricing,
     },
-    -- Whether or not to show tooltips on the graph points
+    -- Whether or not to show the bonanza price in tooltips
     [12] = {
+      type = 'checkbox',
+      name = GetString(SK_SHOW_BONANZA_PRICE_NAME),
+      tooltip = GetString(SK_SHOW_BONANZA_PRICE_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.showBonanzaPricing end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.showBonanzaPricing = value end,
+      default = MasterMerchant.systemDefault.showBonanzaPricing,
+    },
+    -- Whether or not to show tooltips on the graph points
+    [13] = {
       type = 'checkbox',
       name = GetString(MM_GRAPH_INFO_NAME),
       tooltip = GetString(MM_GRAPH_INFO_TIP),
@@ -1689,7 +1760,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.displaySalesDetails,
     },
     -- Whether or not to show the crafting costs data in tooltips
-    [13] = {
+    [14] = {
       type = 'checkbox',
       name = GetString(SK_SHOW_CRAFT_COST_NAME),
       tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
@@ -1698,7 +1769,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showCraftCost,
     },
     -- Whether or not to show the quality/level adjustment buttons
-    [14] = {
+    [15] = {
       type = 'checkbox',
       name = GetString(MM_LEVEL_QUALITY_NAME),
       tooltip = GetString(MM_LEVEL_QUALITY_TIP),
@@ -1707,7 +1778,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.displayItemAnalysisButtons,
     },
     -- should we trim outliers prices?
-    [15] = {
+    [16] = {
       type = 'checkbox',
       name = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
@@ -1716,7 +1787,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.trimOutliers,
     },
     -- should we trim off decimals?
-    [16] = {
+    [17] = {
       type = 'checkbox',
       name = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
@@ -1724,14 +1795,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimDecimals = value end,
       default = MasterMerchant.systemDefault.trimDecimals,
     },
-    [17] = {
+    [18] = {
       type = "header",
       name = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
     },
     -- should we replace inventory values?
-    [18] = {
+    [19] = {
       type = 'checkbox',
       name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
@@ -1739,14 +1810,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.replaceInventoryValues = value end,
       default = MasterMerchant.systemDefault.replaceInventoryValues,
     },
-    [19] = {
+    [20] = {
       type = "header",
       name = GetString(GUILD_STORE_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
     -- Should we show the stack price calculator?
-    [20] = {
+    [21] = {
       type = 'checkbox',
       name = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
@@ -1755,7 +1826,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showCalc,
     },
     -- should we display a Min Profit Filter in AGS?
-    [21] = {
+    [22] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1764,7 +1835,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.minProfitFilter,
     },
     -- should we display profit instead of margin?
-    [22] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -1772,14 +1843,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
       default = MasterMerchant.systemDefault.saucy,
     },
-    [23] = {
+    [24] = {
       type = "header",
       name = GetString(GUILD_MASTER_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#ExportSalesReport",
     },
     -- should we add taxes to the export?
-    [24] = {
+    [25] = {
       type = 'checkbox',
       name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -1787,13 +1858,13 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
-    [25] = {
+    [26] = {
       type = "header",
       name = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
     },
-    [26] = {
+    [27] = {
       type = 'checkbox',
       name = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
@@ -1801,7 +1872,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
     },
-    [27] = {
+    [28] = {
       type = 'checkbox',
       name = GetString(MM_DISABLE_ATT_WARN_NAME),
       tooltip = GetString(MM_DISABLE_ATT_WARN_TIP),
@@ -2710,6 +2781,7 @@ function MasterMerchant:Initialize()
     viewSize = ITEMS,
     offlineSales = true,
     showPricing = true,
+    showBonanzaPricing = true,
     showCraftCost = true,
     showGraph = true,
     showCalc = true,
@@ -3210,7 +3282,7 @@ function MasterMerchant:InitScrollLists()
     end
   end
 
-  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales))
+  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings))
 
   if NonContiguousCount(sales_data) > 0 then
     --[[ Sales exist, but no way to know from what source
@@ -3456,7 +3528,11 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
     MasterMerchantGuildWindow:ClearAnchors()
     MasterMerchantGuildWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
-    MasterMerchant.systemSavedVariables.salesWinLeft      = 30
+    MasterMerchantListingWindow:ClearAnchors()
+    MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
+    MasterMerchantPurchaseWindow:ClearAnchors()
+    MasterMerchantPurchaseWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
+    MasterMerchant.systemSavedVariables.salesWinLeft = 30
     MasterMerchant.systemSavedVariables.guildWinLeft = 30
     MasterMerchant.systemSavedVariables.salesWinTop  = 85
     MasterMerchant.systemSavedVariables.guildWinTop  = 85

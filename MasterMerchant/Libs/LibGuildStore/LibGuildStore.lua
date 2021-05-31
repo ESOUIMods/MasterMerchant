@@ -165,6 +165,7 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
   if LibGuildStore_SavedVariables["maxItemCount"] == nil then LibGuildStore_SavedVariables["maxItemCount"] = internal.defaults.maxItemCount end
   if LibGuildStore_SavedVariables["showGuildInitSummary"] == nil then LibGuildStore_SavedVariables["showGuildInitSummary"] = internal.defaults.showGuildInitSummary end
   if LibGuildStore_SavedVariables["showIndexingSummary"] == nil then LibGuildStore_SavedVariables["showIndexingSummary"] = internal.defaults.showIndexingSummary end
+  if LibGuildStore_SavedVariables["showTruncateSummary"] == nil then LibGuildStore_SavedVariables["showTruncateSummary"] = internal.defaults.showTruncateSummary end
   if LibGuildStore_SavedVariables["minimalIndexing"] == nil then LibGuildStore_SavedVariables["minimalIndexing"] = internal.defaults.minimalIndexing end
   if LibGuildStore_SavedVariables["useSalesHistory"] == nil then LibGuildStore_SavedVariables["useSalesHistory"] = internal.defaults.useSalesHistory end
   if LibGuildStore_SavedVariables["overrideMMImport"] == nil then LibGuildStore_SavedVariables["overrideMMImport"] = internal.defaults.overrideMMImport end
@@ -219,10 +220,12 @@ local function SetupData()
   LEQ:Add(function() internal:ReferenceCancelledItemDataContainer() end, 'ReferenceCancelledItemDataContainer')
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
-  LEQ:Add(function() internal:dm("Info", "LibGuildStore Build Reference Tables Finished...") end, "LibGuildStoreReferenceTables")
   -- AddNewData, which adds counts
   LEQ:Add(function() internal:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
   -- Truncate
+  if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
+    LEQ:Add(function() internal:dm("Info", "LibGuildStore Truncate Records Started...") end, "LibGuildStoreReferenceTables")
+  end
   LEQ:Add(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
   LEQ:Add(function() internal:TruncatePurchaseHistory() end, 'TruncatePurchaseHistory')
   LEQ:Add(function() internal:TruncateListingsHistory() end, 'TruncateListingsHistory')
@@ -231,9 +234,12 @@ local function SetupData()
   -- RenewExtraData, if was altered
   LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
   -- and...
+  if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
+    LEQ:Add(function() internal:dm("Info", "LibGuildStore History Initialization Started...") end, "LibGuildStoreReferenceTables")
+  end
   LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
   LEQ:Add(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
-  LEQ:Add(function() internal:InitListingHistory() end, 'InitPurchaseHistory')
+  LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
   -- Index Data, like sr_index
   if LibGuildStore_SavedVariables["minimalIndexing"] then
     LEQ:Add(function() internal:dm("Info", GetString(GS_MINIMAL_INDEXING)) end, "LibGuildStoreIndexData")

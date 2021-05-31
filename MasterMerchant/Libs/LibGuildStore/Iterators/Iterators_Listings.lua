@@ -275,7 +275,9 @@ function internal:TruncateListingsHistory()
 
   local postfunc = function(extraData)
     internal:DatabaseBusy(false)
-    internal:dm("Info", string.format(GetString(GS_TRUNCATE_LISTINGS_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    if LibGuildStore_SavedVariables["showTruncateSummary"] then
+      internal:dm("Info", string.format(GetString(GS_TRUNCATE_LISTINGS_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    end
   end
 
   if not internal.isDatabaseBusy then
@@ -325,7 +327,7 @@ function internal:IndexListingsData()
 
   local postfunc   = function(extraData)
     internal:DatabaseBusy(false)
-    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+    if LibGuildStore_SavedVariables["showIndexingSummary"] then
       internal:dm("Info",
         string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
           extraData.wordsIndexCount))
@@ -339,7 +341,7 @@ function internal:IndexListingsData()
 end
 
 function internal:InitListingHistory()
-  internal:dm("Info", GetString(GS_INIT_ITEM_HISTORY))
+  internal:dm("Debug", "InitListingHistory")
 
   local extradata = {}
 
@@ -398,7 +400,7 @@ function internal:InitListingHistory()
 
     internal.totalListings = extraData.totalRecords
     if LibGuildStore_SavedVariables["showGuildInitSummary"] then
-      internal:dm("Info", string.format(GetString(GS_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
+      internal:dm("Info", string.format(GetString(GS_INIT_LISTINGS_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
         internal.totalListings))
     end
   end
@@ -411,7 +413,7 @@ end
 
 -- Bring seperate lists together we can still access the sales history all together
 function internal:ReferenceListingsDataContainer()
-  internal:dm("Debug", "Bring LibGuildStore data together")
+  internal:dm("Debug", "Reference Listings Data Containers")
   internal:ReferenceListings(GS00DataSavedVariables)
   internal:ReferenceListings(GS01DataSavedVariables)
   internal:ReferenceListings(GS02DataSavedVariables)

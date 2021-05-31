@@ -116,6 +116,14 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
+    name = GetString(GS_TRUNCATE_NAME),
+    tooltip = GetString(GS_TRUNCATE_TIP),
+    getFunc = function() return LibGuildStore_SavedVariables.showTruncateSummary end,
+    setFunc = function(value) LibGuildStore_SavedVariables.showTruncateSummary = value end,
+    default = internal.defaults.showTruncateSummary,
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
     name = GetString(GS_INDEXING_NAME),
     tooltip = GetString(GS_INDEXING_TIP),
     getFunc = function() return LibGuildStore_SavedVariables.showIndexingSummary end,

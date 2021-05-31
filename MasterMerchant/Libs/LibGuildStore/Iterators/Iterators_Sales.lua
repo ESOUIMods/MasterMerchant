@@ -372,7 +372,9 @@ function internal:TruncateSalesHistory()
 
   local postfunc = function(extraData)
     internal:DatabaseBusy(false)
-    internal:dm("Info", string.format(GetString(GS_TRUNCATE_SALES_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    if LibGuildStore_SavedVariables["showTruncateSummary"] then
+      internal:dm("Info", string.format(GetString(GS_TRUNCATE_SALES_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    end
   end
 
   if not internal.isDatabaseBusy then
@@ -429,7 +431,7 @@ function internal:IndexSalesData()
 
   local postfunc   = function(extraData)
     internal:DatabaseBusy(false)
-    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+    if LibGuildStore_SavedVariables["showIndexingSummary"] then
       internal:dm("Info",
         string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
           extraData.wordsIndexCount))
@@ -443,7 +445,7 @@ function internal:IndexSalesData()
 end
 
 function internal:InitItemHistory()
-  internal:dm("Info", GetString(GS_INIT_ITEM_HISTORY))
+  internal:dm("Debug", "InitItemHistory")
 
   local extradata = {}
 
@@ -557,7 +559,7 @@ function internal:InitItemHistory()
 
       internal.totalSales = extraData.totalRecords
       if LibGuildStore_SavedVariables["showGuildInitSummary"] then
-        internal:dm("Info", string.format(GetString(GS_INIT_ITEM_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
+        internal:dm("Info", string.format(GetString(GS_INIT_SALES_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
           internal.totalSales))
       end
     end

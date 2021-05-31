@@ -1637,6 +1637,7 @@ function MasterMerchant:remStatsItemTooltip()
     ItemTooltip.textPool:ReleaseAllObjects()
   end
   ItemTooltip.mmText        = nil
+  ItemTooltip.mmBonanzaText = nil
   ItemTooltip.mmCraftText   = nil
   ItemTooltip.mmTextDebug   = nil
   ItemTooltip.mmQualityDown = nil
@@ -1647,7 +1648,8 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
   local xBonanza = ""
-  local tipLine, avePrice, graphInfo, bonanzaPrice = self:itemPriceTip(itemLink, false, clickable)
+  local tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo = self:itemPriceTip(itemLink, false, clickable)
+
   local craftCostLine                = self:itemCraftPriceTip(itemLink, false)
 
   if not tooltip.textPool then
@@ -1804,6 +1806,24 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
     end
 
+    if MasterMerchant.systemSavedVariables.showBonanzaPricing then
+
+      if bonanzaTipline then
+        if not tooltip.mmBonanzaText then
+          tooltip:AddVerticalPadding(5)
+          tooltip.mmBonanzaText = tooltip.textPool:AcquireObject()
+          tooltip:AddControl(tooltip.mmBonanzaText)
+          tooltip.mmBonanzaText:SetAnchor(CENTER)
+        end
+
+        if tooltip.mmBonanzaText then
+          tooltip.mmBonanzaText:SetText(bonanzaTipline)
+          tooltip.mmBonanzaText:SetColor(1, 1, 1, 1)
+        end
+      end
+
+    end
+
     if MasterMerchant.systemSavedVariables.showCraftCost then
 
       if craftCostLine then
@@ -1846,24 +1866,24 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
           graph.points = MM_Graph:New(graph)
         end
         if graphInfo.low == graphInfo.high then
-          graphInfo.low  = avePrice * 0.85
-          graphInfo.high = avePrice * 1.15
+          graphInfo.low  = avgPrice * 0.85
+          graphInfo.high = avgPrice * 1.15
         end
 
-        if graphInfo.low > avePrice then
-            graphInfo.low = avePrice - 1
+        if graphInfo.low > avgPrice then
+            graphInfo.low = avgPrice - 1
         end
         if graphInfo.low < 1 then
             graphInfo.low = 1
         end
 
-        if graphInfo.high < avePrice then
-            graphInfo.high = avePrice + 1
+        if graphInfo.high < avgPrice then
+            graphInfo.high = avgPrice + 1
         end
 
-        local priceDifference = math.abs(graphInfo.high - avePrice)
+        local priceDifference = math.abs(graphInfo.high - avgPrice)
         if priceDifference < 1 then
-          graphInfo.high = avePrice + 1
+          graphInfo.high = avgPrice + 1
         end
 
         if bonanzaPriceFound then
@@ -1878,12 +1898,12 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
 
         local xLow   = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         local xHigh  = MasterMerchant.LocalizedNumber(graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        local xPrice = MasterMerchant.LocalizedNumber(avePrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        local xPrice = MasterMerchant.LocalizedNumber(avgPrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         local endTimeFrameText = GetString(MM_ENDTIMEFRAME_TEXT)
         -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
-        -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice, x_bonanzaPriceText, x_bonanzaPriceValue)
+        -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avgPrice, x_bonanzaPriceText, x_bonanzaPriceValue)
         graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), endTimeFrameText, xLow, xHigh,
-          graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avePrice, xBonanza, bonanzaPrice)
+          graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, avgPrice, xBonanza, bonanzaPrice)
         if MasterMerchant.systemSavedVariables.displaySalesDetails then
           for _, point in ipairs(graphInfo.points) do
             graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
@@ -1983,6 +2003,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
       Popup.textPool:ReleaseAllObjects()
     end
     Popup.mmText        = nil
+    Popup.mmBonanzaText = nil
     Popup.mmCraftText   = nil
     Popup.mmTextDebug   = nil
     Popup.mmQualityDown = nil
@@ -2003,6 +2024,7 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
     Popup.textPool:ReleaseAllObjects()
   end
   Popup.mmText        = nil
+  Popup.mmBonanzaText = nil
   Popup.mmCraftText   = nil
   Popup.mmTextDebug   = nil
   Popup.mmQualityDown = nil
@@ -2124,6 +2146,7 @@ function MasterMerchant:addStatsItemTooltip()
         ItemTooltip.textPool:ReleaseAllObjects()
       end
       ItemTooltip.mmText        = nil
+      ItemTooltip.mmBonanzaText = nil
       ItemTooltip.mmCraftText   = nil
       ItemTooltip.mmTextDebug   = nil
       ItemTooltip.mmQualityDown = nil

@@ -269,7 +269,9 @@ function internal:TruncatePostedItemsHistory()
 
   local postfunc = function(extraData)
     internal:DatabaseBusy(false)
-    internal:dm("Info", string.format(GetString(GS_TRUNCATE_POSTED_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    if LibGuildStore_SavedVariables["showTruncateSummary"] then
+      internal:dm("Info", string.format(GetString(GS_TRUNCATE_POSTED_COMPLETE), GetTimeStamp() - extraData.start, extraData.deleteCount))
+    end
   end
 
   if not internal.isDatabaseBusy then
@@ -319,7 +321,7 @@ function internal:IndexPostedItemsData()
 
   local postfunc   = function(extraData)
     internal:DatabaseBusy(false)
-    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+    if LibGuildStore_SavedVariables["showIndexingSummary"] then
       internal:dm("Info",
         string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
           extraData.wordsIndexCount))
@@ -333,7 +335,7 @@ function internal:IndexPostedItemsData()
 end
 
 function internal:ReferencePostedItemsDataContainer()
-  internal:dm("Debug", "ReferencePostedItemsDataContainer")
+  internal:dm("Debug", "Reference Posted Items Data Container")
   local savedVars = GS17DataSavedVariables[internal.postedNamespace]
   for itemid, versionlist in pairs(savedVars) do
     if posted_items_data[itemid] then
