@@ -53,6 +53,7 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Show Purchase and Sales totals on the G
 
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Show Pricing History Graph")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Include a graph of the sales history in item tooltips.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")
@@ -80,13 +81,26 @@ ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
 ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Price")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "Price(ea.)")
+
+-- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Right-click on an item to link it in chat.")
 ZO_CreateStringId("SK_BUYER_TOOLTIP", "Right-click on a name to contact them.")
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Click to sort by sale time.")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Click to sort by sale price.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Open statistics window.")
-ZO_CreateStringId("SK_SELLER_TOOLTIP", "Seller Info")
-ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Item Info")
+ZO_CreateStringId("SK_SALES_TOOLTIP", "Sales View")
+ZO_CreateStringId("SK_PURCHASE_TOOLTIP", "Purchase View")
+ZO_CreateStringId("SK_BONANZA_TOOLTIP", "Bonanza View")
+ZO_CreateStringId("SK_MANAGEMENT_TOOLTIP", "Management View")
+ZO_CreateStringId("SK_FEEDBACK_TOOLTIP", "Send Feedback")
+ZO_CreateStringId("SK_CLOSE_TOOLTIP", "Close Window")
+ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Filter By Name")
+ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filter By Type")
+
+-- toggle view mode
+ZO_CreateStringId("SK_SELLER_TOOLTIP", "Ranking View")
+ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Item View")
+
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[Yesterday/%d days ago]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ",")
 
@@ -360,3 +374,4 @@ ZO_CreateStringId("MM_ITEMNAME_TEXT", "Item Name")
 ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
 ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")
 ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
+ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")

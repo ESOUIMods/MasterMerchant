@@ -33,7 +33,7 @@
           <Controls>
             <Control name="$(parent)ItemName" inherits="MM_SortHeaderLeft">
               <Anchor point="LEFT" relativeTo="$(parent)Headers" relativePoint="LEFT" offsetX="32" offsetY="0" />
-              <Dimensions x="260" y="32" />
+              <Dimensions x="210" y="32" />
               <OnInitialized>
                 ZO_SortHeader_Initialize(MasterMerchantFilterByNameWindowHeadersItemName, GetString(MM_ITEMNAME_COLUMN), 'itemName', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "MM_FontGameLargeBold")
               </OnInitialized>
@@ -41,8 +41,21 @@
           </Controls>
         </Control>
         <Control name="$(parent)List" inherits="ZO_ScrollList">
-          <Dimensions x="250" y="585" />
+          <Dimensions x="250" y="580" />
           <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+        </Control>
+        <Control name="$(parent)MenuFooter">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5"/>
+          <Dimensions x="250" y="40"/>
+          <Controls>
+            <Button name="$(parent)ClearFilterButton" inherits="ZO_DefaultButton">
+              <Anchor point="BOTTOMLEFT" relativeTo="$(parent)MenuFooter" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5"/>
+              <Dimensions x="180"/>
+              <OnClicked>
+                MasterMerchant:ClearFilterList()
+              </OnClicked>
+            </Button>
+          </Controls>
         </Control>
       </Controls>
     </TopLevelControl>

@@ -79,13 +79,26 @@ ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
 ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Preis")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "St\195\188ckpreis")
+
+-- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Doppelklick auf einen Gegenstand f\195\188gt einen Link auf diesen im Chat ein.")
 ZO_CreateStringId("SK_BUYER_TOOLTIP", "Doppelkick auf einen K\195\164ufer, um diesen anzufl\195\188stern bzw. wenn der Senden-Reiter in Nachrichten ge\195\182ffnet ist, f\195\188gt es den Namen in die Adresszeile ein.")
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Anklicken um nach Verkaufszeit zu sortieren.")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Anklicken um nach Verkaufspreis zu sortieren.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Statistikfenster öffnen.")
-ZO_CreateStringId("SK_SELLER_TOOLTIP", "Verkäufer Infos")
+ZO_CreateStringId("SK_SALES_TOOLTIP", "Sales View")
+ZO_CreateStringId("SK_PURCHASE_TOOLTIP", "Purchase View")
+ZO_CreateStringId("SK_BONANZA_TOOLTIP", "Bonanza View")
+ZO_CreateStringId("SK_MANAGEMENT_TOOLTIP", "Management View")
+ZO_CreateStringId("SK_FEEDBACK_TOOLTIP", "Send Feedback")
+ZO_CreateStringId("SK_CLOSE_TOOLTIP", "Close Window")
+ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Filter By Name")
+ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filter By Type")
+
+-- toggle view mode
+ZO_CreateStringId("SK_SELLER_TOOLTIP", "Ranking-Ansicht")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Verkaufsinformationen")
+
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[Gestern/Vor %d Tagen]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ".")
 
@@ -359,4 +372,4 @@ ZO_CreateStringId("MM_ITEMNAME_TEXT", "Item Name")
 ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
 ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")
 ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
-
+ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")

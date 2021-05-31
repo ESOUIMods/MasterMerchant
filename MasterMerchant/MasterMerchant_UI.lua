@@ -1616,6 +1616,7 @@ function MasterMerchant:UpdateFonts()
   ]]--
   MasterMerchantFilterByTypeWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
   MasterMerchantFilterByNameWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantFilterByNameWindowMenuFooterClearFilterButton:SetFont(string.format(fontString, windowButtonLabel))
 
 end
 
@@ -2579,6 +2580,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantFilterByTypeWindowMenuHeaderTitle:SetText(GetString(MM_FILTERBY_TYPE_TITLE))
   MasterMerchantFilterByNameWindowMenuHeaderTitle:SetText(GetString(MM_FILTERBY_LINK_TITLE))
   MasterMerchantFilterByNameWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(MM_ITEMNAME_TEXT))
+  MasterMerchantFilterByNameWindowMenuFooterClearFilterButton:SetText(GetString(MM_CLEAR_FILTER_BUTTON))
 
   if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
     MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
@@ -2802,18 +2804,6 @@ function MasterMerchant:SetupMasterMerchantWindow()
     }
   }
   ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetListingsConfirmation', confirmDialog)
-
-  -- Stats buttons
-  MasterMerchantWindowMenuHeaderStatsButton:SetHandler('OnMouseEnter',
-    function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_STATS_TOOLTIP)) end)
-  MasterMerchantGuildWindowMenuHeaderStatsButton:SetHandler('OnMouseEnter',
-    function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_STATS_TOOLTIP)) end)
-
-  -- View size change buttons
-  MasterMerchantWindowMenuHeaderViewSizeButton:SetHandler('OnMouseEnter',
-    function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_SELLER_TOOLTIP)) end)
-  MasterMerchantGuildWindowMenuHeaderViewSizeButton:SetHandler('OnMouseEnter',
-    function(self) ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_ITEMS_TOOLTIP)) end)
 
   -- Slider setup
   MasterMerchantStatsWindowSlider:SetValue(100)

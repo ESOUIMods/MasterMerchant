@@ -79,13 +79,26 @@ ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
 ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "価格")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "価格(1個 )")
+
+-- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "アイテムをダブルクリックすることでチャットに表示します。")
 ZO_CreateStringId("SK_BUYER_TOOLTIP", "名前をダブルクリックすることでコンタクトを取ります。")
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "クリックして販売時間でソートします")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "クリックして販売価格でソートします。")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "統計ウィンドウを開きます。")
-ZO_CreateStringId("SK_SELLER_TOOLTIP", "販売者情報")
+ZO_CreateStringId("SK_SALES_TOOLTIP", "Sales View")
+ZO_CreateStringId("SK_PURCHASE_TOOLTIP", "Purchase View")
+ZO_CreateStringId("SK_BONANZA_TOOLTIP", "Bonanza View")
+ZO_CreateStringId("SK_MANAGEMENT_TOOLTIP", "Management View")
+ZO_CreateStringId("SK_FEEDBACK_TOOLTIP", "Send Feedback")
+ZO_CreateStringId("SK_CLOSE_TOOLTIP", "Close Window")
+ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Filter By Name")
+ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filter By Type")
+
+-- toggle view mode
+ZO_CreateStringId("SK_SELLER_TOOLTIP", "ランキングビュー")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "アイテム情報")
+
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[昨日/%d日前]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ",")
 
@@ -359,4 +372,4 @@ ZO_CreateStringId("MM_ITEMNAME_TEXT", "Item Name")
 ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
 ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")
 ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
-
+ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")

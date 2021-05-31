@@ -129,3 +129,9 @@ function MasterMerchant:RemoveFilterFromTable(itemName)
   MasterMerchant.nameFilterScrollList:RefreshData()
   MasterMerchant.listingsScrollList:RefreshFilters()
 end
+
+function MasterMerchant:ClearFilterList()
+  GS17DataSavedVariables[internal.nameFilterNamespace] = {}
+  MasterMerchant.nameFilterScrollList:RefreshData()
+  MasterMerchant.listingsScrollList:RefreshFilters()
+end
