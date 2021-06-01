@@ -258,7 +258,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(GS_RESET_RU_BUTTON),
+    name = GetString(GS_RESET_EU_BUTTON),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DebugOptions",
   }

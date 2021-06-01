@@ -2043,8 +2043,6 @@ function MasterMerchant:RefreshMasterMerchantWindow()
       self.listIsDirty[ITEMS] = true
     end
     self.listIsDirty[GUILDS]   = true
-    self.listIsDirty[LISTINGS] = true
-    self.listIsDirty[PURCHASES] = true
   elseif currentView == GUILDS then
     if not MasterMerchantGuildWindow:IsHidden() and not internal.isDatabaseBusy then
       self.guildScrollList:RefreshData()
@@ -2052,43 +2050,20 @@ function MasterMerchant:RefreshMasterMerchantWindow()
       self.listIsDirty[GUILDS] = true
     end
     self.listIsDirty[ITEMS]    = true
-    self.listIsDirty[LISTINGS] = true
-    self.listIsDirty[PURCHASES] = true
   elseif currentView == LISTINGS then
     if not MasterMerchantListingWindow:IsHidden() and not internal.isDatabaseBusy then
       self.listingsScrollList:RefreshData()
     else
       self.listIsDirty[LISTINGS] = true
     end
-    self.listIsDirty[ITEMS]  = true
-    self.listIsDirty[GUILDS] = true
-    self.listIsDirty[PURCHASES] = true
   elseif currentView == PURCHASES then
     if not MasterMerchantPurchaseWindow:IsHidden() and not internal.isDatabaseBusy then
       self.purchasesScrollList:RefreshData()
     else
       self.listIsDirty[PURCHASES] = true
     end
-    self.listIsDirty[ITEMS]  = true
-    self.listIsDirty[GUILDS] = true
-    self.listIsDirty[LISTINGS] = true
   else
   end
-end
-
--- don't refresh just set whether or not the list needs updated.
-function MasterMerchant:SetMasterMerchantWindowDirty()
-  self.listIsDirty[ITEMS]    = true
-  self.listIsDirty[GUILDS]   = true
-  self.listIsDirty[LISTINGS] = true
-  self.listIsDirty[PURCHASES] = true
-end
-
-function MasterMerchant:RefreshDataAllData()
-  self.scrollList:RefreshData()
-  self.guildScrollList:RefreshData()
-  self.listingsScrollList:RefreshData()
-  self.purchasesScrollList:RefreshData()
 end
 
 -- Called after store scans complete, re-creates indexes if need be,
@@ -3524,18 +3499,20 @@ function MasterMerchant.Slash(allArgs)
     return
   end
   if args == 'invisible' then
-    MasterMerchantWindow:ClearAnchors()
-    MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
-    MasterMerchantGuildWindow:ClearAnchors()
-    MasterMerchantGuildWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
-    MasterMerchantListingWindow:ClearAnchors()
-    MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
-    MasterMerchantPurchaseWindow:ClearAnchors()
-    MasterMerchantPurchaseWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 30, 85)
     MasterMerchant.systemSavedVariables.salesWinLeft = 30
+    MasterMerchant.systemSavedVariables.salesWinTop = 85
     MasterMerchant.systemSavedVariables.guildWinLeft = 30
-    MasterMerchant.systemSavedVariables.salesWinTop  = 85
-    MasterMerchant.systemSavedVariables.guildWinTop  = 85
+    MasterMerchant.systemSavedVariables.guildWinTop = 85
+    MasterMerchant.systemSavedVariables.listingWinLeft = 30
+    MasterMerchant.systemSavedVariables.listingWinTop = 85
+    MasterMerchant.systemSavedVariables.purchaseWinLeft = 30
+    MasterMerchant.systemSavedVariables.purchaseWinTop = 85
+
+    MasterMerchant.systemSavedVariables.statsWinLeft = 720
+    MasterMerchant.systemSavedVariables.statsWinTop = 820
+    MasterMerchant.systemSavedVariables.feedbackWinLeft = 720
+    MasterMerchant.systemSavedVariables.feedbackWinTop = 420
+    MasterMerchant:RestoreWindowPosition()
     MasterMerchant:dm("Info", GetString(MM_RESET_POSITION))
     return
   end

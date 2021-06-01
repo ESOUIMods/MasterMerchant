@@ -82,7 +82,24 @@ function internal:addListingData(theEvent)
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
 
-  local searchText = internal:GetSearchText(nil, theEvent.seller, theEvent.guild, searchItemDesc, searchItemAdderText, true)
+  local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
+  local searchText = ""
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText
+    end
+  else
+    -- if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
+    if theEvent.seller then temp[3] = 's' .. theEvent.seller end
+    temp[5]  = theEvent.guild or ''
+    temp[7]  = searchItemDesc or ''
+    temp[9]  = searchItemAdderText or ''
+    if isSelfSale then
+      temp[11] = internal.PlayerSpecialText
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
@@ -305,12 +322,33 @@ function internal:IndexListingsData()
 
     extraData.indexCount  = extraData.indexCount + 1
 
-    local searchText
     local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, viewedItem['itemLink'])
     local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, viewedItem['guild'])
     local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, viewedItem['seller'])
 
-    local searchText = internal:GetSearchText(nil, currentSeller, currentGuild, versiondata.itemDesc, versiondata.itemAdderText, true)
+    local playerName = zo_strlower(GetDisplayName())
+    local selfSale = playerName == zo_strlower(currentSeller)
+    local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
+    local searchText = ""
+    if LibGuildStore_SavedVariables["minimalIndexing"] then
+      if selfSale then
+        searchText = internal.PlayerSpecialText
+      end
+    else
+      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
+      versiondata.itemDesc      = versiondata.itemDesc or GetItemLinkName(currentItemLink)
+      versiondata.itemIcon      = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
+
+      -- if currentBuyer then temp[1] = 'b' .. currentBuyer end
+      if currentSeller then temp[3] = 's' .. currentSeller end
+      temp[5]  = currentGuild or ''
+      temp[7]  = versiondata.itemDesc or ''
+      temp[9]  = versiondata.itemAdderText or ''
+      if selfSale then
+        temp[11] = internal.PlayerSpecialText
+      end
+      searchText = zo_strlower(table.concat(temp, ''))
+    end
 
     -- Index each word
     local searchByWords = zo_strgmatch(searchText, '%S+')

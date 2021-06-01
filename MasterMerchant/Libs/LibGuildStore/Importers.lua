@@ -11,8 +11,6 @@ local pir_index         = _G["LibGuildStore_PostedItemsIndex"]
 local cancelled_items_data = _G["LibGuildStore_CancelledItemsData"]
 local cr_index             = _G["LibGuildStore_CancelledItemsIndex"]
 
-local ASYNC          = LibAsync
-
 ----------------------------------------
 ----- ImportShoppingList           -----
 ----------------------------------------

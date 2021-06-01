@@ -2,6 +2,14 @@ local lib            = _G["LibGuildStore"]
 local internal       = _G["LibGuildStore_Internal"]
 local sales_data        = _G["LibGuildStore_SalesData"]
 local sr_index          = _G["LibGuildStore_SalesIndex"]
+local ASYNC                     = LibAsync
+--[[ can nout use MasterMerchant.itemsViewSize for example
+because that will not be available this early.
+]]--
+local ITEMS                     = 'items_vs'
+local GUILDS                    = 'guild_vs'
+local LISTINGS                  = 'listings_vs'
+local PURCHASES                 = 'purchases_vs'
 
 function internal:CheckForDuplicateSale(itemLink, eventID)
   --[[ we need to be able to calculate theIID and itemIndex
@@ -149,9 +157,27 @@ function internal:addSalesData(theEvent)
     internal.myItems[theEvent.guild] = guild;
     guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
       adderDescConcat)
+    MasterMerchant.listIsDirty[ITEMS] = true
   end
 
-  local searchText = internal:GetSearchText(theEvent.buyer, theEvent.seller, theEvent.guild, searchItemDesc, searchItemAdderText, true)
+  local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
+  local searchText = ""
+  if LibGuildStore_SavedVariables["minimalIndexing"] then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText
+    end
+  else
+    if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
+    if theEvent.seller then temp[3] = 's' .. theEvent.seller end
+    temp[5]  = theEvent.guild or ''
+    temp[7]  = searchItemDesc or ''
+    temp[9]  = searchItemAdderText or ''
+    if isSelfSale then
+      temp[11] = internal.PlayerSpecialText
+    end
+    searchText = zo_strlower(table.concat(temp, ''))
+  end
+
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData      = { theIID, itemIndex, insertedIndex }
 
@@ -161,6 +187,7 @@ function internal:addSalesData(theEvent)
     table.insert(sr_index[i], wordData)
   end
 
+  MasterMerchant.listIsDirty[GUILDS]   = true
   return true
 end
 
@@ -408,13 +435,34 @@ function internal:IndexSalesData()
 
     extraData.indexCount  = extraData.indexCount + 1
 
-    local searchText
     local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, soldItem['itemLink'])
     local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, soldItem['guild'])
     local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['buyer'])
     local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['seller'])
 
-    local searchText = internal:GetSearchText(currentBuyer, currentSeller, currentGuild, versiondata.itemDesc, versiondata.itemAdderText, true)
+    local playerName = zo_strlower(GetDisplayName())
+    local selfSale = playerName == zo_strlower(currentSeller)
+    local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
+    local searchText = ""
+    if LibGuildStore_SavedVariables["minimalIndexing"] then
+      if selfSale then
+        searchText = internal.PlayerSpecialText
+      end
+    else
+      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
+      versiondata.itemDesc      = versiondata.itemDesc or GetItemLinkName(currentItemLink)
+      versiondata.itemIcon      = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
+
+      if currentBuyer then temp[1] = 'b' .. currentBuyer end
+      if currentSeller then temp[3] = 's' .. currentSeller end
+      temp[5]  = currentGuild or ''
+      temp[7]  = versiondata.itemDesc or ''
+      temp[9]  = versiondata.itemAdderText or ''
+      if selfSale then
+        temp[11] = internal.PlayerSpecialText
+      end
+      searchText = zo_strlower(table.concat(temp, ''))
+    end
 
     -- Index each word
     local searchByWords = zo_strgmatch(searchText, '%S+')

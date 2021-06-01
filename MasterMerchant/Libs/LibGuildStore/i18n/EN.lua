@@ -1,7 +1,7 @@
 ﻿ZO_CreateStringId("GS_DEBUG_OPTIONS", "Debug Options")
 ZO_CreateStringId("GS_REFRESH_BUTTON", "Refresh")
 ZO_CreateStringId("GS_RESET_NA_BUTTON", "Reset NA")
-ZO_CreateStringId("GS_RESET_RU_BUTTON", "Reset EU")
+ZO_CreateStringId("GS_RESET_EU_BUTTON", "Reset EU")
 ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE_NAME", "Refresh Libhistoire")
 ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE_TIP", "Refresh all Libhistoire data based on your sales history size.")
 ZO_CreateStringId("GS_RESET_NA_NAME", "Reset NA")

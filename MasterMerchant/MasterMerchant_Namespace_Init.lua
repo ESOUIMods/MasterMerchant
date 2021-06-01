@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant         = { }
 MasterMerchant.name    = 'MasterMerchant'
-MasterMerchant.version = '3.6.21'
+MasterMerchant.version = '3.6.22'
 
 -------------------------------------------------
 ----- early helper                          -----

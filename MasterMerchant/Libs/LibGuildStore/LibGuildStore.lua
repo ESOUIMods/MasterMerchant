@@ -55,7 +55,8 @@ function internal:QueueCheckStatus()
     lib.guildStoreReady                                      = true
     LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
     internal:DatabaseBusy(false)
-    MasterMerchant:RefreshDataAllData()
+    MasterMerchant.scrollList:RefreshData()
+    MasterMerchant.guildScrollList:RefreshData()
   end
 end
 

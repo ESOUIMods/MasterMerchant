@@ -3,6 +3,19 @@ local internal          = _G["LibGuildStore_Internal"]
 
 local LGH           = LibHistoire
 
+--[[ can nout use MasterMerchant.itemsViewSize for example
+because that will not be available this early.
+]]--
+local ITEMS                     = 'items_vs'
+local GUILDS                    = 'guild_vs'
+local LISTINGS                  = 'listings_vs'
+local PURCHASES                 = 'purchases_vs'
+
+local ITEM_VIEW                 = 'self_vm'
+local GUILD_VIEW                = 'guild_vm'
+local LISTINGS_VIEW             = 'listings_vm'
+local PURCHASES_VIEW            = 'purchases_vm'
+
 function internal:concat(a, ...)
   if a == nil and ... == nil then
     return ''
@@ -312,7 +325,7 @@ function internal:SetupListener(guildId)
     internal.LibHistoireListener[guildId]:SetAfterEventId(lastReceivedEventID)
   end
   internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
-    if eventType == GUILD_EVENT_ITEM_SOLD and not internal.isDatabaseBusy then
+    if eventType == GUILD_EVENT_ITEM_SOLD then
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
         LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] = Id64ToString(eventId)
         lastReceivedEventID                                          = eventId
@@ -382,7 +395,11 @@ function internal:SetupListener(guildId)
         end
         if added then
           MasterMerchant:PostScanParallel(guildName, true)
-          MasterMerchant:SetMasterMerchantWindowDirty()
+          local currentView = MasterMerchant.systemSavedVariables.viewSize
+          local currentViewMode = MasterMerchant.viewMode
+          if currentViewMode == ITEM_VIEW and currentView == ITEMS then
+            MasterMerchant.scrollList:RefreshData()
+          end
         end
       end
     end
