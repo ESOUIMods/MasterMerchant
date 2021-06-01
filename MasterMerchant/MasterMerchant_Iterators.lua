@@ -147,19 +147,25 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
         extraData.versionRemoved = true
       end
 
-      if not MasterMerchant.systemSavedVariables.shouldAdderText then
-        local _, itemData = next(versiondata['sales'])
+      if MasterMerchant.systemSavedVariables.shouldAdderText then
+        local itemData = nil
+        for sid, sd in pairs(versiondata['sales']) do
+          if (sd ~= nil) and (type(sd) == 'table') then
+            itemData = sd
+            break
+          end
+        end
+
         if itemData then
-          itemLink = itemData["itemLink"]
-          if itemLink then
-            versiondata['itemAdderText'] = MasterMerchant.addedSearchToItem(itemLink)
-            versiondata['itemDesc'] = GetItemLinkName(itemLink)
+          if itemData["itemLink"] then
+            versiondata['itemAdderText'] = MasterMerchant.addedSearchToItem(itemData["itemLink"])
+            versiondata['itemDesc']      = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemData["itemLink"]))
           end
         end
       end
       if extraData.wasAltered then
         versiondata["wasAltered"] = true
-        extraData.wasAltered = false
+        extraData.wasAltered      = false
       end
       -- Go onto the next Version
       versionid, versiondata = next(versionlist, versionid)
