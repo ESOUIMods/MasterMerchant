@@ -621,7 +621,7 @@ function MMScrollList:FilterScrollList()
   elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     searchText = MasterMerchantGuildWindowSearchBox:GetText()
   else
-    searchText = MasterMerchantListingWindowSearchBox:GetText()
+    searchText = MasterMerchantListingsWindowSearchBox:GetText()
   end
   if searchText then searchText = string.gsub(string.lower(searchText), '^%s*(.-)%s*$', '%1') end
 
