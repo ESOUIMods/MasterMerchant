@@ -147,7 +147,7 @@ function MasterMerchant:iterateOverSalesData(itemid, versionid, saleid, prefunc,
         extraData.versionRemoved = true
       end
 
-      if MasterMerchant.systemSavedVariables.shouldAdderText then
+      if not MasterMerchant.systemSavedVariables.shouldAdderText then
         local itemData = nil
         for sid, sd in pairs(versiondata['sales']) do
           if (sd ~= nil) and (type(sd) == 'table') then
