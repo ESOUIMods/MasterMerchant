@@ -151,6 +151,7 @@ ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "MM price (%s sales/%s items, %s days):
 ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s listings/%s items): %s")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM has no data")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "MM has no data in the last %d days")
+ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "for")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Link in Chat")
 ZO_CreateStringId("MM_STATS_TO_CHAT", "MM Price to Chat")

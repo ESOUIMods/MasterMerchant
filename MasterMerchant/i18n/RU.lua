@@ -147,6 +147,7 @@ ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Цена M.M. (%s, %d день): %.2f
 ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Цена M.M. (%s, %d дней): %.2f")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "Нет данных M.M.")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "У M.M. нет данных за прошедшие %d дней")
+ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "за")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "В чат")
 ZO_CreateStringId("MM_STATS_TO_CHAT", "Статистика в чат")

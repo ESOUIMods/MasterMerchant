@@ -7,9 +7,9 @@
 local LAM                       = LibAddonMenu2
 local LMP                       = LibMediaProvider
 local ASYNC                     = LibAsync
+local internal                  = _G["LibGuildStore_Internal"]
 local sales_data                = _G["LibGuildStore_SalesData"]
 local sr_index                  = _G["LibGuildStore_SalesIndex"]
-local internal                  = _G["LibGuildStore_Internal"]
 local listings_data             = _G["LibGuildStore_ListingsData"]
 
 local OriginalSetupPendingPost
@@ -317,192 +317,194 @@ end
 -- Computes the weighted moving average across available data
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
   -- 10000 for numDays is more or less like saying it is undefined
-  local returnData = { ['avgPrice'] = nil, ['numSales'] = nil, ['numDays'] = 10000, ['numItems'] = nil, ['craftCost'] = nil }
-  if not MasterMerchant.isInitialized then return returnData end
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
   For example when you press SHIFT or CTRL then daysHistory and daysRange
   are the same. However, when you do not modify the data, then daysRange
   is 10000 and daysHistory is however many days you have.
   ]]--
-  local legitSales   = 0
-  local bonanzaSales = 0
+  local list         = {}
+  local legitSales   = nil
+  local avgPrice     = nil
+  local countSold    = nil
+  local daysHistory  = 10000
+
+  local bonanzaList  = {}
+  local bonanzaSales = nil
   local bonanzaPrice = nil
-  local daysHistory  = 0
-  local bonanzaList = {}
+  local bonanzaCount = nil
+
+  local oldestTime   = nil
+  local lowPrice     = nil
+  local highPrice    = nil
+  local salesPoints  = {}
+  local returnData   = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                         ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
+                         ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+  if not MasterMerchant.isInitialized then return returnData end
 
   -- make sure we have a list of sales to work with
-  if sales_data[theIID] and sales_data[theIID][itemIndex] and sales_data[theIID][itemIndex]['sales'] and #sales_data[theIID][itemIndex]['sales'] > 0 then
+  if MasterMerchant:itemIDHasSales(theIID, itemIndex) then
 
-    local oldestTime     = nil
-    local newestTime     = nil
-    local initCount      = 0
-    local list           = sales_data[theIID][itemIndex]['sales']
+    local newestTime           = nil
+    local initCount            = 0
+    list                       = sales_data[theIID][itemIndex]['sales']
 
     local timeCheck, daysRange = self:CheckTime()
 
-    if timeCheck == -1 then return returnData end
+    if timeCheck ~= -1 then
 
-    list, initCount, oldestTime, newestTime = RemoveSalesPerBlacklist(list)
+      list, initCount, oldestTime, newestTime = RemoveSalesPerBlacklist(list)
 
-    if listings_data[theIID] and listings_data[theIID][itemIndex] and listings_data[theIID][itemIndex]['sales'] and #listings_data[theIID][itemIndex]['sales'] > 0 then
-      bonanzaList = listings_data[theIID][itemIndex]['sales']
-      bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
-      if #bonanzaList >= 3 then
-        local bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange = stats.interquartileRange(bonanzaList)
-        bonanzaList = stats.evaluateQuartileRangeTable(bonanzaList, bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange)
+      if daysRange ~= 10000 then
+        list, initCount, oldestTime, newestTime = UseSalesByTimestamp(list, timeCheck)
       end
-    end
 
-    if daysRange ~= 10000 then
-      list, initCount, oldestTime, newestTime = UseSalesByTimestamp(list, timeCheck)
-    end
+      --[[1-2-2021 Our sales data is now ready to be trimmed if
+      trim outliers is active.
+      ]]--
 
-    --[[1-2-2021 Our sales data is now ready to be trimmed if
-    trim outliers is active.
-    ]]--
-
-    if MasterMerchant.systemSavedVariables.trimOutliers then
-      if #list < 3 then
-        -- MasterMerchant:dm("Debug", "There are less then 3 items, we can not trim outliers")
-      else
-        local quartile1, quartile3, quartileRange = stats.interquartileRange(list)
-        list, initCount, oldestTime, newestTime   = stats.evaluateQuartileRangeTable(list, quartile1, quartile3,
-          quartileRange)
+      if MasterMerchant.systemSavedVariables.trimOutliers then
+        if #list >= 3 then
+          local quartile1, quartile3, quartileRange = stats.interquartileRange(list)
+          list, initCount, oldestTime, newestTime   = stats.evaluateQuartileRangeTable(list, quartile1, quartile3,
+            quartileRange)
+        end
       end
-    end
-    --[[TODO: what is goBack
+      --[[TODO: what is goBack
 
-    if no sales were found do it again but don't worry about
-    item.timestamp being greater then timeCheck.
-    if no sales are found this way, returnData will indicate
-    no sales using MM's undefind value constants
+      if no sales were found do it again but don't worry about
+      item.timestamp being greater then timeCheck.
+      if no sales are found this way, returnData will indicate
+      no sales using MM's undefind value constants
 
-    possible use for goBack. goBack is an argument in SlideSales
-    which is used when a player changes there account name.
-    goBack is also used in SwitchPrice, and GetItemLinePrice
+      possible use for goBack. goBack is an argument in SlideSales
+      which is used when a player changes there account name.
+      goBack is also used in SwitchPrice, and GetItemLinePrice
 
-    1-2-2021 Another theroy is that goBack my be a means with which
-    to specify the amount of days. Meaning /mm missing 100 might
-    have been 100 days only. Code throughout MM does not seem to
-    fully support this functionality or this theroy
-    ]]--
+      1-2-2021 Another theroy is that goBack my be a means with which
+      to specify the amount of days. Meaning /mm missing 100 might
+      have been 100 days only. Code throughout MM does not seem to
+      fully support this functionality or this theroy
+      ]]--
+      if initCount > 0 then
 
-    if initCount == 0 then
-      return returnData
-    end
+        -- 10000 for numDays seems to be like saying it is all sales
+        --[[TODO: how is daysRange used here. This could be this way if
+            the first loop returned no sales but the second loop did
 
-    -- 10000 for numDays seems to be like saying it is all sales
-    --[[TODO: how is daysRange used here. This could be this way if
-        the first loop returned no sales but the second loop did
-
-    TODO:2 Figure out what this does considering the above comment when
-    daysRange might be 10000 but daysHistory is about how much history
-    you have. Might be because of oldestTime.
-    ]]--
-    if (daysRange == 10000) then
-      local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS)
-      daysHistory               = quotient + math.floor(0.5 + remainder)
-    else
-      daysHistory = daysRange
-    end
-
-    --[[1-2-2021 We have determined that there is more then one sale
-    in the table and the dayshistory using the daysrange.
-
-    We can now trim outliers if the uses has that active
-    ]]--
-
-    --[[1-2-2021 First we will see if the data is already
-    calculated.
-
-    1-2-2021 Needs updated
-
-    local lookupDataFound = dataPresent(theIID, itemIndex, daysRange)
-    ]]--
-
-    local timeInterval     = newestTime - oldestTime
-    local lowPrice         = nil
-    local highPrice        = nil
-    local avgPrice         = 0
-    local countSold        = 0
-    local weigtedCountSold = 0
-    local salesPoints      = {}
-    local weightValue      = 0
-    local dayInterval      = 0
-    if timeInterval > ZO_ONE_DAY_IN_SECONDS then
-      dayInterval = math.floor((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS) + 1
-    end
-    -- start loop
-    for i, item in pairs(list) do
-      local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item['itemLink'])
-      local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
-      local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
-      local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
-      -- get individualSale
-      local individualSale  = item.price / item.quant
-      -- determine if it is an outlier, if toggle is on
-      countSold             = countSold + item.quant
-      if timeInterval > ZO_ONE_DAY_IN_SECONDS then
-        weightValue      = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)
-        avgPrice         = avgPrice + (item.price * weightValue)
-        weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
-      else
-        avgPrice = avgPrice + item.price
-      end
-      legitSales = legitSales + 1
-      if lowPrice == nil then lowPrice = individualSale else lowPrice = zo_min(lowPrice, individualSale) end
-      if highPrice == nil then highPrice = individualSale else highPrice = math.max(highPrice, individualSale) end
-      if not skipDots then
-        local tooltip = nil
-        local sellerName = nil
-        --[[ clickable probably means to add the tooltip to the dot
-        rather then actually click anything
+        TODO:2 Figure out what this does considering the above comment when
+        daysRange might be 10000 but daysHistory is about how much history
+        you have. Might be because of oldestTime.
         ]]--
-        if clickable then
-          local stringPrice = self.LocalizedNumber(individualSale)
-          local nameString  = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
-          if item.quant == 1 then
-            tooltip = zo_strformat(GetString(SK_TIME_DAYS),
-              math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
-              string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller,
-                zo_strformat('<<t:1>>', nameString), currentBuyer, stringPrice)
+        if (daysRange == 10000) then
+          local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS)
+          daysHistory               = quotient + math.floor(0.5 + remainder)
+        else
+          daysHistory = daysRange
+        end
+
+        --[[1-2-2021 We have determined that there is more then one sale
+        in the table and the dayshistory using the daysrange.
+
+        We can now trim outliers if the uses has that active
+        ]]--
+
+        --[[1-2-2021 First we will see if the data is already
+        calculated.
+
+        1-2-2021 Needs updated
+
+        local lookupDataFound = dataPresent(theIID, itemIndex, daysRange)
+        ]]--
+
+        local timeInterval     = newestTime - oldestTime
+        local weigtedCountSold = 0
+        local weightValue      = 0
+        local dayInterval      = 0
+        if timeInterval > ZO_ONE_DAY_IN_SECONDS then
+          dayInterval = math.floor((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS) + 1
+        end
+        -- start loop
+        for i, item in pairs(list) do
+          local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item['itemLink'])
+          local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
+          local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
+          local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
+          -- get individualSale
+          local individualSale  = item.price / item.quant
+          -- determine if it is an outlier, if toggle is on
+          if countSold == nil then countSold = 0 end
+          countSold = countSold + item.quant
+          if avgPrice == nil then avgPrice = 0 end
+          if timeInterval > ZO_ONE_DAY_IN_SECONDS then
+            weightValue      = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)
+            avgPrice         = avgPrice + (item.price * weightValue)
+            weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
           else
-            tooltip = zo_strformat(GetString(SK_TIME_DAYS),
-              math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
-              string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
-                zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
+            avgPrice = avgPrice + item.price
           end
-          sellerName = currentSeller
-        end -- clickable
-        table.insert(salesPoints, { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, sellerName })
-      end -- end skip dots
-    end -- end new loop
-    if timeInterval > ZO_ONE_DAY_IN_SECONDS then
-      avgPrice = avgPrice / weigtedCountSold
-    else
-      avgPrice = avgPrice / countSold
+          if legitSales == nil then legitSales = 0 end
+          legitSales = legitSales + 1
+          if lowPrice == nil then lowPrice = individualSale else lowPrice = zo_min(lowPrice, individualSale) end
+          if highPrice == nil then highPrice = individualSale else highPrice = math.max(highPrice, individualSale) end
+          if not skipDots then
+            local tooltip    = nil
+            local sellerName = nil
+            --[[ clickable probably means to add the tooltip to the dot
+            rather then actually click anything
+            ]]--
+            if clickable then
+              local stringPrice = self.LocalizedNumber(individualSale)
+              local nameString  = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
+              if item.quant == 1 then
+                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
+                  math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
+                  string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller,
+                    zo_strformat('<<t:1>>', nameString), currentBuyer, stringPrice)
+              else
+                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
+                  math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
+                  string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
+                    zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
+              end
+              sellerName = currentSeller
+            end -- clickable
+            table.insert(salesPoints,
+              { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, sellerName })
+          end -- end skip dots
+        end -- end new loop
+        if timeInterval > ZO_ONE_DAY_IN_SECONDS then
+          avgPrice = avgPrice / weigtedCountSold
+        else
+          avgPrice = avgPrice / countSold
+        end
+      end
     end
-    local bonanzaCount = 0
+  end
+  if MasterMerchant:itemIDHasListings(theIID, itemIndex) then
+    bonanzaList = listings_data[theIID][itemIndex]['sales']
+    bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
+    if #bonanzaList >= 3 then
+      local bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange = stats.interquartileRange(bonanzaList)
+      bonanzaList                                                    = stats.evaluateQuartileRangeTable(bonanzaList,
+        bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange)
+    end
     for i, item in pairs(bonanzaList) do
-      local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item['itemLink'])
-      local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
-      local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
-      local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
-      bonanzaCount          = bonanzaCount + item.quant
+      if bonanzaCount == nil then bonanzaCount = 0 end
       if bonanzaPrice == nil then bonanzaPrice = 0 end
+      if bonanzaSales == nil then bonanzaSales = 0 end
+      bonanzaCount = bonanzaCount + item.quant
       bonanzaPrice = bonanzaPrice + item.price
       bonanzaSales = bonanzaSales + 1
     end -- end bonanza loop
     if bonanzaSales >= 1 then
       bonanzaPrice = bonanzaPrice / bonanzaCount
     end
-    if legitSales >= 1 then
-      returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                     ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
-                     ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
-    end
   end
+  returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                 ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
+                 ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
   return returnData
 end
 
@@ -512,10 +514,34 @@ function MasterMerchant:itemStats(itemLink, clickable)
   return MasterMerchant:toolTipStats(itemID, itemIndex, nil, nil, clickable)
 end
 
-function MasterMerchant:itemHasSales(itemLink)
+function MasterMerchant:itemIDHasSales(itemID, itemIndex)
+  local hasSales = sales_data[itemID] and sales_data[itemID][itemIndex] and sales_data[itemID][itemIndex]['sales']
+  if hasSales then
+    local salesCount = internal:NonContiguousNonNilCount(sales_data[itemID][itemIndex]['sales'])
+    return salesCount > 0
+  end
+  return false
+end
+
+function MasterMerchant:itemIDHasListings(itemID, itemIndex)
+  local hasListings = listings_data[itemID] and listings_data[itemID][itemIndex] and listings_data[itemID][itemIndex]['sales']
+  if hasListings then
+    local listingsCount = internal:NonContiguousNonNilCount(listings_data[itemID][itemIndex]['sales'])
+    return listingsCount > 0
+  end
+  return false
+end
+
+function MasterMerchant:itemLinkHasSales(itemLink)
   local itemID    = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  return sales_data[itemID] and sales_data[itemID][itemIndex] and sales_data[itemID][itemIndex]['sales'] and #sales_data[itemID][itemIndex]['sales'] > 0
+  return MasterMerchant:itemIDHasSales(itemID, itemIndex)
+end
+
+function MasterMerchant:itemLinkHasListings(itemLink)
+  local itemID    = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  return MasterMerchant:itemIDHasListings(itemID, itemIndex)
 end
 
 --[[TODO refine this, I don't see why we need so many ways to get the
@@ -530,59 +556,44 @@ avgPrice
 bonanzaPrice
 graphInfo
 ]]--
-function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
+function MasterMerchant:AvgPricePriceTip(avgPrice, numSales, numItems, numDays, chatText)
   -- TODO add Bonanza price
-  local tipStats = MasterMerchant:itemStats(itemLink, clickable)
-  local avgPrice = nil
-  local bonanzaPrice = nil
-  local graphInfo = nil
   local formatedPriceString = nil
-  local formatedBonanzaString = nil
-  tipFormat = GetString(MM_TIP_FORMAT_MULTI)
-  if tipStats.avgPrice then
-    avgPrice = tipStats.avgPrice
-  end
-  if tipStats.bonanzaPrice then
-    bonanzaPrice = tipStats.bonanzaPrice
-  end
-  if tipStats.graphInfo then
-    graphInfo = tipStats.graphInfo
-  end
+  tipFormat                 = GetString(MM_TIP_FORMAT_MULTI)
   -- change only when needed
-  if tipStats['numDays'] < 2 then
+  if numDays < 2 then
     tipFormat = GetString(MM_TIP_FORMAT_SINGLE)
   end
 
-  -- ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s")
-  -- ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "MM price (%s sales/%s items, %s days): %s")
+  local avePriceString = self.LocalizedNumber(avgPrice)
+  -- chatText
+  if not chatText then avePriceString = avePriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+  formatedPriceString = string.format(tipFormat, numSales, numItems, numDays, avePriceString)
 
-  -- ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s listings/%s items): %s")
+  return formatedPriceString
+end
 
-  -- ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
-  -- MM price (128 sales/7159 items): 340g
+--[[TODO refine this, I don't see why we need so many ways to get the
+average price and the graph information
 
-  -- MM price (128 sales/7159 items, 90 days): 340g
-  -- MM price (%s sales/%s items, %s days): %s
+Returns:
 
-  --[[ returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                      ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
-                      ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
-  ]]--
+Formated avgPrice String
+Formated bonanzaPrice String
+numDays
+avgPrice
+bonanzaPrice
+graphInfo
+]]--
+function MasterMerchant:BonanzaPriceTip(bonanzaPrice, bonanzaSales, bonanzaCount, chatText)
+  -- TODO add Bonanza price
+  local formatedBonanzaString = nil
+  local bonanzaPriceString    = self.LocalizedNumber(bonanzaPrice)
+  -- chatText
+  if not chatText then bonanzaPriceString = bonanzaPriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+  formatedBonanzaString = string.format(GetString(MM_BONANZA_TIP), bonanzaSales, bonanzaCount, bonanzaPriceString)
 
-  if avgPrice then
-    local avePriceString = self.LocalizedNumber(avgPrice)
-    -- chatText
-    if not chatText then avePriceString = avePriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
-    formatedPriceString = string.format(tipFormat, tipStats['numSales'], tipStats['numItems'], tipStats['numDays'], avePriceString)
-  end
-  if bonanzaPrice then
-    local avePriceString = self.LocalizedNumber(bonanzaPrice)
-    -- chatText
-    if not chatText then avePriceString = avePriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
-    formatedBonanzaString = string.format(GetString(MM_BONANZA_TIP), tipStats['bonanzaSales'], tipStats['bonanzaCount'], avePriceString)
-  end
-
-  return formatedPriceString, formatedBonanzaString, tipStats['numDays'], tipStats['avgPrice'], tipStats['bonanzaPrice'], tipStats['graphInfo']
+  return formatedBonanzaString
 end
 
 function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
@@ -731,7 +742,9 @@ function MasterMerchant:itemCraftPrice(itemLink)
   end
 end
 
-function MasterMerchant:itemCraftPriceTip(itemLink, chatText)
+--[[TODO Verified Good
+]]--
+function MasterMerchant:CraftCostPriceTip(itemLink, chatText)
   local cost = self:itemCraftPrice(itemLink)
   if cost then
     craftTip             = "Craft Cost: %s"
@@ -942,26 +955,40 @@ end
 -- |H1:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
 -- |H0:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
 function MasterMerchant:onItemActionLinkStatsLink(itemLink)
-  -- formatedPriceString, formatedBonanzaString, tipStats['numDays'], tipStats['avgPrice'], tipStats['bonanzaPrice'], tipStats['graphInfo']
-  local tipLine, bonanzaTipline, numDays = MasterMerchant:itemPriceTip(itemLink, true, false)
+  local itemID         = GetItemLinkItemId(itemLink)
+  local itemIndex      = internal.GetOrCreateIndexFromLink(itemLink)
+  local tipLine        = nil
+  local bonanzaTipline = nil
+  -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
+  local statsInfo      = self:toolTipStats(itemID, itemIndex, nil, nil, false)
+  if statsInfo.avgPrice then
+    tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems,
+      statsInfo.numDays, true)
+  end
+  if statsInfo.bonanzaPrice then
+    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales,
+      statsInfo.bonanzaCount, true)
+  end
+
   if not tipLine then
     -- 10000 for numDays is more or less like saying it is undefined
-    if numDays == 10000 then
+    if statsInfo.numDays == 10000 then
       tipLine = GetString(MM_TIP_FORMAT_NONE)
     else
       tipLine = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), numDays)
     end
   end
-  if tipLine then
-    local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
-    if (not ChatEditControl:HasFocus()) then StartChatInput() end
-    local itemText = string.gsub(itemLink, '|H0', '|H1')
-    ChatEditControl:InsertText(MasterMerchant.concat(tipLine, bonanzaTipline, GetString(MM_TIP_FOR), itemText))
+  if not bonanzaTipline then
+    bonanzaTipline = GetString(MM_BONANZATIP_FORMAT_NONE)
   end
+  local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
+  if (not ChatEditControl:HasFocus()) then StartChatInput() end
+  local itemText = string.gsub(itemLink, '|H0', '|H1')
+  ChatEditControl:InsertText(MasterMerchant.concat(tipLine, ":", bonanzaTipline, GetString(MM_TIP_FOR), itemText))
 end
 
 function MasterMerchant:onItemActionLinkCCLink(itemLink)
-  local tipLine = MasterMerchant:itemCraftPriceTip(itemLink, true)
+  local tipLine = MasterMerchant:CraftCostPriceTip(itemLink, true)
   if not tipLine then
     tipLine = "No Crafting Price Available"
   end
@@ -989,7 +1016,8 @@ function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, 
         AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
       end
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
-      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end,
+        MENU_ADD_OPTION_LABEL)
 
       ShowMenu()
     end)
@@ -1109,16 +1137,16 @@ end
 function MasterMerchant.PostPendingItem(self)
   MasterMerchant:dm("Debug", "PostPendingItem")
   if self.pendingItemSlot and self.pendingSaleIsValid then
-    local itemLink                                                     = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
-    local _, stackCount, _                                             = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
+    local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
+    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
 
-    local theIID                                                       = GetItemLinkItemId(itemLink)
-    local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
+    local theIID = GetItemLinkItemId(itemLink)
+    local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
     local selectedGuildId = GetSelectedTradingHouseGuildId()
 
-    GS17DataSavedVariables[internal.pricingNamespace]                                     = GS17DataSavedVariables[internal.pricingNamespace] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId]                    = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
+    GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
     GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
@@ -1189,8 +1217,10 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
       if MasterMerchant:itemCraftPrice(link) then
         AddMenuItem("Craft Cost to Chat", function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
       end
-      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
-      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(link) end, MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end,
+        MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(link) end,
+        MENU_ADD_OPTION_LABEL)
       ShowMenu(self)
     end, 50)
   end
@@ -1387,7 +1417,7 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithStore end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.openWithStore = value
-        local theFragment                                = MasterMerchant:ActiveFragment()
+        local theFragment = MasterMerchant:ActiveFragment()
         if value then
           -- Register for the store scene
           TRADING_HOUSE_SCENE:AddFragment(theFragment)
@@ -2042,14 +2072,14 @@ function MasterMerchant:RefreshMasterMerchantWindow()
     else
       self.listIsDirty[ITEMS] = true
     end
-    self.listIsDirty[GUILDS]   = true
+    self.listIsDirty[GUILDS] = true
   elseif currentView == GUILDS then
     if not MasterMerchantGuildWindow:IsHidden() and not internal.isDatabaseBusy then
       self.guildScrollList:RefreshData()
     else
       self.listIsDirty[GUILDS] = true
     end
-    self.listIsDirty[ITEMS]    = true
+    self.listIsDirty[ITEMS] = true
   elseif currentView == LISTINGS then
     if not MasterMerchantListingWindow:IsHidden() and not internal.isDatabaseBusy then
       self.listingsScrollList:RefreshData()
@@ -2630,7 +2660,7 @@ function MasterMerchant.SetupPendingPost(self)
     local pricingData      = nil
 
     if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] then
-      pricingData      = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex]
+      pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex]
     end
 
     if pricingData then
@@ -3057,13 +3087,13 @@ function MasterMerchant:Initialize()
   if AwesomeGuildStore then
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
-        local theIID                                                       = GetItemLinkItemId(itemLink)
-        local itemIndex                                                    = internal.GetOrCreateIndexFromLink(itemLink)
+        local theIID = GetItemLinkItemId(itemLink)
+        local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
         local selectedGuildId = GetSelectedTradingHouseGuildId()
 
-        GS17DataSavedVariables[internal.pricingNamespace]                                     = GS17DataSavedVariables[internal.pricingNamespace] or {}
-        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId]                    = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
-        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID]            = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
+        GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
+        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
         GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = price / stackCount
 
       end)
@@ -3270,7 +3300,7 @@ function MasterMerchant:InitScrollLists()
 
   -- for mods using the old syntax
   if GS17DataSavedVariables then
-    local selectedGuildId = GetSelectedTradingHouseGuildId()
+    local selectedGuildId                           = GetSelectedTradingHouseGuildId()
     MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
   end
 
@@ -3499,19 +3529,19 @@ function MasterMerchant.Slash(allArgs)
     return
   end
   if args == 'invisible' then
-    MasterMerchant.systemSavedVariables.salesWinLeft = 30
-    MasterMerchant.systemSavedVariables.salesWinTop = 85
-    MasterMerchant.systemSavedVariables.guildWinLeft = 30
-    MasterMerchant.systemSavedVariables.guildWinTop = 85
-    MasterMerchant.systemSavedVariables.listingWinLeft = 30
-    MasterMerchant.systemSavedVariables.listingWinTop = 85
+    MasterMerchant.systemSavedVariables.salesWinLeft    = 30
+    MasterMerchant.systemSavedVariables.salesWinTop     = 85
+    MasterMerchant.systemSavedVariables.guildWinLeft    = 30
+    MasterMerchant.systemSavedVariables.guildWinTop     = 85
+    MasterMerchant.systemSavedVariables.listingWinLeft  = 30
+    MasterMerchant.systemSavedVariables.listingWinTop   = 85
     MasterMerchant.systemSavedVariables.purchaseWinLeft = 30
-    MasterMerchant.systemSavedVariables.purchaseWinTop = 85
+    MasterMerchant.systemSavedVariables.purchaseWinTop  = 85
 
-    MasterMerchant.systemSavedVariables.statsWinLeft = 720
-    MasterMerchant.systemSavedVariables.statsWinTop = 820
+    MasterMerchant.systemSavedVariables.statsWinLeft    = 720
+    MasterMerchant.systemSavedVariables.statsWinTop     = 820
     MasterMerchant.systemSavedVariables.feedbackWinLeft = 720
-    MasterMerchant.systemSavedVariables.feedbackWinTop = 420
+    MasterMerchant.systemSavedVariables.feedbackWinTop  = 420
     MasterMerchant:RestoreWindowPosition()
     MasterMerchant:dm("Info", GetString(MM_RESET_POSITION))
     return
