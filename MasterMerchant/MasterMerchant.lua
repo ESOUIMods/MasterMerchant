@@ -315,7 +315,11 @@ function MasterMerchant:GetWritCount(itemLink)
 end
 
 -- Computes the weighted moving average across available data
-function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
+function MasterMerchant:toolTipStats(theIID, itemIndex)
+  local clickable = not MasterMerchant.systemSavedVariables.displaySalesDetails
+  local skipDots = not MasterMerchant.systemSavedVariables.showGraph
+
+  MasterMerchant:dm("Debug", "toolTipStats")
   -- 10000 for numDays is more or less like saying it is undefined
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
@@ -344,7 +348,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
   if not MasterMerchant.isInitialized then return returnData end
 
   -- make sure we have a list of sales to work with
-  if MasterMerchant:itemIDHasSales(theIID, itemIndex) then
+  if MasterMerchant:itemIDHasSales(theIID, itemIndex) and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex) then
 
     local newestTime           = nil
     local initCount            = 0
@@ -451,7 +455,7 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
           if not skipDots then
             local tooltip    = nil
             local sellerName = nil
-            --[[ clickable probably means to add the tooltip to the dot
+            --[[ clickable means to add the tooltip to the dot
             rather then actually click anything
             ]]--
             if clickable then
@@ -481,6 +485,33 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
         end
       end
     end
+  else
+    if MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex) then
+      avgPrice = MasterMerchant.itemInformationCache[theIID][itemIndex].avgPrice
+      numSales = MasterMerchant.itemInformationCache[theIID][itemIndex].numSales
+      numDays = MasterMerchant.itemInformationCache[theIID][itemIndex].numDays
+      numItems = MasterMerchant.itemInformationCache[theIID][itemIndex].numItems
+      graphInfo = MasterMerchant.itemInformationCache[theIID][itemIndex].graphInfo
+      MasterMerchant:dm("Debug", avgPrice)
+      MasterMerchant:dm("Debug", numSales)
+      MasterMerchant:dm("Debug", numDays)
+      MasterMerchant:dm("Debug", numItems)
+    end
+  end
+  if avgPrice and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex) and not skipDots then
+    local itemInfo = {
+      avgPrice = avgPrice,
+      numSales = legitSales,
+      numDays = daysHistory,
+      numItems = countSold,
+      graphInfo = { 
+        oldestTime = oldestTime,
+        low = lowPrice,
+        high = highPrice,
+        points = salesPoints,
+      },
+    }
+    MasterMerchant:SetItemCacheById(theIID, itemIndex, itemInfo)
   end
   if MasterMerchant:itemIDHasListings(theIID, itemIndex) then
     bonanzaList = listings_data[theIID][itemIndex]['sales']
@@ -505,13 +536,20 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clicka
   returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                  ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
                  ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+      MasterMerchant:dm("Debug", returnData.avgPrice)
+      MasterMerchant:dm("Debug", returnData.numSales)
+      MasterMerchant:dm("Debug", returnData.numDays)
+      MasterMerchant:dm("Debug", returnData.numItems)
   return returnData
 end
 
 function MasterMerchant:itemStats(itemLink, clickable)
   local itemID    = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  return MasterMerchant:toolTipStats(itemID, itemIndex, nil, nil, clickable)
+  if MasterMerchant:ItemCacheHasInfoByItemLink(itemLink) then
+    return MasterMerchant.itemInformationCache[theIID][itemIndex]
+  end
+  return MasterMerchant:toolTipStats(itemID, itemIndex)
 end
 
 function MasterMerchant:itemIDHasSales(itemID, itemIndex)
@@ -523,6 +561,12 @@ function MasterMerchant:itemIDHasSales(itemID, itemIndex)
   return false
 end
 
+function MasterMerchant:itemLinkHasSales(itemLink)
+  local itemID    = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  return MasterMerchant:itemIDHasSales(itemID, itemIndex)
+end
+
 function MasterMerchant:itemIDHasListings(itemID, itemIndex)
   local hasListings = listings_data[itemID] and listings_data[itemID][itemIndex] and listings_data[itemID][itemIndex]['sales']
   if hasListings then
@@ -532,16 +576,55 @@ function MasterMerchant:itemIDHasListings(itemID, itemIndex)
   return false
 end
 
-function MasterMerchant:itemLinkHasSales(itemLink)
-  local itemID    = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  return MasterMerchant:itemIDHasSales(itemID, itemIndex)
-end
-
 function MasterMerchant:itemLinkHasListings(itemLink)
   local itemID    = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   return MasterMerchant:itemIDHasListings(itemID, itemIndex)
+end
+
+function MasterMerchant:ItemCacheHasInfoById(itemID, itemIndex)
+  local itemInfo = MasterMerchant.itemInformationCache[itemID] and  MasterMerchant.itemInformationCache[itemID][itemIndex]
+  if itemInfo then
+    if not MasterMerchant.itemInformationCache[itemID][itemIndex].avgPrice or
+       not MasterMerchant.itemInformationCache[itemID][itemIndex].numSales or
+       not MasterMerchant.itemInformationCache[itemID][itemIndex].numDays or
+       not MasterMerchant.itemInformationCache[itemID][itemIndex].numItems or
+       not MasterMerchant.itemInformationCache[itemID][itemIndex].graphInfo then
+      return false
+    end
+    return true
+  end
+  return false
+end
+
+function MasterMerchant:ItemCacheHasInfoByItemLink(itemLink)
+  local itemID    = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  return MasterMerchant:ItemCacheHasInfoById(itemID, itemIndex)
+end
+
+function MasterMerchant:SetItemCacheById(itemID, itemIndex, itemInfo)
+  if MasterMerchant.itemInformationCache[itemID] == nil then MasterMerchant.itemInformationCache[itemID] = {} end
+  if MasterMerchant.itemInformationCache[itemID][itemIndex] == nil then MasterMerchant.itemInformationCache[itemID][itemIndex] = {} end
+  MasterMerchant.itemInformationCache[itemID][itemIndex] = itemInfo
+end
+
+function MasterMerchant:SetItemCacheByItemLink(itemLink, itemInfo)
+  local itemID    = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  MasterMerchant:SetItemCacheById(itemID, itemIndex, itemInfo)
+end
+
+function MasterMerchant:ClearItemCacheById(itemID, itemIndex)
+  if MasterMerchant:ItemCacheHasInfoById(itemID, itemIndex) then
+    MasterMerchant.itemInformationCache[itemID][itemIndex] = nil
+  end
+end
+
+function MasterMerchant:ClearItemCacheByItemLink(itemLink)
+  local itemID    = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  MasterMerchant:ClearItemCacheById(itemID, itemIndex)
 end
 
 --[[TODO refine this, I don't see why we need so many ways to get the
@@ -557,6 +640,11 @@ bonanzaPrice
 graphInfo
 ]]--
 function MasterMerchant:AvgPricePriceTip(avgPrice, numSales, numItems, numDays, chatText)
+  MasterMerchant:dm("Debug", "AvgPricePriceTip")
+      MasterMerchant:dm("Debug", avgPrice)
+      MasterMerchant:dm("Debug", numSales)
+      MasterMerchant:dm("Debug", numDays)
+      MasterMerchant:dm("Debug", numItems)
   -- TODO add Bonanza price
   local formatedPriceString = nil
   tipFormat                 = GetString(MM_TIP_FORMAT_MULTI)
@@ -960,7 +1048,7 @@ function MasterMerchant:onItemActionLinkStatsLink(itemLink)
   local tipLine        = nil
   local bonanzaTipline = nil
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
-  local statsInfo      = self:toolTipStats(itemID, itemIndex, nil, nil, false)
+  local statsInfo      = MasterMerchant:toolTipStats(itemID, itemIndex)
   if statsInfo.avgPrice then
     tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems,
       statsInfo.numDays, true)
@@ -3025,9 +3113,7 @@ function MasterMerchant:Initialize()
     function(eventCode, slotId, isPending)
       if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
         local theLink     = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
-        local theIID      = GetItemLinkItemId(theLink)
-        local theIData    = internal.GetOrCreateIndexFromLink(theLink)
-        local postedStats = self:toolTipStats(theIID, theIData)
+        local postedStats = MasterMerchant:itemStats(theLink, false)
         MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
         local floorPrice = 0
         if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
@@ -3212,9 +3298,7 @@ function MasterMerchant:SwitchPrice(control, slot)
     local itemLink  = bagId and GetItemLink(bagId, slotIndex) or GetItemLink(slotIndex)
 
     if itemLink then
-      local theIID    = GetItemLinkItemId(itemLink)
-      local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-      local tipStats  = MasterMerchant:toolTipStats(theIID, itemIndex, true, true)
+      local tipStats  = MasterMerchant:itemStats(itemLink, false)
       if tipStats.avgPrice then
         --[[
         if control.dataEntry.data.rawName == "Fortified Nirncrux" then
@@ -3317,9 +3401,7 @@ MasterMerchant.GetDealInfo        = function(itemLink, purchasePrice, stackCount
   if (not dealInfoCache[key]) then
     local setPrice   = nil
     local salesCount = 0
-    local theIID     = GetItemLinkItemId(itemLink)
-    local itemIndex  = internal.GetOrCreateIndexFromLink(itemLink)
-    local tipStats   = MasterMerchant:toolTipStats(theIID, itemIndex, true)
+    local tipStats   = MasterMerchant:itemStats(itemLink, false)
     if tipStats.avgPrice then
       setPrice   = tipStats['avgPrice']
       salesCount = tipStats['numSales']

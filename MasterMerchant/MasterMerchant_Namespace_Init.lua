@@ -166,7 +166,7 @@ MasterMerchant.listIsDirty                   = { [MasterMerchant.personalSalesVi
 MasterMerchant.scrollList                    = nil
 MasterMerchant.guildScrollList               = nil
 MasterMerchant.listingsScrollList            = nil
-MasterMerchant.purchasesScrollList            = nil
+MasterMerchant.purchasesScrollList           = nil
 MasterMerchant.calcInput                     = nil
 MasterMerchant.nameFilterScrollList          = nil
 
@@ -176,11 +176,11 @@ MasterMerchant.guildColor                    = { }
 
 MasterMerchant.curSort                       = { 'time', 'desc' }
 MasterMerchant.curGuildSort                  = { 'rank', 'asc' }
-MasterMerchant.curFilterSort                  = { 'name', 'asc' }
+MasterMerchant.curFilterSort                 = { 'name', 'asc' }
 MasterMerchant.salesUiFragment               = { }
 MasterMerchant.guildUiFragment               = { }
-MasterMerchant.listingUiFragment               = { }
-MasterMerchant.purchaseUiFragment               = { }
+MasterMerchant.listingUiFragment             = { }
+MasterMerchant.purchaseUiFragment            = { }
 MasterMerchant.statsFragment                 = { }
 MasterMerchant.activeTip                     = nil
 MasterMerchant.tippingControl                = nil
@@ -191,6 +191,8 @@ MasterMerchant.originalSetupCallback         = nil
 MasterMerchant.originalSellingSetupCallback  = nil
 MasterMerchant.originalRosterStatsCallback   = nil
 MasterMerchant.originalRosterBuildMasterList = nil
+
+MasterMerchant.itemInformationCache          = { }
 
 ----------------------------------------
 ----- Gamepad                      -----

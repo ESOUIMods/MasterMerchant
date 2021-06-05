@@ -1654,6 +1654,7 @@ function MasterMerchant:remStatsItemTooltip()
 end
 
 function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
+  MasterMerchant:dm("Debug", "addStatsAndGraph")
   local bonanzaPriceFound = false
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
@@ -1661,16 +1662,28 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   local itemIndex     = internal.GetOrCreateIndexFromLink(itemLink)
   local tipLine = nil
   local bonanzaTipline = nil
+  local craftCostLine = nil
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
   -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- input ['graphInfo']: oldestTime, lowPrice, highPrice, salesPoints
   -- return ['graphInfo']: oldestTime, low, high, points
-  local statsInfo = self:toolTipStats(itemID, itemIndex, nil, nil, clickable)
+  local skipDots = not MasterMerchant.systemSavedVariables.showGraph
+  local statsInfo = self:toolTipStats(itemID, itemIndex)
   local graphInfo =  statsInfo.graphInfo
+  MasterMerchant:dm("Debug", statsInfo.avgPrice)
+  MasterMerchant:dm("Debug", statsInfo.numSales)
+  MasterMerchant:dm("Debug", statsInfo.numItems)
+  MasterMerchant:dm("Debug", statsInfo.numDays)
 
   local xBonanza = ""
-  local craftCostLine                = self:CraftCostPriceTip(itemLink, false)
+  if MasterMerchant.systemSavedVariables.showCraftCost then
+    craftCostLine = self:CraftCostPriceTip(itemLink, false)
+  end
+  MasterMerchant:dm("Debug", statsInfo.avgPrice)
+  MasterMerchant:dm("Debug", statsInfo.numSales)
+  MasterMerchant:dm("Debug", statsInfo.numItems)
+  MasterMerchant:dm("Debug", statsInfo.numDays)
   if statsInfo.avgPrice then
     tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false)
   end

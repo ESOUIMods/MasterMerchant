@@ -188,6 +188,11 @@ function internal:addSalesData(theEvent)
   end
 
   MasterMerchant.listIsDirty[GUILDS]   = true
+  
+  if MasterMerchant.itemInformationCache[theIID][itemIndex] then
+    MasterMerchant.itemInformationCache[theIID][itemIndex] = nil
+  end
+
   return true
 end
 
