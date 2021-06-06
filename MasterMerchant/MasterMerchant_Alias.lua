@@ -50,5 +50,10 @@ end
 function MasterMerchant:itemStats(itemLink, clickable)
   local itemID    = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  return MasterMerchant:toolTipStats(itemID, itemIndex, true, true)
+  return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
 end
+
+function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
+  return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
+end
+

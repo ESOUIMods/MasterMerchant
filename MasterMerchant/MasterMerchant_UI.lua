@@ -1668,7 +1668,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
   -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- input ['graphInfo']: oldestTime, lowPrice, highPrice, salesPoints
   -- return ['graphInfo']: oldestTime, low, high, points
-  local statsInfo = self:toolTipStats(itemID, itemIndex, false, false)
+  local statsInfo = self:GetTooltipStats(itemID, itemIndex, false, false)
   local graphInfo =  statsInfo.graphInfo
 
   local xBonanza = ""
@@ -2408,7 +2408,7 @@ function MasterMerchant:SwitchToMasterMerchantSalesView()
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:AddFragment(self.salesUiFragment)
   end
-  MasterMerchant.purchasesScrollList:RefreshFilters()
+  MasterMerchant.scrollList:RefreshFilters()
 
   MasterMerchantGuildWindow:SetHidden(true)
   MasterMerchantListingWindow:SetHidden(true)

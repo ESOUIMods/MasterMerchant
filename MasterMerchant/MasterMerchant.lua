@@ -315,10 +315,7 @@ function MasterMerchant:GetWritCount(itemLink)
 end
 
 -- Computes the weighted moving average across available data
-function MasterMerchant:toolTipStats(theIID, itemIndex, avgOnly, priceEval)
-  local clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
-  local skipDots = not MasterMerchant.systemSavedVariables.showGraph
-  if priceEval then skipDots = true end
+function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   -- 10000 for numDays is more or less like saying it is undefined
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
@@ -345,6 +342,10 @@ function MasterMerchant:toolTipStats(theIID, itemIndex, avgOnly, priceEval)
                          ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
                          ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
   if not MasterMerchant.isInitialized then return returnData end
+
+  local clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
+  local skipDots = not MasterMerchant.systemSavedVariables.showGraph
+  if priceEval then skipDots = true end
 
   -- make sure we have a list of sales to work with
   if MasterMerchant:itemIDHasSales(theIID, itemIndex) and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex) then
@@ -539,7 +540,7 @@ function MasterMerchant:itemStats(itemLink, clickable)
   if MasterMerchant:ItemCacheHasInfoByItemLink(itemLink) then
     return MasterMerchant.itemInformationCache[theIID][itemIndex]
   end
-  return MasterMerchant:toolTipStats(itemID, itemIndex)
+  return MasterMerchant:GetTooltipStats(itemID, itemIndex)
 end
 
 function MasterMerchant:itemIDHasSales(itemID, itemIndex)
@@ -1040,7 +1041,7 @@ function MasterMerchant:onItemActionLinkStatsLink(itemLink)
   local tipLine        = nil
   local bonanzaTipline = nil
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
-  local statsInfo = self:toolTipStats(itemID, itemIndex, false, true)
+  local statsInfo = self:GetTooltipStats(itemID, itemIndex, false, true)
   if statsInfo.avgPrice then
     tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems,
       statsInfo.numDays, true)
@@ -3051,7 +3052,10 @@ function MasterMerchant:Initialize()
   ZO_PreHook('ZO_InventorySlot_ShowContextMenu',
     function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
 
-  local theFragment = MasterMerchant:ActiveFragment()
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then theFragment = self.salesUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == GUILDS then theFragment = self.guildUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then theFragment = self.listingUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then theFragment = self.purchaseUiFragment end
   if not theFragment then theFragment = self.salesUiFragment end
 
   if MasterMerchant.systemSavedVariables.openWithMail then
@@ -3107,7 +3111,7 @@ function MasterMerchant:Initialize()
         local theLink     = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
         local theIID      = GetItemLinkItemId(theLink)
         local theIData    = internal.GetOrCreateIndexFromLink(theLink)
-        local postedStats = self:toolTipStats(theIID, theIData, true, true)
+        local postedStats = self:GetTooltipStats(theIID, theIData, true, true)
         MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
         local floorPrice = 0
         if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
@@ -3294,7 +3298,7 @@ function MasterMerchant:SwitchPrice(control, slot)
     if itemLink then
       local theIID    = GetItemLinkItemId(itemLink)
       local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-      local tipStats  = MasterMerchant:toolTipStats(theIID, itemIndex, true, true)
+      local tipStats  = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
       if tipStats.avgPrice then
         --[[
         if control.dataEntry.data.rawName == "Fortified Nirncrux" then
@@ -3399,7 +3403,7 @@ MasterMerchant.GetDealInfo        = function(itemLink, purchasePrice, stackCount
     local salesCount = 0
     local theIID     = GetItemLinkItemId(itemLink)
     local itemIndex  = internal.GetOrCreateIndexFromLink(itemLink)
-    local tipStats   = MasterMerchant:toolTipStats(theIID, itemIndex, true, true)
+    local tipStats   = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
     if tipStats.avgPrice then
       setPrice   = tipStats['avgPrice']
       salesCount = tipStats['numSales']

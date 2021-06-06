@@ -397,7 +397,7 @@ function internal:SetupListener(guildId)
           MasterMerchant:PostScanParallel(guildName, true)
           local currentView = MasterMerchant.systemSavedVariables.viewSize
           local currentViewMode = MasterMerchant.viewMode
-          if currentViewMode == ITEM_VIEW and currentView == ITEMS then
+          if currentViewMode == ITEM_VIEW and currentView == ITEMS and MasterMerchantWindow:IsHidden() then
             MasterMerchant.scrollList:RefreshData()
           end
         end
