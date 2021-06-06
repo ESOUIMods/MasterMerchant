@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant         = { }
 MasterMerchant.name    = 'MasterMerchant'
-MasterMerchant.version = '3.6.24'
+MasterMerchant.version = '3.6.25'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -151,7 +151,7 @@ MasterMerchant.systemDefault       = {} -- added 11-26 placeholder for init rout
 MasterMerchant.fontListChoices     = {} -- added 12-16 but always there
 MasterMerchant.isFirstScan         = false -- added again 5-14-2021 but used previously
 MasterMerchant.a_test              = {}
-MasterMerchant.aa_test              = {}
+MasterMerchant.aa_test             = {}
 
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2

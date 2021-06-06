@@ -94,7 +94,9 @@ end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
   if itemLink then
-    local tipStats = MasterMerchant:itemStats(itemLink, false)
+    local theIID    = GetItemLinkItemId(itemLink)
+    local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+    local tipStats  = MasterMerchant:toolTipStats(theIID, itemIndex, true, true)
     if tipStats.avgPrice then
       return tipStats.avgPrice
     end

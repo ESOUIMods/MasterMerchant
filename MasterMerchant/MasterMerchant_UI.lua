@@ -1653,8 +1653,8 @@ function MasterMerchant:remStatsItemTooltip()
   ItemTooltip.mmQualityDown = nil
 end
 
-function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
-  MasterMerchant:dm("Debug", "addStatsAndGraph")
+function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
+
   local bonanzaPriceFound = false
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
@@ -1668,22 +1668,13 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- input ['graphInfo']: oldestTime, lowPrice, highPrice, salesPoints
   -- return ['graphInfo']: oldestTime, low, high, points
-  local skipDots = not MasterMerchant.systemSavedVariables.showGraph
-  local statsInfo = self:toolTipStats(itemID, itemIndex)
+  local statsInfo = self:toolTipStats(itemID, itemIndex, false, false)
   local graphInfo =  statsInfo.graphInfo
-  MasterMerchant:dm("Debug", statsInfo.avgPrice)
-  MasterMerchant:dm("Debug", statsInfo.numSales)
-  MasterMerchant:dm("Debug", statsInfo.numItems)
-  MasterMerchant:dm("Debug", statsInfo.numDays)
 
   local xBonanza = ""
   if MasterMerchant.systemSavedVariables.showCraftCost then
     craftCostLine = self:CraftCostPriceTip(itemLink, false)
   end
-  MasterMerchant:dm("Debug", statsInfo.avgPrice)
-  MasterMerchant:dm("Debug", statsInfo.numSales)
-  MasterMerchant:dm("Debug", statsInfo.numItems)
-  MasterMerchant:dm("Debug", statsInfo.numDays)
   if statsInfo.avgPrice then
     tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false)
   end
@@ -1760,7 +1751,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
   end
 
   local itemType = GetItemLinkItemType(itemLink)
-  if (clickable) and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and (itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY) then
+  if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and (itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY) then
 
     local itemQuality                     = GetItemLinkQuality(itemLink)
     tooltip.mmQualityDown.mmData.nextItem = MasterMerchant.QualityDown(itemLink)
@@ -1913,10 +1904,10 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink, clickable)
           lowRange = math.min(statsInfo.avgPrice, statsInfo.bonanzaPrice)
           highRange = math.max(statsInfo.avgPrice, statsInfo.bonanzaPrice)
           if graphInfo.low > lowRange then
-              graphInfo.low = lowRange * 0.85
+              graphInfo.low = lowRange * 0.95
           end
           if graphInfo.high < highRange then
-              graphInfo.high = highRange * 1.15
+              graphInfo.high = highRange * 1.05
           end
           xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
         else
@@ -2063,7 +2054,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
   self.isShiftPressed = IsShiftKeyDown()
   self.isCtrlPressed  = IsControlKeyDown()
 
-  self:addStatsAndGraph(Popup, Popup.mmActiveTip, true)
+  self:addStatsAndGraph(Popup, Popup.mmActiveTip)
 end
 
 function MasterMerchant:remStatsPopupTooltip(Popup)

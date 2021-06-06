@@ -46,3 +46,9 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     return nil, tipStats['numDays'], nil
   end
 end
+
+function MasterMerchant:itemStats(itemLink, clickable)
+  local itemID    = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  return MasterMerchant:toolTipStats(itemID, itemIndex, true, true)
+end
