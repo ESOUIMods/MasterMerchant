@@ -25,9 +25,9 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
 
     local tipFormat
     if tipStats['numDays'] < 2 then
-      tipFormat = GetString(MM_TIP_FORMAT_SINGLE)
+      tipFormat = GetString(MM_OLD_TIP_FORMAT_SINGLE)
     else
-      tipFormat = GetString(MM_TIP_FORMAT_MULTI)
+      tipFormat = GetString(MM_OLD_TIP_FORMAT_MULTI)
     end
 
     local avePriceString = self.LocalizedNumber(tipStats['avgPrice'])
@@ -35,13 +35,13 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     tipFormat            = string.gsub(tipFormat, 'M.M.', 'MM')
     -- chatText
     if not chatText then tipFormat = tipFormat .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
-    local salesString = zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales'])
+    local salesString = zo_strformat(GetString(SK_OLD_PRICETIP_SALES), tipStats['numSales'])
     if tipStats['numSales'] ~= tipStats['numItems'] then
-      salesString = salesString .. zo_strformat(GetString(MM_PRICETIP_ITEMS), tipStats['numItems'])
+      salesString = salesString .. zo_strformat(GetString(MM_OLD_PRICETIP_ITEMS), tipStats['numItems'])
     end
     return string.format(tipFormat, salesString, tipStats['numDays'],
       avePriceString), tipStats['avgPrice'], tipStats['graphInfo']
-    --return string.format(tipFormat, zo_strformat(GetString(SK_PRICETIP_SALES), tipStats['numSales']), tipStats['numDays'], tipStats['avgPrice']), tipStats['avgPrice'], tipStats['graphInfo']
+    --return string.format(tipFormat, zo_strformat(GetString(SK_OLD_PRICETIP_SALES), tipStats['numSales']), tipStats['numDays'], tipStats['avgPrice']), tipStats['avgPrice'], tipStats['graphInfo']
   else
     return nil, tipStats['numDays'], nil
   end

@@ -141,6 +141,12 @@ ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "メインウィン�
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_STATS_TOGGLE", "ステータスウィンドウを表示/非表示")
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_GRAPH_TOGGLE", "Show/Hide Pricing History Graph")
 
+-- Old string for compatibility
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_SINGLE", "M.M. price (%s, %d day): %.2f")
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
+ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
+
 -- New values
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "M.M. 価格 (%s, %d 日): %.2f")
 ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "M.M. 価格 (%s, %d 日): %.2f")

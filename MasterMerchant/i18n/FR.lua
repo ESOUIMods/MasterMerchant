@@ -142,6 +142,12 @@ ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "Afficher/Masquer La 
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_STATS_TOGGLE", "Afficher/Masquer La Fen\195\170tre de Statistiques")
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_GRAPH_TOGGLE", "Show/Hide Pricing History Graph")
 
+-- Old string for compatibility
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_SINGLE", "M.M. price (%s, %d day): %.2f")
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
+ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
+
 -- New values
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Le prix de M.M. (%s, %d jour): %.2f")
 ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Le prix de M.M. (%s, %d jours): %.2f")
