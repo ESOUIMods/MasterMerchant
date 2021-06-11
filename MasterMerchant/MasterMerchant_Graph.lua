@@ -180,14 +180,14 @@ function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
   end
 end
 
-function MM_Graph:MyGraphPointClickHandler(self, mouseButton, upInside, sellerName)
+function MM_Graph:MyGraphPointClickHandler(self, button, upInside, sellerName)
   MasterMerchant:dm("Debug", "MyGraphPointClickHandler")
-  if upInside and mouseButton == MOUSE_BUTTON_INDEX_RIGHT then
+  if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
     MasterMerchant:dm("Debug", "Show Click Handler Menu")
 
     ClearMenu()
 
-    AddMenuItem(GetString(MM_BLACKLIST_MENU), function() MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName) end)
+    AddMenuItem(GetString(MM_BLACKLIST_MENU), function() MM_Graph:OnGraphPointClicked(self, button, sellerName) end)
 
     ShowMenu()
   end
@@ -212,16 +212,7 @@ function MM_Graph:AddPoint(x, y, color, tipText, sellerName)
     point.data = {
       tooltipText = tipText
     }
-    point:SetMouseEnabled(true)
-
-    point:SetHandler("OnMouseEnter", ZO_Options_OnMouseEnter)
-    point:SetHandler("OnMouseExit", ZO_Options_OnMouseExit)
-    point:SetHandler("OnMouseUp", function(self, mouseButton, upInside, shift, ctrl, alt, command)
-      --code here
-      if mouseButton == MOUSE_BUTTON_INDEX_RIGHT then
-        MM_Graph:MyGraphPointClickHandler(self, mouseButton, upInside, sellerName)
-      end
-    end)
+    point.sellerName = sellerName
   end
 
 end

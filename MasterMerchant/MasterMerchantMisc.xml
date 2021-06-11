@@ -8,7 +8,18 @@
 -->
 <GuiXml>
   <Controls>
-
+    <Label name="MM_Point" mouseEnabled="true" hidden="true" virtual="true">
+      <OnMouseEnter>
+        ZO_Options_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        ZO_Options_OnMouseExit(self)
+      </OnMouseExit>
+      <OnMouseUp>
+        MM_Graph:MyGraphPointClickHandler(self, button, upInside, self.sellerName)
+      </OnMouseUp>
+    </Label>
+  
     <Backdrop name="MasterMerchantPrice" inherits="ZO_EditBackdrop" virtual="true">
       <Dimensions x="88" y="25"/>
       <Controls>

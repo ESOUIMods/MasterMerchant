@@ -131,7 +131,11 @@ function internal:addSalesData(theEvent)
     --internal:dm("Debug", newEvent)
   end
   sales_data[theIID][itemIndex].wasAltered = true
-  sales_data[theIID][itemIndex].totalCount = sales_data[theIID][itemIndex].totalCount + 1
+  if sales_data[theIID][itemIndex] and sales_data[theIID][itemIndex].totalCount then
+    sales_data[theIID][itemIndex].totalCount = sales_data[theIID][itemIndex].totalCount + 1
+  else
+    sales_data[theIID][itemIndex].totalCount = 1
+  end
 
   -- this section adds the sales to the lists for the MM window
   local guild
@@ -150,8 +154,8 @@ function internal:addSalesData(theEvent)
   guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
     adderDescConcat)
 
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+  local playerName = string.lower(GetDisplayName())
+  local isSelfSale = playerName == string.lower(theEvent.seller)
 
   if isSelfSale then
     guild                            = internal.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
@@ -176,7 +180,7 @@ function internal:addSalesData(theEvent)
     if isSelfSale then
       temp[11] = internal.PlayerSpecialText
     end
-    searchText = zo_strlower(table.concat(temp, ''))
+    searchText = string.lower(table.concat(temp, ''))
   end
 
   local searchByWords = zo_strgmatch(searchText, '%S+')
@@ -444,8 +448,8 @@ function internal:IndexSalesData()
     local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['buyer'])
     local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, soldItem['seller'])
 
-    local playerName = zo_strlower(GetDisplayName())
-    local selfSale = playerName == zo_strlower(currentSeller)
+    local playerName = string.lower(GetDisplayName())
+    local selfSale = playerName == string.lower(currentSeller)
     local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
     local searchText = ""
     if LibGuildStore_SavedVariables["minimalIndexing"] then
@@ -465,7 +469,7 @@ function internal:IndexSalesData()
       if selfSale then
         temp[11] = internal.PlayerSpecialText
       end
-      searchText = zo_strlower(table.concat(temp, ''))
+      searchText = string.lower(table.concat(temp, ''))
     end
 
     -- Index each word
@@ -509,7 +513,7 @@ function internal:InitItemHistory()
   if internal.myItems == nil then
     internal.myItems     = {}
     extradata.doMyItems  = true
-    extradata.playerName = zo_strlower(GetDisplayName())
+    extradata.playerName = string.lower(GetDisplayName())
   end
 
   if internal.guildSales == nil then
@@ -552,7 +556,7 @@ function internal:InitItemHistory()
             searchData)
         end
 
-        if (extradata.doMyItems and zo_strlower(currentSeller) == extradata.playerName) then
+        if (extradata.doMyItems and string.lower(currentSeller) == extradata.playerName) then
           internal.myItems[currentGuild] = internal.myItems[currentGuild] or MMGuild:new(currentGuild)
           local guild                    = internal.myItems[currentGuild]
           local _, firstsaledata         = next(versiondata.sales, nil)

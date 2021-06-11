@@ -548,7 +548,7 @@ function internal:ReferenceATTSales(otherData)
       end
     end
     if guildFound then
-      theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
+      theEvent.wasKiosk = (internal.guildMemberInfo[guildId][string.lower(theEvent.buyer)] == nil)
     end
     local theIID    = GetItemLinkItemId(theEvent.itemLink)
     local itemIndex = internal.GetOrCreateIndexFromLink(theEvent.itemLink)

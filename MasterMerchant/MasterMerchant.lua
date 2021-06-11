@@ -94,23 +94,33 @@ function MasterMerchant:CheckTime()
   return GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * daysRange), daysRange
 end
 
-function RemoveSalesPerBlacklist(list)
+function RemoveSalesPerBlacklist(list, timeCheck, daysRange)
+  local useDaysRange   = daysRange ~= 10000
   local dataList       = { }
   local count          = 0
   local lowerBlacklist = MasterMerchant.systemSavedVariables.blacklist and MasterMerchant.systemSavedVariables.blacklist:lower() or ""
   local oldestTime     = nil
   local newestTime     = nil
   for i, item in pairs(list) do
-    local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
-    local currentBuyer  = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
-    local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
-    if (not zo_plainstrfind(lowerBlacklist, currentBuyer:lower())) and
-      (not zo_plainstrfind(lowerBlacklist, currentSeller:lower())) and
-      (not zo_plainstrfind(lowerBlacklist, currentGuild:lower())) then
-      if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-      if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-      count = count + 1
-      table.insert(dataList, item)
+    local currentGuild  = string.lower(internal.guildNameByIdLookup[item['guild']]) or ""
+    local currentBuyer  = string.lower(internal.accountNameByIdLookup[item['buyer']]) or ""
+    local currentSeller = string.lower(internal.accountNameByIdLookup[item['seller']]) or ""
+    if (not zo_plainstrfind(lowerBlacklist, currentBuyer)) and
+      (not zo_plainstrfind(lowerBlacklist, currentSeller)) and
+      (not zo_plainstrfind(lowerBlacklist, currentGuild)) then
+      if useDaysRange then
+        if item.timestamp > timeCheck then
+          if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+          if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+          count = count + 1
+          table.insert(dataList, item)
+        end
+      else
+        if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+        if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
+        count = count + 1
+        table.insert(dataList, item)
+      end
     end
   end
   return dataList, count, oldestTime, newestTime
@@ -156,8 +166,7 @@ end
 local stats = {}
 
 function stats.CleanUnitPrice(salesRecord)
-  local individualSale = salesRecord.price / salesRecord.quant
-  return individualSale
+  return salesRecord.price / salesRecord.quant
 end
 
 function stats.GetSortedSales(t)
@@ -182,15 +191,16 @@ function stats.mean(t)
   return (sum / count), count, sum
 end
 
--- Get the median of a table.
+--[[ Get the median of a table.
+Modified: Requires the table to be sorted already
+]]--
 function stats.median(t, index, range)
   local temp        = {}
-  local sortedSales = stats.GetSortedSales(t)
   index             = index or 1
   range             = range or #t
 
   for i = index, range do
-    local individualSale = sortedSales[i].price / sortedSales[i].quant
+    local individualSale = t[i].price / t[i].quant
     table.insert(temp, individualSale)
   end
 
@@ -271,16 +281,17 @@ items in the table.
 middleIndex will be rounded up when odd
 ]]--
 function stats.interquartileRange(t)
-  local middleIndex, evenNumber = stats.getMiddleIndex(#t)
+  local sortedSales = stats.GetSortedSales(t)
+  local middleIndex, evenNumber = stats.getMiddleIndex(#sortedSales)
   -- 1,2,3,4
   if evenNumber then
-    quartile1 = stats.median(t, 1, middleIndex)
-    quartile3 = stats.median(t, middleIndex + 1, #t)
+    quartile1 = stats.median(sortedSales, 1, middleIndex)
+    quartile3 = stats.median(sortedSales, middleIndex + 1, #sortedSales)
   else
     -- 1,2,3,4,5
     -- odd number
-    quartile1 = stats.median(t, 1, middleIndex)
-    quartile3 = stats.median(t, middleIndex, #t)
+    quartile1 = stats.median(sortedSales, 1, middleIndex)
+    quartile3 = stats.median(sortedSales, middleIndex, #sortedSales)
   end
   return quartile1, quartile3, quartile3 - quartile1
 end
@@ -358,11 +369,13 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
 
     if timeCheck ~= -1 then
 
-      list, initCount, oldestTime, newestTime = RemoveSalesPerBlacklist(list)
+      list, initCount, oldestTime, newestTime = RemoveSalesPerBlacklist(list, timeCheck, daysRange)
 
+      --[[
       if daysRange ~= 10000 then
         list, initCount, oldestTime, newestTime = UseSalesByTimestamp(list, timeCheck)
       end
+      ]]--
 
       --[[1-2-2021 Our sales data is now ready to be trimmed if
       trim outliers is active.
@@ -431,10 +444,6 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         end
         -- start loop
         for i, item in pairs(list) do
-          local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item['itemLink'])
-          local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
-          local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
-          local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
           -- get individualSale
           local individualSale  = item.price / item.quant
           -- determine if it is an outlier, if toggle is on
@@ -453,29 +462,31 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
           if lowPrice == nil then lowPrice = individualSale else lowPrice = zo_min(lowPrice, individualSale) end
           if highPrice == nil then highPrice = individualSale else highPrice = math.max(highPrice, individualSale) end
           if not skipDots then
+            local currentGuild  = internal.guildNameByIdLookup[item['guild']] or ""
+            local currentSeller = internal.accountNameByIdLookup[item['seller']] or ""
             local tooltip    = nil
-            local sellerName = nil
             --[[ clickable means to add the tooltip to the dot
             rather then actually click anything
             ]]--
             if clickable then
+              local currentItemLink  = internal.itemLinkNameByIdLookup[item['itemLink']] or ""
+              local currentBuyer  = internal.accountNameByIdLookup[item['buyer']] or ""
               local stringPrice = self.LocalizedNumber(individualSale)
-              local nameString  = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
+              local nameString  = string.format(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
               if item.quant == 1 then
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
+                tooltip = string.format(GetString(SK_TIME_DAYS),
                   math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
                   string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller,
-                    zo_strformat('<<t:1>>', nameString), currentBuyer, stringPrice)
+                    string.format('<<t:1>>', nameString), currentBuyer, stringPrice)
               else
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
+                tooltip = string.format(GetString(SK_TIME_DAYS),
                   math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
                   string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
-                    zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
+                    string.format('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
               end
-              sellerName = currentSeller
             end -- clickable
             table.insert(salesPoints,
-              { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, sellerName })
+              { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, currentSeller })
           end -- end skip dots
         end -- end new loop
         if timeInterval > ZO_ONE_DAY_IN_SECONDS then
@@ -654,7 +665,7 @@ graphInfo
 function MasterMerchant:AvgPricePriceTip(avgPrice, numSales, numItems, numDays, chatText)
   -- TODO add Bonanza price
   local formatedPriceString = nil
-  tipFormat                 = GetString(MM_TIP_FORMAT_MULTI)
+  tipFormat = GetString(MM_TIP_FORMAT_MULTI)
   -- change only when needed
   if numDays < 2 then
     tipFormat = GetString(MM_TIP_FORMAT_SINGLE)
@@ -1133,7 +1144,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
       AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
       AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT),
-        function() ZO_LinkHandler_InsertLink(zo_strformat(SI_TOOLTIP_ITEM_NAME, link)) end)
+        function() ZO_LinkHandler_InsertLink(string.format(SI_TOOLTIP_ITEM_NAME, link)) end)
 
       ShowMenu(scene)
     end
@@ -1247,7 +1258,7 @@ function MasterMerchant.PostPendingItem(self)
     if MasterMerchant.systemSavedVariables.displayListingMessage then
       MasterMerchant:dm("Info",
         string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
-          zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
+          string.format('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
           GetGuildName(selectedGuildId)))
     end
   end
@@ -2267,7 +2278,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
         local textTime    = self.TextTimeSince(theEvent.timestamp, true)
         if i == 1 then MasterMerchant:dm("Info",
           MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT))) end
-        MasterMerchant:dm("Info", zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
+        MasterMerchant:dm("Info", string.format('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
         if i == numAlerts then
           -- Total of offline sales
           MasterMerchant:dm("Info", string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
@@ -2306,16 +2317,16 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
               if theEvent.quant > 1 then
                 MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
                   string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant,
-                    zo_strformat('<<t:1>>', theEvent.itemLink),
+                    string.format('<<t:1>>', theEvent.itemLink),
                     stringPrice, theEvent.guild, textTime) .. alertSuffix)
               else
                 MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
+                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR), string.format('<<t:1>>', theEvent.itemLink),
                     stringPrice, theEvent.guild, textTime) .. alertSuffix)
               end
             else
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
+                string.format(GetString(SK_SALES_ALERT_COLOR), string.format('<<t:1>>', theEvent.itemLink),
                   theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
             end
           end -- End of on screen announce
@@ -2326,18 +2337,18 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
               if theEvent.quant > 1 then
                 MasterMerchant:dm("Info",
                   string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                    theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
+                    theEvent.quant, string.format('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
                     self.TextTimeSince(theEvent.timestamp, true)))
               else
                 MasterMerchant:dm("Info",
                   string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
-                    zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
+                    string.format('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
                     self.TextTimeSince(theEvent.timestamp, true)))
               end
             else
               MasterMerchant:dm("Info",
                 string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                  zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
+                  string.format('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
                   self.TextTimeSince(theEvent.timestamp, true)))
             end
           end -- End of show chat alert
@@ -3377,7 +3388,7 @@ function MasterMerchant:InitScrollLists()
     for m = 1, GetNumGuildMembers(guildID) do
       local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildID, m)
       if MasterMerchant.guildMemberInfo[guildID] == nil then MasterMerchant.guildMemberInfo[guildID] = {} end
-      MasterMerchant.guildMemberInfo[guildID][zo_strlower(guildMemInfo)] = true
+      MasterMerchant.guildMemberInfo[guildID][string.lower(guildMemInfo)] = true
     end
   end
 
@@ -3546,7 +3557,7 @@ function MasterMerchant.Slash(allArgs)
     if argNum == 2 then guildNumber = tonumber(w) end
     if argNum == 3 then hoursBack = tonumber(w) end
   end
-  args = zo_strlower(args)
+  args = string.lower(args)
 
   if args == 'help' then
     MasterMerchant:dm("Info", GetString(MM_HELP_WINDOW))

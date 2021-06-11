@@ -68,7 +68,7 @@ end
 
 -- uses mod to determine which save files to use
 function internal:MakeHashString(itemLink)
-  local name = zo_strlower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
+  local name = string.lower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
   local hash = 0
   for c in zo_strgmatch(name, '.') do
     if c then hash = hash + string.byte(c) end
@@ -213,7 +213,7 @@ function internal:AddSearchToItem(itemLink)
     end
   end
   adder = table.concat(resultTable)
-  return zo_strlower(adder)
+  return string.lower(adder)
 end
 
 function internal:BuildTraderNameLookup()
@@ -331,7 +331,7 @@ function internal:SetupListener(guildId)
         lastReceivedEventID                                          = eventId
       end
       local guildName           = GetGuildName(guildId)
-      local thePlayer           = zo_strlower(GetDisplayName())
+      local thePlayer           = string.lower(GetDisplayName())
       local added               = false
       --[[
       local theEvent = {
@@ -380,7 +380,7 @@ function internal:SetupListener(guildId)
         wasKiosk = false,
         id = Id64ToString(eventId)
       }
-      theEvent.wasKiosk         = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
+      theEvent.wasKiosk         = (internal.guildMemberInfo[guildId][string.lower(theEvent.buyer)] == nil)
 
       local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
       if (theEvent.timestamp > daysOfHistoryToKeep) then
@@ -389,7 +389,7 @@ function internal:SetupListener(guildId)
           added = internal:addSalesData(theEvent)
         end
         -- (doAlert and (internal.systemSavedVariables.showChatAlerts or internal.systemSavedVariables.showAnnounceAlerts))
-        if added and zo_strlower(theEvent.seller) == thePlayer then
+        if added and string.lower(theEvent.seller) == thePlayer then
           --internal:dm("Debug", "alertQueue updated")
           table.insert(internal.alertQueue[theEvent.guild], theEvent)
         end
@@ -425,7 +425,7 @@ function internal:GetSearchText(buyer, seller, guild, itemDesc, adderText, addPl
     if selfSale and addPlayer then
       temp[11] = internal.PlayerSpecialText
     end
-    searchText = zo_strlower(table.concat(temp, ''))
+    searchText = string.lower(table.concat(temp, ''))
   end
   return searchText
 end

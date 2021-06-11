@@ -72,7 +72,6 @@ function internal:addListingData(theEvent)
       table.insert(listings_data[theIID][itemIndex]['sales'], newEvent)
       insertedIndex = #listings_data[theIID][itemIndex]['sales']
     end
-
   else
     if listings_data[theIID][itemIndex] == nil then listings_data[theIID][itemIndex] = {} end
     if listings_data[theIID][itemIndex]['sales'] == nil then listings_data[theIID][itemIndex]['sales'] = {} end
@@ -86,10 +85,14 @@ function internal:addListingData(theEvent)
     --internal:dm("Debug", newEvent)
   end
   listings_data[theIID][itemIndex].wasAltered = true
-  listings_data[theIID][itemIndex].totalCount = listings_data[theIID][itemIndex].totalCount + 1
+  if listings_data[theIID][itemIndex] and listings_data[theIID][itemIndex].totalCount then
+    listings_data[theIID][itemIndex].totalCount = listings_data[theIID][itemIndex].totalCount + 1
+  else
+    listings_data[theIID][itemIndex].totalCount = 1
+  end
 
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+  local playerName = string.lower(GetDisplayName())
+  local isSelfSale = playerName == string.lower(theEvent.seller)
 
   local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
   local searchText = ""
@@ -106,7 +109,7 @@ function internal:addListingData(theEvent)
     if isSelfSale then
       temp[11] = internal.PlayerSpecialText
     end
-    searchText = zo_strlower(table.concat(temp, ''))
+    searchText = string.lower(table.concat(temp, ''))
   end
 
   local searchByWords = zo_strgmatch(searchText, '%S+')
@@ -335,8 +338,8 @@ function internal:IndexListingsData()
     local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, viewedItem['guild'])
     local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, viewedItem['seller'])
 
-    local playerName = zo_strlower(GetDisplayName())
-    local selfSale = playerName == zo_strlower(currentSeller)
+    local playerName = string.lower(GetDisplayName())
+    local selfSale = playerName == string.lower(currentSeller)
     local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
     local searchText = ""
     if LibGuildStore_SavedVariables["minimalIndexing"] then
@@ -356,7 +359,7 @@ function internal:IndexListingsData()
       if selfSale then
         temp[11] = internal.PlayerSpecialText
       end
-      searchText = zo_strlower(table.concat(temp, ''))
+      searchText = string.lower(table.concat(temp, ''))
     end
 
     -- Index each word
