@@ -1,11 +1,3 @@
-local function OnMouseEnter(control)
-  ZO_Options_OnMouseEnter(control)
-end
-
-local function OnMouseExit(control)
-  ZO_Options_OnMouseExit(control)
-end
-
 MM_Graph = ZO_Object:Subclass()
 
 function MM_Graph:New(control, pointTemplate, labelTemplate)
@@ -13,7 +5,7 @@ function MM_Graph:New(control, pointTemplate, labelTemplate)
 
   graph.control   = control
 
-  pointTemplate   = pointTemplate or "MMGraphLabel"
+  pointTemplate   = pointTemplate or "MM_Point"
   labelTemplate   = labelTemplate or "MMGraphLabel"
 
   graph.pointPool = ZO_ControlPool:New(pointTemplate, control, "Point")

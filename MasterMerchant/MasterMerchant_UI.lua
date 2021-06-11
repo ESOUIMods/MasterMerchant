@@ -2096,6 +2096,7 @@ end
 -- who the control generating the tooltip is so we know
 -- how to grab the item data
 function MasterMerchant:addStatsItemTooltip()
+  if not MasterMerchant.isInitialized then return end
   local skMoc = moc()
   -- Make sure we don't double-add stats or try to add them to nothing
   -- Since we call this on Update rather than Show it gets called a lot
