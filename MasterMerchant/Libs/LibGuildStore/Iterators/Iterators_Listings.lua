@@ -62,10 +62,17 @@ function internal:addListingData(theEvent)
   local searchItemDesc      = ""
   local searchItemAdderText = ""
   if listings_data[theIID][itemIndex] then
+    local nextLocation  = #listings_data[theIID][itemIndex]['sales'] + 1
     searchItemDesc      = listings_data[theIID][itemIndex].itemDesc
     searchItemAdderText = listings_data[theIID][itemIndex].itemAdderText
-    table.insert(listings_data[theIID][itemIndex]['sales'], newEvent)
-    insertedIndex = #listings_data[theIID][itemIndex]['sales']
+    if listings_data[theIID][itemIndex]['sales'][nextLocation] == nil then
+      table.insert(listings_data[theIID][itemIndex]['sales'], nextLocation, newEvent)
+      insertedIndex = nextLocation
+    else
+      table.insert(listings_data[theIID][itemIndex]['sales'], newEvent)
+      insertedIndex = #listings_data[theIID][itemIndex]['sales']
+    end
+
   else
     if listings_data[theIID][itemIndex] == nil then listings_data[theIID][itemIndex] = {} end
     if listings_data[theIID][itemIndex]['sales'] == nil then listings_data[theIID][itemIndex]['sales'] = {} end
@@ -78,6 +85,8 @@ function internal:addListingData(theEvent)
       sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
+  listings_data[theIID][itemIndex].wasAltered = true
+  listings_data[theIID][itemIndex].totalCount = listings_data[theIID][itemIndex].totalCount + 1
 
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)

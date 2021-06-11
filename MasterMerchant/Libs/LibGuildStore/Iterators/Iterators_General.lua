@@ -98,8 +98,32 @@ end
 ----- Functions                    -----
 ----------------------------------------
 
-function internal:RenewExtraData(otherData)
+function internal:RenewExtraSalesData(otherData)
   local savedVars = otherData[internal.dataNamespace]
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      if itemIndexData.wasAltered then
+        local oldestTime = nil
+        local totalCount = 0
+        for sale, saleData in pairs(itemIndexData['sales']) do
+          totalCount = totalCount + 1
+          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+        end
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].wasAltered = false
+        else
+          --internal:dm("Warn", "Empty or nil savedVars[internal.dataNamespace]")
+        end
+      end
+    end
+  end
+end
+
+function internal:RenewExtraListingsData(otherData)
+  local savedVars = otherData[internal.listingsNamespace]
 
   for itemID, itemIndex in pairs(savedVars) do
     for field, itemIndexData in pairs(itemIndex) do
@@ -143,7 +167,7 @@ function internal:VerifyItemLinks(hash, task)
   end)
 end
 
-function internal:AddNewData(otherData)
+function internal:AddExtraSalesData(otherData)
   local savedVars = otherData[internal.dataNamespace]
 
   for itemID, itemIndex in pairs(savedVars) do
@@ -174,49 +198,121 @@ function internal:AddNewData(otherData)
   end
 end
 
--- Renew extra data if list was altered
-function internal:RenewExtraDataAllContainers()
+function internal:AddExtraListingsData(otherData)
+  local savedVars = otherData[internal.listingsNamespace]
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      local oldestTime = nil
+      local totalCount = 0
+      for sale, saleData in pairs(itemIndexData['sales']) do
+        totalCount = totalCount + 1
+        if saleData.timestamp then
+          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+        else
+          if internal:is_empty_or_nil(saleData) then
+            internal:dm("Warn", "Empty Table Detected!")
+            internal:dm("Warn", itemID)
+            internal:dm("Warn", sale)
+            itemIndexData['sales'][sale] = nil
+          end
+        end
+      end
+      if savedVars[itemID][field] then
+        savedVars[itemID][field].totalCount = totalCount
+        savedVars[itemID][field].oldestTime = oldestTime
+        savedVars[itemID][field].wasAltered = false
+      else
+        --internal:dm("Warn", "Empty or nil savedVars[internal.dataNamespace]")
+      end
+    end
+  end
+end
+
+-- Renew extra Sales data if list was altered
+function internal:RenewExtraSalesDataAllContainers()
   internal:dm("Debug", "Add new data to LibGuildStore concatanated data array")
-  internal:RenewExtraData(GS00DataSavedVariables)
-  internal:RenewExtraData(GS01DataSavedVariables)
-  internal:RenewExtraData(GS02DataSavedVariables)
-  internal:RenewExtraData(GS03DataSavedVariables)
-  internal:RenewExtraData(GS04DataSavedVariables)
-  internal:RenewExtraData(GS05DataSavedVariables)
-  internal:RenewExtraData(GS06DataSavedVariables)
-  internal:RenewExtraData(GS07DataSavedVariables)
-  internal:RenewExtraData(GS08DataSavedVariables)
-  internal:RenewExtraData(GS09DataSavedVariables)
-  internal:RenewExtraData(GS10DataSavedVariables)
-  internal:RenewExtraData(GS11DataSavedVariables)
-  internal:RenewExtraData(GS12DataSavedVariables)
-  internal:RenewExtraData(GS13DataSavedVariables)
-  internal:RenewExtraData(GS14DataSavedVariables)
-  internal:RenewExtraData(GS15DataSavedVariables)
+  internal:RenewExtraSalesData(GS00DataSavedVariables)
+  internal:RenewExtraSalesData(GS01DataSavedVariables)
+  internal:RenewExtraSalesData(GS02DataSavedVariables)
+  internal:RenewExtraSalesData(GS03DataSavedVariables)
+  internal:RenewExtraSalesData(GS04DataSavedVariables)
+  internal:RenewExtraSalesData(GS05DataSavedVariables)
+  internal:RenewExtraSalesData(GS06DataSavedVariables)
+  internal:RenewExtraSalesData(GS07DataSavedVariables)
+  internal:RenewExtraSalesData(GS08DataSavedVariables)
+  internal:RenewExtraSalesData(GS09DataSavedVariables)
+  internal:RenewExtraSalesData(GS10DataSavedVariables)
+  internal:RenewExtraSalesData(GS11DataSavedVariables)
+  internal:RenewExtraSalesData(GS12DataSavedVariables)
+  internal:RenewExtraSalesData(GS13DataSavedVariables)
+  internal:RenewExtraSalesData(GS14DataSavedVariables)
+  internal:RenewExtraSalesData(GS15DataSavedVariables)
 end
 
--- Add new data to concatanated data array
-function internal:AddNewDataAllContainers()
+-- Add new Sales data to concatanated data array
+function internal:AddExtraSalesDataAllContainers()
   internal:dm("Debug", "Add new data to concatanated data array")
-  internal:AddNewData(GS00DataSavedVariables)
-  internal:AddNewData(GS01DataSavedVariables)
-  internal:AddNewData(GS02DataSavedVariables)
-  internal:AddNewData(GS03DataSavedVariables)
-  internal:AddNewData(GS04DataSavedVariables)
-  internal:AddNewData(GS05DataSavedVariables)
-  internal:AddNewData(GS06DataSavedVariables)
-  internal:AddNewData(GS07DataSavedVariables)
-  internal:AddNewData(GS08DataSavedVariables)
-  internal:AddNewData(GS09DataSavedVariables)
-  internal:AddNewData(GS10DataSavedVariables)
-  internal:AddNewData(GS11DataSavedVariables)
-  internal:AddNewData(GS12DataSavedVariables)
-  internal:AddNewData(GS13DataSavedVariables)
-  internal:AddNewData(GS14DataSavedVariables)
-  internal:AddNewData(GS15DataSavedVariables)
+  internal:AddExtraSalesData(GS00DataSavedVariables)
+  internal:AddExtraSalesData(GS01DataSavedVariables)
+  internal:AddExtraSalesData(GS02DataSavedVariables)
+  internal:AddExtraSalesData(GS03DataSavedVariables)
+  internal:AddExtraSalesData(GS04DataSavedVariables)
+  internal:AddExtraSalesData(GS05DataSavedVariables)
+  internal:AddExtraSalesData(GS06DataSavedVariables)
+  internal:AddExtraSalesData(GS07DataSavedVariables)
+  internal:AddExtraSalesData(GS08DataSavedVariables)
+  internal:AddExtraSalesData(GS09DataSavedVariables)
+  internal:AddExtraSalesData(GS10DataSavedVariables)
+  internal:AddExtraSalesData(GS11DataSavedVariables)
+  internal:AddExtraSalesData(GS12DataSavedVariables)
+  internal:AddExtraSalesData(GS13DataSavedVariables)
+  internal:AddExtraSalesData(GS14DataSavedVariables)
+  internal:AddExtraSalesData(GS15DataSavedVariables)
 end
 
--- Add new data to concatanated data array
+-- Add new Listings data to concatanated data array
+function internal:AddExtraListingsDataAllContainers()
+  internal:dm("Debug", "Add new data to concatanated data array")
+  internal:AddExtraListingsData(GS00DataSavedVariables)
+  internal:AddExtraListingsData(GS01DataSavedVariables)
+  internal:AddExtraListingsData(GS02DataSavedVariables)
+  internal:AddExtraListingsData(GS03DataSavedVariables)
+  internal:AddExtraListingsData(GS04DataSavedVariables)
+  internal:AddExtraListingsData(GS05DataSavedVariables)
+  internal:AddExtraListingsData(GS06DataSavedVariables)
+  internal:AddExtraListingsData(GS07DataSavedVariables)
+  internal:AddExtraListingsData(GS08DataSavedVariables)
+  internal:AddExtraListingsData(GS09DataSavedVariables)
+  internal:AddExtraListingsData(GS10DataSavedVariables)
+  internal:AddExtraListingsData(GS11DataSavedVariables)
+  internal:AddExtraListingsData(GS12DataSavedVariables)
+  internal:AddExtraListingsData(GS13DataSavedVariables)
+  internal:AddExtraListingsData(GS14DataSavedVariables)
+  internal:AddExtraListingsData(GS15DataSavedVariables)
+end
+
+-- Renew extra Listings data if list was altered
+function internal:RenewExtraListingsDataAllContainers()
+  internal:dm("Debug", "Add new data to LibGuildStore concatanated data array")
+  internal:RenewExtraListingsData(GS00DataSavedVariables)
+  internal:RenewExtraListingsData(GS01DataSavedVariables)
+  internal:RenewExtraListingsData(GS02DataSavedVariables)
+  internal:RenewExtraListingsData(GS03DataSavedVariables)
+  internal:RenewExtraListingsData(GS04DataSavedVariables)
+  internal:RenewExtraListingsData(GS05DataSavedVariables)
+  internal:RenewExtraListingsData(GS06DataSavedVariables)
+  internal:RenewExtraListingsData(GS07DataSavedVariables)
+  internal:RenewExtraListingsData(GS08DataSavedVariables)
+  internal:RenewExtraListingsData(GS09DataSavedVariables)
+  internal:RenewExtraListingsData(GS10DataSavedVariables)
+  internal:RenewExtraListingsData(GS11DataSavedVariables)
+  internal:RenewExtraListingsData(GS12DataSavedVariables)
+  internal:RenewExtraListingsData(GS13DataSavedVariables)
+  internal:RenewExtraListingsData(GS14DataSavedVariables)
+  internal:RenewExtraListingsData(GS15DataSavedVariables)
+end
+
 -- /script LibGuildStore_Internal:VerifyAllItemLinks()
 -- DEBUG
 function internal:VerifyAllItemLinks()

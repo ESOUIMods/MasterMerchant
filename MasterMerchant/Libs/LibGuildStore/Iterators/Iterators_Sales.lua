@@ -131,6 +131,7 @@ function internal:addSalesData(theEvent)
     --internal:dm("Debug", newEvent)
   end
   sales_data[theIID][itemIndex].wasAltered = true
+  sales_data[theIID][itemIndex].totalCount = sales_data[theIID][itemIndex].totalCount + 1
 
   -- this section adds the sales to the lists for the MM window
   local guild
@@ -782,7 +783,7 @@ function internal:CleanOutBad()
       internal.guildSales            = {}
       internal.guildItems            = {}
       internal.myItems               = {}
-      LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
+      LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
       LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')

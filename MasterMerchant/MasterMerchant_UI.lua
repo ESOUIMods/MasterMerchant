@@ -1898,6 +1898,13 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
           graphInfo.high = statsInfo.avgPrice * 1.15
         end
 
+        if graphInfo.low < 0 then
+            graphInfo.low = 0
+        end
+        if graphInfo.high < 1 then
+            graphInfo.high = 1
+        end
+
         if statsInfo.bonanzaPrice then
           local lowRange = nil
           local highRange = nil
@@ -1913,10 +1920,6 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
         else
           xBonanza = nil
           statsInfo.bonanzaPrice = nil
-        end
-
-        if graphInfo.low < 1 then
-            graphInfo.low = 1
         end
 
         local xLow   = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'

@@ -483,6 +483,10 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         else
           avgPrice = avgPrice / countSold
         end
+        --[[found an average price of 0.07 which X 200 is 14g
+        even 0.01 X 200 is 2g
+        ]]--
+        if avgPrice < 0.01 then avgPrice = 0.01 end
       end
     end
   else
@@ -530,6 +534,10 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     if bonanzaSales >= 1 then
       bonanzaPrice = bonanzaPrice / bonanzaCount
     end
+    --[[found an average price of 0.07 which X 200 is 14g
+    even 0.01 X 200 is 2g
+    ]]--
+    if bonanzaPrice < 0.01 then bonanzaPrice = 0.01 end
   end
   returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                  ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
@@ -540,7 +548,7 @@ end
 function MasterMerchant:itemIDHasSales(itemID, itemIndex)
   local hasSales = sales_data[itemID] and sales_data[itemID][itemIndex] and sales_data[itemID][itemIndex]['sales']
   if hasSales then
-    local salesCount = internal:NonContiguousNonNilCount(sales_data[itemID][itemIndex]['sales'])
+    local salesCount = sales_data[itemID][itemIndex].totalCount
     return salesCount > 0
   end
   return false
@@ -555,7 +563,7 @@ end
 function MasterMerchant:itemIDHasListings(itemID, itemIndex)
   local hasListings = listings_data[itemID] and listings_data[itemID][itemIndex] and listings_data[itemID][itemIndex]['sales']
   if hasListings then
-    local listingsCount = internal:NonContiguousNonNilCount(listings_data[itemID][itemIndex]['sales'])
+    local listingsCount = listings_data[itemID][itemIndex].totalCount
     return listingsCount > 0
   end
   return false
@@ -3272,23 +3280,19 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Add(function()
       if internal:MasterMerchantDataActive() then
-        MasterMerchant:dm("Info", "The old MMxxData modules are only needed for importing MM data.")
-        MasterMerchant:dm("Info", "Please disable all MMxxData modules to increase performance and reduce load times.")
+        MasterMerchant:dm("Info", "The old MMxxData modules are only needed for importing MM data. Please disable all MMxxData modules to increase performance and reduce load times.")
       end
     end, 'MasterMerchantDataActive')
     LEQ:Add(function()
-      if internal:MasterMerchantDataActive() then
+      if internal:ArkadiusDataActive() then
         if not MasterMerchant.systemSavedVariables.disableAttWarn then
-          MasterMerchant:dm("Info", "ATT is an effective and modular framework that provides sales information to users.")
-          MasterMerchant:dm("Info", "While you can use both ATT and MM simultaneously importing your current ATT data,")
-          MasterMerchant:dm("Info", "and disabling ATT will increase performance and reduce load times.")
+          MasterMerchant:dm("Info", "ATT is an effective and modular framework that provides sales information to users. While you can use both ATT and MM simultaneously importing your current ATT data, and disabling ATT will increase performance and reduce load times.")
         end
       end
     end, 'ArkadiusDataActive')
     LEQ:Add(function()
       if ShoppingList then
-        MasterMerchant:dm("Info", "ShoppingList is only needed for importing old data")
-        MasterMerchant:dm("Info", "Please disable ShoppingList after you import its data.")
+        MasterMerchant:dm("Info", "ShoppingList is only needed for importing old data. Please disable ShoppingList after you import its data.")
       end
     end, 'ArkadiusDataActive')
     LEQ:Start()

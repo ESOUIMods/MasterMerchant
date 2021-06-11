@@ -222,7 +222,8 @@ local function SetupData()
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   -- AddNewData, which adds counts
-  LEQ:Add(function() internal:AddNewDataAllContainers() end, 'AddNewDataAllContainers')
+  LEQ:Add(function() internal:AddExtraSalesDataAllContainers() end, 'AddExtraSalesDataAllContainers')
+  LEQ:Add(function() internal:AddExtraListingsDataAllContainers() end, 'AddExtraListingsDataAllContainers')
   -- Truncate
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
     LEQ:Add(function() internal:dm("Info", "LibGuildStore Truncate Records Started...") end, "LibGuildStoreReferenceTables")
@@ -233,7 +234,8 @@ local function SetupData()
   LEQ:Add(function() internal:TruncatePostedItemsHistory() end, 'TruncatePostedItemsHistory')
   LEQ:Add(function() internal:TruncateCancelledItemHistory() end, 'TruncateCancelledItemHistory')
   -- RenewExtraData, if was altered
-  LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
+  LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
+  LEQ:Add(function() internal:RenewExtraListingsDataAllContainers() end, 'RenewExtraListingsDataAllContainers')
   -- and...
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
     LEQ:Add(function() internal:dm("Info", "LibGuildStore History Initialization Started...") end, "LibGuildStoreReferenceTables")

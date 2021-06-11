@@ -97,7 +97,7 @@ function internal:ImportMasterMerchantSales()
       internal.guildSales            = {}
       internal.guildItems            = {}
       internal.myItems               = {}
-      LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
+      LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
       LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
@@ -154,7 +154,7 @@ function internal:ImportATTSales()
       internal.guildSales            = {}
       internal.guildItems            = {}
       internal.myItems               = {}
-      LEQ:Add(function() internal:RenewExtraDataAllContainers() end, 'RenewExtraDataAllContainers')
+      LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
       LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
