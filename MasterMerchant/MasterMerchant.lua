@@ -102,9 +102,9 @@ function RemoveSalesPerBlacklist(list, timeCheck, daysRange)
   local oldestTime     = nil
   local newestTime     = nil
   for i, item in pairs(list) do
-    local currentGuild  = string.lower(internal.guildNameByIdLookup[item['guild']]) or ""
-    local currentBuyer  = string.lower(internal.accountNameByIdLookup[item['buyer']]) or ""
-    local currentSeller = string.lower(internal.accountNameByIdLookup[item['seller']]) or ""
+    local currentGuild  = string.lower(internal.guildNameByIdLookup[item.guild]) or ""
+    local currentBuyer  = string.lower(internal.accountNameByIdLookup[item.buyer]) or ""
+    local currentSeller = string.lower(internal.accountNameByIdLookup[item.seller]) or ""
     if (not zo_plainstrfind(lowerBlacklist, currentBuyer)) and
       (not zo_plainstrfind(lowerBlacklist, currentSeller)) and
       (not zo_plainstrfind(lowerBlacklist, currentGuild)) then
@@ -444,6 +444,10 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         end
         -- start loop
         for i, item in pairs(list) do
+          local currentItemLink = internal.itemLinkNameByIdLookup[item.itemLink]
+          local currentGuild    = internal.guildNameByIdLookup[item.guild]
+          local currentBuyer    = internal.accountNameByIdLookup[item.buyer]
+          local currentSeller   = internal.accountNameByIdLookup[item.seller]
           -- get individualSale
           local individualSale  = item.price / item.quant
           -- determine if it is an outlier, if toggle is on
@@ -462,27 +466,23 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
           if lowPrice == nil then lowPrice = individualSale else lowPrice = zo_min(lowPrice, individualSale) end
           if highPrice == nil then highPrice = individualSale else highPrice = math.max(highPrice, individualSale) end
           if not skipDots then
-            local currentGuild  = internal.guildNameByIdLookup[item['guild']] or ""
-            local currentSeller = internal.accountNameByIdLookup[item['seller']] or ""
             local tooltip    = nil
             --[[ clickable means to add the tooltip to the dot
             rather then actually click anything
             ]]--
             if clickable then
-              local currentItemLink  = internal.itemLinkNameByIdLookup[item['itemLink']] or ""
-              local currentBuyer  = internal.accountNameByIdLookup[item['buyer']] or ""
               local stringPrice = self.LocalizedNumber(individualSale)
-              local nameString  = string.format(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
+              local nameString  = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
               if item.quant == 1 then
-                tooltip = string.format(GetString(SK_TIME_DAYS),
+                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
                   math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
                   string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller,
-                    string.format('<<t:1>>', nameString), currentBuyer, stringPrice)
+                    zo_strformat('<<t:1>>', nameString), currentBuyer, stringPrice)
               else
-                tooltip = string.format(GetString(SK_TIME_DAYS),
+                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
                   math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
                   string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
-                    string.format('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
+                    zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
               end
             end -- clickable
             table.insert(salesPoints,
@@ -522,7 +522,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       numItems = countSold,
       graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints },
     }
-    if legitSales and legitSales > 0 then
+    if legitSales and legitSales > 200 then
       MasterMerchant:SetItemCacheById(theIID, itemIndex, daysRange, itemInfo)
     end
   end
@@ -631,7 +631,7 @@ function MasterMerchant:SetItemCacheByItemLink(itemLink, daysRange, itemInfo)
 end
 
 function MasterMerchant:ClearItemCacheById(itemID, itemIndex)
-  local itemInfo = MasterMerchant.itemInformationCache[theIID] and MasterMerchant.itemInformationCache[theIID][itemIndex]
+  local itemInfo = MasterMerchant.itemInformationCache[itemID] and MasterMerchant.itemInformationCache[itemID][itemIndex]
   if itemInfo then
     MasterMerchant.itemInformationCache[itemID][itemIndex] = nil
   end
@@ -1107,6 +1107,12 @@ function MasterMerchant:onItemActionLinkCCLink(itemLink)
 end
 
 function MasterMerchant:onItemActionPopupInfoLink(itemLink)
+  --[[MM_Graph.itemLink was added to there is a current link
+  for the graph. When adding a seller to the filter that
+  changes the outcome of the calculations so the tooltip
+  cache needs to be reset
+  ]]--
+  MM_Graph.itemLink = itemLink
   ZO_PopupTooltip_SetLink(itemLink)
 end
 

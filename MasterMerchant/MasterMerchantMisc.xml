@@ -8,7 +8,7 @@
 -->
 <GuiXml>
   <Controls>
-    <Label name="MM_Point" mouseEnabled="true" virtual="true">
+    <Label name="MM_Point" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="." mouseEnabled="true" virtual="true">
       <OnMouseEnter>
         ZO_Options_OnMouseEnter(self)
       </OnMouseEnter>

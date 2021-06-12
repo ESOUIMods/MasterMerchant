@@ -1,11 +1,12 @@
 MM_Graph = ZO_Object:Subclass()
+MM_Graph.itemLink = nil
 
 function MM_Graph:New(control, pointTemplate, labelTemplate)
   local graph     = ZO_Object.New(self)
 
   graph.control   = control
 
-  pointTemplate   = pointTemplate or "MM_Point"
+  pointTemplate   = "MM_Point"
   labelTemplate   = labelTemplate or "MMGraphLabel"
 
   graph.pointPool = ZO_ControlPool:New(pointTemplate, control, "Point")
@@ -160,7 +161,6 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
 end
 
 function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
-  MasterMerchant:dm("Debug", "Menu Option Chosen")
   local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
   local lengthSellerName = string.len(sellerName) + 2
   if lengthBlacklist + lengthSellerName > 2000 then
@@ -168,19 +168,15 @@ function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
+      MasterMerchant:ClearItemCacheByItemLink(MM_Graph.itemLink)
     end
   end
 end
 
 function MM_Graph:MyGraphPointClickHandler(self, button, upInside, sellerName)
-  MasterMerchant:dm("Debug", "MyGraphPointClickHandler")
   if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
-    MasterMerchant:dm("Debug", "Show Click Handler Menu")
-
     ClearMenu()
-
     AddMenuItem(GetString(MM_BLACKLIST_MENU), function() MM_Graph:OnGraphPointClicked(self, button, sellerName) end)
-
     ShowMenu()
   end
 end
