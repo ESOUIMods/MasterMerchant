@@ -1264,7 +1264,7 @@ function MasterMerchant.PostPendingItem(self)
     if MasterMerchant.systemSavedVariables.displayListingMessage then
       MasterMerchant:dm("Info",
         string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
-          string.format('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
+          zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
           GetGuildName(selectedGuildId)))
     end
   end
@@ -2284,7 +2284,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
         local textTime    = self.TextTimeSince(theEvent.timestamp, true)
         if i == 1 then MasterMerchant:dm("Info",
           MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT))) end
-        MasterMerchant:dm("Info", string.format('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
+        MasterMerchant:dm("Info", zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
         if i == numAlerts then
           -- Total of offline sales
           MasterMerchant:dm("Info", string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
@@ -2323,16 +2323,16 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
               if theEvent.quant > 1 then
                 MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
                   string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant,
-                    string.format('<<t:1>>', theEvent.itemLink),
+                    zo_strformat('<<t:1>>', theEvent.itemLink),
                     stringPrice, theEvent.guild, textTime) .. alertSuffix)
               else
                 MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR), string.format('<<t:1>>', theEvent.itemLink),
+                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
                     stringPrice, theEvent.guild, textTime) .. alertSuffix)
               end
             else
               MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                string.format(GetString(SK_SALES_ALERT_COLOR), string.format('<<t:1>>', theEvent.itemLink),
+                string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
                   theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
             end
           end -- End of on screen announce
@@ -2343,18 +2343,18 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
               if theEvent.quant > 1 then
                 MasterMerchant:dm("Info",
                   string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                    theEvent.quant, string.format('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
+                    theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
                     self.TextTimeSince(theEvent.timestamp, true)))
               else
                 MasterMerchant:dm("Info",
                   string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
-                    string.format('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
+                    zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
                     self.TextTimeSince(theEvent.timestamp, true)))
               end
             else
               MasterMerchant:dm("Info",
                 string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                  string.format('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
+                  zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
                   self.TextTimeSince(theEvent.timestamp, true)))
             end
           end -- End of show chat alert
@@ -2941,7 +2941,7 @@ function MasterMerchant:Initialize()
     shouldAdderText = false,
     showGuildInitSummary = false,
     showIndexingSummary = false,
-    lastReceivedEventID = {},
+    lastReceivedEventID = {}, -- unused, see LGS
     --[[you can assign this as the default but it needs to be a global var
     customTimeframeText = tostring(90) .. ' ' .. GetString(MM_CUSTOM_TIMEFRAME_DAYS),
     ]]--
@@ -3225,16 +3225,6 @@ function MasterMerchant:Initialize()
 
   -- Set up purchase tracking, if also installed
   self:initPurchaseTracking()
-
-  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
-    MasterMerchant:dm("Debug", "Checked Settings")
-    LibGuildStore_SavedVariables["historyDepth"] = math.max(MasterMerchant.systemSavedVariables.historyDepth,
-      LibGuildStore_SavedVariables["historyDepth"])
-    LibGuildStore_SavedVariables["minItemCount"] = math.max(MasterMerchant.systemSavedVariables.minItemCount,
-      LibGuildStore_SavedVariables["minItemCount"])
-    LibGuildStore_SavedVariables["maxItemCount"] = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
-      LibGuildStore_SavedVariables["maxItemCount"])
-  end
 
   --Watch inventory listings
   for _, i in pairs(PLAYER_INVENTORY.inventories) do

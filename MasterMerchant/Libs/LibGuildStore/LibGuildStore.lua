@@ -37,11 +37,16 @@ function internal:CheckStatus()
   return false
 end
 
+function internal:StartQueue()
+  internal:dm("Debug", "StartQueue")
+  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
+end
+
 function internal:QueueCheckStatus()
   local eventsRemaining = internal:CheckStatus()
   if eventsRemaining then
     zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
-    internal:dm("Info", "LibGuildStore Refresh Not Finished Yet")
+    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED))
   else
     --[[
     MasterMerchant.CenterScreenAnnounce_AddMessage(
@@ -51,7 +56,7 @@ function internal:QueueCheckStatus()
       "LibHistoire Ready"
     )
     ]]--
-    internal:dm("Info", "LibGuildStore Refresh Finished")
+    internal:dm("Info", GetString(GS_REFRESH_FINISHED))
     lib.guildStoreReady                                      = true
     LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
     internal:DatabaseBusy(false)
@@ -61,8 +66,10 @@ function internal:QueueCheckStatus()
 end
 
 local function SetNamespace()
+  internal:dm("Debug", "SetNamespace")
   if GetWorldName() == 'NA Megaserver' then
-    internal.firstrunNamespace = "firstRunNa"
+    internal.firstrunNamespace = internal.GS_NA_FIRST_RUN_NAMESPACE
+    internal.libHistoireNamespace = internal.GS_NA_LIBHISTOIRE_NAMESPACE
     internal.dataNamespace     = internal.GS_NA_NAMESPACE
     internal.listingsNamespace = internal.GS_NA_LISTING_NAMESPACE
     internal.purchasesNamespace = internal.GS_NA_PURCHASE_NAMESPACE
@@ -72,7 +79,8 @@ local function SetNamespace()
     internal.pricingNamespace        = internal.GS_NA_PRICING_NAMESPACE
     internal.nameFilterNamespace= internal.GS_NA_NAME_FILTER_NAMESPACE
   else
-    internal.firstrunNamespace = "firstRunEu"
+    internal.firstrunNamespace = internal.GS_EU_FIRST_RUN_NAMESPACE
+    internal.libHistoireNamespace = internal.GS_EU_LIBHISTOIRE_NAMESPACE
     internal.dataNamespace     = internal.GS_EU_NAMESPACE
     internal.listingsNamespace = internal.GS_EU_LISTING_NAMESPACE
     internal.purchasesNamespace = internal.GS_EU_PURCHASE_NAMESPACE
@@ -92,15 +100,19 @@ function internal:SetupListenerLibHistoire()
     internal:SetupListener(guildId)
   end
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
-    internal:QueueCheckStatus()
+    internal:StartQueue()
   end
 end
 
 local function SetupLibGuildStore()
+  if not LibGuildStore_SavedVariables[internal.firstrunNamespace] then
+    internal:dm("Debug", "SetupLibGuildStore Not First Run")
+    return
+  end
   internal:dm("Debug", "SetupLibGuildStore For First Run")
   for guildNum = 1, GetNumGuilds() do
     local guildId                                                = GetGuildId(guildNum)
-    LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] = "0"
+    LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
     internal.eventsNeedProcessing[guildId]                       = true
     internal.timeEstimated[guildId]                              = false
   end
@@ -108,11 +120,12 @@ end
 
 function internal:RefreshLibGuildStore()
   internal:dm("Debug", "RefreshLibGuildStore")
+  internal:dm("Info", GetString(GS_REFRESH_STARTING))
   internal:DatabaseBusy(true)
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     internal.LibHistoireListener[guildId]:Stop()
-    LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] = "0"
+    LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
     internal.eventsNeedProcessing[guildId]                       = true
     internal.timeEstimated[guildId]                              = false
   end
@@ -131,10 +144,16 @@ local function SetupDefaults()
 --[[
 internal.GS_NA_NAMESPACE          = "datana"
 internal.GS_EU_NAMESPACE          = "dataeu"
+internal.GS_NA_LIBHISTOIRE_NAMESPACE = "libhistoirena"
+internal.GS_EU_LIBHISTOIRE_NAMESPACE = "libhistoireeu"
 internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
 internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
 internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
 internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
+internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
+internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
+internal.GS_NA_FIRST_RUN_NAMESPACE = "firstRunNa"
+internal.GS_EU_FIRST_RUN_NAMESPACE = "firstRunEu"
 
 internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
 internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
@@ -144,33 +163,58 @@ internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
 internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
 internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
 
-  updateAdditionalText = false,
-  historyDepth = 30,
-  minItemCount = 20,
-  maxItemCount = 5000,
-  showGuildInitSummary = false,
-  showIndexingSummary = false,
-  minimalIndexing = false,
-  useSalesHistory = false,
-  overrideMMImport = false,
-  historyDepthSL = 60,
-
+internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
+internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
 ]]--
-
   internal:dm("Debug", "SetupDefaults")
-  if LibGuildStore_SavedVariables["firstRunNa"] == nil then LibGuildStore_SavedVariables["firstRunNa"] = true end
-  if LibGuildStore_SavedVariables["firstRunEu"] == nil then LibGuildStore_SavedVariables["firstRunEu"] = true end
-  if LibGuildStore_SavedVariables["updateAdditionalText"] == nil then LibGuildStore_SavedVariables["updateAdditionalText"] = internal.defaults.updateAdditionalText end
-  if LibGuildStore_SavedVariables["historyDepth"] == nil then LibGuildStore_SavedVariables["historyDepth"] = internal.defaults.historyDepth end
-  if LibGuildStore_SavedVariables["minItemCount"] == nil then LibGuildStore_SavedVariables["minItemCount"] = internal.defaults.minItemCount end
-  if LibGuildStore_SavedVariables["maxItemCount"] == nil then LibGuildStore_SavedVariables["maxItemCount"] = internal.defaults.maxItemCount end
-  if LibGuildStore_SavedVariables["showGuildInitSummary"] == nil then LibGuildStore_SavedVariables["showGuildInitSummary"] = internal.defaults.showGuildInitSummary end
-  if LibGuildStore_SavedVariables["showIndexingSummary"] == nil then LibGuildStore_SavedVariables["showIndexingSummary"] = internal.defaults.showIndexingSummary end
-  if LibGuildStore_SavedVariables["showTruncateSummary"] == nil then LibGuildStore_SavedVariables["showTruncateSummary"] = internal.defaults.showTruncateSummary end
-  if LibGuildStore_SavedVariables["minimalIndexing"] == nil then LibGuildStore_SavedVariables["minimalIndexing"] = internal.defaults.minimalIndexing end
-  if LibGuildStore_SavedVariables["useSalesHistory"] == nil then LibGuildStore_SavedVariables["useSalesHistory"] = internal.defaults.useSalesHistory end
-  if LibGuildStore_SavedVariables["overrideMMImport"] == nil then LibGuildStore_SavedVariables["overrideMMImport"] = internal.defaults.overrideMMImport end
-  if LibGuildStore_SavedVariables["historyDepthSL"] == nil then LibGuildStore_SavedVariables["historyDepthSL"] = internal.defaults.historyDepthSL end
+  SetNamespace()
+  local systemDefault          = {
+    version = 2,
+    firstRunEu = false,
+    firstRunNa = false,
+    lastReceivedEventID = {},
+    historyDepthSL = 180,
+    minimalIndexing = false,
+    historyDepth = 90,
+    minItemCount = 20,
+    maxItemCount = 5000,
+    showIndexingSummary = false,
+    showTruncateSummary = false,
+    showGuildInitSummary = false,
+    useSalesHistory = true,
+    overrideMMImport = false,
+    updateAdditionalText = false,
+  }
+  internal.systemDefault = systemDefault
+  local sv = LibGuildStore_SavedVariables
+  for key, val in pairs(sv) do
+    -- Delete key-value pair if the key can't also be found in the default settings (except for version)
+    if ( key ~= "lastReceivedEventID" and key ~= "version" ) and systemDefault[key] == nil then
+      sv[key] = nil
+    end
+  end
+
+  for key, val in pairs(systemDefault) do
+    if LibGuildStore_SavedVariables[key] == nil then LibGuildStore_SavedVariables[key] = val end
+  end
+  -- for some reason the above loop does not assign the empty table
+  for guildNum = 1, GetNumGuilds() do
+    local guildId                                                = GetGuildId(guildNum)
+    if LibGuildStore_SavedVariables["lastReceivedEventID"] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"] = {} end
+    if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] = {} end
+    if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0" end
+  end
+
+    -- TODO Check historyDepth is only set once on first run
+  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
+    internal:dm("Debug", "Checked Old MM Settings")
+    LibGuildStore_SavedVariables["historyDepth"] = math.max(MasterMerchant.systemSavedVariables.historyDepth,
+      LibGuildStore_SavedVariables["historyDepth"])
+    LibGuildStore_SavedVariables["minItemCount"] = math.max(MasterMerchant.systemSavedVariables.minItemCount,
+      LibGuildStore_SavedVariables["minItemCount"])
+    LibGuildStore_SavedVariables["maxItemCount"] = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
+      LibGuildStore_SavedVariables["maxItemCount"])
+  end
 
   --cleanup old vars and this can be removed for production
   GS17DataSavedVariables["purchases"] = nil
@@ -195,8 +239,6 @@ internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
   if GS17DataSavedVariables["namefiltereu"] == nil then GS17DataSavedVariables["namefiltereu"] = {} end
 
   SetupLibHistoireContainers()
-  SetNamespace()
-
   SetupLibGuildStore()
 end
 
@@ -267,7 +309,6 @@ local function Initilizze()
     local guildId   = GetGuildId(i)
     local guildName = GetGuildName(guildId)
     internal.currentGuilds[guildId] = guildName
-    if not LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] then LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] = "0" end
     internal.alertQueue[guildName] = {}
     for m = 1, GetNumGuildMembers(guildId) do
       local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildId, m)

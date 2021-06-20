@@ -1891,7 +1891,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
         local graph = tooltip.mmGraph
 
         if not graph.points then
-          graph.points = MM_Graph:New(graph)
+          graph.points = MM_Graph:New(graph, "MM_Point")
         end
         if graphInfo.low == graphInfo.high then
           graphInfo.low  = statsInfo.avgPrice * 0.85
@@ -2153,7 +2153,10 @@ function MasterMerchant:addStatsItemTooltip()
     mocParent == 'ZO_CompanionCharacterWindow_Keyboard_TopLevel' then
     itemLink = GetItemLink(skMoc.bagId, skMoc.slotIndex)
     -- Loot window if autoloot is disabled
-  elseif mocParent == 'ZO_LootAlphaContainerListContents' then itemLink = GetLootItemLink(skMoc.dataEntry.data.lootId)
+  elseif mocParent == 'ZO_LootAlphaContainerListContents' then
+		if not skMoc.dataEntry then return end
+		local data = skMoc.dataEntry.data
+		itemLink = GetLootItemLink(data.lootId, LINK_STYLE_BRACKETS)
   elseif mocParent == 'ZO_MailInboxMessageAttachments' then itemLink = GetAttachedItemLink(MAIL_INBOX:GetOpenMailId(),
     skMoc.id, LINK_STYLE_DEFAULT)
   elseif mocParent == 'ZO_MailSendAttachments' then itemLink = GetMailQueuedAttachmentLink(skMoc.id, LINK_STYLE_DEFAULT)

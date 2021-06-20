@@ -104,3 +104,8 @@ ZO_CreateStringId("GS_CLEANING_STRINGS_CONVERTED", '  %s events with numbers con
 ZO_CreateStringId("GS_CLEANING_BAD_ITEMLINKS", '  %s bad item links removed')
 ZO_CreateStringId("GS_RESET_CONFIRM_TITLE", "Confirm Reset")
 ZO_CreateStringId("GS_RESET_CONFIRM_MAIN", "Are you sure you wish to reset your sales history? You will need to refresh your LibHistoire data.")
+
+ZO_CreateStringId("GS_REFRESH_NOT_FINISHED", "LibGuildStore Refresh Not Finished Yet")
+ZO_CreateStringId("GS_REFRESH_FINISHED", "LibGuildStore Refresh Not Finished Yet")
+ZO_CreateStringId("GS_REFRESH_STARTING", "Starting LibGuildStore Refresh")
+

@@ -6,7 +6,7 @@ function MM_Graph:New(control, pointTemplate, labelTemplate)
 
   graph.control   = control
 
-  pointTemplate   = "MM_Point"
+  pointTemplate   = pointTemplate or "MM_Point"
   labelTemplate   = labelTemplate or "MMGraphLabel"
 
   graph.pointPool = ZO_ControlPool:New(pointTemplate, control, "Point")

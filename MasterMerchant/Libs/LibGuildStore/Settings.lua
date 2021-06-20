@@ -2,11 +2,6 @@ local lib           = _G["LibGuildStore"]
 local internal      = _G["LibGuildStore_Internal"]
 local LAM           = LibAddonMenu2
 
-function internal:StartQueue()
-  internal:dm("Debug", "StartQueue")
-  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
-end
-
 function internal:LibAddonInit()
   internal:dm("Debug", "LibGuildStore LAM Init")
   local panelData = {

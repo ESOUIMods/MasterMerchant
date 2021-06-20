@@ -318,16 +318,16 @@ function internal:SetupListener(guildId)
   -- listener
   internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
   local lastReceivedEventID
-  if LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] then
-    --internal:dm("Info", string.format("internal Saved Var: %s, guildId: (%s)", LibGuildStore_SavedVariables["lastReceivedEventID"][guildId], guildId))
-    lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][guildId])
+  if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] then
+    --internal:dm("Info", string.format("internal Saved Var: %s, guildId: (%s)", LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId], guildId))
+    lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId])
     --internal:dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
     internal.LibHistoireListener[guildId]:SetAfterEventId(lastReceivedEventID)
   end
   internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
     if eventType == GUILD_EVENT_ITEM_SOLD then
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
-        LibGuildStore_SavedVariables["lastReceivedEventID"][guildId] = Id64ToString(eventId)
+        LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = Id64ToString(eventId)
         lastReceivedEventID                                          = eventId
       end
       local guildName           = GetGuildName(guildId)
@@ -457,7 +457,7 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
     --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
     if not MasterMerchant.isInitialized then
-      internal:dm("Info", "LibGuildStore not initialized. Information will not be refreshed.")
+      internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
       return
     end
     MasterMerchant.purchasesScrollList:RefreshFilters()
@@ -500,7 +500,7 @@ function internal:processAwesomeGuildStore(itemDatabase, guildId)
     end
   end
   if not MasterMerchant.isInitialized then
-      internal:dm("Info", "LibGuildStore not initialized. Information will not be refreshed.")
+      internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
     return
   end
   MasterMerchant.listingsScrollList:RefreshFilters()

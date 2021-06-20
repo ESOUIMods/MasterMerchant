@@ -231,7 +231,7 @@ end
 
 -- Renew extra Sales data if list was altered
 function internal:RenewExtraSalesDataAllContainers()
-  internal:dm("Debug", "Add new data to LibGuildStore concatanated data array")
+  internal:dm("Debug", "RenewExtraSalesDataAllContainers")
   internal:RenewExtraSalesData(GS00DataSavedVariables)
   internal:RenewExtraSalesData(GS01DataSavedVariables)
   internal:RenewExtraSalesData(GS02DataSavedVariables)
@@ -252,7 +252,7 @@ end
 
 -- Add new Sales data to concatanated data array
 function internal:AddExtraSalesDataAllContainers()
-  internal:dm("Debug", "Add new data to concatanated data array")
+  internal:dm("Debug", "AddExtraSalesDataAllContainers")
   internal:AddExtraSalesData(GS00DataSavedVariables)
   internal:AddExtraSalesData(GS01DataSavedVariables)
   internal:AddExtraSalesData(GS02DataSavedVariables)
@@ -273,7 +273,7 @@ end
 
 -- Add new Listings data to concatanated data array
 function internal:AddExtraListingsDataAllContainers()
-  internal:dm("Debug", "Add new data to concatanated data array")
+  internal:dm("Debug", "AddExtraListingsDataAllContainers")
   internal:AddExtraListingsData(GS00DataSavedVariables)
   internal:AddExtraListingsData(GS01DataSavedVariables)
   internal:AddExtraListingsData(GS02DataSavedVariables)
@@ -294,7 +294,7 @@ end
 
 -- Renew extra Listings data if list was altered
 function internal:RenewExtraListingsDataAllContainers()
-  internal:dm("Debug", "Add new data to LibGuildStore concatanated data array")
+  internal:dm("Debug", "RenewExtraListingsDataAllContainers")
   internal:RenewExtraListingsData(GS00DataSavedVariables)
   internal:RenewExtraListingsData(GS01DataSavedVariables)
   internal:RenewExtraListingsData(GS02DataSavedVariables)

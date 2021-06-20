@@ -43,10 +43,10 @@ local function create_log(log_type, log_content)
     CHAT_ROUTER:AddSystemMessage(log_content)
     return
   end
-  if not internal.logger then return end
   if log_type == "Debug" then
     internal.logger:Debug(log_content)
   end
+  if not internal.logger then return end
   if log_type == "Info" then
     internal.logger:Info(log_content)
   end
@@ -181,12 +181,16 @@ internal.listedSellers           = nil
 
 internal.GS_NA_NAMESPACE          = "datana"
 internal.GS_EU_NAMESPACE          = "dataeu"
+internal.GS_NA_LIBHISTOIRE_NAMESPACE = "libhistoirena"
+internal.GS_EU_LIBHISTOIRE_NAMESPACE = "libhistoireeu"
 internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
 internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
 internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
 internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
 internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
 internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
+internal.GS_NA_FIRST_RUN_NAMESPACE = "firstRunNa"
+internal.GS_EU_FIRST_RUN_NAMESPACE = "firstRunEu"
 
 internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
 internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
@@ -211,6 +215,7 @@ internal.dataToReset             = ""
 internal.listingsToReset         = ""
 
 internal.dataNamespace           = ""
+internal.libHistoireNamespace    = ""
 internal.listingsNamespace       = ""
 internal.purchasesNamespace      = ""
 internal.firstrunNamespace       = ""

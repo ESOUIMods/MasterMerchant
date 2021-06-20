@@ -379,3 +379,6 @@ ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
 ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")
 ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
 ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")
+
+ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore not initialized. Information will not be refreshed.")
+
