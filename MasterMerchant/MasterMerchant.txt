@@ -5,12 +5,12 @@
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
 
-## Title: Master Merchant 3.6.31 by Sharlikran
+## Title: Master Merchant 3.6.32 by Sharlikran
 ## APIVersion: 100034 100035
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Philgo68, Khaibit, dOpiate, Garkin, Sharlikran
-## Version: 3.6.31
-## AddOnVersion: 3631
+## Version: 3.6.32
+## AddOnVersion: 3632
 ## License: See license - distribution without license is prohibited!
 ## LastUpdated: Mar 2021
 ## SavedVariables: ShopkeeperSavedVars
