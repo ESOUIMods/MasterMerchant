@@ -1900,7 +1900,10 @@ function MasterMerchant:LibAddonInit()
       name = GetString(MM_GRAPH_INFO_NAME),
       tooltip = GetString(MM_GRAPH_INFO_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.displaySalesDetails end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.displaySalesDetails = value end,
+      setFunc = function(value)
+        MasterMerchant.systemSavedVariables.displaySalesDetails = value
+        MasterMerchant.itemInformationCache = { }
+      end,
       default = MasterMerchant.systemDefault.displaySalesDetails,
     },
     -- Whether or not to show the crafting costs data in tooltips

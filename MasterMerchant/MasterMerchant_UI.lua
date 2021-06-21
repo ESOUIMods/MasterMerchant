@@ -1930,14 +1930,8 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
         -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, x_bonanzaPriceText, x_bonanzaPriceValue)
         graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), endTimeFrameText, xLow, xHigh,
           graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, xBonanza, statsInfo.bonanzaPrice)
-        if MasterMerchant.systemSavedVariables.displaySalesDetails then
-          for _, point in ipairs(graphInfo.points) do
-            graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
-          end
-        else
-          for _, point in ipairs(graphInfo.points) do
-            graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
-          end
+        for _, point in ipairs(graphInfo.points) do
+          graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
         end
 
       end
