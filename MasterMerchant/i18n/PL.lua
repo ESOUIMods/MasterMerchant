@@ -250,8 +250,8 @@ ZO_CreateStringId("MM_GRAPH_TIP", "W %s %s sprzedano %s x %d do %s za %s sztukę
 ZO_CreateStringId("MM_GRAPH_TIP_SINGLE", "W %s %s sprzedano %s do %s za %s.")
 ZO_CreateStringId("MM_NO_DATA_DEAL_NAME", "Ocena transakcji bez danych")
 ZO_CreateStringId("MM_NO_DATA_DEAL_TIP", "Ocena transakcji dla przedmiotu bez historii sprzedaży.")
-ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Podpowiedzi na punktach wykresu")
-ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Wyświetl wskazówki z informacjami o sprzedaży dla punktów wykresu.")
+ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Szczegółowe informacje na punktach wykresu")
+ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Włączony wyświetla informacje o czasie, gildii, kupującym, sprzedającym i cenach. Wyłączone pokaże indywidualną cenę punktu wykresu.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Przyciski wyboru poziomu/jakości")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Wyświetl przyciski w wyskakującym oknie przedmiotu aby wybrać poziom/jakość.")
 

@@ -250,8 +250,8 @@ ZO_CreateStringId("MM_GRAPH_TIP", "Im %s %s verkauft %s x %d zu %s zum %s jeder.
 ZO_CreateStringId("MM_GRAPH_TIP_SINGLE", "Im %s %s verkauft a %s zu %s zum %s.")
 ZO_CreateStringId("MM_NO_DATA_DEAL_NAME", "Keine Daten Deal Rating")
 ZO_CreateStringId("MM_NO_DATA_DEAL_TIP", "Die Geschäftsbewertung für einen Artikel ohne Verkaufshistorie.")
-ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Tipps zu Grafikpunkten")
-ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Zeigen Sie QuickInfos zu Verkaufsinformationen für Diagrammpunkte an.")
+ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Ausführliche Informationen zu Diagrammpunkten")
+ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Aktiviert zeigt Zeit, Gilde, Käufer, Verkäufer und Preisinformationen an. Deaktiviert zeigt den individuellen Preis des Diagrammpunkts an.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Level- / Qualitätswähler")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Anzeigen von Schaltflächen im Element-Popup zum Anpassen von Stufe / Qualität.")
 

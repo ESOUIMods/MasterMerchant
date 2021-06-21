@@ -1936,7 +1936,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
           end
         else
           for _, point in ipairs(graphInfo.points) do
-            graph.points:AddPoint(point[1], point[2], point[3], nil, point[5])
+            graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
           end
         end
 

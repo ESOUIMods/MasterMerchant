@@ -484,11 +484,13 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
                   string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
                     zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
               end
-            end -- clickable
+            else -- clickable
+              tooltip = MasterMerchant.LocalizedNumber(individualSale) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+            end
             table.insert(salesPoints,
               { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, currentSeller })
           end -- end skip dots
-        end -- end new loop
+        end -- end for loop on list
         if timeInterval > ZO_ONE_DAY_IN_SECONDS then
           avgPrice = avgPrice / weigtedCountSold
         else

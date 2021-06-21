@@ -249,8 +249,8 @@ ZO_CreateStringId("MM_GRAPH_TIP", "Em %s %s vendeu %s x %d para %s por %s each."
 ZO_CreateStringId("MM_GRAPH_TIP_SINGLE", "Em %s %s vendeu um %s para %s por %s.")
 ZO_CreateStringId("MM_NO_DATA_DEAL_NAME", "Não há dados para avaliar")
 ZO_CreateStringId("MM_NO_DATA_DEAL_TIP", "A clssificação de um item sem histórico de vendas.")
-ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Dicas nos Pontos do Gráfico")
-ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Mostra dicas de informações de vendas nos pontos do gráfico.")
+ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Informações detalhadas nos pontos do gráfico")
+ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Enabled exibirá informações de hora, guilda, comprador, vendedor e preço. Desativado mostrará o preço individual do ponto do gráfico.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Seletores de Nível/Qualidade")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Mostra botões no popup do item para ajustar nível/qualidade.")
 
