@@ -555,6 +555,8 @@ function internal:addTraderInfo(guildId, guildName)
   -- GetUnitZone("player") Grahtwood
   -- GetMapName() Grahtwood
   -- GetPlayerLocationName() Southpoint in Grahtwood
+  local interactTypeKiosk = IsUnitGuildKiosk("interact")
+  if not interactTypeKiosk then return end
 
   local zoneName = GetPlayerActiveZoneName()
   local subzoneName = GetPlayerActiveSubzoneName()
