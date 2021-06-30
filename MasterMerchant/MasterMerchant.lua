@@ -1087,7 +1087,7 @@ function MasterMerchant:onItemActionLinkStatsLink(itemLink)
     end
   end
   if not bonanzaTipline then
-    bonanzaTipline = GetString(MM_BONANZATIP_FORMAT_NONE)
+    bonanzaTipline = ""
   end
   local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
   if (not ChatEditControl:HasFocus()) then StartChatInput() end
