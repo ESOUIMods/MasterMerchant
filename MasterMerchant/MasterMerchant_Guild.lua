@@ -134,6 +134,7 @@ function MMGuild:new(_name)
   o.kiosk_cycle       = 0
   o.week_start        = 0
 
+  -- /script MasterMerchant:dm("Info", { GetGuildKioskCycleTimes() } )
   -- Calc Guild Week Cutoff
   local _, weekCutoff = GetGuildKioskCycleTimes()
   if weekCutoff == 0 then
