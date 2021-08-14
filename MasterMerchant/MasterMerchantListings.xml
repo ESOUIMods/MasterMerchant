@@ -90,6 +90,7 @@
                         mouseOver="/esoui/art/hud/radialicon_cancel_over.dds"/>
               <OnClicked>
                 MasterMerchant:ActiveWindow():SetHidden(true)
+                MasterMerchant:ToggleMasterMerchantFilterWindows()
               </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_CLOSE_TOOLTIP))

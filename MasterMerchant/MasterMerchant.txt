@@ -41,6 +41,7 @@ MasterMerchant_GuildListings.lua
 MasterMerchant_ItemNameFilter.lua
 i18n\en.lua
 i18n\$(language).lua
+MasterMerchantFilters.lua
 MasterMerchant.lua
 MasterMerchant_Alias.lua
 bindings.xml
