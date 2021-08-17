@@ -374,6 +374,13 @@ function MasterMerchant:ResetFilters()
 end
 
 function MasterMerchant:UpdateFilterState(control, filterType)
+  local function filtersCleared()
+    for key, value in pairs(MasterMerchant.filterTypes) do
+      if value.filterActive then return false end
+    end
+    return true
+  end
+
   if not MasterMerchant.filterTypes[filterType].filterActive then MasterMerchant.filterTypes[filterType].filterActive = false end
   local recipeToggleFilter = filterType == MM_RECIPE_MOTIF_KNOWN or filterType == MM_RECIPE_MOTIF_UNKNOWN
   if recipeToggleFilter then
@@ -383,12 +390,12 @@ function MasterMerchant:UpdateFilterState(control, filterType)
     if filterType == MM_RECIPE_MOTIF_UNKNOWN then
       MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].filterActive = not MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].filterActive
     end
-    if filterType == MM_RECIPE_MOTIF_KNOWN and  MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].filterActive then
+    if filterType == MM_RECIPE_MOTIF_KNOWN and MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].filterActive then
       MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].filterActive = false
       button = MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].button
       button:SetNormalTexture(MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].up)
     end
-    if filterType == MM_RECIPE_MOTIF_UNKNOWN and  MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].filterActive then
+    if filterType == MM_RECIPE_MOTIF_UNKNOWN and MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].filterActive then
       MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].filterActive = false
       button = MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].button
       button:SetNormalTexture(MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].up)
@@ -408,6 +415,7 @@ function MasterMerchant:UpdateFilterState(control, filterType)
   if filterType ~= MM_RECIPE_MOTIF_KNOWN and filterType ~= MM_RECIPE_MOTIF_UNKNOWN then
     MasterMerchant.filterTypes[MM_ITEM_TYPE_ALL].filterActive = false
   end
+  if filtersCleared() then MasterMerchant.filterTypes[MM_ITEM_TYPE_ALL].filterActive = true end
   MasterMerchant.listingsScrollList:RefreshFilters()
 end
 
@@ -776,32 +784,32 @@ function MasterMerchant:IsItemLinkKnownUnknown(itemLink, debugLink)
     end
   end
   return known
---[[
-  special case when the itemType is something you can learn like
-  a Recipe or Motif, or a Collectible you can aquire
+  --[[
+    special case when the itemType is something you can learn like
+    a Recipe or Motif, or a Collectible you can aquire
 
-  returns the vanilla ItemType and True or False if known for subfilterOut
-  if itemType == ITEMTYPE_RECIPE then
-    filterType = itemType
-    subfilterOut = IsItemLinkRecipeKnown(itemLink)
-  end
-  if itemType == ITEMTYPE_RACIAL_STYLE_MOTIF then
-    filterType = itemType
-    subfilterOut = IsItemLinkBookKnown(itemLink)
-  end
-  -- ITEMTYPE_COLLECTIBLE
-  if MasterMerchant:IsItemLinkLearnedCollectible(specializedItemType) then
-    local containerCollectibleId = GetItemLinkContainerCollectibleId(itemLink)
-    local isValidForPlayer = IsCollectibleValidForPlayer(containerCollectibleId)
-    if isValidForPlayer then
+    returns the vanilla ItemType and True or False if known for subfilterOut
+    if itemType == ITEMTYPE_RECIPE then
       filterType = itemType
-      subfilterOut = IsCollectibleUnlocked(containerCollectibleId)
-    else
-      filterType = MM_ITEM_TYPE_MISCELLANEOUS
-      subfilterOut = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY
+      subfilterOut = IsItemLinkRecipeKnown(itemLink)
     end
-  end
-]]--
+    if itemType == ITEMTYPE_RACIAL_STYLE_MOTIF then
+      filterType = itemType
+      subfilterOut = IsItemLinkBookKnown(itemLink)
+    end
+    -- ITEMTYPE_COLLECTIBLE
+    if MasterMerchant:IsItemLinkLearnedCollectible(specializedItemType) then
+      local containerCollectibleId = GetItemLinkContainerCollectibleId(itemLink)
+      local isValidForPlayer = IsCollectibleValidForPlayer(containerCollectibleId)
+      if isValidForPlayer then
+        filterType = itemType
+        subfilterOut = IsCollectibleUnlocked(containerCollectibleId)
+      else
+        filterType = MM_ITEM_TYPE_MISCELLANEOUS
+        subfilterOut = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY
+      end
+    end
+  ]]--
 end
 
 function MasterMerchant:IsItemLinkLearnable(itemLink, debugLink)
@@ -813,6 +821,15 @@ function MasterMerchant:IsItemLinkLearnable(itemLink, debugLink)
   return false
 end
 
+--[[
+/script LibGuildStore_Internal:dm("Info", {MasterMerchant:GetItemLinkItemType("|H1:item:175565:124:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true)})
+
+/script LibGuildStore_Internal:dm("Info", MasterMerchant:IsItemLinkFiltered("|H1:item:171741:124:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true))
+
+/script LibGuildStore_Internal:dm("Info", MasterMerchant:IsItemLinkFiltered("|H1:item:171290:124:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true))
+
+/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal:AddSearchToItem("|H0:item:97217:362:50:0:0:0:0:0:0:0:0:0:0:0:0:6:0:0:0:0:0|h|h"))
+]]--
 function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
   local itemType, specializedItemType = MasterMerchant:GetItemLinkItemType(itemLink)
   local knownFilterActive = MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].filterActive
@@ -839,8 +856,8 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
     internal:dm("Info", "isLearnable")
     internal:dm("Info", isLearnable)
     if isKnown ~= nil then
-    internal:dm("Info", "isKnown")
-    internal:dm("Info", isKnown)
+      internal:dm("Info", "isKnown")
+      internal:dm("Info", isKnown)
     end
   end
 
@@ -851,13 +868,13 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
     if isLearnable and showAll and isKnown and not unknownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey Show All is active, a recipe toggle is active, I know this but  the unknown filter is not active")
     end
-    if isLearnable and showAll and isKnown and unknownFilterActive and isKnowToggleActive  then
+    if isLearnable and showAll and isKnown and unknownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey Show All is active, a recipe toggle is active, I know this but  the unknown filter is ACTIVE")
     end
-    if isLearnable and showAll  and not isKnown and not knownFilterActive and isKnowToggleActive  then
+    if isLearnable and showAll and not isKnown and not knownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey Show All is active, a recipe toggle is active, I do not know this but  the known filter is not active")
     end
-    if isLearnable and showAll  and not isKnown and knownFilterActive and isKnowToggleActive  then
+    if isLearnable and showAll and not isKnown and knownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey Show All is active, a recipe toggle is active, I do not know this but  the known filter is ACTIVE")
     end
     -------------------------------------------------
@@ -866,13 +883,13 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
     if isLearnable and typeFilterActive and isKnown and not unknownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey the type filter is active, the type filter is a recipe toggle is active, I know this but  the unknown filter is not active")
     end
-    if isLearnable and typeFilterActive and isKnown and unknownFilterActive and isKnowToggleActive  then
+    if isLearnable and typeFilterActive and isKnown and unknownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey the type filter is active, a recipe toggle is active, I know this but  the unknown filter is ACTIVE")
     end
-    if isLearnable and typeFilterActive  and not isKnown and not knownFilterActive and isKnowToggleActive  then
+    if isLearnable and typeFilterActive and not isKnown and not knownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey the type filter is active, a recipe toggle is active, I do not know this but  the known filter is not active")
     end
-    if isLearnable and typeFilterActive  and not isKnown and knownFilterActive and isKnowToggleActive  then
+    if isLearnable and typeFilterActive and not isKnown and knownFilterActive and isKnowToggleActive then
       internal:dm("Info", "hey the type filter is active, a recipe toggle is active, I do not know this but  the known filter is ACTIVE")
     end
 
@@ -886,9 +903,9 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
     end
   end
 
--------------------------------------------------
------ Show All                                        -----
--------------------------------------------------
+  -------------------------------------------------
+  ----- Show All                                        -----
+  -------------------------------------------------
   if debugLink then
     internal:dm("Info", "step 1")
   end
@@ -905,7 +922,7 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
   if debugLink then
     internal:dm("Info", "step 3")
   end
-  if isLearnable and showAll  and not isKnown and not knownFilterActive and isKnowToggleActive then
+  if isLearnable and showAll and not isKnown and not knownFilterActive and isKnowToggleActive then
     return true
   end
   if debugLink then
@@ -915,10 +932,10 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
     return false
   end
 
--------------------------------------------------
------ Active Filter                                   -----
--------------------------------------------------
-if debugLink then
+  -------------------------------------------------
+  ----- Active Filter                                   -----
+  -------------------------------------------------
+  if debugLink then
     internal:dm("Info", "step A")
   end
   if isLearnable and typeFilterActive and isKnown and not unknownFilterActive and isKnowToggleActive then
@@ -934,7 +951,7 @@ if debugLink then
   if debugLink then
     internal:dm("Info", "step C")
   end
-  if isLearnable and typeFilterActive  and not isKnown and not knownFilterActive and isKnowToggleActive then
+  if isLearnable and typeFilterActive and not isKnown and not knownFilterActive and isKnowToggleActive then
     return true
   end
   if debugLink then
@@ -944,9 +961,9 @@ if debugLink then
     return false
   end
 
--------------------------------------------------
------ Exiting                                            -----
--------------------------------------------------
+  -------------------------------------------------
+  ----- Exiting                                            -----
+  -------------------------------------------------
   if debugLink then
     internal:dm("Info", "step 5")
   end

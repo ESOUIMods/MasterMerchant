@@ -1224,7 +1224,7 @@ function MMScrollList:FilterScrollList()
               local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
               local isFiltered = MasterMerchant:IsItemLinkFiltered(itemLink)
               if not saveData[itemName] and isFiltered then
-                  table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
           end
