@@ -17,6 +17,7 @@
       </OnMoveStop>
       <OnShow>
         MasterMerchant:RefreshWindowData("guild_vm")
+        SetGameCameraUIMode(true)
       </OnShow>
       <Controls>
         <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>

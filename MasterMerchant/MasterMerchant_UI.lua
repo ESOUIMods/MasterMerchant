@@ -2416,7 +2416,6 @@ function MasterMerchant:RefreshWindowData(viewMode)
       self.purchasesScrollList:RefreshData()
     end
   end
-  SetGameCameraUIMode(true)
 end
 
 function MasterMerchant:SwitchToMasterMerchantSalesView()
