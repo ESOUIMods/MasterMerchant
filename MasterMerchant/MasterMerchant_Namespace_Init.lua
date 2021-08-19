@@ -132,15 +132,15 @@ end
 ----- MasterMerchant Constants              -----
 -------------------------------------------------
 
-MasterMerchant.personalSalesViewMode = 'self_vm'
-MasterMerchant.guildSalesViewMode    = 'guild_vm'
-MasterMerchant.listingsViewMode      = 'listings_vm'
-MasterMerchant.purchasesViewMode     = 'purchases_vm'
-
 MasterMerchant.itemsViewSize         = 'items_vs'
 MasterMerchant.guildsViewSize        = 'guild_vs'
 MasterMerchant.listingsViewSize      = 'listings_vs'
 MasterMerchant.purchasesViewSize     = 'purchases_vs'
+
+MasterMerchant.personalSalesViewMode = 'self_vm'
+MasterMerchant.guildSalesViewMode    = 'guild_vm'
+MasterMerchant.listingsViewMode      = 'listings_vm'
+MasterMerchant.purchasesViewMode     = 'purchases_vm'
 
 -- default is self
 MasterMerchant.viewMode            = MasterMerchant.personalSalesViewMode
@@ -159,10 +159,15 @@ else
   MasterMerchant.AwesomeGuildStoreDetected = false -- added 12-2
 end
 
--- We do 'lazy' updates on the scroll lists, this is used to
--- mark whether we need to RefreshData() before showing
--- ITEMS, GUILDS, LISTINGS, PURCHASES
-MasterMerchant.listIsDirty                   = { [MasterMerchant.personalSalesViewMode] = false, [MasterMerchant.guildSalesViewMode] = false, [MasterMerchant.listingsViewMode] = false, [MasterMerchant.purchasesViewMode] = false }
+--[[ We do 'lazy' updates on the scroll lists, this is used to
+  mark whether we need to RefreshData() before showing
+  this is the view mode not the view size
+  ITEMS, GUILDS, LISTINGS, PURCHASES
+
+  example in 2.2.0 the view mode for personal sales was "self"
+  in 3.x it is 'self_vm'
+]]--
+MasterMerchant.listIsDirty = { [MasterMerchant.personalSalesViewMode] = false, [MasterMerchant.guildSalesViewMode] = false, [MasterMerchant.listingsViewMode] = false, [MasterMerchant.purchasesViewMode] = false }
 MasterMerchant.scrollList                    = nil
 MasterMerchant.guildScrollList               = nil
 MasterMerchant.listingsScrollList            = nil

@@ -6,10 +6,15 @@ local ASYNC                     = LibAsync
 --[[ can nout use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
 ]]--
-local ITEMS                     = 'items_vs'
-local GUILDS                    = 'guild_vs'
-local LISTINGS                  = 'listings_vs'
-local PURCHASES                 = 'purchases_vs'
+local ITEMS = 'items_vs'
+local GUILDS = 'guild_vs'
+local LISTINGS = 'listings_vs'
+local PURCHASES = 'purchases_vs'
+
+local ITEM_VIEW = 'self_vm'
+local GUILD_VIEW = 'guild_vm'
+local LISTINGS_VIEW = 'listings_vm'
+local PURCHASES_VIEW = 'purchases_vm'
 
 function internal:CheckForDuplicateSale(itemLink, eventID)
   --[[ we need to be able to calculate theIID and itemIndex
@@ -160,9 +165,8 @@ function internal:addSalesData(theEvent)
   if isSelfSale then
     guild                            = internal.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
     internal.myItems[theEvent.guild] = guild;
-    guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
-      adderDescConcat)
-    MasterMerchant.listIsDirty[ITEMS] = true
+    guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+    MasterMerchant.listIsDirty[ITEM_VIEW] = true
   end
 
   local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
@@ -191,8 +195,6 @@ function internal:addSalesData(theEvent)
     if sr_index[i] == nil then sr_index[i] = {} end
     table.insert(sr_index[i], wordData)
   end
-
-  MasterMerchant.listIsDirty[GUILDS]   = true
 
   MasterMerchant:ClearItemCacheById(theIID, itemIndex)
 

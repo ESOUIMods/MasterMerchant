@@ -14,10 +14,18 @@ local listings_data             = _G["LibGuildStore_ListingsData"]
 
 local OriginalSetupPendingPost
 
-local ITEMS                     = MasterMerchant.itemsViewSize
-local GUILDS                    = MasterMerchant.guildsViewSize
-local LISTINGS                  = MasterMerchant.listingsViewSize
-local PURCHASES                 = MasterMerchant.purchasesViewSize
+--[[ can nout use MasterMerchant.itemsViewSize for example
+because that will not be available this early.
+]]--
+local ITEMS = 'items_vs'
+local GUILDS = 'guild_vs'
+local LISTINGS = 'listings_vs'
+local PURCHASES = 'purchases_vs'
+
+local ITEM_VIEW = 'self_vm'
+local GUILD_VIEW = 'guild_vm'
+local LISTINGS_VIEW = 'listings_vm'
+local PURCHASES_VIEW = 'purchases_vm'
 
 CSA_EVENT_SMALL_TEXT            = 1
 CSA_EVENT_LARGE_TEXT            = 2
@@ -1550,10 +1558,10 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.showFullPrice end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.showFullPrice = value
-        MasterMerchant.listIsDirty[ITEMS]                 = true
-        MasterMerchant.listIsDirty[GUILDS]                = true
-        MasterMerchant.listIsDirty[LISTINGS]              = true
-        MasterMerchant.listIsDirty[PURCHASES]             = true
+        MasterMerchant.listIsDirty[ITEM_VIEW]                 = true
+        MasterMerchant.listIsDirty[GUILD_VIEW]                = true
+        MasterMerchant.listIsDirty[LISTINGS_VIEW]              = true
+        MasterMerchant.listIsDirty[PURCHASES_VIEW]             = true
       end,
       default = MasterMerchant.systemDefault.showFullPrice,
     },
@@ -2177,40 +2185,6 @@ function MasterMerchant:ExportSalesData()
     end
   end
 
-end
-
--- We only have to refresh scroll list data if the window is actually visible; methods
--- to show these windows refresh data before display
-function MasterMerchant:RefreshMasterMerchantWindow()
-  local currentView = MasterMerchant.systemSavedVariables.viewSize
-  if currentView == ITEMS then
-    if not MasterMerchantWindow:IsHidden() and not internal.isDatabaseBusy then
-      self.scrollList:RefreshData()
-    else
-      self.listIsDirty[ITEMS] = true
-    end
-    self.listIsDirty[GUILDS] = true
-  elseif currentView == GUILDS then
-    if not MasterMerchantGuildWindow:IsHidden() and not internal.isDatabaseBusy then
-      self.guildScrollList:RefreshData()
-    else
-      self.listIsDirty[GUILDS] = true
-    end
-    self.listIsDirty[ITEMS] = true
-  elseif currentView == LISTINGS then
-    if not MasterMerchantListingWindow:IsHidden() and not internal.isDatabaseBusy then
-      self.listingsScrollList:RefreshData()
-    else
-      self.listIsDirty[LISTINGS] = true
-    end
-  elseif currentView == PURCHASES then
-    if not MasterMerchantPurchaseWindow:IsHidden() and not internal.isDatabaseBusy then
-      self.purchasesScrollList:RefreshData()
-    else
-      self.listIsDirty[PURCHASES] = true
-    end
-  else
-  end
 end
 
 -- Called after store scans complete, re-creates indexes if need be,
@@ -3250,6 +3224,21 @@ function MasterMerchant:Initialize()
     originalCall(control, slot)
     self:SwitchPrice(control, slot)
   end
+
+  --[[ the scroll list may not be dirty, or have any new data however
+  new routines look to see if the data has changed. If no change has
+  been made then refresh doesn't occur.
+
+  This is a problem when the MM window is opened for the first time
+  because the global var might be false so no data is displayed
+
+  This will be reset once the user chooses a mode such as sales,
+  purchaces, or listings
+  ]]--
+  MasterMerchant.listIsDirty[ITEM_VIEW]                 = true
+  MasterMerchant.listIsDirty[GUILD_VIEW]                = true
+  MasterMerchant.listIsDirty[LISTINGS_VIEW]              = true
+  MasterMerchant.listIsDirty[PURCHASES_VIEW]             = true
 
   --[[
   Order of events:

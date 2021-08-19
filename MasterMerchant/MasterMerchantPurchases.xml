@@ -16,11 +16,7 @@
         MasterMerchant:OnWindowMoveStop(self)
       </OnMoveStop>
       <OnShow>
-        if MasterMerchant.listIsDirty["purchases_vm"] then
-        MasterMerchant.purchasesScrollList:RefreshData()
-        MasterMerchant.listIsDirty["purchases_vm"] = false
-        end
-        SetGameCameraUIMode(true)
+        MasterMerchant:RefreshWindowData("purchases_vm")
       </OnShow>
       <Controls>
         <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>

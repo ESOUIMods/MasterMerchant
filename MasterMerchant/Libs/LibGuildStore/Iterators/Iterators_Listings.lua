@@ -91,6 +91,18 @@ function internal:addListingData(theEvent)
     listings_data[theIID][itemIndex].totalCount = 1
   end
 
+  -- this section adds the sales to the lists for the MM window
+  local guild
+  local adderDescConcat                    = searchItemDesc .. ' ' .. searchItemAdderText
+
+  guild                               = internal.listedItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+  internal.listedItems[theEvent.guild] = guild
+  guild:addPurchaseByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+
+  guild                               = internal.listedSellers[theEvent.guild] or MMGuild:new(theEvent.guild)
+  internal.listedSellers[theEvent.guild] = guild
+  guild:addPurchaseByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
+
   local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', }
   local searchText = ""
   -- if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
@@ -408,18 +420,15 @@ function internal:InitListingHistory()
       internal.listedItems[currentGuild] = internal.listedItems[currentGuild] or MMGuild:new(currentGuild)
       local guild = internal.listedItems[currentGuild]
       local _, firstsaledata = next(versiondata.sales, nil)
-      local firstsaledataItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK,
-        firstsaledata.itemLink)
-      local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
-        GetItemLinkName(firstsaledataItemLink))
+      local firstsaledataItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, firstsaledata.itemLink)
+      local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
       local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
       local searchData = searchDataDesc .. ' ' .. searchDataAdder
-      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil,
-        searchData)
+      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
 
       internal.listedSellers[currentGuild] = internal.listedSellers[currentGuild] or MMGuild:new(currentGuild)
       local guild = internal.listedSellers[currentGuild]
-      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
+      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, nil)
 
     end
     return false

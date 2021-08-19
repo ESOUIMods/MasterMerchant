@@ -47,7 +47,7 @@ function internal:ImportShoppingList()
     }
     local duplicate = internal:CheckForDuplicatePurchase(theEvent.itemLink, theEvent.id)
     if not duplicate then
-      added = internal:addPurchaseData(theEvent)
+      internal:addPurchaseData(theEvent)
     end
   end
   MasterMerchant.purchasesScrollList:RefreshFilters()
@@ -76,7 +76,7 @@ function internal:ImportMasterMerchantSales()
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
       local duplicate = internal:CheckForDuplicateSale(saledata['itemLink'], saledata['id'])
       if not duplicate then
-        local added = internal:addSalesData(saledata)
+        internal:addSalesData(saledata)
       end
     end
     extraData.totalSales = extraData.totalSales + 1
@@ -133,7 +133,7 @@ function internal:ImportATTSales()
     if (saledata['timestamp'] > daysOfHistoryToKeep) then
       local duplicate = internal:CheckForDuplicateSale(saledata['itemLink'], saledata['id'])
       if not duplicate then
-        local added = internal:addSalesData(saledata)
+        internal:addSalesData(saledata)
       end
     end
     extraData.totalSales = extraData.totalSales + 1
@@ -637,10 +637,9 @@ function internal:ImportATTPurchases()
 
     local duplicate = internal:CheckForDuplicateATTPurchase(theEvent)
     if not duplicate then
-      added = internal:addPurchaseData(theEvent)
+      internal:addPurchaseData(theEvent)
     end
   end
   MasterMerchant.purchasesScrollList:RefreshFilters()
   internal:dm("Info", "ATT Purchase data imported.")
 end
-

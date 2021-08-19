@@ -821,14 +821,24 @@ function MasterMerchant:IsItemLinkLearnable(itemLink, debugLink)
   return false
 end
 
+function MasterMerchant:CollectibleUnlockState(itemLink)
+  return IsItemSetCollectionPieceUnlocked(GetItemLinkItemId(itemLink))
+end
+
+function MasterMerchant:IsItemLinkCollectible(itemLink)
+  return IsItemSetCollectionPieceUnlocked(GetItemLinkItemId(itemLink))
+end
+
 --[[
 /script LibGuildStore_Internal:dm("Info", {MasterMerchant:GetItemLinkItemType("|H1:item:175565:124:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true)})
 
 /script LibGuildStore_Internal:dm("Info", MasterMerchant:IsItemLinkFiltered("|H1:item:171741:124:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true))
 
-/script LibGuildStore_Internal:dm("Info", MasterMerchant:IsItemLinkFiltered("|H1:item:171290:124:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true))
+/script LibGuildStore_Internal:dm("Info", MasterMerchant:IsItemLinkFiltered("|H0:item:10897:358:50:0:0:0:0:0:0:0:0:0:0:0:0:8:0:0:0:10000:0|h|h", true))
 
 /script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal:AddSearchToItem("|H0:item:97217:362:50:0:0:0:0:0:0:0:0:0:0:0:0:6:0:0:0:0:0|h|h"))
+
+/script LibGuildStore_Internal:dm("Info", MasterMerchant:CollectibleUnlockState("|H1:item:45851:21:6:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true))
 ]]--
 function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
   local itemType, specializedItemType = MasterMerchant:GetItemLinkItemType(itemLink)
@@ -838,9 +848,15 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
   local isKnowToggleActive = knownFilterActive or unknownFilterActive
   local showAll = MasterMerchant.filterTypes[MM_ITEM_TYPE_ALL].filterActive
   local typeFilterActive = MasterMerchant.filterTypes[itemType].filterActive
+  local isCollectibleItem = IsItemLinkSetCollectionPiece(itemLink) 
+  local collectible = isCollectibleItem and (itemType == MM_ITEM_TYPE_WEAPON or itemType == MM_ITEM_TYPE_ARMOR or itemType == MM_ITEM_TYPE_JEWELRY)
   local isKnown = nil
+  local isCollected = nil
   if isLearnable then
     isKnown = MasterMerchant:IsItemLinkKnownUnknown(itemLink, debugLink)
+  end
+  if collectible then
+    isCollected = MasterMerchant:CollectibleUnlockState(itemLink)
   end
 
   if debugLink then
@@ -855,6 +871,10 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
     internal:dm("Info", unknownFilterActive)
     internal:dm("Info", "isLearnable")
     internal:dm("Info", isLearnable)
+    if isCollected ~= nil then
+    internal:dm("Info", "isCollected")
+    internal:dm("Info", isCollected)
+    end
     if isKnown ~= nil then
       internal:dm("Info", "isKnown")
       internal:dm("Info", isKnown)
@@ -906,59 +926,90 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
   -------------------------------------------------
   ----- Show All                                        -----
   -------------------------------------------------
-  if debugLink then
-    internal:dm("Info", "step 1")
-  end
-  if isLearnable and showAll and isKnown and not unknownFilterActive and isKnowToggleActive then
-    return true
-  end
-  if debugLink then
-    internal:dm("Info", "step 2")
-  end
-  if isLearnable and showAll and isKnown and unknownFilterActive and isKnowToggleActive then
-    return false
-  end
+  if isKnowToggleActive and isLearnable and showAll then
+    if debugLink then
+      internal:dm("Info", "step 1")
+    end
+    if isKnown and not unknownFilterActive then
+      return true
+    end
+    if debugLink then
+      internal:dm("Info", "step 2")
+    end
+    if isKnown and unknownFilterActive then
+      return false
+    end
 
-  if debugLink then
-    internal:dm("Info", "step 3")
+    if debugLink then
+      internal:dm("Info", "step 3")
+    end
+    if not isKnown and not knownFilterActive then
+      return true
+    end
+    if debugLink then
+      internal:dm("Info", "step 4")
+    end
+    if not isKnown and knownFilterActive then
+      return false
+    end
   end
-  if isLearnable and showAll and not isKnown and not knownFilterActive and isKnowToggleActive then
-    return true
-  end
-  if debugLink then
-    internal:dm("Info", "step 4")
-  end
-  if isLearnable and showAll and not isKnown and knownFilterActive and isKnowToggleActive then
-    return false
-  end
-
   -------------------------------------------------
   ----- Active Filter                                   -----
   -------------------------------------------------
-  if debugLink then
-    internal:dm("Info", "step A")
+  if isKnowToggleActive and isLearnable and typeFilterActive then
+    if debugLink then
+      internal:dm("Info", "step A")
+    end
+    if isKnown and not unknownFilterActive then
+      return true
+    end
+    if debugLink then
+      internal:dm("Info", "step B")
+    end
+    if isKnown and unknownFilterActive then
+      return false
+    end
+    if debugLink then
+      internal:dm("Info", "step C")
+    end
+    if not isKnown and not knownFilterActive then
+      return true
+    end
+    if debugLink then
+      internal:dm("Info", "step D")
+    end
+    if not isKnown and knownFilterActive then
+      return false
+    end
   end
-  if isLearnable and typeFilterActive and isKnown and not unknownFilterActive and isKnowToggleActive then
-    return true
-  end
-  if debugLink then
-    internal:dm("Info", "step B")
-  end
-  if isLearnable and typeFilterActive and isKnown and unknownFilterActive and isKnowToggleActive then
-    return false
-  end
-
-  if debugLink then
-    internal:dm("Info", "step C")
-  end
-  if isLearnable and typeFilterActive and not isKnown and not knownFilterActive and isKnowToggleActive then
-    return true
-  end
-  if debugLink then
-    internal:dm("Info", "step D")
-  end
-  if isLearnable and typeFilterActive and not isKnown and knownFilterActive and isKnowToggleActive then
-    return false
+  -------------------------------------------------
+  ----- Collectable                                   -----
+  -------------------------------------------------
+  if isKnowToggleActive and collectible and typeFilterActive then
+    if debugLink then
+      internal:dm("Info", "step A1")
+    end
+    if isCollected and not unknownFilterActive then
+      return true
+    end
+    if debugLink then
+      internal:dm("Info", "step B2")
+    end
+    if isCollected and unknownFilterActive then
+      return false
+    end
+    if debugLink then
+      internal:dm("Info", "step C3")
+    end
+    if not isCollected and not knownFilterActive then
+      return true
+    end
+    if debugLink then
+      internal:dm("Info", "step D4")
+    end
+    if not isCollected and knownFilterActive then
+      return false
+    end
   end
 
   -------------------------------------------------

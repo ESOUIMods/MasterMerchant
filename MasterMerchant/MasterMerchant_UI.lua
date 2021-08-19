@@ -22,10 +22,18 @@ when viewSize is 'full': then you are viewing the seller information
 when viewSize if 'half': you are viewing the item information
 ]]--
 
-local ITEMS = MasterMerchant.itemsViewSize
-local GUILDS = MasterMerchant.guildsViewSize
-local LISTINGS = MasterMerchant.listingsViewSize
-local PURCHASES = MasterMerchant.purchasesViewSize
+--[[ can nout use MasterMerchant.itemsViewSize for example
+because that will not be available this early.
+]]--
+local ITEMS = 'items_vs'
+local GUILDS = 'guild_vs'
+local LISTINGS = 'listings_vs'
+local PURCHASES = 'purchases_vs'
+
+local ITEM_VIEW = 'self_vm'
+local GUILD_VIEW = 'guild_vm'
+local LISTINGS_VIEW = 'listings_vm'
+local PURCHASES_VIEW = 'purchases_vm'
 
 local SALES_WINDOW_DATAROW = "MasterMerchantDataRow"
 local GUILD_WINDOW_DATAROW = "MasterMerchantGuildDataRow"
@@ -921,8 +929,7 @@ function MMScrollList:FilterScrollList()
               --d(item)
             else
               if (item.timestamp > timeCheck) then
-                table.insert(listData,
-                  ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
           end
@@ -2346,7 +2353,7 @@ function MasterMerchant:ToggleViewMode()
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     MasterMerchant:ActiveWindow():SetHidden(true)
     MasterMerchant.systemSavedVariables.viewSize = GUILDS
-    if not self.listIsDirty['guild_vm'] then self.guildScrollList:RefreshFilters() end
+    self.guildScrollList:RefreshFilters()
     MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
@@ -2364,7 +2371,7 @@ function MasterMerchant:ToggleViewMode()
   elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     MasterMerchant:ActiveWindow():SetHidden(true)
     MasterMerchant.systemSavedVariables.viewSize = ITEMS
-    if not self.listIsDirty['self_vm'] then self.scrollList:RefreshFilters() end
+    self.scrollList:RefreshFilters()
     MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
@@ -2392,6 +2399,24 @@ end
 -- Set the visibility status of the main window to the opposite of its current status
 function MasterMerchant:ToggleMasterMerchantWindow()
   MasterMerchant:ActiveWindow():SetHidden(not MasterMerchant:ActiveWindow():IsHidden())
+  MasterMerchant:RefreshWindowData(MasterMerchant.viewMode)
+end
+
+function MasterMerchant:RefreshWindowData(viewMode)
+-- viewMode is like "listings_vm" or "self_vm" for use with the listIsDirty[] table
+  if MasterMerchant.listIsDirty[viewMode] then
+    MasterMerchant.listIsDirty[viewMode] = false
+    if viewMode == ITEM_VIEW then
+      self.scrollList:RefreshData()
+    elseif viewMode == GUILD_VIEW then
+      self.guildScrollList:RefreshData()
+    elseif viewMode == LISTINGS_VIEW then
+      self.listingsScrollList:RefreshData()
+    elseif viewMode == PURCHASES_VIEW then
+      self.purchasesScrollList:RefreshData()
+    end
+  end
+  SetGameCameraUIMode(true)
 end
 
 function MasterMerchant:SwitchToMasterMerchantSalesView()
@@ -2410,7 +2435,7 @@ function MasterMerchant:SwitchToMasterMerchantSalesView()
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:AddFragment(self.salesUiFragment)
   end
-  MasterMerchant.scrollList:RefreshFilters()
+  MasterMerchant:RefreshWindowData(MasterMerchant.viewMode)
 
   MasterMerchantGuildWindow:SetHidden(true)
   MasterMerchantListingWindow:SetHidden(true)
@@ -2437,7 +2462,7 @@ function MasterMerchant:SwitchToMasterMerchantPurchaseView()
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:AddFragment(self.purchaseUiFragment)
   end
-  MasterMerchant.purchasesScrollList:RefreshFilters()
+  MasterMerchant:RefreshWindowData(PURCHASES_VIEW)
 
   MasterMerchantWindow:SetHidden(true)
   MasterMerchantGuildWindow:SetHidden(true)
@@ -2464,7 +2489,7 @@ function MasterMerchant:SwitchToMasterMerchantListingsView()
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:AddFragment(self.listingUiFragment)
   end
-  MasterMerchant.listingsScrollList:RefreshFilters()
+  MasterMerchant:RefreshWindowData(LISTINGS_VIEW)
 
   MasterMerchantWindow:SetHidden(true)
   MasterMerchantGuildWindow:SetHidden(true)

@@ -334,11 +334,12 @@ local function Initilizze()
         buyer = GetDisplayName()
       }
       internal:addPurchaseData(theEvent)
+      MasterMerchant.listIsDirty[PURCHASES_VIEW] = true
       if not MasterMerchant.isInitialized then
-        internal:dm("Info", "LibGuildStore not initialized. Information will not be refreshed.")
+        internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
         return
       end
-      MasterMerchant.purchasesScrollList:RefreshFilters()
+      MasterMerchant:RefreshWindowData(PURCHASES_VIEW)
     end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_DATABASE_UPDATE,

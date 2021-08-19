@@ -423,11 +423,7 @@ function internal:SetupListener(guildId)
         end
         if added then
           MasterMerchant:PostScanParallel(guildName, true)
-          local currentView = MasterMerchant.systemSavedVariables.viewSize
-          local currentViewMode = MasterMerchant.viewMode
-          if currentViewMode == ITEM_VIEW and currentView == ITEMS and MasterMerchantWindow:IsHidden() then
-            MasterMerchant.scrollList:RefreshData()
-          end
+          MasterMerchant.listIsDirty[GUILD_VIEW] = true
         end
       end
     end
@@ -484,11 +480,12 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
     }
     --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
+    MasterMerchant.listIsDirty[PURCHASES_VIEW] = true
     if not MasterMerchant.isInitialized then
       internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
       return
     end
-    MasterMerchant.purchasesScrollList:RefreshFilters()
+    MasterMerchant:RefreshWindowData(PURCHASES_VIEW)
   end
 end
 
@@ -512,6 +509,9 @@ function internal:AddAwesomeGuildStoreListing(listing)
   if not duplicate then
     added = internal:addListingData(theEvent)
   end
+  if added then
+    MasterMerchant.listIsDirty[LISTINGS_VIEW] = true
+  end
 end
 
 -- this should loop over the data from AGS to be converted to theEvent
@@ -527,11 +527,12 @@ function internal:processAwesomeGuildStore(itemDatabase, guildId)
       end
     end
   end
+  --[[
   if not MasterMerchant.isInitialized then
     internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
     return
   end
-  MasterMerchant.listingsScrollList:RefreshFilters()
+  ]]--
 end
 
 -- Handle the reset button - clear out the search and scan tables,
@@ -568,7 +569,7 @@ function internal:ResetListingsData()
   LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
   LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
   LEQ:Add(function() internal:IndexListingsData() end, 'IndexListingsData')
-  LEQ:Add(function() MasterMerchant.listIsDirty["listings_vm"] = true end, 'listIsDirty')
+  LEQ:Add(function() MasterMerchant.listIsDirty[LISTINGS_VIEW] = true end, 'listIsDirty')
   LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshData() end, 'RefreshData_listingsScrollList')
   LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshFilters() end, 'RefreshFilters_listingsScrollList')
   LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshVisible() end, 'RefreshVisible_listingsScrollList')
