@@ -3235,10 +3235,6 @@ function MasterMerchant:Initialize()
   This will be reset once the user chooses a mode such as sales,
   purchaces, or listings
   ]]--
-  MasterMerchant.listIsDirty[ITEM_VIEW]                 = true
-  MasterMerchant.listIsDirty[GUILD_VIEW]                = true
-  MasterMerchant.listIsDirty[LISTINGS_VIEW]              = true
-  MasterMerchant.listIsDirty[PURCHASES_VIEW]             = true
 
   --[[
   Order of events:

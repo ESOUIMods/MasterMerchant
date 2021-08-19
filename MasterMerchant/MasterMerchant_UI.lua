@@ -2403,7 +2403,14 @@ function MasterMerchant:ToggleMasterMerchantWindow()
 end
 
 function MasterMerchant:RefreshWindowData(viewMode)
--- viewMode is like "listings_vm" or "self_vm" for use with the listIsDirty[] table
+  -- viewMode is like "listings_vm" or "self_vm" for use with the listIsDirty[] table
+  if not viewMode then
+    nternal:dm("Warn", "RefreshWindowData viewMode was nil")
+    return
+  end
+  if not MasterMerchant.isInitialized then
+    return
+  end
   if MasterMerchant.listIsDirty[viewMode] then
     MasterMerchant.listIsDirty[viewMode] = false
     if viewMode == ITEM_VIEW then
@@ -3013,4 +3020,8 @@ function MasterMerchant:SetupScrollLists()
 
   -- setup filter window
   self.nameFilterScrollList = IFScrollList:New(MasterMerchantFilterByNameWindow)
+  MasterMerchant.listIsDirty[ITEM_VIEW]                 = true
+  MasterMerchant.listIsDirty[GUILD_VIEW]                = true
+  MasterMerchant.listIsDirty[LISTINGS_VIEW]              = true
+  MasterMerchant.listIsDirty[PURCHASES_VIEW]             = true
 end
