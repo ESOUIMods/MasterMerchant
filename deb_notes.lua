@@ -1,6 +1,21 @@
 -- from votan for tooptip in scroll list rows
 local rowData = ZO_ScrollList_GetData(control)
 
+local currencyFormatDealOptions = {
+    [0] = { color = ZO_ColorDef:New(0.98, 0.01, 0.01) },
+    [ITEM_DISPLAY_QUALITY_NORMAL] = { color = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, ITEM_DISPLAY_QUALITY_NORMAL)) },
+--- the other qualities
+}
+
+local numItemsOnPage, currentPage, hasMorePages = GetTradingHouseSearchResultsInfo()
+local itemLink, icon, itemName, displayQuality, stackCount, sellerName, timeRemaining, purchasePrice, currencyType, itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo
+for i=1, numItemsOnPage do
+   itemLink = GetTradingHouseSearchResultItemLink(i)
+   icon, itemName, displayQuality, stackCount, sellerName, timeRemaining, purchasePrice, currencyType, itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo
+end
+
+I believe AGS.callback.ITEM_DATABASE_UPDATE is the one that fires when new unseen results are received and AGS.callback.SEARCH_RESULTS_RECEIVED when a new page is received.
+
 -- From Baertram for close window
 --[[
 MasterMerchant_OnCloseButtonCallback(buttonVar)

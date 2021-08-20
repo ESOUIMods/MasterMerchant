@@ -2353,7 +2353,7 @@ function MasterMerchant:ToggleViewMode()
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     MasterMerchant:ActiveWindow():SetHidden(true)
     MasterMerchant.systemSavedVariables.viewSize = GUILDS
-    self.guildScrollList:RefreshFilters()
+    if not self.listIsDirty[GUILD_VIEW] then self.guildScrollList:RefreshFilters() end
     MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
@@ -2371,7 +2371,7 @@ function MasterMerchant:ToggleViewMode()
   elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     MasterMerchant:ActiveWindow():SetHidden(true)
     MasterMerchant.systemSavedVariables.viewSize = ITEMS
-    self.scrollList:RefreshFilters()
+    if not self.listIsDirty[ITEM_VIEW] then self.scrollList:RefreshFilters() end
     MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
@@ -2399,13 +2399,15 @@ end
 -- Set the visibility status of the main window to the opposite of its current status
 function MasterMerchant:ToggleMasterMerchantWindow()
   MasterMerchant:ActiveWindow():SetHidden(not MasterMerchant:ActiveWindow():IsHidden())
-  MasterMerchant:RefreshWindowData(MasterMerchant.viewMode)
+  --MasterMerchant:RefreshWindowData(MasterMerchant.viewMode)
 end
 
 function MasterMerchant:RefreshWindowData(viewMode)
+  MasterMerchant:dm("Debug", "RefreshWindowData")
+  MasterMerchant:dm("Debug", viewMode)
   -- viewMode is like "listings_vm" or "self_vm" for use with the listIsDirty[] table
   if not viewMode then
-    nternal:dm("Warn", "RefreshWindowData viewMode was nil")
+    internal:dm("Warn", "RefreshWindowData viewMode was nil")
     return
   end
   if not MasterMerchant.isInitialized then
@@ -2413,6 +2415,7 @@ function MasterMerchant:RefreshWindowData(viewMode)
   end
   if MasterMerchant.listIsDirty[viewMode] then
     MasterMerchant.listIsDirty[viewMode] = false
+    MasterMerchant:dm("Debug", "the viewMode was dirty")
     if viewMode == ITEM_VIEW then
       self.scrollList:RefreshData()
     elseif viewMode == GUILD_VIEW then
@@ -2422,10 +2425,16 @@ function MasterMerchant:RefreshWindowData(viewMode)
     elseif viewMode == PURCHASES_VIEW then
       self.purchasesScrollList:RefreshData()
     end
+  else
+    MasterMerchant:dm("Debug", "viewMode was not dirty")
   end
 end
 
 function MasterMerchant:SwitchToMasterMerchantSalesView()
+  MasterMerchant:dm("Debug", "SwitchToMasterMerchantSalesView")
+  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewSize)
+  MasterMerchant:dm("Debug", MasterMerchant.viewMode)
+
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then return end
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
@@ -2441,7 +2450,7 @@ function MasterMerchant:SwitchToMasterMerchantSalesView()
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:AddFragment(self.salesUiFragment)
   end
-  MasterMerchant:RefreshWindowData(MasterMerchant.viewMode)
+  MasterMerchant.scrollList:RefreshFilters()
 
   MasterMerchantGuildWindow:SetHidden(true)
   MasterMerchantListingWindow:SetHidden(true)
@@ -3020,8 +3029,4 @@ function MasterMerchant:SetupScrollLists()
 
   -- setup filter window
   self.nameFilterScrollList = IFScrollList:New(MasterMerchantFilterByNameWindow)
-  MasterMerchant.listIsDirty[ITEM_VIEW]                 = true
-  MasterMerchant.listIsDirty[GUILD_VIEW]                = true
-  MasterMerchant.listIsDirty[LISTINGS_VIEW]              = true
-  MasterMerchant.listIsDirty[PURCHASES_VIEW]             = true
 end

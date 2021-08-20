@@ -3396,6 +3396,10 @@ function MasterMerchant:InitScrollLists()
   end
 
   MasterMerchant.isInitialized = true
+  MasterMerchant.listIsDirty[ITEM_VIEW] = true
+  MasterMerchant.listIsDirty[GUILD_VIEW] = true
+  MasterMerchant.listIsDirty[LISTINGS_VIEW] = true
+  MasterMerchant.listIsDirty[PURCHASES_VIEW] = true
 end
 
 local dealInfoCache               = {}
