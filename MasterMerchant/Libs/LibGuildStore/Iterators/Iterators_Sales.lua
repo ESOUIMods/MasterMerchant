@@ -3,18 +3,28 @@ local internal       = _G["LibGuildStore_Internal"]
 local sales_data        = _G["LibGuildStore_SalesData"]
 local sr_index          = _G["LibGuildStore_SalesIndex"]
 local ASYNC                     = LibAsync
---[[ can nout use MasterMerchant.itemsViewSize for example
-because that will not be available this early.
-]]--
-local ITEMS = 'items_vs'
-local GUILDS = 'guild_vs'
-local LISTINGS = 'listings_vs'
-local PURCHASES = 'purchases_vs'
 
-local ITEM_VIEW = 'self_vm'
-local GUILD_VIEW = 'guild_vm'
-local LISTINGS_VIEW = 'listings_vm'
-local PURCHASES_VIEW = 'purchases_vm'
+--[[ can not use global values for because they are not
+always available early.
+
+guild sales, even when viewing ranks, viewMode is all
+personal sales, even when viewing ranks, viewMode is self
+
+personal sales, items view, viewSize is full
+personal sales, rank view, viewSize is half
+
+guild sales, items view, viewSize is full
+guild sales, rank view, viewSize is half
+]]--
+local SALES = 'sales_vm' -- full
+local RANKS = 'ranks_vm' -- half
+local LISTINGS = 'listings_vm'
+local PURCHASES = 'purchases_vm'
+
+local SELF_VIEW_TYPE = 'self_vt' -- self
+local ALL_VIEW_TYPE = 'guild_vt' -- all
+-- local LISTINGS_VIEW = 'listings_vm'
+-- local PURCHASES_VIEW = 'purchases_vm'
 
 function internal:CheckForDuplicateSale(itemLink, eventID)
   --[[ we need to be able to calculate theIID and itemIndex
@@ -166,7 +176,6 @@ function internal:addSalesData(theEvent)
     guild                            = internal.myItems[theEvent.guild] or MMGuild:new(theEvent.guild)
     internal.myItems[theEvent.guild] = guild;
     guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
-    MasterMerchant.listIsDirty[ITEM_VIEW] = true
   end
 
   local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
@@ -196,6 +205,11 @@ function internal:addSalesData(theEvent)
     table.insert(sr_index[i], wordData)
   end
 
+  --[[ this sales data is effectivly added to both the guild and personal
+  sales at the same time, which includes the ranking information
+  ]]--
+  MasterMerchant.listIsDirty[SALES] = true
+  MasterMerchant.listIsDirty[RANKS] = true
   MasterMerchant:ClearItemCacheById(theIID, itemIndex)
 
   return true
@@ -1036,11 +1050,10 @@ function internal:ResetSalesData()
   internal.guildSales                          = {}
   internal.guildItems                          = {}
   internal.myItems                             = {}
-  if MasterMerchantGuildWindow:IsHidden() then
-    MasterMerchant.scrollList:RefreshData()
-  else
-    MasterMerchant.guildScrollList:RefreshData()
-  end
+  MasterMerchant.listIsDirty[SALES] = true
+  MasterMerchant.listIsDirty[RANKS] = true
+  MasterMerchant:RefreshAlteredWindowData()
+  -- TODO why is this false here
   internal:DatabaseBusy(false)
   internal:dm("Info", internal:concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_RESET_DONE)))
   internal:dm("Info", internal:concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_REFRESH_START)))

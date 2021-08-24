@@ -3,18 +3,27 @@ local internal = _G["LibGuildStore_Internal"]
 
 local LGH = LibHistoire
 
---[[ can nout use MasterMerchant.itemsViewSize for example
-because that will not be available this early.
-]]--
-local ITEMS = 'items_vs'
-local GUILDS = 'guild_vs'
-local LISTINGS = 'listings_vs'
-local PURCHASES = 'purchases_vs'
+--[[ can not use global values for because they are not
+always available early.
 
-local ITEM_VIEW = 'self_vm'
-local GUILD_VIEW = 'guild_vm'
-local LISTINGS_VIEW = 'listings_vm'
-local PURCHASES_VIEW = 'purchases_vm'
+guild sales, even when viewing ranks, viewMode is all
+personal sales, even when viewing ranks, viewMode is self
+
+personal sales, items view, viewSize is full
+personal sales, rank view, viewSize is half
+
+guild sales, items view, viewSize is full
+guild sales, rank view, viewSize is half
+]]--
+local SALES = 'sales_vm' -- full
+local RANKS = 'ranks_vm' -- half
+local LISTINGS = 'listings_vm'
+local PURCHASES = 'purchases_vm'
+
+local SELF_VIEW_TYPE = 'self_vt' -- self
+local ALL_VIEW_TYPE = 'guild_vt' -- all
+-- local LISTINGS_VIEW = 'listings_vm'
+-- local PURCHASES_VIEW = 'purchases_vm'
 
 function internal:concat(a, ...)
   if a == nil and ... == nil then
@@ -423,7 +432,6 @@ function internal:SetupListener(guildId)
         end
         if added then
           MasterMerchant:PostScanParallel(guildName, true)
-          MasterMerchant.listIsDirty[GUILD_VIEW] = true
         end
       end
     end
@@ -480,12 +488,12 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
     }
     --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
-    MasterMerchant.listIsDirty[PURCHASES_VIEW] = true
+    MasterMerchant.listIsDirty[PURCHASES] = true
     if not MasterMerchant.isInitialized then
       internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
       return
     end
-    MasterMerchant:RefreshWindowData(PURCHASES_VIEW)
+    MasterMerchant:RefreshAlteredWindowData()
   end
 end
 
@@ -510,7 +518,7 @@ function internal:AddAwesomeGuildStoreListing(listing)
     added = internal:addListingData(theEvent)
   end
   if added then
-    MasterMerchant.listIsDirty[LISTINGS_VIEW] = true
+    MasterMerchant.listIsDirty[LISTINGS] = true
   end
 end
 

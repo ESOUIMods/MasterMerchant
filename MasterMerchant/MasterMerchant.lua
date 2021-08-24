@@ -14,18 +14,27 @@ local listings_data             = _G["LibGuildStore_ListingsData"]
 
 local OriginalSetupPendingPost
 
---[[ can nout use MasterMerchant.itemsViewSize for example
-because that will not be available this early.
-]]--
-local ITEMS = 'items_vs'
-local GUILDS = 'guild_vs'
-local LISTINGS = 'listings_vs'
-local PURCHASES = 'purchases_vs'
+--[[ can not use global values for because they are not
+always available early.
 
-local ITEM_VIEW = 'self_vm'
-local GUILD_VIEW = 'guild_vm'
-local LISTINGS_VIEW = 'listings_vm'
-local PURCHASES_VIEW = 'purchases_vm'
+guild sales, even when viewing ranks, viewMode is all
+personal sales, even when viewing ranks, viewMode is self
+
+personal sales, items view, viewSize is full
+personal sales, rank view, viewSize is half
+
+guild sales, items view, viewSize is full
+guild sales, rank view, viewSize is half
+]]--
+local SALES = 'sales_vm' -- full
+local RANKS = 'ranks_vm' -- half
+local LISTINGS = 'listings_vm'
+local PURCHASES = 'purchases_vm'
+
+local SELF_VIEW_TYPE = 'self_vt' -- self
+local ALL_VIEW_TYPE = 'guild_vt' -- all
+-- local LISTINGS_VIEW = 'listings_vm'
+-- local PURCHASES_VIEW = 'purchases_vm'
 
 CSA_EVENT_SMALL_TEXT            = 1
 CSA_EVENT_LARGE_TEXT            = 2
@@ -1558,10 +1567,10 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.showFullPrice end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.showFullPrice = value
-        MasterMerchant.listIsDirty[ITEM_VIEW]                 = true
-        MasterMerchant.listIsDirty[GUILD_VIEW]                = true
-        MasterMerchant.listIsDirty[LISTINGS_VIEW]              = true
-        MasterMerchant.listIsDirty[PURCHASES_VIEW]             = true
+        MasterMerchant.listIsDirty[SALES]                 = true
+        MasterMerchant.listIsDirty[RANKS]                = true
+        MasterMerchant.listIsDirty[LISTINGS]              = true
+        MasterMerchant.listIsDirty[PURCHASES]             = true
       end,
       default = MasterMerchant.systemDefault.showFullPrice,
     },
@@ -1575,8 +1584,8 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.windowFont = value
         self:UpdateFonts()
-        if MasterMerchant.systemSavedVariables.viewSize == ITEMS then self.scrollList:RefreshVisible()
-        elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then self.guildScrollList:RefreshVisible()
+        if MasterMerchant.systemSavedVariables.viewMode == SALES then self.salesScrollList:RefreshVisible()
+        elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then self.rankScrollList:RefreshVisible()
         else self.listingScrollList:RefreshVisible() end
       end,
       default = MasterMerchant.systemDefault.windowFont,
@@ -2716,8 +2725,7 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- Guild Time dropdown choice box
-  MasterMerchant.UI_GuildTime            = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster,
-    'MasterMerchantStatsGuildDropdown')
+  MasterMerchant.UI_GuildTime            = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
 
   -- Placing Guild Time dropdown at the bottom of the Count Column when it has been generated
   LibGuildRoster:OnRosterReady(function()
@@ -2874,7 +2882,8 @@ function MasterMerchant:Initialize()
     showCyroAlerts = true,
     alertSoundName = "Book_Acquired",
     showUnitPrice = false,
-    viewSize = ITEMS,
+    viewMode = SALES,
+    viewType = SELF_VIEW_TYPE,
     offlineSales = true,
     showPricing = true,
     showBonanzaPricing = true,
@@ -2974,8 +2983,8 @@ function MasterMerchant:Initialize()
     "self",
     "all",
   }
-  if internal:is_in(MasterMerchant.systemSavedVariables.viewSize, oldViewSizeValues) then
-    MasterMerchant.systemSavedVariables.viewSize = ITEMS
+  if internal:is_in(MasterMerchant.systemSavedVariables.viewMode, oldViewSizeValues) then
+    MasterMerchant.systemSavedVariables.viewMode = SALES
   end
 
   self.currentGuildID                                 = GetGuildId(1) or 0
@@ -3062,11 +3071,16 @@ function MasterMerchant:Initialize()
   ZO_PreHook('ZO_InventorySlot_ShowContextMenu',
     function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
 
-  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then theFragment = self.salesUiFragment end
-  if MasterMerchant.systemSavedVariables.viewSize == GUILDS then theFragment = self.guildUiFragment end
-  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then theFragment = self.listingUiFragment end
-  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then theFragment = self.purchaseUiFragment end
+  MasterMerchant.systemSavedVariables.viewMode = SALES
+  MasterMerchant.systemSavedVariables.viewType = SELF_VIEW_TYPE
+  theFragment = self.salesUiFragment
+  --[[
+  if MasterMerchant.systemSavedVariables.viewMode == SALES then theFragment = self.salesUiFragment end
+  if MasterMerchant.systemSavedVariables.viewMode == RANKS then theFragment = self.guildUiFragment end
+  if MasterMerchant.systemSavedVariables.viewMode == LISTINGS then theFragment = self.listingUiFragment end
+  if MasterMerchant.systemSavedVariables.viewMode == PURCHASES then theFragment = self.purchaseUiFragment end
   if not theFragment then theFragment = self.salesUiFragment end
+  ]]--
 
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:AddFragment(theFragment)
@@ -3396,10 +3410,10 @@ function MasterMerchant:InitScrollLists()
   end
 
   MasterMerchant.isInitialized = true
-  MasterMerchant.listIsDirty[ITEM_VIEW] = true
-  MasterMerchant.listIsDirty[GUILD_VIEW] = true
-  MasterMerchant.listIsDirty[LISTINGS_VIEW] = true
-  MasterMerchant.listIsDirty[PURCHASES_VIEW] = true
+  MasterMerchant.listIsDirty[SALES] = true
+  MasterMerchant.listIsDirty[RANKS] = true
+  MasterMerchant.listIsDirty[LISTINGS] = true
+  MasterMerchant.listIsDirty[PURCHASES] = true
 end
 
 local dealInfoCache               = {}
@@ -3436,7 +3450,7 @@ end
 function OnItemSelected()
   local isPlayerViewingTrader = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.active
   local selectedItem          = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.selectedIndex
-  local searchData            = ZO_TradingHouse_GamepadMaskContainerSellList.scrollList.dataList.itemData.searchData
+  local searchData            = ZO_TradingHouse_GamepadMaskContainerSellList.salesScrollList.dataList.itemData.searchData
   local itemSelected          = searchData[selectedItem]
   local bagId                 = itemInventorySlot.bagId
   local slotId                = itemInventorySlot.slotId

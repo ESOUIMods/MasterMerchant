@@ -60,8 +60,7 @@ function internal:QueueCheckStatus()
     lib.guildStoreReady                                      = true
     LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
     internal:DatabaseBusy(false)
-    MasterMerchant.scrollList:RefreshData()
-    MasterMerchant.guildScrollList:RefreshData()
+    MasterMerchant:RefreshAlteredWindowData()
   end
 end
 
@@ -334,12 +333,12 @@ local function Initilizze()
         buyer = GetDisplayName()
       }
       internal:addPurchaseData(theEvent)
-      MasterMerchant.listIsDirty[PURCHASES_VIEW] = true
+      MasterMerchant.listIsDirty[PURCHASES] = true
       if not MasterMerchant.isInitialized then
         internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
         return
       end
-      MasterMerchant:RefreshWindowData(PURCHASES_VIEW)
+      MasterMerchant:RefreshAlteredWindowData()
     end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_DATABASE_UPDATE,
