@@ -6,13 +6,13 @@
 
 
 ## Title: Master Merchant 3.6.36 by Sharlikran
-## APIVersion: 100035 101031
+## APIVersion: 101031
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Philgo68, Khaibit, dOpiate, Garkin, Sharlikran
 ## Version: 3.6.36
 ## AddOnVersion: 3636
 ## License: See license - distribution without license is prohibited!
-## LastUpdated: Mar 2021
+## LastUpdated: Aug 2021
 ## SavedVariables: ShopkeeperSavedVars
 ## DependsOn: LibExecutionQueue>=200 LibAddonMenu-2.0>=32 LibMediaProvider-1.0>=17 LibGuildRoster>=10
 ## DependsOn: LibHistoire>=450 LibGuildStore>=101

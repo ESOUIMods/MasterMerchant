@@ -3,27 +3,18 @@ local internal = _G["LibGuildStore_Internal"]
 
 local LGH = LibHistoire
 
---[[ can not use global values for because they are not
-always available early.
-
-guild sales, even when viewing ranks, viewMode is all
-personal sales, even when viewing ranks, viewMode is self
-
-personal sales, items view, viewSize is full
-personal sales, rank view, viewSize is half
-
-guild sales, items view, viewSize is full
-guild sales, rank view, viewSize is half
+--[[ can nout use MasterMerchant.itemsViewSize for example
+because that will not be available this early.
 ]]--
-local SALES = 'sales_vm' -- full
-local RANKS = 'ranks_vm' -- half
-local LISTINGS = 'listings_vm'
-local PURCHASES = 'purchases_vm'
+local ITEMS = 'items_vs'
+local GUILDS = 'guild_vs'
+local LISTINGS = 'listings_vs'
+local PURCHASES = 'purchases_vs'
 
-local SELF_VIEW_TYPE = 'self_vt' -- self
-local ALL_VIEW_TYPE = 'guild_vt' -- all
--- local LISTINGS_VIEW = 'listings_vm'
--- local PURCHASES_VIEW = 'purchases_vm'
+local ITEM_VIEW = 'self_vm'
+local GUILD_VIEW = 'guild_vm'
+local LISTINGS_VIEW = 'listings_vm'
+local PURCHASES_VIEW = 'purchases_vm'
 
 function internal:concat(a, ...)
   if a == nil and ... == nil then
@@ -488,12 +479,7 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
     }
     --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
-    MasterMerchant.listIsDirty[PURCHASES] = true
-    if not MasterMerchant.isInitialized then
-      internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
-      return
-    end
-    MasterMerchant:RefreshAlteredWindowData()
+    MasterMerchant.listIsDirty[PURCHASES]  = true
   end
 end
 
@@ -516,8 +502,6 @@ function internal:AddAwesomeGuildStoreListing(listing)
   local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
   if not duplicate then
     added = internal:addListingData(theEvent)
-  end
-  if added then
     MasterMerchant.listIsDirty[LISTINGS] = true
   end
 end
@@ -535,12 +519,7 @@ function internal:processAwesomeGuildStore(itemDatabase, guildId)
       end
     end
   end
-  --[[
-  if not MasterMerchant.isInitialized then
-    internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
-    return
-  end
-  ]]--
+
 end
 
 -- Handle the reset button - clear out the search and scan tables,
@@ -577,6 +556,8 @@ function internal:ResetListingsData()
   LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
   LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
   LEQ:Add(function() internal:IndexListingsData() end, 'IndexListingsData')
+  LEQ:Add(function() MasterMerchant.listIsDirty[LISTINGS] = true end, 'listIsDirty')
+  LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshData() end, 'RefreshData_listingsScrollList')
   LEQ:Add(function() internal:DatabaseBusy(false) end, 'DatabaseBusy_false')
   LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
   LEQ:Start()

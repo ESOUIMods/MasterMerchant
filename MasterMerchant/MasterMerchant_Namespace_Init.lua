@@ -132,42 +132,18 @@ end
 ----- MasterMerchant Constants              -----
 -------------------------------------------------
 
---[[ Removed 8-20-2021
+MasterMerchant.personalSalesViewMode = 'self_vm'
+MasterMerchant.guildSalesViewMode    = 'guild_vm'
+MasterMerchant.listingsViewMode      = 'listings_vm'
+MasterMerchant.purchasesViewMode     = 'purchases_vm'
+
 MasterMerchant.itemsViewSize         = 'items_vs'
 MasterMerchant.guildsViewSize        = 'guild_vs'
 MasterMerchant.listingsViewSize      = 'listings_vs'
 MasterMerchant.purchasesViewSize     = 'purchases_vs'
 
-MasterMerchant.personalSalesViewMode = 'self_vm'
-MasterMerchant.guildSalesViewMode    = 'guild_vm'
-MasterMerchant.listingsViewMode      = 'listings_vm'
-MasterMerchant.purchasesViewMode     = 'purchases_vm'
-]]--
-
---[[ can not use global values for because they are not
-always available early.
-
-guild sales, even when viewing ranks, viewMode is all
-personal sales, even when viewing ranks, viewMode is self
-
-personal sales, items view, viewSize is full
-personal sales, rank view, viewSize is half
-
-guild sales, items view, viewSize is full
-guild sales, rank view, viewSize is half
-]]--
-local SALES = 'sales_vm' -- full
-local RANKS = 'ranks_vm' -- half
-local LISTINGS = 'listings_vm'
-local PURCHASES = 'purchases_vm'
-
-local SELF_VIEW_TYPE = 'self_vt' -- self
-local ALL_VIEW_TYPE = 'guild_vt' -- all
--- local LISTINGS_VIEW = 'listings_vm'
--- local PURCHASES_VIEW = 'purchases_vm'
-
 -- default is self
--- MasterMerchant.viewMode            = MasterMerchant.personalSalesViewMode removed 8-20-2021
+MasterMerchant.viewMode            = MasterMerchant.personalSalesViewMode
 MasterMerchant.isInitialized       = false -- added 8-25 used
 MasterMerchant.guildMemberInfo     = { } -- added 10-17 used as lookup
 MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
@@ -183,16 +159,12 @@ else
   MasterMerchant.AwesomeGuildStoreDetected = false -- added 12-2
 end
 
---[[ We do 'lazy' updates on the scroll lists, this is used to
-  mark whether we need to RefreshData() before showing
-  this is the view mode not the view size
-
-  example in 2.2.0 the viewMode for personal sales was "self"
-  in 3.x it is 'self_vt'
-]]--
-MasterMerchant.listIsDirty = { [SALES] = false, [RANKS] = false, [LISTINGS] = false, [PURCHASES] = false }
-MasterMerchant.salesScrollList                    = nil
-MasterMerchant.rankScrollList               = nil
+-- We do 'lazy' updates on the scroll lists, this is used to
+-- mark whether we need to RefreshData() before showing
+-- ITEMS, GUILDS, LISTINGS, PURCHASES
+MasterMerchant.listIsDirty                   = { [MasterMerchant.itemsViewSize] = false, [MasterMerchant.guildsViewSize] = false, [MasterMerchant.listingsViewSize] = false, [MasterMerchant.purchasesViewSize] = false }
+MasterMerchant.scrollList                    = nil
+MasterMerchant.guildScrollList               = nil
 MasterMerchant.listingsScrollList            = nil
 MasterMerchant.purchasesScrollList           = nil
 MasterMerchant.calcInput                     = nil

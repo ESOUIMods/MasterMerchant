@@ -17,27 +17,15 @@ local lr_index = _G["LibGuildStore_ListingsIndex"]
 local purchases_data = _G["LibGuildStore_PurchaseData"]
 local pr_index = _G["LibGuildStore_PurchaseIndex"]
 
---[[ can not use global values for because they are not
-always available early.
-
-guild sales, even when viewing ranks, viewMode is all
-personal sales, even when viewing ranks, viewMode is self
-
-personal sales, items view, viewSize is full
-personal sales, rank view, viewSize is half
-
-guild sales, items view, viewSize is full
-guild sales, rank view, viewSize is half
+--[[ TODO Verify this
+when viewSize is 'full': then you are viewing the seller information
+when viewSize if 'half': you are viewing the item information
 ]]--
-local SALES = 'sales_vm' -- full
-local RANKS = 'ranks_vm' -- half
-local LISTINGS = 'listings_vm'
-local PURCHASES = 'purchases_vm'
 
-local SELF_VIEW_TYPE = 'self_vt' -- self
-local ALL_VIEW_TYPE = 'guild_vt' -- all
--- local LISTINGS_VIEW = 'listings_vm'
--- local PURCHASES_VIEW = 'purchases_vm'
+local ITEMS = MasterMerchant.itemsViewSize
+local GUILDS = MasterMerchant.guildsViewSize
+local LISTINGS = MasterMerchant.listingsViewSize
+local PURCHASES = MasterMerchant.purchasesViewSize
 
 local SALES_WINDOW_DATAROW = "MasterMerchantDataRow"
 local GUILD_WINDOW_DATAROW = "MasterMerchantGuildDataRow"
@@ -55,17 +43,17 @@ local LISTING_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantListingWindow"
 local PURCHASE_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantPurchaseWindow"
 
 function MasterMerchant:ActiveWindow()
-  return ((MasterMerchant.systemSavedVariables.viewMode == SALES and MasterMerchantWindow) or
-    (MasterMerchant.systemSavedVariables.viewMode == RANKS and MasterMerchantGuildWindow) or
-    (MasterMerchant.systemSavedVariables.viewMode == LISTINGS and MasterMerchantListingWindow) or
-    (MasterMerchant.systemSavedVariables.viewMode == PURCHASES and MasterMerchantPurchaseWindow))
+  return ((MasterMerchant.systemSavedVariables.viewSize == ITEMS and MasterMerchantWindow) or
+    (MasterMerchant.systemSavedVariables.viewSize == GUILDS and MasterMerchantGuildWindow) or
+    (MasterMerchant.systemSavedVariables.viewSize == LISTINGS and MasterMerchantListingWindow) or
+    (MasterMerchant.systemSavedVariables.viewSize == PURCHASES and MasterMerchantPurchaseWindow))
 end
 
 function MasterMerchant:ActiveFragment()
-  return ((MasterMerchant.systemSavedVariables.viewMode == SALES and self.salesUiFragment) or
-    (MasterMerchant.systemSavedVariables.viewMode == RANKS and self.guildUiFragment) or
-    (MasterMerchant.systemSavedVariables.viewMods == LISTINGS and self.listingUiFragment) or
-    (MasterMerchant.systemSavedVariables.viewMode == PURCHASES and self.purchaseUiFragment))
+  return ((MasterMerchant.systemSavedVariables.viewSize == ITEMS and self.salesUiFragment) or
+    (MasterMerchant.systemSavedVariables.viewSize == GUILDS and self.guildUiFragment) or
+    (MasterMerchant.systemSavedVariables.viewSize == LISTINGS and self.listingUiFragment) or
+    (MasterMerchant.systemSavedVariables.viewSize == PURCHASES and self.purchaseUiFragment))
 end
 
 function MasterMerchant:SortByPrice(ordering, scrollList)
@@ -908,20 +896,20 @@ function MMScrollList:FilterScrollList()
   local listData = ZO_ScrollList_GetDataList(self.list)
   ZO_ClearNumericallyIndexedTable(listData)
   local searchText = nil
-  if MasterMerchant.systemSavedVariables.viewMode == SALES then
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     searchText = MasterMerchantWindowMenuHeaderSearchEditBox:GetText()
-  elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     searchText = MasterMerchantGuildWindowMenuHeaderSearchEditBox:GetText()
-  elseif MasterMerchant.systemSavedVariables.viewMode == LISTINGS then
+  elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
     searchText = MasterMerchantListingWindowMenuHeaderSearchEditBox:GetText()
-  elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
+  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
     searchText = MasterMerchantPurchaseWindowMenuHeaderSearchEditBox:GetText()
   end
   if searchText then searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1') end
 
-  if MasterMerchant.systemSavedVariables.viewMode == SALES then
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     -- return item sales
-    if MasterMerchant.systemSavedVariables.viewType ~= SELF_VIEW_TYPE and (searchText == nil or searchText == '') then
+    if MasterMerchant.viewMode ~= MasterMerchant.personalSalesViewMode and (searchText == nil or searchText == '') then
       -- everything unfiltered (filter to the default time range)
       local timeCheck = MasterMerchant:CheckTime()
       for k, v in pairs(sales_data) do
@@ -941,7 +929,7 @@ function MMScrollList:FilterScrollList()
       end
     elseif NonContiguousCount(sr_index) == 1 and (searchText ~= nil and searchText ~= '') then
       -- We just have player indexed and we have something to filter with
-      if MasterMerchant.systemSavedVariables.viewType == SELF_VIEW_TYPE then
+      if MasterMerchant.viewMode == MasterMerchant.personalSalesViewMode then
         -- Search all data in the last 180 days
         local timeCheck = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 90)
         local tconcat = table.concat
@@ -1026,7 +1014,7 @@ function MMScrollList:FilterScrollList()
     else
       -- We have the indexes to search
       -- Break up search term into words
-      if MasterMerchant.systemSavedVariables.viewType == SELF_VIEW_TYPE then
+      if MasterMerchant.viewMode == MasterMerchant.personalSalesViewMode then
         searchText = MasterMerchant.concat(searchText, internal.PlayerSpecialText)
       end
       local searchByWords = zo_strgmatch(searchText, '%S+')
@@ -1086,14 +1074,14 @@ function MMScrollList:FilterScrollList()
       end
     end
 
-  elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     local dataSet = nil
     if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
       dataSet = internal.guildPurchases
     elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
       dataSet = internal.guildSales
     else
-      if MasterMerchant.systemSavedVariables.viewType == SELF_VIEW_TYPE then
+      if MasterMerchant.viewMode == MasterMerchant.personalSalesViewMode then
         dataSet = internal.myItems
       else
         dataSet = internal.guildItems
@@ -1110,7 +1098,7 @@ function MMScrollList:FilterScrollList()
 
     local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
     if searchText == nil or searchText == '' then
-      if MasterMerchant.systemSavedVariables.viewType == SELF_VIEW_TYPE and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
+      if MasterMerchant.viewMode == MasterMerchant.personalSalesViewMode and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
         -- my guild sales
         for gn, g in pairs(dataSet) do
           local sellerData = g.sellers[GetDisplayName()] or nil
@@ -1148,7 +1136,7 @@ function MMScrollList:FilterScrollList()
         end
       end
     else
-      if MasterMerchant.systemSavedVariables.viewType == SELF_VIEW_TYPE and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
+      if MasterMerchant.viewMode == MasterMerchant.personalSalesViewMode and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
         -- my guild sales - filtered
         for gn, g in pairs(dataSet) do
           -- Search the guild name for all words
@@ -1220,7 +1208,7 @@ function MMScrollList:FilterScrollList()
       end
     end
 
-  elseif MasterMerchant.systemSavedVariables.viewMode == LISTINGS then
+  elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
     if (searchText == nil or searchText == '') then
       for k, v in pairs(listings_data) do
         for j, dataList in pairs(v) do
@@ -1304,7 +1292,7 @@ function MMScrollList:FilterScrollList()
       end
     end
 
-  elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
+  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
     local timeCheck = MasterMerchant:CheckTime()
     if (searchText == nil or searchText == '') then
       for k, v in pairs(purchases_data) do
@@ -1403,15 +1391,15 @@ function MMScrollList:SortScrollList()
   elseif self.currentSortKey == 'tax' then
     MasterMerchant:SortByTax(self.currentSortOrder, self)
   elseif self.currentSortKey == 'name' then
-    if MasterMerchant.systemSavedVariables.viewMode == RANKS then
+    if MasterMerchant.systemSavedVariables.viewSize == GUILDS then
       MasterMerchant:SortByName(self.currentSortOrder, self)
-    elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
+    elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
       MasterMerchant:SortByPurchaseAccountName(self.currentSortOrder, self)
     end
   elseif self.currentSortKey == 'itemGuildName' then
-    if MasterMerchant.systemSavedVariables.viewMode == LISTINGS then
+    if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
       MasterMerchant:SortByListingItemGuildName(self.currentSortOrder, self)
-    elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
+    elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
       MasterMerchant:SortByPurchaseItemGuildName(self.currentSortOrder, self)
     else
       MasterMerchant:SortBySalesItemGuildName(self.currentSortOrder, self)
@@ -1549,6 +1537,7 @@ function MasterMerchant:UpdateFonts()
 
   -- Main Window (Sales)
   MasterMerchantWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, windowButtonLabel))
   MasterMerchantWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
   MasterMerchantWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
   MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
@@ -1563,6 +1552,7 @@ function MasterMerchant:UpdateFonts()
 
   -- Guild Window
   MasterMerchantGuildWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
+  MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, windowButtonLabel))
   MasterMerchantGuildWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
   MasterMerchantGuildWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
   MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
@@ -1593,6 +1583,7 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantListingWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
   MasterMerchantListingWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
   MasterMerchantListingWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantListingSwitchViewButton:SetFont(string.format(fontString, guildButtonLabel))
   MasterMerchantGuildResetButton:SetFont(string.format(fontString, guildButtonLabel))
   MasterMerchantGuildRefreshButton:SetFont(string.format(fontString, guildButtonLabel))
   ]]--
@@ -1612,6 +1603,7 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantListingWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
   MasterMerchantListingWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
   MasterMerchantListingWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, guildHeader))
+  MasterMerchantListingSwitchViewButton:SetFont(string.format(fontString, guildButtonLabel))
   MasterMerchantGuildResetButton:SetFont(string.format(fontString, guildButtonLabel))
   MasterMerchantGuildRefreshButton:SetFont(string.format(fontString, guildButtonLabel))
   ]]--
@@ -2227,9 +2219,10 @@ end
 
 -- Update Guild Sales window to use the selected date range
 function MasterMerchant:UpdateGuildWindow(rankIndex)
+  -- MasterMerchant:dm("Debug", "UpdateGuildWindow")
   if not rankIndex or rankIndex == 0 then rankIndex = 1 end
   MasterMerchant.systemSavedVariables.rankIndex = rankIndex
-  self.rankScrollList:RefreshFilters()
+  MasterMerchant:RefreshAlteredWindowData(true)
 end
 
 
@@ -2291,9 +2284,10 @@ end
 
 -- Switch Sales window to display buyer or seller
 function MasterMerchant:ToggleBuyerSeller()
+  -- MasterMerchant:dm("Debug", "ToggleBuyerSeller")
   --[[TODO Make this also change the title of the window
   ]]--
-  if MasterMerchant.systemSavedVariables.viewMode == SALES then
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
       MasterMerchant.systemSavedVariables.viewBuyerSeller = 'seller'
       MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
@@ -2302,8 +2296,8 @@ function MasterMerchant:ToggleBuyerSeller()
       MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
     end
 
-    MasterMerchant.salesScrollList:RefreshFilters()
-  elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
       MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'seller'
       MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
@@ -2318,8 +2312,8 @@ function MasterMerchant:ToggleBuyerSeller()
       MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(SK_PURCHASES_COLUMN))
     end
 
-    MasterMerchant.rankScrollList:RefreshFilters()
-  elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
     if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
       MasterMerchant.systemSavedVariables.viewBuyerSeller = 'seller'
       MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
@@ -2328,11 +2322,10 @@ function MasterMerchant:ToggleBuyerSeller()
       MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
     end
 
-    MasterMerchant.purchasesScrollList:RefreshFilters()
+    MasterMerchant:RefreshAlteredWindowData(true)
   else
     internal:dm("Warn", "Shit Hit the fan ToggleBuyerSeller")
-    MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewMode)
-    MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewType)
+    MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
   end
 end
 
@@ -2342,64 +2335,51 @@ end
 -- contents of the search box and the current sorting settings so they're the
 -- same on the other window when it appears.
 function MasterMerchant:ToggleViewMode()
-  MasterMerchant:dm("Debug", "ToggleViewMode")
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewType)
-  --[[ Switching between SALES view or RANKS view
-  until there are other ranks lists this is for guild and
-  personal sales only
-  ]]--
-  if MasterMerchant.systemSavedVariables.viewMode == LISTINGS or MasterMerchant.systemSavedVariables.viewMode == PURCHASES then 
-    MasterMerchant.systemSavedVariables.viewMode = RANKS
-  end
-  --[[ save for use elsewhere
+  -- MasterMerchant:dm("Debug", "ToggleViewMode")
+  -- Switching to 'guild_vs' view
   local theFragment = MasterMerchant:ActiveFragment()
-  if MasterMerchant.systemSavedVariables.viewMode == LISTINGS or MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
+  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS or MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
     MasterMerchant:ToggleMasterMerchantWindow()
     MAIL_INBOX_SCENE:RemoveFragment(theFragment)
     MAIL_SEND_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
-    -- MasterMerchant.systemSavedVariables.viewMode = SALES
+    MasterMerchant.systemSavedVariables.viewSize = GUILDS
   end
-  ]]--
-  if MasterMerchant.systemSavedVariables.viewMode == SALES then
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     MasterMerchant:ActiveWindow():SetHidden(true)
-    MasterMerchant.systemSavedVariables.viewMode = RANKS
-    MasterMerchant.viewTypeFragment                    = self.guildUiFragment
-    MasterMerchant.viewTypeList = self.rankScrollList.list
-
+    MasterMerchant.systemSavedVariables.viewSize = GUILDS
+    MasterMerchant:RefreshAlteredWindowData(true)
+    MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
       MAIL_INBOX_SCENE:RemoveFragment(self.salesUiFragment)
       MAIL_SEND_SCENE:RemoveFragment(self.salesUiFragment)
-      MAIL_INBOX_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
-      MAIL_SEND_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
+      MAIL_INBOX_SCENE:AddFragment(self.guildUiFragment)
+      MAIL_SEND_SCENE:AddFragment(self.guildUiFragment)
     end
 
     if MasterMerchant.systemSavedVariables.openWithStore then
       TRADING_HOUSE_SCENE:RemoveFragment(self.salesUiFragment)
-      TRADING_HOUSE_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
+      TRADING_HOUSE_SCENE:AddFragment(self.guildUiFragment)
     end
-    MasterMerchant.RefreshNewViewsWindowData()
-    -- Switching to 'sales_vm' view
-  elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
+    -- Switching to 'items_vs' view
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
     MasterMerchant:ActiveWindow():SetHidden(true)
-    MasterMerchant.systemSavedVariables.viewMode = SALES
-    MasterMerchant.viewTypeFragment                    = self.salesUiFragment
-    MasterMerchant.viewTypeList = self.salesScrollList.list
+    MasterMerchant.systemSavedVariables.viewSize = ITEMS
+    MasterMerchant:RefreshAlteredWindowData(true)
+    MasterMerchant:ToggleMasterMerchantWindow()
 
     if MasterMerchant.systemSavedVariables.openWithMail then
       MAIL_INBOX_SCENE:RemoveFragment(self.guildUiFragment)
       MAIL_SEND_SCENE:RemoveFragment(self.guildUiFragment)
-      MAIL_INBOX_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
-      MAIL_SEND_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
+      MAIL_INBOX_SCENE:AddFragment(self.salesUiFragment)
+      MAIL_SEND_SCENE:AddFragment(self.salesUiFragment)
     end
 
     if MasterMerchant.systemSavedVariables.openWithStore then
       TRADING_HOUSE_SCENE:RemoveFragment(self.guildUiFragment)
-      TRADING_HOUSE_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
+      TRADING_HOUSE_SCENE:AddFragment(self.salesUiFragment)
     end
-    MasterMerchant.RefreshNewViewsWindowData()
   else
     MasterMerchant:dm("Warn", "Shit Hit the fan ToggleViewMode")
   end
@@ -2414,90 +2394,61 @@ end
 -- Set the visibility status of the main window to the opposite of its current status
 function MasterMerchant:ToggleMasterMerchantWindow()
   MasterMerchant:ActiveWindow():SetHidden(not MasterMerchant:ActiveWindow():IsHidden())
-  --MasterMerchant:RefreshAlteredWindowData(MasterMerchant.systemSavedVariables.viewType)
 end
 
-function MasterMerchant:RefreshAlteredWindowData()
-  MasterMerchant:dm("Debug", "RefreshAlteredWindowData")
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
+-- /script MasterMerchant:RefreshAlteredWindowData()
+function MasterMerchant:RefreshAlteredWindowData(forceRefresh, refreshMode)
+  -- MasterMerchant:dm("Debug", "RefreshAlteredWindowData")
   -- viewMode is like "listings_vm" or "self_vt" for use with the listIsDirty[] table
   if not MasterMerchant.isInitialized then
+    -- MasterMerchant:dm("Debug", "Master Merchant was not Initialized")
     return
   end
-  if MasterMerchant.listIsDirty[MasterMerchant.systemSavedVariables.viewMode] then
-    MasterMerchant.listIsDirty[MasterMerchant.systemSavedVariables.viewMode] = false
-    MasterMerchant:dm("Debug", "the viewMode was dirty")
-    if MasterMerchant.systemSavedVariables.viewMode == SALES then
-      self.salesScrollList:RefreshData()
-    elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
-      self.rankScrollList:RefreshData()
-    elseif MasterMerchant.systemSavedVariables.viewMode == LISTINGS then
-      self.listingsScrollList:RefreshData()
-    elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
-      self.purchasesScrollList:RefreshData()
+  local view
+  if refreshMode then
+    view = refreshMode
+  else
+    view = MasterMerchant.systemSavedVariables.viewSize
+  end
+  -- MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewSize)
+  if MasterMerchant.listIsDirty[view] or forceRefresh then
+    MasterMerchant.listIsDirty[view] = false
+    if forceRefresh then
+    -- MasterMerchant:dm("Debug", "the refresh was forced")
+    else
+    -- MasterMerchant:dm("Debug", "the viewMode was dirty")
+    end
+    if view == ITEMS then
+        MasterMerchant.scrollList:RefreshFilters()
+    elseif view == GUILDS then
+        MasterMerchant.guildScrollList:RefreshFilters()
+    elseif view == LISTINGS then
+        MasterMerchant.listingsScrollList:RefreshFilters()
+    elseif view == PURCHASES then
+        MasterMerchant.purchasesScrollList:RefreshFilters()
     end
   else
-    MasterMerchant:dm("Debug", "viewMode was not dirty")
-  end
-end
-
-function MasterMerchant:RefreshNewViewsWindowData()
-  MasterMerchant:dm("Debug", "RefreshNewViewsWindowData")
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  -- viewMode is like "listings_vm" or "self_vt" for use with the listIsDirty[] table
-  if not MasterMerchant.isInitialized then
-    return
-  end
-  if not MasterMerchant.listIsDirty[MasterMerchant.systemSavedVariables.viewMode] then
-    MasterMerchant:dm("Debug", "Changed viewMode, was not dirty")
-    if MasterMerchant.systemSavedVariables.viewMode == SALES then
-      MasterMerchant.salesScrollList:RefreshData()
-    elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
-      self.rankScrollList:RefreshData()
-    elseif MasterMerchant.systemSavedVariables.viewMode == LISTINGS then
-      self.listingsScrollList:RefreshData()
-    elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
-      MasterMerchant.purchasesScrollList:RefreshData()
-    end
-  else
-    MasterMerchant:dm("Debug", "Changed viewMode will update with next refresh")
+    -- MasterMerchant:dm("Debug", "viewMode was not dirty")
   end
 end
 
 function MasterMerchant:SwitchToMasterMerchantSalesView()
-  MasterMerchant:dm("Debug", "SwitchToMasterMerchantSalesView")
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewType)
-
+  -- MasterMerchant:dm("Debug", "SwitchToMasterMerchantSalesView")
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then return end
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
-  MasterMerchant.systemSavedVariables.viewType = SELF_VIEW_TYPE
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewType)
-  MasterMerchant:dm("Debug", MasterMerchant.previousViewMode)
-  if not MasterMerchant.previousViewMode then
-    MasterMerchant.previousViewMode = SALES
-  end
-  MasterMerchant:dm("Debug", MasterMerchant.previousViewMode)
-  MasterMerchant.systemSavedVariables.viewMode = MasterMerchant.previousViewMode
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  MasterMerchant.previousViewMode = nil
-  MasterMerchant:dm("Debug", MasterMerchant.previousViewMode)
-  MasterMerchant:dm("Debug", "----------")
-  MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
-  MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
+  MasterMerchant.systemSavedVariables.viewSize = ITEMS
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:RemoveFragment(theFragment)
     MAIL_SEND_SCENE:RemoveFragment(theFragment)
-    MAIL_INBOX_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
-    MAIL_SEND_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
+    MAIL_INBOX_SCENE:AddFragment(self.salesUiFragment)
+    MAIL_SEND_SCENE:AddFragment(self.salesUiFragment)
   end
 
   if MasterMerchant.systemSavedVariables.openWithStore then
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
-    TRADING_HOUSE_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
+    TRADING_HOUSE_SCENE:AddFragment(self.salesUiFragment)
   end
-  MasterMerchant:RefreshAlteredWindowData()
-  ZO_Scroll_ResetToTop(MasterMerchant.viewTypeList)
 
   MasterMerchantGuildWindow:SetHidden(true)
   MasterMerchantListingWindow:SetHidden(true)
@@ -2505,58 +2456,15 @@ function MasterMerchant:SwitchToMasterMerchantSalesView()
   MasterMerchantFilterByNameWindow:SetHidden(true)
   MasterMerchantFilterByTypeWindow:SetHidden(true)
 
-  MasterMerchantWindow:SetHidden(false)
-end
-
-function MasterMerchant:SwitchToMasterMerchantGuildSalesView()
-  MasterMerchant:dm("Debug", "SwitchToMasterMerchantGuildSalesView")
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewType)
-
-  local theFragment = MasterMerchant:ActiveFragment()
-  MasterMerchant:ActiveWindow():SetHidden(true)
-  MasterMerchant.systemSavedVariables.viewType = ALL_VIEW_TYPE
-  if not MasterMerchant.previousViewMode then
-    MasterMerchant.previousViewMode = SALES
-  end
-  MasterMerchant.systemSavedVariables.viewMode = MasterMerchant.previousViewMode
-  MasterMerchant.previousViewMode = nil
-  MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
-  MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
-  if MasterMerchant.systemSavedVariables.openWithMail then
-    MAIL_INBOX_SCENE:RemoveFragment(theFragment)
-    MAIL_SEND_SCENE:RemoveFragment(theFragment)
-    MAIL_INBOX_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
-    MAIL_SEND_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
-  end
-
-  if MasterMerchant.systemSavedVariables.openWithStore then
-    TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
-    TRADING_HOUSE_SCENE:AddFragment(MasterMerchant.viewTypeFragment)
-  end
-  MasterMerchant:RefreshAlteredWindowData()
-  ZO_Scroll_ResetToTop(MasterMerchant.viewTypeList)
-
-  MasterMerchantWindow:SetHidden(true)
-  MasterMerchantListingWindow:SetHidden(true)
-  MasterMerchantPurchaseWindow:SetHidden(true)
-  MasterMerchantFilterByNameWindow:SetHidden(true)
-  MasterMerchantFilterByTypeWindow:SetHidden(true)
-
-  MasterMerchantGuildWindow:SetHidden(false)
+  MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
 function MasterMerchant:SwitchToMasterMerchantPurchaseView()
-  MasterMerchant:dm("Debug", "SwitchToMasterMerchantPurchaseView")
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewType)
-  if MasterMerchant.systemSavedVariables.viewMode == PURCHASES then return end
+  -- MasterMerchant:dm("Debug", "SwitchToMasterMerchantPurchaseView")
+  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then return end
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
-  if MasterMerchant.systemSavedVariables.viewMode == SALES or MasterMerchant.systemSavedVariables.viewMode == RANKS then
-  MasterMerchant.previousViewMode = MasterMerchant.systemSavedVariables.viewMode
-  end
-  MasterMerchant.systemSavedVariables.viewMode = PURCHASES
+  MasterMerchant.systemSavedVariables.viewSize = PURCHASES
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:RemoveFragment(theFragment)
     MAIL_SEND_SCENE:RemoveFragment(theFragment)
@@ -2568,7 +2476,6 @@ function MasterMerchant:SwitchToMasterMerchantPurchaseView()
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:AddFragment(self.purchaseUiFragment)
   end
-  MasterMerchant:RefreshAlteredWindowData()
 
   MasterMerchantWindow:SetHidden(true)
   MasterMerchantGuildWindow:SetHidden(true)
@@ -2576,20 +2483,15 @@ function MasterMerchant:SwitchToMasterMerchantPurchaseView()
   MasterMerchantFilterByNameWindow:SetHidden(true)
   MasterMerchantFilterByTypeWindow:SetHidden(true)
 
-  MasterMerchantPurchaseWindow:SetHidden(false)
+  MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
 function MasterMerchant:SwitchToMasterMerchantListingsView()
-  MasterMerchant:dm("Debug", "SwitchToMasterMerchantListingsView")
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewType)
-  if MasterMerchant.systemSavedVariables.viewMode == LISTINGS then return end
+  -- MasterMerchant:dm("Debug", "SwitchToMasterMerchantListingsView")
+  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then return end
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
-  if MasterMerchant.systemSavedVariables.viewMode == SALES or MasterMerchant.systemSavedVariables.viewMode == RANKS then
-  MasterMerchant.previousViewMode = MasterMerchant.systemSavedVariables.viewMode
-  end
-  MasterMerchant.systemSavedVariables.viewMode = LISTINGS
+  MasterMerchant.systemSavedVariables.viewSize = LISTINGS
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:RemoveFragment(theFragment)
     MAIL_SEND_SCENE:RemoveFragment(theFragment)
@@ -2601,7 +2503,6 @@ function MasterMerchant:SwitchToMasterMerchantListingsView()
     TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
     TRADING_HOUSE_SCENE:AddFragment(self.listingUiFragment)
   end
-  MasterMerchant:RefreshAlteredWindowData()
 
   MasterMerchantWindow:SetHidden(true)
   MasterMerchantGuildWindow:SetHidden(true)
@@ -2609,7 +2510,7 @@ function MasterMerchant:SwitchToMasterMerchantListingsView()
   MasterMerchantFilterByNameWindow:SetHidden(true)
   MasterMerchantFilterByTypeWindow:SetHidden(true)
 
-  MasterMerchantListingWindow:SetHidden(false)
+  MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
 -- Set the visibility status of the feebback window to the opposite of its current status
@@ -2646,31 +2547,30 @@ function MasterMerchant:ToggleMasterMerchantPricingHistoryGraph()
   MasterMerchant.systemSavedVariables.showGraph = not MasterMerchant.systemSavedVariables.showGraph
 end
 
---[[ TODO Switch between all sales and your sales however, this needs to be
-added to SwitchToMasterMerchantSalesView and
-SwitchToMasterMerchantGuildSalesView because of menu icon changes
-
-SwitchViewButton controls need to be removed
-]]--
+-- Switch between all sales and your sales
 function MasterMerchant:SwitchViewMode()
-  -- /script MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewMode)
-  -- /script MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewType)
+  -- MasterMerchant:dm("Debug", "SwitchViewMode")
+  -- /script MasterMerchant:dm("Debug", MasterMerchant.systemSavedVariables.viewSize)
+  -- /script MasterMerchant:dm("Debug", MasterMerchant.viewMode)
   -- default is self
-  --[[ MasterMerchant.systemSavedVariables.viewType
-  when viewMode is 'self' (SELF_VIEW_TYPE) then you are viewing personal sales
-  when viewMode if 'all'/'guild' (ALL_VIEW_TYPE) you are viewing guild sales
+  --[[ MasterMerchant.viewMode
+  when viewMode is 'self': (MasterMerchant.personalSalesViewMode) then you are viewing personal sales
+  when viewMode if 'all'/'guild': (MasterMerchant.guildSalesViewMode) you are viewing guild sales
   ]]--
 
-  if MasterMerchant.systemSavedVariables.viewType == SELF_VIEW_TYPE then
-    -- switching to 'all' or Guild Sales as opposed to personal sales
+  if self.viewMode == MasterMerchant.personalSalesViewMode then
+    -- switching to All Guild Sales
+    MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
     MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
+    MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
     MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
-    MasterMerchant.systemSavedVariables.viewType = ALL_VIEW_TYPE
-  elseif MasterMerchant.systemSavedVariables.viewType == ALL_VIEW_TYPE then
-    -- switching to 'self' or personal sales as opposed to guild sales
+    self.viewMode = MasterMerchant.guildSalesViewMode
+  else
+    MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
     MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
+    MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
     MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
-    MasterMerchant.systemSavedVariables.viewType = SELF_VIEW_TYPE
+    self.viewMode = MasterMerchant.personalSalesViewMode
   end
 
   --[[ TODO Verify this
@@ -2685,26 +2585,27 @@ function MasterMerchant:SwitchViewMode()
 
   Either that or tbug didn't update
   ]]--
-  if MasterMerchant.systemSavedVariables.viewMode == SALES then
-    self.salesScrollList:RefreshFilters()
-    ZO_Scroll_ResetToTop(self.salesScrollList.list)
-  elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
-    self.rankScrollList:RefreshFilters()
-    ZO_Scroll_ResetToTop(self.rankScrollList.list)
-  elseif MasterMerchant.systemSavedVariables.viewMode == LISTINGS then
-    self.listingsScrollList:RefreshFilters()
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+    ZO_Scroll_ResetToTop(self.scrollList.list)
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+    ZO_Scroll_ResetToTop(self.guildScrollList.list)
+  elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
+    MasterMerchant:RefreshAlteredWindowData(true)
     ZO_Scroll_ResetToTop(self.listingsScrollList.list)
-  elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
-    self.purchasesScrollList:RefreshFilters()
+  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
+    MasterMerchant:RefreshAlteredWindowData(true)
     ZO_Scroll_ResetToTop(self.purchasesScrollList.list)
   else
     internal:dm("Warn", "Shit Hit the fan SwitchViewMode")
-    MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewMode)
+    MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
   end
 end
 
 -- Switch between total price mode and unit price mode
 function MasterMerchant:SwitchPriceMode()
+  MasterMerchant:dm("Debug", "SwitchPriceMode")
   if MasterMerchant.systemSavedVariables.showUnitPrice then
     MasterMerchant.systemSavedVariables.showUnitPrice = false
     MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
@@ -2723,14 +2624,14 @@ function MasterMerchant:SwitchPriceMode()
     MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetText(GetString(SK_PRICE_EACH_COLUMN))
   end
 
-  if MasterMerchant.systemSavedVariables.viewMode == SALES then
-    MasterMerchant.salesScrollList:RefreshFilters()
-  elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then
-    MasterMerchant.rankScrollList:RefreshFilters()
-  elseif MasterMerchant.systemSavedVariables.viewMode == LISTINGS then
-    MasterMerchant.listingsScrollList:RefreshFilters()
-  elseif MasterMerchant.systemSavedVariables.viewMode == PURCHASES then
-    MasterMerchant.purchasesScrollList:RefreshFilters()
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
+    MasterMerchant:RefreshAlteredWindowData(true)
   else
     MasterMerchant:dm("Debug", "Shit Hit The Fan SwitchPriceMode")
   end
@@ -2815,9 +2716,10 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantStatsGuild.m_comboBox:SetSortsItems(false)
 
   -- Guild Time dropdown choice box
-  local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantGuildTimeChooser', MasterMerchantGuildWindow, 'MasterMerchantStatsGuildDropdown')
+  local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantGuildTimeChooser', MasterMerchantGuildWindow,
+    'MasterMerchantStatsGuildDropdown')
   MasterMerchantGuildTime:SetDimensions(180, 25)
-  MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildWindowMenuFooterPriceSwitchButton, RIGHT, 5, 0)
+  MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildWindowMenuFooterSwitchViewButton, RIGHT, 5, 0)
   MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
 
   MasterMerchant.systemSavedVariables.rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
@@ -3002,6 +2904,10 @@ function MasterMerchant:SetupMasterMerchantWindow()
   --ZO_SortHeader_SetTooltip(MasterMerchantGuildWindowHeadersSellTime, GetString(SK_SORT_TIME_TOOLTIP))
   --ZO_SortHeader_SetTooltip(MasterMerchantGuildWindowHeadersPrice, GetString(SK_SORT_PRICE_TOOLTIP))
 
+  -- View switch button
+  MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
+  MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
+
   -- Total / unit price switch button
   if MasterMerchant.systemSavedVariables.showUnitPrice then
     MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
@@ -3066,9 +2972,9 @@ end
 function MasterMerchant:SetupScrollLists()
   MasterMerchant:dm("Debug", "SetupScrollLists")
   -- Scroll list init
-  self.salesScrollList = MMScrollList:New(MasterMerchantWindow)
-  --self.salesScrollList:Initialize()
-  ZO_PostHook(self.salesScrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
+  self.scrollList = MMScrollList:New(MasterMerchantWindow)
+  --self.scrollList:Initialize()
+  ZO_PostHook(self.scrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
     if header == MasterMerchantWindowHeadersPrice then
       if header.mouseIsOver then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.95, 0.92, 0.26, 1)
       else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.81, 0.15, 1) end
@@ -3085,9 +2991,9 @@ function MasterMerchant:SetupScrollLists()
     else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end
   end)
 
-  self.rankScrollList = MMScrollList:New(MasterMerchantGuildWindow)
-  --self.rankScrollList:Initialize()
-  ZO_PostHook(self.rankScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
+  self.guildScrollList = MMScrollList:New(MasterMerchantGuildWindow)
+  --self.guildScrollList:Initialize()
+  ZO_PostHook(self.guildScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
     MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   end)
   ZO_PostHookHandler(MasterMerchantGuildWindowHeadersSales, 'OnMouseExit', function()

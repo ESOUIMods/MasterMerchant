@@ -1,6 +1,14 @@
 local lib           = _G["LibGuildStore"]
 local internal      = _G["LibGuildStore_Internal"]
 
+--[[ can nout use MasterMerchant.itemsViewSize for example
+because that will not be available this early.
+]]--
+local ITEMS = 'items_vs'
+local GUILDS = 'guild_vs'
+local LISTINGS = 'listings_vs'
+local PURCHASES = 'purchases_vs'
+
 --/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal.LibHistoireListener[622389]:GetPendingEventMetrics())
 function internal:CheckStatus()
   --internal:dm("Debug", "CheckStatus")
@@ -60,7 +68,8 @@ function internal:QueueCheckStatus()
     lib.guildStoreReady                                      = true
     LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
     internal:DatabaseBusy(false)
-    MasterMerchant:RefreshAlteredWindowData()
+    MasterMerchant.listIsDirty[ITEMS] = true
+    MasterMerchant.listIsDirty[GUILDS]   = true
   end
 end
 
@@ -334,11 +343,6 @@ local function Initilizze()
       }
       internal:addPurchaseData(theEvent)
       MasterMerchant.listIsDirty[PURCHASES] = true
-      if not MasterMerchant.isInitialized then
-        internal:dm("Info", GetString(MM_LGS_NOT_INITIALIZED_AGS_REFRESH))
-        return
-      end
-      MasterMerchant:RefreshAlteredWindowData()
     end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_DATABASE_UPDATE,

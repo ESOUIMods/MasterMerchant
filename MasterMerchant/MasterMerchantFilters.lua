@@ -363,6 +363,7 @@ MasterMerchant.filterTypes = {
 }
 
 function MasterMerchant:ResetFilters()
+  -- MasterMerchant:dm("Debug", "ResetFilters")
   for key, value in pairs(MasterMerchant.filterTypes) do
     if value.filterActive then value.filterActive = false end
     if value.button then
@@ -370,10 +371,11 @@ function MasterMerchant:ResetFilters()
     end
   end
   MasterMerchant.filterTypes[MM_ITEM_TYPE_ALL].filterActive = true
-  MasterMerchant.listingsScrollList:RefreshFilters()
+  MasterMerchant:RefreshAlteredWindowData(true)
 end
 
 function MasterMerchant:UpdateFilterState(control, filterType)
+  -- MasterMerchant:dm("Debug", "UpdateFilterState")
   local function filtersCleared()
     for key, value in pairs(MasterMerchant.filterTypes) do
       if value.filterActive then return false end
@@ -416,7 +418,7 @@ function MasterMerchant:UpdateFilterState(control, filterType)
     MasterMerchant.filterTypes[MM_ITEM_TYPE_ALL].filterActive = false
   end
   if filtersCleared() then MasterMerchant.filterTypes[MM_ITEM_TYPE_ALL].filterActive = true end
-  MasterMerchant.listingsScrollList:RefreshFilters()
+  MasterMerchant:RefreshAlteredWindowData(true)
 end
 
 function MasterMerchant:ResetFilterState(control, filterType)
@@ -848,7 +850,7 @@ function MasterMerchant:IsItemLinkFiltered(itemLink, debugLink)
   local isKnowToggleActive = knownFilterActive or unknownFilterActive
   local showAll = MasterMerchant.filterTypes[MM_ITEM_TYPE_ALL].filterActive
   local typeFilterActive = MasterMerchant.filterTypes[itemType].filterActive
-  local isCollectibleItem = IsItemLinkSetCollectionPiece(itemLink) 
+  local isCollectibleItem = IsItemLinkSetCollectionPiece(itemLink)
   local collectible = isCollectibleItem and (itemType == MM_ITEM_TYPE_WEAPON or itemType == MM_ITEM_TYPE_ARMOR or itemType == MM_ITEM_TYPE_JEWELRY)
   local isKnown = nil
   local isCollected = nil

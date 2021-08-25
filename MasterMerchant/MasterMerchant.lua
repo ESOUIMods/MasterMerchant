@@ -14,27 +14,10 @@ local listings_data             = _G["LibGuildStore_ListingsData"]
 
 local OriginalSetupPendingPost
 
---[[ can not use global values for because they are not
-always available early.
-
-guild sales, even when viewing ranks, viewMode is all
-personal sales, even when viewing ranks, viewMode is self
-
-personal sales, items view, viewSize is full
-personal sales, rank view, viewSize is half
-
-guild sales, items view, viewSize is full
-guild sales, rank view, viewSize is half
-]]--
-local SALES = 'sales_vm' -- full
-local RANKS = 'ranks_vm' -- half
-local LISTINGS = 'listings_vm'
-local PURCHASES = 'purchases_vm'
-
-local SELF_VIEW_TYPE = 'self_vt' -- self
-local ALL_VIEW_TYPE = 'guild_vt' -- all
--- local LISTINGS_VIEW = 'listings_vm'
--- local PURCHASES_VIEW = 'purchases_vm'
+local ITEMS                     = MasterMerchant.itemsViewSize
+local GUILDS                    = MasterMerchant.guildsViewSize
+local LISTINGS                  = MasterMerchant.listingsViewSize
+local PURCHASES                 = MasterMerchant.purchasesViewSize
 
 CSA_EVENT_SMALL_TEXT            = 1
 CSA_EVENT_LARGE_TEXT            = 2
@@ -1567,8 +1550,8 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.showFullPrice end,
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.showFullPrice = value
-        MasterMerchant.listIsDirty[SALES]                 = true
-        MasterMerchant.listIsDirty[RANKS]                = true
+        MasterMerchant.listIsDirty[ITEMS]                 = true
+        MasterMerchant.listIsDirty[GUILDS]                = true
         MasterMerchant.listIsDirty[LISTINGS]              = true
         MasterMerchant.listIsDirty[PURCHASES]             = true
       end,
@@ -1584,8 +1567,8 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value)
         MasterMerchant.systemSavedVariables.windowFont = value
         self:UpdateFonts()
-        if MasterMerchant.systemSavedVariables.viewMode == SALES then self.salesScrollList:RefreshVisible()
-        elseif MasterMerchant.systemSavedVariables.viewMode == RANKS then self.rankScrollList:RefreshVisible()
+        if MasterMerchant.systemSavedVariables.viewSize == ITEMS then self.scrollList:RefreshVisible()
+        elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then self.guildScrollList:RefreshVisible()
         else self.listingScrollList:RefreshVisible() end
       end,
       default = MasterMerchant.systemDefault.windowFont,
@@ -2882,8 +2865,7 @@ function MasterMerchant:Initialize()
     showCyroAlerts = true,
     alertSoundName = "Book_Acquired",
     showUnitPrice = false,
-    viewMode = SALES,
-    viewType = SELF_VIEW_TYPE,
+    viewSize = ITEMS,
     offlineSales = true,
     showPricing = true,
     showBonanzaPricing = true,
@@ -2983,8 +2965,8 @@ function MasterMerchant:Initialize()
     "self",
     "all",
   }
-  if internal:is_in(MasterMerchant.systemSavedVariables.viewMode, oldViewSizeValues) then
-    MasterMerchant.systemSavedVariables.viewMode = SALES
+  if internal:is_in(MasterMerchant.systemSavedVariables.viewSize, oldViewSizeValues) then
+    MasterMerchant.systemSavedVariables.viewSize = ITEMS
   end
 
   self.currentGuildID                                 = GetGuildId(1) or 0
@@ -3071,16 +3053,11 @@ function MasterMerchant:Initialize()
   ZO_PreHook('ZO_InventorySlot_ShowContextMenu',
     function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
 
-  MasterMerchant.systemSavedVariables.viewMode = SALES
-  MasterMerchant.systemSavedVariables.viewType = SELF_VIEW_TYPE
-  theFragment = self.salesUiFragment
-  --[[
-  if MasterMerchant.systemSavedVariables.viewMode == SALES then theFragment = self.salesUiFragment end
-  if MasterMerchant.systemSavedVariables.viewMode == RANKS then theFragment = self.guildUiFragment end
-  if MasterMerchant.systemSavedVariables.viewMode == LISTINGS then theFragment = self.listingUiFragment end
-  if MasterMerchant.systemSavedVariables.viewMode == PURCHASES then theFragment = self.purchaseUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then theFragment = self.salesUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == GUILDS then theFragment = self.guildUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then theFragment = self.listingUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then theFragment = self.purchaseUiFragment end
   if not theFragment then theFragment = self.salesUiFragment end
-  ]]--
 
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:AddFragment(theFragment)
@@ -3238,17 +3215,6 @@ function MasterMerchant:Initialize()
     originalCall(control, slot)
     self:SwitchPrice(control, slot)
   end
-
-  --[[ the scroll list may not be dirty, or have any new data however
-  new routines look to see if the data has changed. If no change has
-  been made then refresh doesn't occur.
-
-  This is a problem when the MM window is opened for the first time
-  because the global var might be false so no data is displayed
-
-  This will be reset once the user chooses a mode such as sales,
-  purchaces, or listings
-  ]]--
 
   --[[
   Order of events:
@@ -3410,8 +3376,8 @@ function MasterMerchant:InitScrollLists()
   end
 
   MasterMerchant.isInitialized = true
-  MasterMerchant.listIsDirty[SALES] = true
-  MasterMerchant.listIsDirty[RANKS] = true
+  MasterMerchant.listIsDirty[ITEMS] = true
+  MasterMerchant.listIsDirty[GUILDS] = true
   MasterMerchant.listIsDirty[LISTINGS] = true
   MasterMerchant.listIsDirty[PURCHASES] = true
 end
@@ -3450,7 +3416,7 @@ end
 function OnItemSelected()
   local isPlayerViewingTrader = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.active
   local selectedItem          = GAMEPAD_TRADING_HOUSE_SELL.itemList.list.selectedIndex
-  local searchData            = ZO_TradingHouse_GamepadMaskContainerSellList.salesScrollList.dataList.itemData.searchData
+  local searchData            = ZO_TradingHouse_GamepadMaskContainerSellList.scrollList.dataList.itemData.searchData
   local itemSelected          = searchData[selectedItem]
   local bagId                 = itemInventorySlot.bagId
   local slotId                = itemInventorySlot.slotId

@@ -8,7 +8,7 @@
 -->
 <GuiXml>
   <Controls>
-    <!-- Sales Main Window self_vt -->
+    <!-- Sales Main Window purchases_vs -->
     <!-- /script MasterMerchantItemsWindow:SetHidden(false) -->
     <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantPurchaseWindow" hidden="true">
       <Dimensions x="960" y="720"/>
@@ -43,8 +43,8 @@
               </Controls>
             </Backdrop>
             <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-              <Anchor point="TOP" relativeTo="$(parent)MenuHeader" relativePoint="TOP" offsetX="-35" offsetY="5"/>
-              <Dimensions x="345" y="40"/>
+              <Anchor point="TOP" relativeTo="$(parent)MenuHeader" relativePoint="TOP" offsetX="0" offsetY="5"/>
+              <Dimensions x="365" y="40"/>
             </Label>
             <!-- Buttons in reverse order and anchored to upper right corner relative to each other -->
             <Button name="$(parent)CloseButton" inheritAlpha="true">
@@ -128,7 +128,7 @@
               <Textures normal="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_up.dds"
                         mouseOver="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_over.dds"/>
               <OnClicked>
-                MasterMerchant:ToggleViewMode()
+                MasterMerchant:SwitchToMasterMerchantSalesView()
               </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_SALES_TOOLTIP))
