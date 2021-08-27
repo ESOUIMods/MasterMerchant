@@ -298,7 +298,7 @@ ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Inicjalizacja Master Merchant...")
-ZO_CreateStringId("MM_INITIALIZED", "Master Merchant zainicjalizowany: zgromadzono %s sprzedaży.")
+ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: zgromadzono %s sprzedaży, %s Purchases, %s Listings, %s Posted, %s Canceled.")
 ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Start początkowej inicjalizacji gildii i przedmiotów")
 ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Początkowa inicjalizacja gildii i przedmiotów: %s sekund do inicjalizacji %s rekordów.")
 ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimalne indeksowanie...")

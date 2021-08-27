@@ -147,6 +147,8 @@ internal.defaults                = {
   useSalesHistory = false,
   overrideMMImport = false,
   historyDepthSL = 60,
+  historyDepthPI = 180,
+  historyDepthCI = 180,
 }
 
 if not LibGuildStore_SavedVariables then LibGuildStore_SavedVariables = internal.saveVarsDefaults end
@@ -173,11 +175,18 @@ internal.currentGuilds           = {}
 internal.totalSales              = 0
 internal.totalPurchases          = 0
 internal.totalListings           = 0
+internal.totalPosted           = 0
+internal.totalCanceled           = 0
 
 internal.purchasedItems          = nil
 internal.purchasedSellers        = nil
 internal.listedItems             = nil
 internal.listedSellers           = nil
+
+internal.cancelledItems          = nil
+internal.cancelledSellers        = nil
+internal.postedItems             = nil
+internal.postedSellers           = nil
 
 internal.GS_NA_NAMESPACE          = "datana"
 internal.GS_EU_NAMESPACE          = "dataeu"

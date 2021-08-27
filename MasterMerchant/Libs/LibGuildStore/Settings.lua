@@ -80,7 +80,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(GS_SHOPPINGLIST_MANAGEMENT_NAME),
+    name = GetString(GS_DATA_MANAGEMENT_NAME),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#DataManagementOptions",
   }
@@ -94,6 +94,28 @@ function internal:LibAddonInit()
     getFunc = function() return LibGuildStore_SavedVariables.historyDepthSL end,
     setFunc = function(value) LibGuildStore_SavedVariables.historyDepthSL = value end,
     default = internal.defaults.historyDepthSL,
+  }
+  -- Size posteditems history
+  optionsData[#optionsData + 1] = {
+    type = 'slider',
+    name = GetString(GS_POSTEDITEMS_DEPTH_NAME),
+    tooltip = GetString(GS_POSTEDITEMS_DEPTH_TIP),
+    min = 15,
+    max = 180,
+    getFunc = function() return LibGuildStore_SavedVariables.historyDepthPI end,
+    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthPI = value end,
+    default = internal.defaults.historyDepthPI,
+  }
+  -- Size canceleditems history
+  optionsData[#optionsData + 1] = {
+    type = 'slider',
+    name = GetString(GS_CANCELEDITEMS_DEPTH_NAME),
+    tooltip = GetString(GS_CANCELEDITEMS_DEPTH_TIP),
+    min = 15,
+    max = 180,
+    getFunc = function() return LibGuildStore_SavedVariables.historyDepthCI end,
+    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthCI = value end,
+    default = internal.defaults.historyDepthCI,
   }
   optionsData[#optionsData + 1] = {
     type = "header",

@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant         = { }
 MasterMerchant.name    = 'MasterMerchant'
-MasterMerchant.version = '3.6.36'
+MasterMerchant.version = '3.6.37'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -134,6 +134,9 @@ end
 
 MasterMerchant.personalSalesViewMode = 'self_vm'
 MasterMerchant.guildSalesViewMode    = 'guild_vm'
+MasterMerchant.reportsPostedViewMode      = 'posted_vm'
+MasterMerchant.reportsCanceledViewMode      = 'canceled_vm'
+-- TODO currently unused?
 MasterMerchant.listingsViewMode      = 'listings_vm'
 MasterMerchant.purchasesViewMode     = 'purchases_vm'
 
@@ -141,9 +144,11 @@ MasterMerchant.itemsViewSize         = 'items_vs'
 MasterMerchant.guildsViewSize        = 'guild_vs'
 MasterMerchant.listingsViewSize      = 'listings_vs'
 MasterMerchant.purchasesViewSize     = 'purchases_vs'
+MasterMerchant.reportsViewSize     = 'reports_vs'
 
 -- default is self
-MasterMerchant.viewMode            = MasterMerchant.personalSalesViewMode
+MasterMerchant.salesViewMode            = MasterMerchant.personalSalesViewMode
+MasterMerchant.reportsViewMode            = MasterMerchant.reportsPostedViewMode
 MasterMerchant.isInitialized       = false -- added 8-25 used
 MasterMerchant.guildMemberInfo     = { } -- added 10-17 used as lookup
 MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
@@ -161,12 +166,20 @@ end
 
 -- We do 'lazy' updates on the scroll lists, this is used to
 -- mark whether we need to RefreshData() before showing
--- ITEMS, GUILDS, LISTINGS, PURCHASES
-MasterMerchant.listIsDirty                   = { [MasterMerchant.itemsViewSize] = false, [MasterMerchant.guildsViewSize] = false, [MasterMerchant.listingsViewSize] = false, [MasterMerchant.purchasesViewSize] = false }
+-- ITEMS, GUILDS, LISTINGS, PURCHASES, REPORTS
+MasterMerchant.listIsDirty                   = {
+  [MasterMerchant.itemsViewSize] = false,
+  [MasterMerchant.guildsViewSize] = false,
+  [MasterMerchant.listingsViewSize] = false,
+  [MasterMerchant.purchasesViewSize] = false,
+  [MasterMerchant.reportsViewSize] = false,
+}
+
 MasterMerchant.scrollList                    = nil
 MasterMerchant.guildScrollList               = nil
 MasterMerchant.listingsScrollList            = nil
 MasterMerchant.purchasesScrollList           = nil
+MasterMerchant.reportsScrollList           = nil
 MasterMerchant.calcInput                     = nil
 MasterMerchant.nameFilterScrollList          = nil
 
@@ -181,6 +194,7 @@ MasterMerchant.salesUiFragment               = { }
 MasterMerchant.guildUiFragment               = { }
 MasterMerchant.listingUiFragment             = { }
 MasterMerchant.purchaseUiFragment            = { }
+MasterMerchant.reportsUiFragment            = { }
 MasterMerchant.statsFragment                 = { }
 MasterMerchant.activeTip                     = nil
 MasterMerchant.tippingControl                = nil

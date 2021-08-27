@@ -366,18 +366,21 @@ function internal:DatabaseBusy(start)
     MasterMerchantGuildWindowMenuFooterLoadingIcon.animation:Stop()
     MasterMerchantListingWindowMenuFooterLoadingIcon.animation:Stop()
     MasterMerchantPurchaseWindowMenuFooterLoadingIcon.animation:Stop()
+    MasterMerchantReportsWindowMenuFooterLoadingIcon.animation:Stop()
   end
 
   MasterMerchantWindowMenuFooterLoadingIcon:SetHidden(not start)
   MasterMerchantGuildWindowMenuFooterLoadingIcon:SetHidden(not start)
   MasterMerchantListingWindowMenuFooterLoadingIcon:SetHidden(not start)
   MasterMerchantPurchaseWindowMenuFooterLoadingIcon:SetHidden(not start)
+  MasterMerchantReportsWindowMenuFooterLoadingIcon:SetHidden(not start)
 
   if start then
     MasterMerchantWindowMenuFooterLoadingIcon.animation:PlayForward()
     MasterMerchantGuildWindowMenuFooterLoadingIcon.animation:PlayForward()
     MasterMerchantListingWindowMenuFooterLoadingIcon.animation:PlayForward()
     MasterMerchantPurchaseWindowMenuFooterLoadingIcon.animation:PlayForward()
+    MasterMerchantReportsWindowMenuFooterLoadingIcon.animation:PlayForward()
   end
 end
 

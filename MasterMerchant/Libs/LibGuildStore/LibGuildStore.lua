@@ -8,6 +8,7 @@ local ITEMS = 'items_vs'
 local GUILDS = 'guild_vs'
 local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
+local REPORTS = 'reports_vs'
 
 --/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal.LibHistoireListener[622389]:GetPendingEventMetrics())
 function internal:CheckStatus()
@@ -182,6 +183,8 @@ internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
     firstRunNa = false,
     lastReceivedEventID = {},
     historyDepthSL = 180,
+    historyDepthPI = 180,
+    historyDepthCI = 180,
     minimalIndexing = false,
     historyDepth = 90,
     minItemCount = 20,
@@ -293,6 +296,8 @@ local function SetupData()
   LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
   LEQ:Add(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
   LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
+  LEQ:Add(function() internal:InitPostedItemsHistory() end, 'InitPostedItemsHistory')
+  LEQ:Add(function() internal:InitCancelledItemsHistory() end, 'InitCancelledItemsHistory')
   -- Index Data, like sr_index
   if LibGuildStore_SavedVariables["minimalIndexing"] then
     LEQ:Add(function() internal:dm("Info", GetString(GS_MINIMAL_INDEXING)) end, "LibGuildStoreIndexData")
@@ -363,6 +368,7 @@ local function Initilizze()
           seller = GetDisplayName(),
         }
         internal:addPostedItem(theEvent)
+        MasterMerchant.listIsDirty[REPORTS] = true
       end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_CANCELLED,
@@ -377,6 +383,7 @@ local function Initilizze()
           seller = GetDisplayName(),
         }
         internal:addCancelledItem(theEvent)
+        MasterMerchant.listIsDirty[REPORTS] = true
       end)
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.GUILD_SELECTION_CHANGED,
       function(guildData)

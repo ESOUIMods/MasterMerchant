@@ -83,6 +83,9 @@
               <Dimensions x="42" y="42"/>
               <Textures normal="/esoui/art/market/keyboard/giftmessageicon_up.dds"
                         mouseOver="/esoui/art/market/keyboard/giftmessageicon_over.dds"/>
+              <OnClicked>
+                MasterMerchant:SwitchToMasterMerchantReportsView()
+              </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_MANAGEMENT_TOOLTIP))
               </OnMouseEnter>
@@ -247,7 +250,7 @@
               <Anchor point="BOTTOMLEFT" relativeTo="$(parent)MenuFooter" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5"/>
               <Dimensions x="180"/>
               <OnClicked>
-                MasterMerchant:SwitchViewMode()
+                MasterMerchant:SwitchSalesViewMode()
               </OnClicked>
             </Button>
             <Button name="$(parent)PriceSwitchButton" inherits="ZO_DefaultButton">

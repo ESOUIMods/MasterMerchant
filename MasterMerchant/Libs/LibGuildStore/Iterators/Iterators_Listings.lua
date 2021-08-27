@@ -125,7 +125,7 @@ function internal:addListingData(theEvent)
 end
 
 ----------------------------------------
------ iterateOverSalesData         -----
+----- iterateOverListingsData         -----
 ----------------------------------------
 
 function internal:iterateOverListingsData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)

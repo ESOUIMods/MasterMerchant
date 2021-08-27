@@ -103,7 +103,7 @@ function internal:addCancelledItem(theEvent)
 end
 
 ----------------------------------------
------ iterateOverShoppinglistData  -----
+----- iterateOverCancelledItemData  -----
 ----------------------------------------
 
 function internal:iterateOverCancelledItemData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
@@ -246,7 +246,7 @@ function internal:TruncateCancelledItemHistory()
   local prefunc  = function(extraData)
     extraData.start       = GetTimeStamp()
     extraData.deleteCount = 0
-    extraData.epochBack   = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 30)
+    extraData.epochBack   = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepthCI"])
     extraData.wasAltered  = false
 
     internal:DatabaseBusy(true)
@@ -364,6 +364,74 @@ function internal:IndexCancelledItemData()
 
   if not internal.isDatabaseBusy then
     internal:iterateOverCancelledItemData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
+  end
+
+end
+
+function internal:InitCancelledItemsHistory()
+  internal:dm("Debug", "InitCancelledItemsHistory")
+
+  local extradata = {}
+
+  if internal.cancelledItems == nil then
+    internal.cancelledItems = {}
+  end
+
+  if internal.cancelledSellers == nil then
+    internal.cancelledSellers = {}
+  end
+
+  local prefunc = function(extraData)
+    extraData.start = GetTimeStamp()
+    internal:DatabaseBusy(true)
+    extraData.totalRecords = 0
+  end
+
+  local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
+    extraData.totalRecords = extraData.totalRecords + 1
+    if (not (saledata == {})) and saledata.guild then
+      local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
+      local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
+      local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
+
+      internal.cancelledItems[currentGuild] = internal.cancelledItems[currentGuild] or MMGuild:new(currentGuild)
+      local guild = internal.cancelledItems[currentGuild]
+      local _, firstsaledata = next(versiondata.sales, nil)
+      local firstsaledataItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, firstsaledata.itemLink)
+      local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
+      local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
+      local searchData = searchDataDesc .. ' ' .. searchDataAdder
+      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
+
+      internal.cancelledSellers[currentGuild] = internal.cancelledSellers[currentGuild] or MMGuild:new(currentGuild)
+      local guild = internal.cancelledSellers[currentGuild]
+      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, nil)
+
+    end
+    return false
+  end
+
+  local postfunc = function(extraData)
+
+    for _, guild in pairs(internal.cancelledItems) do
+      guild:sort()
+    end
+
+    for guildName, guild in pairs(internal.cancelledSellers) do
+      guild:sort()
+    end
+
+    internal:DatabaseBusy(false)
+
+    internal.totalCanceled = extraData.totalRecords
+    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+      internal:dm("Info", string.format(GetString(GS_INIT_LISTINGS_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
+        internal.totalCanceled))
+    end
+  end
+
+  if not internal.isDatabaseBusy then
+    internal:iterateOverCancelledItemData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata)
   end
 
 end

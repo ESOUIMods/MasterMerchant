@@ -6,10 +6,11 @@ local ASYNC                     = LibAsync
 --[[ can nout use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
 ]]--
-local ITEMS                     = 'items_vs'
-local GUILDS                    = 'guild_vs'
-local LISTINGS                  = 'listings_vs'
-local PURCHASES                 = 'purchases_vs'
+local ITEMS = 'items_vs'
+local GUILDS = 'guild_vs'
+local LISTINGS = 'listings_vs'
+local PURCHASES = 'purchases_vs'
+local REPORTS = 'reports_vs'
 
 function internal:CheckForDuplicateSale(itemLink, eventID)
   --[[ we need to be able to calculate theIID and itemIndex

@@ -10,11 +10,7 @@ local ITEMS = 'items_vs'
 local GUILDS = 'guild_vs'
 local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
-
-local ITEM_VIEW = 'self_vm'
-local GUILD_VIEW = 'guild_vm'
-local LISTINGS_VIEW = 'listings_vm'
-local PURCHASES_VIEW = 'purchases_vm'
+local REPORTS = 'reports_vs'
 
 function internal:concat(a, ...)
   if a == nil and ... == nil then

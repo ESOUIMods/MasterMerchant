@@ -14,10 +14,14 @@ local listings_data             = _G["LibGuildStore_ListingsData"]
 
 local OriginalSetupPendingPost
 
-local ITEMS                     = MasterMerchant.itemsViewSize
-local GUILDS                    = MasterMerchant.guildsViewSize
-local LISTINGS                  = MasterMerchant.listingsViewSize
-local PURCHASES                 = MasterMerchant.purchasesViewSize
+--[[ can nout use MasterMerchant.itemsViewSize for example
+because that will not be available this early.
+]]--
+local ITEMS = 'items_vs'
+local GUILDS = 'guild_vs'
+local LISTINGS = 'listings_vs'
+local PURCHASES = 'purchases_vs'
+local REPORTS = 'reports_vs'
 
 CSA_EVENT_SMALL_TEXT            = 1
 CSA_EVENT_LARGE_TEXT            = 2
@@ -1319,7 +1323,6 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
     local bag, index = ZO_Inventory_GetBagAndIndex(inventorySlot)
     link             = GetItemLink(bag, index)
   end
-  MasterMerchant.a_test = GetItemUniqueId(bag, index)
   if st == SLOT_TYPE_TRADING_HOUSE_ITEM_RESULT then
     link = GetTradingHouseSearchResultItemLink(ZO_Inventory_GetSlotIndex(inventorySlot))
   end
@@ -2856,6 +2859,8 @@ function MasterMerchant:Initialize()
     listingWinTop = 85,
     purchaseWinLeft = 30,
     purchaseWinTop = 85,
+    reportsWinLeft = 30,
+    reportsWinTop = 85,
     statsWinLeft = 720,
     statsWinTop = 820,
     feedbackWinLeft = 720,
@@ -3047,6 +3052,7 @@ function MasterMerchant:Initialize()
   self.guildUiFragment    = ZO_FadeSceneFragment:New(MasterMerchantGuildWindow)
   self.listingUiFragment  = ZO_FadeSceneFragment:New(MasterMerchantListingWindow)
   self.purchaseUiFragment = ZO_FadeSceneFragment:New(MasterMerchantPurchaseWindow)
+  self.reportsUiFragment  = ZO_FadeSceneFragment:New(MasterMerchantReportsWindow)
 
   LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, self.LinkHandler_OnLinkMouseUp)
 
@@ -3057,6 +3063,7 @@ function MasterMerchant:Initialize()
   if MasterMerchant.systemSavedVariables.viewSize == GUILDS then theFragment = self.guildUiFragment end
   if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then theFragment = self.listingUiFragment end
   if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then theFragment = self.purchaseUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == REPORTS then theFragment = self.reportsUiFragment end
   if not theFragment then theFragment = self.salesUiFragment end
 
   if MasterMerchant.systemSavedVariables.openWithMail then
@@ -3136,26 +3143,22 @@ function MasterMerchant:Initialize()
   -- when it's just these I want to hook
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_BANK, function()
     self:ActiveWindow():SetHidden(true)
-    MasterMerchantFilterByNameWindow:SetHidden(true)
-    MasterMerchantFilterByTypeWindow:SetHidden(true)
+    MasterMerchant:ToggleMasterMerchantFilterWindows()
   end)
   --    MasterMerchantWindow:SetHidden(true)
   --    MasterMerchantGuildWindow:SetHidden(true)
   --  end)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_GUILD_BANK, function()
     self:ActiveWindow():SetHidden(true)
-    MasterMerchantFilterByNameWindow:SetHidden(true)
-    MasterMerchantFilterByTypeWindow:SetHidden(true)
+    MasterMerchant:ToggleMasterMerchantFilterWindows()
   end)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_STORE, function()
     self:ActiveWindow():SetHidden(true)
-    MasterMerchantFilterByNameWindow:SetHidden(true)
-    MasterMerchantFilterByTypeWindow:SetHidden(true)
+    MasterMerchant:ToggleMasterMerchantFilterWindows()
   end)
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_END_CRAFTING_STATION_INTERACT, function()
     self:ActiveWindow():SetHidden(true)
-    MasterMerchantFilterByNameWindow:SetHidden(true)
-    MasterMerchantFilterByTypeWindow:SetHidden(true)
+    MasterMerchant:ToggleMasterMerchantFilterWindows()
   end)
 
   -- We'll add stats to tooltips for items we have data for, if desired
@@ -3358,7 +3361,7 @@ function MasterMerchant:InitScrollLists()
     end
   end
 
-  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings))
+  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings, internal.totalPosted, internal.totalCanceled))
 
   if NonContiguousCount(sales_data) > 0 then
     --[[ Sales exist, but no way to know from what source
@@ -3380,6 +3383,7 @@ function MasterMerchant:InitScrollLists()
   MasterMerchant.listIsDirty[GUILDS] = true
   MasterMerchant.listIsDirty[LISTINGS] = true
   MasterMerchant.listIsDirty[PURCHASES] = true
+  MasterMerchant.listIsDirty[REPORTS] = true
 end
 
 local dealInfoCache               = {}
@@ -3612,6 +3616,8 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant.systemSavedVariables.listingWinTop   = 85
     MasterMerchant.systemSavedVariables.purchaseWinLeft = 30
     MasterMerchant.systemSavedVariables.purchaseWinTop  = 85
+    MasterMerchant.systemSavedVariables.reportsWinLeft = 30
+    MasterMerchant.systemSavedVariables.reportsWinTop  = 85
 
     MasterMerchant.systemSavedVariables.statsWinLeft    = 720
     MasterMerchant.systemSavedVariables.statsWinTop     = 820

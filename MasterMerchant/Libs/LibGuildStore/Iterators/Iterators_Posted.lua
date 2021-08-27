@@ -107,7 +107,7 @@ function internal:addPostedItem(theEvent)
 end
 
 ----------------------------------------
------ iterateOverShoppinglistData  -----
+----- iterateOverPostedItemsData  -----
 ----------------------------------------
 
 function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
@@ -250,7 +250,7 @@ function internal:TruncatePostedItemsHistory()
   local prefunc  = function(extraData)
     extraData.start       = GetTimeStamp()
     extraData.deleteCount = 0
-    extraData.epochBack   = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 30)
+    extraData.epochBack   = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepthPI"])
     extraData.wasAltered  = false
 
     internal:DatabaseBusy(true)
@@ -368,6 +368,74 @@ function internal:IndexPostedItemsData()
 
   if not internal.isDatabaseBusy then
     internal:iterateOverPostedItemsData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
+  end
+
+end
+
+function internal:InitPostedItemsHistory()
+  internal:dm("Debug", "InitPostedItemsHistory")
+
+  local extradata = {}
+
+  if internal.postedItems == nil then
+    internal.postedItems = {}
+  end
+
+  if internal.postedSellers == nil then
+    internal.postedSellers = {}
+  end
+
+  local prefunc = function(extraData)
+    extraData.start = GetTimeStamp()
+    internal:DatabaseBusy(true)
+    extraData.totalRecords = 0
+  end
+
+  local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
+    extraData.totalRecords = extraData.totalRecords + 1
+    if (not (saledata == {})) and saledata.guild then
+      local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
+      local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
+      local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
+
+      internal.postedItems[currentGuild] = internal.postedItems[currentGuild] or MMGuild:new(currentGuild)
+      local guild = internal.postedItems[currentGuild]
+      local _, firstsaledata = next(versiondata.sales, nil)
+      local firstsaledataItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, firstsaledata.itemLink)
+      local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
+      local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
+      local searchData = searchDataDesc .. ' ' .. searchDataAdder
+      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
+
+      internal.postedSellers[currentGuild] = internal.postedSellers[currentGuild] or MMGuild:new(currentGuild)
+      local guild = internal.postedSellers[currentGuild]
+      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, nil)
+
+    end
+    return false
+  end
+
+  local postfunc = function(extraData)
+
+    for _, guild in pairs(internal.postedItems) do
+      guild:sort()
+    end
+
+    for guildName, guild in pairs(internal.postedSellers) do
+      guild:sort()
+    end
+
+    internal:DatabaseBusy(false)
+
+    internal.totalPosted = extraData.totalRecords
+    if LibGuildStore_SavedVariables["showGuildInitSummary"] then
+      internal:dm("Info", string.format(GetString(GS_INIT_LISTINGS_HISTORY_SUMMARY), GetTimeStamp() - extraData.start,
+        internal.totalPosted))
+    end
+  end
+
+  if not internal.isDatabaseBusy then
+    internal:iterateOverPostedItemsData(nil, nil, nil, prefunc, loopfunc, postfunc, extradata)
   end
 
 end
