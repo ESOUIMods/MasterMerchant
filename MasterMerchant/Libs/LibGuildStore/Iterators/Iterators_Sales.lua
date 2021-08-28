@@ -537,13 +537,15 @@ function internal:InitItemHistory()
 
     local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
       extraData.totalRecords = extraData.totalRecords + 1
-      if (not (saledata == {})) and saledata.guild then
+      if (not (saledata == {})) and saledata['guild'] then
         local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
         local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
         local currentBuyer  = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
 
         if (extradata.doGuildItems) then
-          internal.guildItems[currentGuild] = internal.guildItems[currentGuild] or MMGuild:new(currentGuild)
+          if not internal.guildItems[currentGuild] then
+            internal.guildItems[currentGuild] = MMGuild:new(currentGuild)
+          end
           local guild                       = internal.guildItems[currentGuild]
           local _, firstsaledata            = next(versiondata.sales, nil)
           local firstsaledataItemLink       = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK,
@@ -557,7 +559,9 @@ function internal:InitItemHistory()
         end
 
         if (extradata.doMyItems and string.lower(currentSeller) == extradata.playerName) then
-          internal.myItems[currentGuild] = internal.myItems[currentGuild] or MMGuild:new(currentGuild)
+          if not internal.myItems[currentGuild] then
+            internal.myItems[currentGuild] = MMGuild:new(currentGuild)
+          end
           local guild                    = internal.myItems[currentGuild]
           local _, firstsaledata         = next(versiondata.sales, nil)
           local firstsaledataItemLink    = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, firstsaledata.itemLink)
@@ -570,13 +574,17 @@ function internal:InitItemHistory()
         end
 
         if (extradata.doGuildSales) then
-          internal.guildSales[currentGuild] = internal.guildSales[currentGuild] or MMGuild:new(currentGuild)
+          if not internal.guildSales[currentGuild] then
+            internal.guildSales[currentGuild] = MMGuild:new(currentGuild)
+          end
           local guild                       = internal.guildSales[currentGuild]
           guild:addSaleByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
         end
 
         if (extradata.doGuildPurchases) then
-          internal.guildPurchases[currentGuild] = internal.guildPurchases[currentGuild] or MMGuild:new(currentGuild)
+          if not internal.guildPurchases[currentGuild] then
+            internal.guildPurchases[currentGuild] = MMGuild:new(currentGuild)
+          end
           local guild                           = internal.guildPurchases[currentGuild]
           guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk,
             false)
@@ -694,6 +702,7 @@ function internal:CleanOutBad()
     -- /script internal:dm("Debug", internal:AddSearchToItem("|H0:item:69354:363:50:0:0:0:0:0:0:0:0:0:0:0:0:19:0:0:0:0:0|h|h"))
     if not internal:IsValidItemLink(currentItemLink) then
       -- Remove it
+      -- saledata['itemLink']
       versiondata['sales'][saleid] = nil
       extraData.wasAltered         = true
       extraData.badItemLinkCount   = extraData.badItemLinkCount + 1

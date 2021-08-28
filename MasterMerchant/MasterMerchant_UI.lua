@@ -1404,7 +1404,7 @@ function MMScrollList:FilterScrollList()
             else
               local saveData = GS17DataSavedVariables[internal.nameFilterNamespace]
               local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item.itemLink)
-              local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+              local itemName = dataList.itemDesc
               local isFiltered = MasterMerchant:IsItemLinkFiltered(itemLink)
               if not saveData[itemName] and isFiltered then
                 table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
@@ -1463,10 +1463,11 @@ function MMScrollList:FilterScrollList()
       for k, val in pairs(intersectionIndexes) do
         for j, subval in pairs(val) do
           for i in pairs(subval) do
-            local actualItem = listings_data[k][j]['sales'][i]
+            local listedItem = listings_data[k][j]
+            local actualItem = listedItem['sales'][i]
             local saveData = GS17DataSavedVariables[internal.nameFilterNamespace]
             local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem.itemLink)
-            local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+            local itemName = listedItem.itemDesc
             local isFiltered = MasterMerchant:IsItemLinkFiltered(itemLink)
             if not saveData[itemName] and isFiltered then
               table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
@@ -3453,7 +3454,7 @@ function MasterMerchant:SetupScrollLists()
   end)
 
   self.reportsScrollList = MMScrollList:New(MasterMerchantReportsWindow)
-  --self.purchasesScrollList:Initialize()
+  --self.reportsScrollList:Initialize()
   ZO_PostHook(self.reportsScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
     MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   end)

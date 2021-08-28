@@ -394,7 +394,9 @@ function internal:InitCancelledItemsHistory()
       local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
       local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
 
-      internal.cancelledItems[currentGuild] = internal.cancelledItems[currentGuild] or MMGuild:new(currentGuild)
+      if not internal.cancelledItems[currentGuild] then
+        internal.cancelledItems[currentGuild] = MMGuild:new(currentGuild)
+      end
       local guild = internal.cancelledItems[currentGuild]
       local _, firstsaledata = next(versiondata.sales, nil)
       local firstsaledataItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, firstsaledata.itemLink)
@@ -403,7 +405,9 @@ function internal:InitCancelledItemsHistory()
       local searchData = searchDataDesc .. ' ' .. searchDataAdder
       guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
 
-      internal.cancelledSellers[currentGuild] = internal.cancelledSellers[currentGuild] or MMGuild:new(currentGuild)
+      if not internal.cancelledSellers[currentGuild] then
+        internal.cancelledSellers[currentGuild] = MMGuild:new(currentGuild)
+      end
       local guild = internal.cancelledSellers[currentGuild]
       guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, nil)
 

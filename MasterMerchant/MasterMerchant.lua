@@ -369,6 +369,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   if MasterMerchant:itemIDHasSales(theIID, itemIndex) and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
     local newestTime           = nil
     local initCount            = 0
+    local nameString  = sales_data[theIID][itemIndex].itemDesc
     list                       = sales_data[theIID][itemIndex]['sales']
 
     if timeCheck ~= -1 then
@@ -476,17 +477,16 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
             ]]--
             if clickable then
               local stringPrice = self.LocalizedNumber(individualSale)
-              local nameString  = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
               if item.quant == 1 then
                 tooltip = zo_strformat(GetString(SK_TIME_DAYS),
                   math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
                   string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller,
-                    zo_strformat('<<t:1>>', nameString), currentBuyer, stringPrice)
+                    nameString, currentBuyer, stringPrice)
               else
                 tooltip = zo_strformat(GetString(SK_TIME_DAYS),
                   math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
                   string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
-                    zo_strformat('<<t:1>>', nameString), item.quant, currentBuyer, stringPrice)
+                    nameString, item.quant, currentBuyer, stringPrice)
               end
             else -- clickable
               tooltip = MasterMerchant.LocalizedNumber(individualSale) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
@@ -2799,7 +2799,7 @@ function MasterMerchant:ReferenceSalesAllContainers()
   self.systemSavedVariables.dataLocations                 = self.systemSavedVariables.dataLocations or {}
   self.systemSavedVariables.dataLocations[GetWorldName()] = true
   if internal:CheckMasterMerchantData() then return end
-  MasterMerchant:dm("Debug", "Bring seperate lists together")
+  MasterMerchant:dm("Debug", "ReferenceSalesAllContainers")
   self:ReferenceSales(MM00Data)
   self:ReferenceSales(MM01Data)
   self:ReferenceSales(MM02Data)
@@ -2964,15 +2964,13 @@ function MasterMerchant:Initialize()
     end
   end
 
-  local oldViewSizeValues = {
-    "full",
-    "half",
-    "self",
-    "all",
-  }
-  if internal:is_in(MasterMerchant.systemSavedVariables.viewSize, oldViewSizeValues) then
-    MasterMerchant.systemSavedVariables.viewSize = ITEMS
-  end
+  --[[ Added 8-27-2021, for some reason if the last view size on a reload UI
+  or upon log in is something like LISTINGS then the game will hag for a while
+
+  TODO figure out why it's doing that because I mark the list dirty and I don't
+  want to refresh the data or the filter, unless this just happesn upon creation
+  ]]--
+  MasterMerchant.systemSavedVariables.viewSize = ITEMS
 
   self.currentGuildID                                 = GetGuildId(1) or 0
 
@@ -3363,14 +3361,17 @@ function MasterMerchant:InitScrollLists()
 
   MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings, internal.totalPosted, internal.totalCanceled))
 
-  if NonContiguousCount(sales_data) > 0 then
     --[[ Sales exist, but no way to know from what source
     previously this would set a variable of veryFirstScan to false
     and true just below
     ]]--
+
+    --[[
+  if NonContiguousCount(sales_data) > 0 then
   else
     MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_FIRST_SCAN)))
   end
+  ]]--
 
   -- for mods using the old syntax
   if GS17DataSavedVariables then

@@ -89,7 +89,7 @@ function internal:IsValidItemLink(itemLink)
     validLink = false
   end
   if not validLink then
-    internal:dm("Debug", MasterMerchant.ItemCodeText(itemLink))
+    internal:dm("Debug", { MasterMerchant.ItemCodeText(itemLink) } )
   end
   return validLink
 end

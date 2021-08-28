@@ -417,7 +417,9 @@ function internal:InitListingHistory()
       local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
       local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
 
-      internal.listedItems[currentGuild] = internal.listedItems[currentGuild] or MMGuild:new(currentGuild)
+      if not internal.listedItems[currentGuild] then
+        internal.listedItems[currentGuild] = MMGuild:new(currentGuild)
+      end
       local guild = internal.listedItems[currentGuild]
       local _, firstsaledata = next(versiondata.sales, nil)
       local firstsaledataItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, firstsaledata.itemLink)
@@ -426,7 +428,9 @@ function internal:InitListingHistory()
       local searchData = searchDataDesc .. ' ' .. searchDataAdder
       guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
 
-      internal.listedSellers[currentGuild] = internal.listedSellers[currentGuild] or MMGuild:new(currentGuild)
+      if not internal.listedSellers[currentGuild] then
+        internal.listedSellers[currentGuild] = MMGuild:new(currentGuild)
+      end
       local guild = internal.listedSellers[currentGuild]
       guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, nil)
 
