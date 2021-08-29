@@ -28,6 +28,12 @@ _G["LibGuildStore_PostedItemsIndex"] = pir_index
 _G["LibGuildStore_CancelledItemsData"]  = cancelled_items_data
 _G["LibGuildStore_CancelledItemsIndex"] = cr_index
 
+sr_index.anIndexCount = 0
+pr_index.anIndexCount = 0
+lr_index.anIndexCount = 0
+pir_index.anIndexCount = 0
+cr_index.anIndexCount = 0
+
 lib.libName                       = libName
 lib.libVersion                    = libVersion
 

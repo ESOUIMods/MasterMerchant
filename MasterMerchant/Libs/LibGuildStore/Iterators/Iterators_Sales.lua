@@ -189,6 +189,7 @@ function internal:addSalesData(theEvent)
   for i in searchByWords do
     if sr_index[i] == nil then sr_index[i] = {} end
     table.insert(sr_index[i], wordData)
+    sr_index.anIndexCount = sr_index.anIndexCount + 1
   end
 
   MasterMerchant.listIsDirty[ITEMS] = true
@@ -481,6 +482,7 @@ function internal:IndexSalesData()
         sr_index[i]               = {}
       end
       table.insert(sr_index[i], wordData)
+      sr_index.anIndexCount = sr_index.anIndexCount + 1
     end
 
   end
@@ -791,6 +793,7 @@ function internal:CleanOutBad()
       --rebuild everything
       local sr_index                 = {}
       _G["LibGuildStore_SalesIndex"] = sr_index
+      sr_index.anIndexCount = 0
 
       internal.guildPurchases        = {}
       internal.guildSales            = {}
@@ -822,6 +825,7 @@ local function FinalizePurge(count)
     --rebuild everything
     local sr_index                 = {}
     _G["LibGuildStore_SalesIndex"] = sr_index
+    sr_index.anIndexCount = 0
 
     internal.guildPurchases        = {}
     internal.guildSales            = {}
@@ -1021,6 +1025,7 @@ function internal:ResetSalesData()
   local sr_index                               = {}
   _G["LibGuildStore_SalesData"]                = sales_data
   _G["LibGuildStore_SalesIndex"]               = sr_index
+  sr_index.anIndexCount = 0
 
   GS00DataSavedVariables[internal.dataToReset] = {}
   GS01DataSavedVariables[internal.dataToReset] = {}

@@ -6,7 +6,6 @@
 -- Distribution without license is prohibited!
 local LAM                       = LibAddonMenu2
 local LMP                       = LibMediaProvider
-local ASYNC                     = LibAsync
 local internal                  = _G["LibGuildStore_Internal"]
 local sales_data                = _G["LibGuildStore_SalesData"]
 local sr_index                  = _G["LibGuildStore_SalesIndex"]
@@ -1253,32 +1252,43 @@ function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, contro
 end
 
 function MasterMerchant.PostPendingItem(self)
-  MasterMerchant:dm("Debug", "PostPendingItem")
+  --MasterMerchant:dm("Debug", "PostPendingItem")
   if self.pendingItemSlot and self.pendingSaleIsValid then
     local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
     local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
+    local itemUniqueId = GetItemUniqueId(BAG_BACKPACK, self.pendingItemSlot)
 
     local theIID = GetItemLinkItemId(itemLink)
     local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-    local selectedGuildId = GetSelectedTradingHouseGuildId()
+    local guildId, guildName = GetCurrentTradingHouseGuildDetails()
+
+    local theEvent            = {
+      guild = guildName,
+      guildId = guildId,
+      itemLink = itemLink,
+      quant = stackCount,
+      timestamp = GetTimeStamp(),
+      price = self.invoiceSellPrice.sellPrice,
+      seller = GetDisplayName(),
+      id = itemUniqueId,
+    }
+    internal:addPostedItem(theEvent)
+    MasterMerchant.listIsDirty[REPORTS] = true
 
     GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
+    GS17DataSavedVariables[internal.pricingNamespace][guildId] = GS17DataSavedVariables[internal.pricingNamespace][guildId] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] or {}
+    GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
       MasterMerchant:dm("Info",
         string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
-          zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice,
-          GetGuildName(selectedGuildId)))
+          zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice, guildName))
     end
   end
 end
 
 -- End Copyright (c) 2014 Matthew Miller (Mattmillus)
-
-
 
 MasterMerchant.CustomDealCalc                 = {
   ['@Causa'] = function(setPrice, salesCount, purchasePrice, stackCount)
@@ -2732,7 +2742,7 @@ function MasterMerchant:InitRosterChanges()
 end
 
 function MasterMerchant.SetupPendingPost(self)
-  MasterMerchant:dm("Debug", "SetupPendingPost")
+  --MasterMerchant:dm("Debug", "SetupPendingPost")
   OriginalSetupPendingPost(self)
 
   if (self.pendingItemSlot) then
@@ -3137,6 +3147,26 @@ function MasterMerchant:Initialize()
     self:initSellingAdvice()
   end)
 
+  if not AwesomeGuildStore then
+    ZO_PreHook('CancelTradingHouseListing', function(index)
+      --MasterMerchant:dm("Debug", "CancelTradingHouseListing")
+      local itemLink = GetTradingHouseListingItemLink(index)
+      local icon, itemName, displayQuality, stackCount, sellerName, timeRemaining, salePrice, currencyType, itemUniqueId, salePricePerUnit = GetTradingHouseListingItemInfo(index)
+      local guildId, guildName = GetCurrentTradingHouseGuildDetails()
+      local theEvent            = {
+        guild = guildName,
+        guildId = guildId,
+        itemLink = itemLink,
+        quant = stackCount,
+        timestamp = GetTimeStamp(),
+        price = salePrice,
+        seller = sellerName,
+        id = itemUniqueId,
+      }
+      internal:addCancelledItem(theEvent)
+      MasterMerchant.listIsDirty[REPORTS] = true
+    end)
+  end
   -- I could do this with action layer pop/push, but it's kind've a pain
   -- when it's just these I want to hook
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CLOSE_BANK, function()
@@ -3171,6 +3201,10 @@ function MasterMerchant:Initialize()
     function() self:remStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
 
   if AwesomeGuildStore then
+    --[[ This is to save the sale price however AGS has its own routines and uses
+    its value first so this is usually not seen, although it does save NA and EU
+    separately
+    ]]--
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
         local theIID = GetItemLinkItemId(itemLink)
@@ -3481,45 +3515,6 @@ local function OnAddOnLoaded(eventCode, addOnName)
     MasterMerchant:initAGSIntegration()
   end
 end
-local function loop1()
-  for i = 1, 5 do
-    d(i)
-  end
-end
-local function loop2()
-  for i = 11, 15 do
-    d(i)
-  end
-end
-local function loop3()
-  for i = 21, 25 do
-    d(i)
-  end
-end
-local function loop4()
-  for i = 31, 35 do
-    d(i)
-  end
-end
-
-function MasterMerchant:loopFunction(itemId, count, task)
-  itemId = 123456
-  count  = 0
-  task:While(function() return itemId ~= nil end):Do(function()
-    d(itemId)
-    count = count + 1
-    if count > 100 then itemId = nil end
-  end)
-end
-
-function MasterMerchant:TestLibAsync()
-  local task = ASYNC:Create("example1")
-
-  task:Call(function() MasterMerchant:loopFunction(nil, nil, task) end)
-  task:Then(function()
-    d("end")
-  end)
-end
 
 function MasterMerchant.Slash(allArgs)
   local args        = ""
@@ -3547,12 +3542,6 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", GetString(MM_HELP_EQUIP))
     return
   end
-  --[[
-  if args == 'atest' then
-    MasterMerchant:TestLibAsync()
-    return
-  end
-  ]]--
 
   if args == 'export' then
     if not MasterMerchant.isInitialized then

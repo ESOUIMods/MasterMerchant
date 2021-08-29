@@ -502,6 +502,62 @@ function internal:AddAwesomeGuildStoreListing(listing)
   end
 end
 
+function internal:AddVanillaListing(listing)
+  --internal:dm("Debug", "AddAwesomeGuildStoreListing")
+  local listedTime = GetTimeStamp() - (2592000 - listing.timeRemaining)
+  local theEvent = {
+    guild = listing.guildName,
+    guildId = listing.guildId,
+    itemLink = listing.itemLink,
+    quant = listing.stackCount,
+    timestamp = listing.lastSeen,
+    listingTime = listedTime,
+    price = listing.purchasePrice,
+    seller = listing.sellerName,
+    id = Id64ToString(listing.itemUniqueId),
+  }
+  internal:addTraderInfo(listing.guildId, listing.guildName)
+  local added = false
+  local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
+  if not duplicate then
+    added = internal:addListingData(theEvent)
+    MasterMerchant.listIsDirty[LISTINGS] = true
+  end
+end
+
+-- this is for the vanilla UI
+function internal:processGuildStore()
+  internal:dm("Debug", "processGuildStore")
+  local numItemsOnPage, currentPage, hasMorePages = GetTradingHouseSearchResultsInfo()
+  internal:dm("Debug", {numItemsOnPage, currentPage, hasMorePages})
+  local itemLink, icon, itemName, displayQuality, stackCount, sellerName, timeRemaining, purchasePrice,
+  currencyType, itemUniqueId, purchasePricePerUnit
+  local guildId, guildName = GetCurrentTradingHouseGuildDetails()
+  for i=1, numItemsOnPage do
+     itemLink = GetTradingHouseSearchResultItemLink(i)
+     icon, itemName, displayQuality, stackCount, sellerName, timeRemaining, purchasePrice, currencyType,
+  itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo(i)
+    local listedTime = GetTimeStamp() - (2592000 - timeRemaining)
+    local theEvent = {
+      guild = guildName,
+      guildId = lguildId,
+      itemLink = itemLink,
+      quant = stackCount,
+      timestamp = GetTimeStamp() ,
+      listingTime = listedTime,
+      price = purchasePrice,
+      seller = sellerName,
+      id = Id64ToString(itemUniqueId),
+    }
+    internal:addTraderInfo(guildId, guildName)
+    local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
+    if not duplicate then
+      added = internal:addListingData(theEvent)
+      MasterMerchant.listIsDirty[LISTINGS] = true
+    end
+  end
+end
+
 -- this should loop over the data from AGS to be converted to theEvent
 function internal:processAwesomeGuildStore(itemDatabase, guildId)
   local guildCounts = {}
@@ -543,6 +599,7 @@ function internal:ResetListingsData()
   local LEQ = LibExecutionQueue:new()
   local lr_index = {}
   _G["LibGuildStore_ListingsIndex"] = lr_index
+  lr_index.anIndexCount = 0
   local listings_data = {}
   _G["LibGuildStore_ListingsData"] = listings_data
   internal.listedItems = {}
@@ -553,7 +610,6 @@ function internal:ResetListingsData()
   LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
   LEQ:Add(function() internal:IndexListingsData() end, 'IndexListingsData')
   LEQ:Add(function() MasterMerchant.listIsDirty[LISTINGS] = true end, 'listIsDirty')
-  LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshData() end, 'RefreshData_listingsScrollList')
   LEQ:Add(function() internal:DatabaseBusy(false) end, 'DatabaseBusy_false')
   LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
   LEQ:Start()

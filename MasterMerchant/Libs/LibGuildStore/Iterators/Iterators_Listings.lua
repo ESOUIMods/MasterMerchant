@@ -119,6 +119,7 @@ function internal:addListingData(theEvent)
   for i in searchByWords do
     if lr_index[i] == nil then lr_index[i] = {} end
     table.insert(lr_index[i], wordData)
+    lr_index.anIndexCount = lr_index.anIndexCount + 1
   end
 
   return true
@@ -372,6 +373,7 @@ function internal:IndexListingsData()
         lr_index[i] = {}
       end
       table.insert(lr_index[i], wordData)
+      lr_index.anIndexCount = lr_index.anIndexCount + 1
     end
 
   end

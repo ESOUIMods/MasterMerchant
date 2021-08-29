@@ -6,10 +6,6 @@ local sales_data        = _G["LibGuildStore_SalesData"]
 local sr_index          = _G["LibGuildStore_SalesIndex"]
 local purchases_data    = _G["LibGuildStore_PurchaseData"]
 local pr_index          = _G["LibGuildStore_PurchaseIndex"]
-local posted_items_data = _G["LibGuildStore_PostedItemsData"]
-local pir_index         = _G["LibGuildStore_PostedItemsIndex"]
-local cancelled_items_data = _G["LibGuildStore_CancelledItemsData"]
-local cr_index             = _G["LibGuildStore_CancelledItemsIndex"]
 
 ----------------------------------------
 ----- ImportShoppingList           -----
@@ -92,6 +88,7 @@ function internal:ImportMasterMerchantSales()
       --rebuild everything
       local sr_index                 = {}
       _G["LibGuildStore_SalesIndex"] = sr_index
+      sr_index.anIndexCount = 0
 
       internal.guildPurchases        = {}
       internal.guildSales            = {}
@@ -149,6 +146,7 @@ function internal:ImportATTSales()
       --rebuild everything
       local sr_index                 = {}
       _G["LibGuildStore_SalesIndex"] = sr_index
+      sr_index.anIndexCount = 0
 
       internal.guildPurchases        = {}
       internal.guildSales            = {}
