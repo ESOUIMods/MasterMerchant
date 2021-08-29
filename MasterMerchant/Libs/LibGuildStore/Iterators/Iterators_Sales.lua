@@ -541,6 +541,9 @@ function internal:InitItemHistory()
       extraData.totalRecords = extraData.totalRecords + 1
       if (not (saledata == {})) and saledata['guild'] then
         local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
+      end
+      local continue = type(currentGuild) == 'string'
+      if continue then
         local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
         local currentBuyer  = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
 
@@ -675,6 +678,7 @@ function internal:CleanOutBad()
       or type(saledata['price']) ~= 'number'
       or saledata['quant'] == nil
       or type(saledata['quant']) ~= 'number'
+      or saledata['guild'] == nil
       or currentGuild == nil
       or currentBuyer == nil
       or type(currentBuyer) ~= 'string'
@@ -684,6 +688,11 @@ function internal:CleanOutBad()
       or string.sub(currentSeller, 1, 1) ~= '@'
       or saledata['id'] == nil then
       -- Remove it
+      if type(currentGuild) ~= 'string' then
+        internal:dm("Warn", "currentGuild was not a string")
+        internal:dm("Warn", saledata['guild'])
+        internal:dm("Warn", currentGuild)
+      end
       versiondata['sales'][saleid] = nil
       extraData.wasAltered         = true
       extraData.deleteCount        = extraData.deleteCount + 1

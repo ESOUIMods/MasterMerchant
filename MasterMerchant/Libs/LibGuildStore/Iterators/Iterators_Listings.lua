@@ -414,8 +414,11 @@ function internal:InitListingHistory()
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
     extraData.totalRecords = extraData.totalRecords + 1
-    if (not (saledata == {})) and saledata.guild then
-      local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
+    if (not (saledata == {})) and saledata['guild'] then
+      local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
+    end
+    local continue = type(currentGuild) == 'string'
+    if continue then
       local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
       local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
 
