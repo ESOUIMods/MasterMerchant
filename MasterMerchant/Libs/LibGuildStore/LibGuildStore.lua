@@ -179,8 +179,8 @@ internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
   SetNamespace()
   local systemDefault          = {
     version = 2,
-    firstRunEu = false,
-    firstRunNa = false,
+    [internal.GS_NA_FIRST_RUN_NAMESPACE] = true,
+    [internal.GS_EU_FIRST_RUN_NAMESPACE] = true,
     lastReceivedEventID = {},
     historyDepthSL = 180,
     historyDepthPI = 180,
@@ -215,39 +215,6 @@ internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
     if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] = {} end
     if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0" end
   end
-
-    -- TODO Check historyDepth is only set once on first run
-  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
-    internal:dm("Debug", "Checked Old MM Settings")
-    LibGuildStore_SavedVariables["historyDepth"] = math.max(MasterMerchant.systemSavedVariables.historyDepth,
-      LibGuildStore_SavedVariables["historyDepth"])
-    LibGuildStore_SavedVariables["minItemCount"] = math.max(MasterMerchant.systemSavedVariables.minItemCount,
-      LibGuildStore_SavedVariables["minItemCount"])
-    LibGuildStore_SavedVariables["maxItemCount"] = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
-      LibGuildStore_SavedVariables["maxItemCount"])
-  end
-
-  --cleanup old vars and this can be removed for production
-  GS17DataSavedVariables["purchases"] = nil
-  GS17DataSavedVariables["listings"] = nil
-  GS17DataSavedVariables["postedItems"] = nil
-  GS17DataSavedVariables["cancelledItems"] = nil
-
-  if GS17DataSavedVariables["posteditemsna"] == nil then GS17DataSavedVariables["posteditemsna"] = {} end
-  if GS17DataSavedVariables["posteditemseu"] == nil then GS17DataSavedVariables["posteditemseu"] = {} end
-  if GS17DataSavedVariables["purchasena"] == nil then GS17DataSavedVariables["purchasena"] = {} end
-  if GS17DataSavedVariables["purchaseeu"] == nil then GS17DataSavedVariables["purchaseeu"] = {} end
-  if GS17DataSavedVariables["cancelleditemsna"] == nil then GS17DataSavedVariables["cancelleditemsna"] = {} end
-  if GS17DataSavedVariables["cancelleditemseu"] == nil then GS17DataSavedVariables["cancelleditemseu"] = {} end
-
-  if GS17DataSavedVariables["visitedNATraders"] == nil then GS17DataSavedVariables["visitedNATraders"] = {} end
-  if GS17DataSavedVariables["visitedEUTraders"] == nil then GS17DataSavedVariables["visitedEUTraders"] = {} end
-
-  if GS17DataSavedVariables["pricingdatana"] == nil then GS17DataSavedVariables["pricingdatana"] = {} end
-  if GS17DataSavedVariables["pricingdataeu"] == nil then GS17DataSavedVariables["pricingdataeu"] = {} end
-
-  if GS17DataSavedVariables["namefilterna"] == nil then GS17DataSavedVariables["namefilterna"] = {} end
-  if GS17DataSavedVariables["namefiltereu"] == nil then GS17DataSavedVariables["namefiltereu"] = {} end
 
   SetupLibHistoireContainers()
   SetupLibGuildStore()

@@ -2974,6 +2974,20 @@ function MasterMerchant:Initialize()
     end
   end
 
+      -- TODO Check historyDepth is only set once on first run
+  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
+    internal:dm("Debug", "Checked Old MM Settings")
+    if MasterMerchant.systemSavedVariables.historyDepth then
+      LibGuildStore_SavedVariables["historyDepth"] = math.max(MasterMerchant.systemSavedVariables.historyDepth, LibGuildStore_SavedVariables["historyDepth"])
+    end
+    if MasterMerchant.systemSavedVariables.minItemCount then
+      LibGuildStore_SavedVariables["minItemCount"] = math.max(MasterMerchant.systemSavedVariables.minItemCount, LibGuildStore_SavedVariables["minItemCount"])
+    end
+    if MasterMerchant.systemSavedVariables.maxItemCount then
+      LibGuildStore_SavedVariables["maxItemCount"] = math.max(MasterMerchant.systemSavedVariables.maxItemCount, LibGuildStore_SavedVariables["maxItemCount"])
+    end
+  end
+
   --[[ Added 8-27-2021, for some reason if the last view size on a reload UI
   or upon log in is something like LISTINGS then the game will hag for a while
 

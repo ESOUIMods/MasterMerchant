@@ -139,7 +139,7 @@ end
 internal.saveVarsDefaults = {
   lastReceivedEventID = {},
 }
--- other defaults not sure why I have both
+-- These defaults are used with the Lam menu not the startup routine
 internal.defaults                = {
   -- ["firstRun"] = true not needed when reset
   updateAdditionalText = false,

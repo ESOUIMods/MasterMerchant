@@ -502,34 +502,10 @@ function internal:AddAwesomeGuildStoreListing(listing)
   end
 end
 
-function internal:AddVanillaListing(listing)
-  --internal:dm("Debug", "AddAwesomeGuildStoreListing")
-  local listedTime = GetTimeStamp() - (2592000 - listing.timeRemaining)
-  local theEvent = {
-    guild = listing.guildName,
-    guildId = listing.guildId,
-    itemLink = listing.itemLink,
-    quant = listing.stackCount,
-    timestamp = listing.lastSeen,
-    listingTime = listedTime,
-    price = listing.purchasePrice,
-    seller = listing.sellerName,
-    id = Id64ToString(listing.itemUniqueId),
-  }
-  internal:addTraderInfo(listing.guildId, listing.guildName)
-  local added = false
-  local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
-  if not duplicate then
-    added = internal:addListingData(theEvent)
-    MasterMerchant.listIsDirty[LISTINGS] = true
-  end
-end
-
 -- this is for the vanilla UI
 function internal:processGuildStore()
-  internal:dm("Debug", "processGuildStore")
+  --internal:dm("Debug", "processGuildStore")
   local numItemsOnPage, currentPage, hasMorePages = GetTradingHouseSearchResultsInfo()
-  internal:dm("Debug", {numItemsOnPage, currentPage, hasMorePages})
   local itemLink, icon, itemName, displayQuality, stackCount, sellerName, timeRemaining, purchasePrice,
   currencyType, itemUniqueId, purchasePricePerUnit
   local guildId, guildName = GetCurrentTradingHouseGuildDetails()
@@ -557,6 +533,12 @@ function internal:processGuildStore()
     end
   end
 end
+
+  if not AwesomeGuildStore then
+    ZO_PreHook(TRADING_HOUSE, "RebuildSearchResultsPage", function()
+      internal:processGuildStore()
+    end)
+  end
 
 -- this should loop over the data from AGS to be converted to theEvent
 function internal:processAwesomeGuildStore(itemDatabase, guildId)
