@@ -61,7 +61,7 @@ function IFScrollList:SetupNameFiltersRow(control, data)
   control.itemName:SetFont(string.format(fontString, 15))
 
   local itemName = data.itemName
-  local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, data.itemLink)
+  local itemLink = internal:GetItemLinkByIndex(data.itemLink)
   local itemIcon = GetItemLinkInfo(itemLink)
 
   -- Draw itemIcon

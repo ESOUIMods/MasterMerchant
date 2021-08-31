@@ -202,16 +202,16 @@ function MasterMerchant:SortByPurchaseAccountName(ordering, scrollList)
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       local actualItemA = purchases_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]
       local actualItemB = purchases_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]
-      local nameA = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemA['seller'])
-      local nameB = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemB['seller'])
+      local nameA = internal:GetAccountNameByIndex(actualItemA['seller'])
+      local nameB = internal:GetAccountNameByIndex(actualItemB['seller'])
       return (nameA or 0) > (nameB or 0)
     end)
   else
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       local actualItemA = purchases_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]
       local actualItemB = purchases_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]
-      local nameA = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemA['seller'])
-      local nameB = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItemB['seller'])
+      local nameA = internal:GetAccountNameByIndex(actualItemA['seller'])
+      local nameB = internal:GetAccountNameByIndex(actualItemB['seller'])
       return (nameA or 0) < (nameB or 0)
     end)
   end
@@ -281,16 +281,16 @@ function MasterMerchant:SortByReportItemGuildName(ordering, scrollList)
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       local guildNameA = dataTable[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]['guild']
       local guildNameB = dataTable[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]['guild']
-      local nameA = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, guildNameA)
-      local nameB = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, guildNameB)
+      local nameA = internal:GetGuildNameByIndex(guildNameA)
+      local nameB = internal:GetGuildNameByIndex(guildNameB)
       return (nameA or 0) > (nameB or 0)
     end)
   else
     MasterMerchant.shellSort(listData, function(sortA, sortB)
       local guildNameA = dataTable[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]['guild']
       local guildNameB = dataTable[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]['guild']
-      local nameA = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, guildNameA)
-      local nameB = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, guildNameB)
+      local nameA = internal:GetGuildNameByIndex(guildNameA)
+      local nameB = internal:GetGuildNameByIndex(guildNameB)
       return (nameA or 0) < (nameB or 0)
     end)
   end
@@ -348,10 +348,10 @@ function MMScrollList:SetupSalesRow(control, data)
   end
   ]]--
   local actualItem = sales_data[data[1]][data[2]]['sales'][data[3]]
-  local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem['itemLink'])
-  local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, actualItem['guild'])
-  local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['buyer'])
-  local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['seller'])
+  local currentItemLink = internal:GetItemLinkByIndex(actualItem['itemLink'])
+  local currentGuild = internal:GetGuildNameByIndex(actualItem['guild'])
+  local currentBuyer = internal:GetAccountNameByIndex(actualItem['buyer'])
+  local currentSeller = internal:GetAccountNameByIndex(actualItem['seller'])
   local actualItemIcon = sales_data[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), SALES_WINDOW_CONTROL_NAME_REGEX)
 
@@ -602,9 +602,9 @@ function MMScrollList:SetupListingsRow(control, data)
   if not actualItem.timestamp then
     MasterMerchant:dm("Warn", actualItem)
   end
-  local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem['itemLink'])
-  local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, actualItem['guild'])
-  local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['seller'])
+  local currentItemLink = internal:GetItemLinkByIndex(actualItem['itemLink'])
+  local currentGuild = internal:GetGuildNameByIndex(actualItem['guild'])
+  local currentSeller = internal:GetAccountNameByIndex(actualItem['seller'])
   local actualItemIcon = listings_data[data[1]][data[2]]['itemIcon']
   local guildZone = nil
   local guildSubZone = nil
@@ -750,10 +750,10 @@ function MMScrollList:SetupPurchasesRow(control, data)
   if not actualItem.timestamp then
     MasterMerchant:dm("Warn", actualItem)
   end
-  local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem['itemLink'])
-  local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, actualItem['guild'])
-  local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['buyer'])
-  local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['seller'])
+  local currentItemLink = internal:GetItemLinkByIndex(actualItem['itemLink'])
+  local currentGuild = internal:GetGuildNameByIndex(actualItem['guild'])
+  local currentBuyer = internal:GetAccountNameByIndex(actualItem['buyer'])
+  local currentSeller = internal:GetAccountNameByIndex(actualItem['seller'])
   local actualItemIcon = purchases_data[data[1]][data[2]]['itemIcon']
 
   --[[
@@ -912,10 +912,10 @@ function MMScrollList:SetupReportsRow(control, data)
   end
   ]]--
   local actualItem = dataTable[data[1]][data[2]]['sales'][data[3]]
-  local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem['itemLink'])
-  local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, actualItem['guild'])
-  local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['buyer'])
-  local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, actualItem['seller'])
+  local currentItemLink = internal:GetItemLinkByIndex(actualItem['itemLink'])
+  local currentGuild = internal:GetGuildNameByIndex(actualItem['guild'])
+  local currentBuyer = internal:GetAccountNameByIndex(actualItem['buyer'])
+  local currentSeller = internal:GetAccountNameByIndex(actualItem['seller'])
   local actualItemIcon = dataTable[data[1]][data[2]]['itemIcon']
   local isFullSize = string.find(control:GetName(), SALES_WINDOW_CONTROL_NAME_REGEX)
 
@@ -1127,9 +1127,9 @@ function MMScrollList:FilterScrollList()
           local i = v[3]
           local dataList = sales_data[k][j]
           local item = dataList['sales'][i]
-          local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
-          local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
-          local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
+          local currentGuild = internal:GetGuildNameByIndex(item['guild'])
+          local currentBuyer = internal:GetAccountNameByIndex(item['buyer'])
+          local currentSeller = internal:GetAccountNameByIndex(item['seller'])
 
           if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
             --d('Bad Item:')
@@ -1165,9 +1165,9 @@ function MMScrollList:FilterScrollList()
         for k, v in pairs(sales_data) do
           for j, dataList in pairs(v) do
             for i, item in pairs(dataList['sales']) do
-              local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
-              local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
-              local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
+              local currentGuild = internal:GetGuildNameByIndex(item['guild'])
+              local currentBuyer = internal:GetAccountNameByIndex(item['buyer'])
+              local currentSeller = internal:GetAccountNameByIndex(item['seller'])
               if (type(i) ~= 'number' or type(item) ~= 'table' or type(item.timestamp) ~= 'number') then
                 --d('Bad Item:')
                 --d(item)
@@ -1403,7 +1403,7 @@ function MMScrollList:FilterScrollList()
               --d(item)
             else
               local saveData = GS17DataSavedVariables[internal.nameFilterNamespace]
-              local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, item.itemLink)
+              local itemLink = internal:GetItemLinkByIndex(item.itemLink)
               local itemName = dataList.itemDesc
               local isFiltered = MasterMerchant:IsItemLinkFiltered(itemLink)
               if not saveData[itemName] and isFiltered then
@@ -1466,7 +1466,7 @@ function MMScrollList:FilterScrollList()
             local listedItem = listings_data[k][j]
             local actualItem = listedItem['sales'][i]
             local saveData = GS17DataSavedVariables[internal.nameFilterNamespace]
-            local itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, actualItem.itemLink)
+            local itemLink = internal:GetItemLinkByIndex(actualItem.itemLink)
             local itemName = listedItem.itemDesc
             local isFiltered = MasterMerchant:IsItemLinkFiltered(itemLink)
             if not saveData[itemName] and isFiltered then
@@ -1852,7 +1852,6 @@ function MasterMerchant:UpdateFonts()
   local windowTitle = 26
   local windowButtonLabel = 14
   local windowHeader = 17
-  local windowQuant = 10
   local windowEditBox = 19
 
   -- Main Window (Sales)
@@ -1876,7 +1875,7 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
-  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, windowQuant))
+  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
 
   -- Listing Window

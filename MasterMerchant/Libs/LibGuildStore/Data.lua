@@ -38,28 +38,19 @@ function internal:concatHash(a, ...)
   end
 end
 
-function internal:GetIndexByString(key, stringName)
-  if internal:is_empty_or_nil(GS16DataSavedVariables[key]) then return nil end
-  if GS16DataSavedVariables[key] and GS16DataSavedVariables[key][stringName] then
-    return GS16DataSavedVariables[key][stringName]
-  end
-  return nil
+function internal:GetGuildNameByIndex(index)
+  if not index or not internal.guildNameByIdLookup[index] then return nil end
+  return internal.guildNameByIdLookup[index]
 end
 
-function internal:GetStringByIndex(key, index)
-  if key == internal.GS_CHECK_ACCOUNTNAME then
-    if internal:is_empty_or_nil(internal.accountNameByIdLookup[index]) then return nil end
-    return internal.accountNameByIdLookup[index]
-  end
-  if key == internal.GS_CHECK_ITEMLINK then
-    if internal:is_empty_or_nil(internal.itemLinkNameByIdLookup[index]) then return nil end
-    return internal.itemLinkNameByIdLookup[index]
-  end
-  if key == internal.GS_CHECK_GUILDNAME then
-    if internal:is_empty_or_nil(internal.guildNameByIdLookup[index]) then return nil end
-    return internal.guildNameByIdLookup[index]
-  end
-  return ""
+function internal:GetItemLinkByIndex(index)
+  if not index or not internal.itemLinkNameByIdLookup[index] then return nil end
+  return internal.itemLinkNameByIdLookup[index]
+end
+
+function internal:GetAccountNameByIndex(index)
+  if not index or not internal.accountNameByIdLookup[index] then return nil end
+  return internal.accountNameByIdLookup[index]
 end
 
 -- uses mod to determine which save files to use
@@ -241,7 +232,7 @@ function internal:AddSearchToItem(itemLink)
 end
 
 function internal:BuildTraderNameLookup()
-  internal:dm("Debug", "BuildAccountNameLookup")
+  internal:dm("Debug", "BuildTraderNameLookup")
   if not GS17DataSavedVariables[internal.visitedNamespace] then GS17DataSavedVariables[internal.visitedNamespace] = {} end
   for key, value in pairs(GS17DataSavedVariables[internal.visitedNamespace]) do
     local currentGuild = value.guildName

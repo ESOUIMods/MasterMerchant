@@ -157,7 +157,7 @@ function internal:VerifyItemLinks(hash, task)
   task:For(pairs(savedVars)):Do(function(itemID, itemIndex)
     task:For(pairs(itemIndex)):Do(function(field, itemIndexData)
       task:For(pairs(itemIndexData['sales'])):Do(function(sale, saleData)
-        local currentLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, saleData.itemLink)
+        local currentLink = internal:GetItemLinkByIndex(saleData.itemLink)
         local currentHash = internal:MakeHashString(currentLink)
         if currentHash ~= hash then
           task:Then(function(task) internal:dm("Debug", "sale in wrong file") end)

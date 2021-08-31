@@ -105,9 +105,9 @@ function RemoveSalesPerBlacklist(list, timeCheck, daysRange)
   local oldestTime     = nil
   local newestTime     = nil
   for i, item in pairs(list) do
-    local currentGuild  = string.lower(internal.guildNameByIdLookup[item.guild]) or ""
-    local currentBuyer  = string.lower(internal.accountNameByIdLookup[item.buyer]) or ""
-    local currentSeller = string.lower(internal.accountNameByIdLookup[item.seller]) or ""
+    local currentGuild  = string.lower(internal:GetGuildNameByIndex(item.guild)) or ""
+    local currentBuyer  = string.lower(internal:GetAccountNameByIndex(item.buyer)) or ""
+    local currentSeller = string.lower(internal:GetAccountNameByIndex(item.seller)) or ""
     if (not zo_plainstrfind(lowerBlacklist, currentBuyer)) and
       (not zo_plainstrfind(lowerBlacklist, currentSeller)) and
       (not zo_plainstrfind(lowerBlacklist, currentGuild)) then
@@ -136,9 +136,9 @@ function RemoveListingsPerBlacklist(list)
   local oldestTime     = nil
   local newestTime     = nil
   for i, item in pairs(list) do
-    local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, item['guild'])
-    local currentBuyer  = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['buyer'])
-    local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, item['seller'])
+    local currentGuild  = internal:GetGuildNameByIndex(item['guild'])
+    local currentBuyer  = internal:GetAccountNameByIndex(item['buyer'])
+    local currentSeller = internal:GetAccountNameByIndex(item['seller'])
     if (not zo_plainstrfind(lowerBlacklist, currentSeller:lower())) and
       (not zo_plainstrfind(lowerBlacklist, currentGuild:lower())) then
       if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
@@ -448,10 +448,10 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         end
         -- start loop
         for i, item in pairs(list) do
-          local currentItemLink = internal.itemLinkNameByIdLookup[item.itemLink]
-          local currentGuild    = internal.guildNameByIdLookup[item.guild]
-          local currentBuyer    = internal.accountNameByIdLookup[item.buyer]
-          local currentSeller   = internal.accountNameByIdLookup[item.seller]
+          local currentItemLink = internal:GetItemLinkByIndex(item.itemLink)
+          local currentGuild    = internal:GetGuildNameByIndex(item.guild)
+          local currentBuyer    = internal:GetAccountNameByIndex(item.buyer)
+          local currentSeller   = internal:GetAccountNameByIndex(item.seller)
           -- get individualSale
           local individualSale  = item.price / item.quant
           -- determine if it is an outlier, if toggle is on
@@ -1390,10 +1390,10 @@ function MasterMerchant:SalesStats(statsDays)
       local itemIndex       = indexes[i][3]
 
       local theItem         = sales_data[itemID][itemData]['sales'][itemIndex]
-      local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, theItem['itemLink'])
-      local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, theItem['guild'])
-      local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, theItem['buyer'])
-      local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, theItem['seller'])
+      local currentItemLink = internal:GetItemLinkByIndex(theItem['itemLink'])
+      local currentGuild    = internal:GetGuildNameByIndex(theItem['guild'])
+      local currentBuyer    = internal:GetAccountNameByIndex(theItem['buyer'])
+      local currentSeller   = internal:GetAccountNameByIndex(theItem['seller'])
       if theItem.timestamp > statsDaysEpoch then
         -- Items Sold
         itemsSold['SK_STATS_TOTAL'] = itemsSold['SK_STATS_TOTAL'] + 1
@@ -2162,10 +2162,10 @@ function MasterMerchant:ExportSalesData()
     for j, dataList in pairs(v) do
       if dataList['sales'] then
         for _, sale in pairs(dataList['sales']) do
-          local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, sale['itemLink'])
-          local currentGuild    = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, sale['guild'])
-          local currentBuyer    = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, sale['buyer'])
-          local currentSeller   = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, sale['seller'])
+          local currentItemLink = internal:GetItemLinkByIndex(sale['itemLink'])
+          local currentGuild    = internal:GetGuildNameByIndex(sale['guild'])
+          local currentBuyer    = internal:GetAccountNameByIndex(sale['buyer'])
+          local currentSeller   = internal:GetAccountNameByIndex(sale['seller'])
           if sale.timestamp >= epochBack and (guildName == 'ALL' or guildName == currentGuild) then
             local itemDesc = dataList['itemDesc']
             itemDesc       = itemDesc:gsub("%^.*$", "", 1)
@@ -2850,7 +2850,9 @@ EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER
 function MasterMerchant:Initialize()
   MasterMerchant:dm("Debug", "Initialize")
   -- SavedVar defaults
-  old_defaults                 = {}
+  old_defaults                 = {
+    dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
+  }
 
   local systemDefault          = {
     -- old settings
@@ -2961,8 +2963,7 @@ function MasterMerchant:Initialize()
   swaping between acoutwide or not such as mentioned above
   ]]--
   self.acctSavedVariables      = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), old_defaults)
-  self.systemSavedVariables    = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil,
-    'MasterMerchant')
+  self.systemSavedVariables    = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
   MasterMerchant.show_log      = self.systemSavedVariables.useLibDebugLogger
 
   local sv                     = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]

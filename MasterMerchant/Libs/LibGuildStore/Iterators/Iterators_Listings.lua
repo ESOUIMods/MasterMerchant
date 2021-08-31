@@ -211,7 +211,7 @@ function internal:iterateOverListingsData(itemid, versionid, saleid, prefunc, lo
         end
 
         if itemData then
-          itemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, itemData["itemLink"])
+          itemLink = internal:GetItemLinkByIndex(itemData["itemLink"])
           if itemLink then
             versiondata['itemAdderText'] = internal:AddSearchToItem(itemLink)
             versiondata['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
@@ -336,9 +336,9 @@ function internal:IndexListingsData()
 
     extraData.indexCount = extraData.indexCount + 1
 
-    local currentItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, viewedItem['itemLink'])
-    local currentGuild = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, viewedItem['guild'])
-    local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, viewedItem['seller'])
+    local currentItemLink = internal:GetItemLinkByIndex(viewedItem['itemLink'])
+    local currentGuild = internal:GetGuildNameByIndex(viewedItem['guild'])
+    local currentSeller = internal:GetAccountNameByIndex(viewedItem['seller'])
 
     local playerName = string.lower(GetDisplayName())
     local selfSale = playerName == string.lower(currentSeller)
@@ -414,20 +414,17 @@ function internal:InitListingHistory()
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
     extraData.totalRecords = extraData.totalRecords + 1
-    if (not (saledata == {})) and saledata['guild'] then
-      local currentGuild  = internal:GetStringByIndex(internal.GS_CHECK_GUILDNAME, saledata['guild'])
-    end
-    local continue = type(currentGuild) == 'string'
-    if continue then
-      local currentSeller = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['seller'])
-      local currentBuyer = internal:GetStringByIndex(internal.GS_CHECK_ACCOUNTNAME, saledata['buyer'])
+    local currentGuild  = internal:GetGuildNameByIndex(saledata['guild'])
+    if currentGuild then
+      local currentSeller = internal:GetAccountNameByIndex(saledata['seller'])
+      local currentBuyer = internal:GetAccountNameByIndex(saledata['buyer'])
 
       if not internal.listedItems[currentGuild] then
         internal.listedItems[currentGuild] = MMGuild:new(currentGuild)
       end
       local guild = internal.listedItems[currentGuild]
       local _, firstsaledata = next(versiondata.sales, nil)
-      local firstsaledataItemLink = internal:GetStringByIndex(internal.GS_CHECK_ITEMLINK, firstsaledata.itemLink)
+      local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
       local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
       local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
       local searchData = searchDataDesc .. ' ' .. searchDataAdder
