@@ -146,6 +146,9 @@
               <Dimensions x="42" y="42"/>
               <Textures normal="/esoui/art/campaign/campaign_tabicon_leaderboard_up.dds"
                         mouseOver="/esoui/art/campaign/campaign_tabicon_leaderboard_over.dds"/>
+              <OnClicked>
+                MasterMerchant:ToggleReportsViewMode()
+              </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, "No Purchase Rank View")
               </OnMouseEnter>

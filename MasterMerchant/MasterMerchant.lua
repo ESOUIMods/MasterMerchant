@@ -2996,6 +2996,7 @@ function MasterMerchant:Initialize()
   want to refresh the data or the filter, unless this just happesn upon creation
   ]]--
   MasterMerchant.systemSavedVariables.viewSize = ITEMS
+  MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'seller'
 
   self.currentGuildID                                 = GetGuildId(1) or 0
 

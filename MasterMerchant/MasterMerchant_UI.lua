@@ -1264,12 +1264,17 @@ function MMScrollList:FilterScrollList()
       dataSet = internal.guildPurchases
     elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
       dataSet = internal.guildSales
-    else
+    elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'item' then
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode then
         dataSet = internal.myItems
       else
         dataSet = internal.guildItems
       end
+    elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'purchaces' then
+        dataSet = internal.purchasedBuyer
+    else
+      internal:dm("Warn", "Shit Hit the fan viewSize : GUILDS")
+      internal:dm("Warn", controlName)
     end
 
     local guildList = ''
@@ -2631,6 +2636,50 @@ function MasterMerchant:ToggleBuyerSeller()
   end
 end
 
+function MasterMerchant:ToggleReportsViewMode()
+  -- MasterMerchant:dm("Debug", "ToggleViewMode")
+  local theFragment = MasterMerchant:ActiveFragment()
+  MasterMerchant:ToggleMasterMerchantWindow()
+  MAIL_INBOX_SCENE:RemoveFragment(theFragment)
+  MAIL_SEND_SCENE:RemoveFragment(theFragment)
+  TRADING_HOUSE_SCENE:RemoveFragment(theFragment)
+  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
+    MasterMerchant:ActiveWindow():SetHidden(true)
+    if MasterMerchant.systemSavedVariables.openWithMail then
+      MAIL_INBOX_SCENE:AddFragment(self.guildUiFragment)
+      MAIL_SEND_SCENE:AddFragment(self.guildUiFragment)
+    end
+
+    if MasterMerchant.systemSavedVariables.openWithStore then
+      TRADING_HOUSE_SCENE:AddFragment(self.guildUiFragment)
+    end
+
+    MasterMerchant.systemSavedVariables.viewSize = GUILDS
+    MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'purchaces'
+    MasterMerchant:RefreshAlteredWindowData(true)
+    MasterMerchant:ToggleMasterMerchantWindow()
+
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
+    MasterMerchant:ActiveWindow():SetHidden(true)
+    if MasterMerchant.systemSavedVariables.openWithMail then
+      MAIL_INBOX_SCENE:AddFragment(self.purchaseUiFragment)
+      MAIL_SEND_SCENE:AddFragment(self.purchaseUiFragment)
+    end
+
+    if MasterMerchant.systemSavedVariables.openWithStore then
+      TRADING_HOUSE_SCENE:AddFragment(self.purchaseUiFragment)
+    end
+
+    MasterMerchant.systemSavedVariables.viewSize = PURCHASES
+    MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'seller'
+    MasterMerchant:RefreshAlteredWindowData(true)
+    MasterMerchant:ToggleMasterMerchantWindow()
+
+  else
+    MasterMerchant:dm("Warn", "Shit Hit the fan ToggleViewMode")
+  end
+end
+
 -- Switches the main window between full and half size.  Really this is hiding one
 -- and showing the other, but close enough ;)  Also makes the scene adjustments
 -- necessary to maintain the desired mail/trading house behaviors.  Copies the
@@ -2742,6 +2791,9 @@ function MasterMerchant:SwitchToMasterMerchantSalesView()
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
   MasterMerchant.systemSavedVariables.viewSize = ITEMS
+  if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'purchaces' then
+    MasterMerchant.systemSavedVariables.viewGuildBuyerSeller = 'seller'
+  end
   if MasterMerchant.systemSavedVariables.openWithMail then
     MAIL_INBOX_SCENE:RemoveFragment(theFragment)
     MAIL_SEND_SCENE:RemoveFragment(theFragment)

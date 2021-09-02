@@ -107,29 +107,29 @@ function internal:addPurchaseData(theEvent)
     --internal:dm("Debug", newEvent)
   end
 
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+  -- this section adds the sales to the lists for the MM window
+  local guild
+  local adderDescConcat                    = searchItemDesc .. ' ' .. searchItemAdderText
 
-  local temp       = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '',}
+  guild                               = internal.purchasedItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+  internal.purchasedItems[theEvent.guild] = guild
+  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+
+  guild                               = internal.purchasedBuyer[theEvent.guild] or MMGuild:new(theEvent.guild)
+  internal.purchasedBuyer[theEvent.guild] = guild
+  guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
+
+  local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', }
   local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    end
-  else
-    if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
-    if theEvent.seller then temp[3] = 's' .. theEvent.seller end
-    temp[5]  = theEvent.guild or ''
-    temp[7]  = searchItemDesc or ''
-    temp[9]  = searchItemAdderText or ''
-    if isSelfSale then
-      temp[11] = internal.PlayerSpecialText
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
+  -- if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
+  if theEvent.seller then temp[3] = 's' .. theEvent.seller end
+  temp[5] = theEvent.guild or ''
+  temp[7] = searchItemDesc or ''
+  temp[9] = searchItemAdderText or ''
+  searchText = string.lower(table.concat(temp, ''))
 
   local searchByWords = zo_strgmatch(searchText, '%S+')
-  local wordData      = { theIID, itemIndex, insertedIndex }
+  local wordData = { theIID, itemIndex, insertedIndex }
 
   -- Index each word
   for i in searchByWords do
