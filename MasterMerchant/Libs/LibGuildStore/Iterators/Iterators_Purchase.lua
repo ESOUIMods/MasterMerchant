@@ -418,8 +418,8 @@ function internal:InitPurchaseHistory()
     internal.purchasedItems    = {}
   end
 
-  if internal.purchasedSellers == nil then
-    internal.purchasedSellers    = {}
+  if internal.purchasedBuyer == nil then
+    internal.purchasedBuyer    = {}
   end
 
   local prefunc  = function(extraData)
@@ -445,14 +445,13 @@ function internal:InitPurchaseHistory()
         GetItemLinkName(firstsaledataItemLink))
       local searchDataAdder             = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
       local searchData                  = searchDataDesc .. ' ' .. searchDataAdder
-      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil,
-        searchData)
+      guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
 
-      if not internal.purchasedSellers[currentGuild] then
-        internal.purchasedSellers[currentGuild] = MMGuild:new(currentGuild)
+      if not internal.purchasedBuyer[currentGuild] then
+        internal.purchasedBuyer[currentGuild] = MMGuild:new(currentGuild)
       end
-      local guild                       = internal.purchasedSellers[currentGuild]
-      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
+      local guild                       = internal.purchasedBuyer[currentGuild]
+      guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
 
     end
     return false
@@ -464,7 +463,7 @@ function internal:InitPurchaseHistory()
       guild:sort()
     end
 
-    for guildName, guild in pairs(internal.purchasedSellers) do
+    for guildName, guild in pairs(internal.purchasedBuyer) do
       guild:sort()
     end
 

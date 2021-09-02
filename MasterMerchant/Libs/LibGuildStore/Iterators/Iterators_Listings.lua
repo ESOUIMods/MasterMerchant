@@ -3,7 +3,7 @@ local internal = _G["LibGuildStore_Internal"]
 local listings_data = _G["LibGuildStore_ListingsData"]
 local lr_index = _G["LibGuildStore_ListingsIndex"]
 
-function internal:CheckForDuplicateListings(itemLink, eventID)
+function internal:CheckForDuplicateListings(itemLink, eventID, timestamp)
   --[[ we need to be able to calculate theIID and itemIndex
   when not used with addToHistoryTables() event though
   the function will calculate them.
@@ -15,6 +15,7 @@ function internal:CheckForDuplicateListings(itemLink, eventID)
   if listings_data[theIID] and listings_data[theIID][itemIndex] then
     for k, v in pairs(listings_data[theIID][itemIndex]['sales']) do
       if v.id == eventID then
+        v.timestamp = timestamp
         return true
       end
     end

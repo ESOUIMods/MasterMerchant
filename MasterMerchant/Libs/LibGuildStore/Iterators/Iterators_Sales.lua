@@ -587,8 +587,7 @@ function internal:InitItemHistory()
             internal.guildPurchases[currentGuild] = MMGuild:new(currentGuild)
           end
           local guild                           = internal.guildPurchases[currentGuild]
-          guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk,
-            false)
+          guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
         end
       end
       return false

@@ -1715,8 +1715,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchant.systemSavedVariables.listingWinTop = MasterMerchantGuildWindow:GetTop()
     MasterMerchant.systemSavedVariables.purchaseWinLeft = MasterMerchantGuildWindow:GetLeft()
     MasterMerchant.systemSavedVariables.purchaseWinTop = MasterMerchantGuildWindow:GetTop()
-    MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchantWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.reportsWinTop = MasterMerchantWindow:GetTop()
+    MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchantGuildWindow:GetLeft()
+    MasterMerchant.systemSavedVariables.reportsWinTop = MasterMerchantGuildWindow:GetTop()
 
     MasterMerchantWindow:ClearAnchors()
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.salesWinLeft, MasterMerchant.systemSavedVariables.salesWinTop)
@@ -1740,8 +1740,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchant.systemSavedVariables.guildWinTop = MasterMerchantListingWindow:GetTop()
     MasterMerchant.systemSavedVariables.purchaseWinLeft = MasterMerchantListingWindow:GetLeft()
     MasterMerchant.systemSavedVariables.purchaseWinTop = MasterMerchantListingWindow:GetTop()
-    MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchantWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.reportsWinTop = MasterMerchantWindow:GetTop()
+    MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchantListingWindow:GetLeft()
+    MasterMerchant.systemSavedVariables.reportsWinTop = MasterMerchantListingWindow:GetTop()
 
     MasterMerchantWindow:ClearAnchors()
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.salesWinLeft, MasterMerchant.systemSavedVariables.salesWinTop)
@@ -1765,8 +1765,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchant.systemSavedVariables.guildWinTop = MasterMerchantPurchaseWindow:GetTop()
     MasterMerchant.systemSavedVariables.listingWinLeft = MasterMerchantPurchaseWindow:GetLeft()
     MasterMerchant.systemSavedVariables.listingWinTop = MasterMerchantPurchaseWindow:GetTop()
-    MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchantWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.reportsWinTop = MasterMerchantWindow:GetTop()
+    MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchantPurchaseWindow:GetLeft()
+    MasterMerchant.systemSavedVariables.reportsWinTop = MasterMerchantPurchaseWindow:GetTop()
 
     MasterMerchantWindow:ClearAnchors()
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.salesWinLeft, MasterMerchant.systemSavedVariables.salesWinTop)
@@ -1790,8 +1790,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchant.systemSavedVariables.guildWinTop = MasterMerchantReportsWindow:GetTop()
     MasterMerchant.systemSavedVariables.listingWinLeft = MasterMerchantReportsWindow:GetLeft()
     MasterMerchant.systemSavedVariables.listingWinTop = MasterMerchantReportsWindow:GetTop()
-    MasterMerchant.systemSavedVariables.purchaseWinLeft = MasterMerchantPurchaseWindow:GetLeft()
-    MasterMerchant.systemSavedVariables.purchaseWinTop = MasterMerchantPurchaseWindow:GetTop()
+    MasterMerchant.systemSavedVariables.purchaseWinLeft = MasterMerchantReportsWindow:GetLeft()
+    MasterMerchant.systemSavedVariables.purchaseWinTop = MasterMerchantReportsWindow:GetTop()
 
     MasterMerchantWindow:ClearAnchors()
     MasterMerchantWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.salesWinLeft, MasterMerchant.systemSavedVariables.salesWinTop)
@@ -2469,7 +2469,7 @@ function MasterMerchant:addStatsItemTooltip()
     -- MasterMerchant windows
   else
     local mocGP = skMoc:GetParent():GetParent()
-    if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or mocGP:GetName() == 'MasterMerchantGuildWindowListContents' or mocGP:GetName() == 'MasterMerchantPurchaseWindowListContents' or mocGP:GetName() == 'MasterMerchantListingWindowListContents' or mocGP:GetName() == 'MasterMerchantFilterByNameWindowListContents') then
+    if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or mocGP:GetName() == 'MasterMerchantGuildWindowListContents' or mocGP:GetName() == 'MasterMerchantPurchaseWindowListContents' or mocGP:GetName() == 'MasterMerchantListingWindowListContents' or mocGP:GetName() == 'MasterMerchantFilterByNameWindowListContents'  or mocGP:GetName() == 'MasterMerchantReportsWindowListContents') then
       local itemLabel = skMoc --:GetLabelControl()
       if itemLabel and itemLabel.GetText then
         itemLink = itemLabel:GetText()
@@ -3069,9 +3069,9 @@ function MasterMerchant:BuildGuiTimeDropdown()
   timeDropdown:AddItem(timeEntry)
   if MasterMerchant.systemSavedVariables.rankIndex == 6 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_28DAY), function() self:UpdateGuildWindow(7) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_30DAY), function() self:UpdateGuildWindow(7) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_28DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_30DAY)) end
 
   timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateGuildWindow(9) end)
   timeDropdown:AddItem(timeEntry)

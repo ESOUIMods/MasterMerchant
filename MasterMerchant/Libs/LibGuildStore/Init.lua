@@ -185,7 +185,7 @@ internal.totalPosted           = 0
 internal.totalCanceled           = 0
 
 internal.purchasedItems          = nil
-internal.purchasedSellers        = nil
+internal.purchasedBuyer        = nil
 internal.listedItems             = nil
 internal.listedSellers           = nil
 

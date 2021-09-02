@@ -478,7 +478,7 @@ function internal:AddAwesomeGuildStoreListing(listing)
     guildId = listing.guildId,
     itemLink = listing.itemLink,
     quant = listing.stackCount,
-    timestamp = listing.lastSeen,
+    timestamp = GetTimeStamp(),
     listingTime = listedTime,
     price = listing.purchasePrice,
     seller = listing.sellerName,
@@ -486,7 +486,7 @@ function internal:AddAwesomeGuildStoreListing(listing)
   }
   internal:addTraderInfo(listing.guildId, listing.guildName)
   local added = false
-  local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
+  local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id, theEvent.timestamp)
   if not duplicate then
     added = internal:addListingData(theEvent)
     MasterMerchant.listIsDirty[LISTINGS] = true
@@ -517,7 +517,7 @@ function internal:processGuildStore()
       id = Id64ToString(itemUniqueId),
     }
     internal:addTraderInfo(guildId, guildName)
-    local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id)
+    local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id, theEvent.timestamp)
     if not duplicate then
       added = internal:addListingData(theEvent)
       MasterMerchant.listIsDirty[LISTINGS] = true
