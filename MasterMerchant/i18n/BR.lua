@@ -117,8 +117,6 @@ ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "Você tem certeza que deseja reinici
 ZO_CreateStringId("SK_RESET_DONE", "Reinicia histórico de vendas.")
 ZO_CreateStringId("SK_SALES_ALERT", "Você vendeu %s x%d por %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t de %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_COLOR", "Você vendeu %s x%d oor |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFde %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE", "Você vendeu %s por %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t de %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE_COLOR", "Você vendeu %s por |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFde %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP", "Você vendeu %d itens totalizando %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t pelas lojas da guilda.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Você vendeu %d itens totalizando |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFpelas lojas da guilda.")
 ZO_CreateStringId("SK_SALES_REPORT", "Relatório de Vendas:")

@@ -117,8 +117,6 @@ ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "本当にセールス履歴をリセ
 ZO_CreateStringId("SK_RESET_DONE", "セールスヒストリーのリセットが完了しました。")
 ZO_CreateStringId("SK_SALES_ALERT", "%sを%d個、%s |t16:16:EsoUI/Art/currency/currency_gold.dds|tで販売しました：%s %s")
 ZO_CreateStringId("SK_SALES_ALERT_COLOR", "%sを%dこ|cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFで販売しました： %s %s")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE", "%sを%s |t16:16:EsoUI/Art/currency/currency_gold.dds|tで販売しました： %s %s")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE_COLOR", "%sを |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFで販売しました： %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP", "%d個のアイテムをトータルで%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t ギルドストアから販売しました。")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "%d個のアイテムをトータルで |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFギルドストアから販売しました。")
 ZO_CreateStringId("SK_SALES_REPORT", "セールスレポート:")

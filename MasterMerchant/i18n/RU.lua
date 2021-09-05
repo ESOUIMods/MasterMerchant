@@ -118,8 +118,6 @@ ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "Вы действительно хо
 ZO_CreateStringId("SK_RESET_DONE", "Журнал продаж обнулён.")
 ZO_CreateStringId("SK_SALES_ALERT", "Вы продали %s ×%d за %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t в %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_COLOR", "Вы продали %s ×%d за |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFв %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE", "Вы продали %s за %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t в %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE_COLOR", "Вы продали %s за |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFв %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP", "Вы продали <<1[%d предмет/%d предмета/%d предметов]>> на сумму %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t в магазинах гильдий.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Вы продали <<1[%d предмет/%d предмета/%d предметов]>> на сумму |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFв магазинах гильдий.")
 ZO_CreateStringId("SK_SALES_REPORT", "Отчёт о продажах:")
