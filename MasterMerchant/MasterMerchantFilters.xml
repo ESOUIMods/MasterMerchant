@@ -1,0 +1,296 @@
+<!--
+      MasterMerchant UI Layout File
+      Last Updated September 15, 2014
+      Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
+      Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
+      Released under terms in license accompanying this file.
+      Distribution without license is prohibited!
+-->
+<GuiXml>
+  <Controls>
+    <TopLevelControl movable="false" mouseEnabled="true" name="MasterMerchantFilterByNameWindow" hidden="true">
+      <Dimensions x="250" y="720"/>
+      <Anchor point="TOPLEFT" relativeTo="MasterMerchantListingWindow" relativePoint="TOPRIGHT" offsetX="15" offsetY="0"/>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+        <Control name="$(parent)MenuHeader">
+          <Dimensions x="250" y="50"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+          <Controls>
+            <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER"
+                   horizontalAlignment="CENTER">
+              <Anchor point="TOP" relativeTo="$(parent)MenuHeader" relativePoint="TOP" offsetX="0" offsetY="5"/>
+              <Dimensions x="240" y="40"/>
+            </Label>
+            <Texture name="$(parent)MenuDivider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+              <Dimensions x="250" y="4"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Control name="$(parent)Headers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)MenuHeader" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+          <Dimensions x="250" y="40"/>
+          <Controls>
+            <Control name="$(parent)ItemName" inherits="MM_SortHeaderLeft">
+              <Anchor point="LEFT" relativeTo="$(parent)Headers" relativePoint="LEFT" offsetX="32" offsetY="0"/>
+              <Dimensions x="210" y="32"/>
+              <OnInitialized>
+                ZO_SortHeader_Initialize(MasterMerchantFilterByNameWindowHeadersItemName, GetString(MM_ITEMNAME_COLUMN),
+                'itemName', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "MM_FontGameLargeBold")
+              </OnInitialized>
+            </Control>
+          </Controls>
+        </Control>
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Dimensions x="250" y="580"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+        </Control>
+        <Control name="$(parent)MenuFooter">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5"/>
+          <Dimensions x="250" y="40"/>
+          <Controls>
+            <Button name="$(parent)ClearFilterButton" inherits="ZO_DefaultButton">
+              <Anchor point="BOTTOMLEFT" relativeTo="$(parent)MenuFooter" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5"/>
+              <Dimensions x="180"/>
+              <OnClicked>
+                MasterMerchant:ClearFilterList()
+              </OnClicked>
+            </Button>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl movable="false" mouseEnabled="true" name="MasterMerchantFilterByTypeWindow" hidden="true">
+      <Anchor point="TOPLEFT" relativeTo="MasterMerchantListingWindow" relativePoint="TOPRIGHT" offsetX="15" offsetY="0"/>
+      <Dimensions x="250" y="720"/>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+        <Control name="$(parent)MenuHeader">
+          <Dimensions x="250" y="50"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+          <Controls>
+            <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER"
+                   horizontalAlignment="CENTER">
+              <Anchor point="TOP" relativeTo="$(parent)MenuHeader" relativePoint="TOP" offsetX="0" offsetY="5"/>
+              <Dimensions x="240" y="40"/>
+            </Label>
+            <Texture name="$(parent)MenuDivider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+              <Dimensions x="250" y="4"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)MenuHeader" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+            </Texture>
+            <Button name="$(parent)AllButton" inheritAlpha="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)MenuDivider" relativePoint="TOPLEFT" offsetX="-5" offsetY="5"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_all_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_all_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_all_over.dds"/>
+              <OnClicked>
+                MasterMerchant:ResetFilters()
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_ALL_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)WeaponsButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)AllButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_weapons_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_weapons_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_weapons_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_WEAPON)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_WEAPONS_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)ArmorButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)WeaponsButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_armor_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_ARMOR)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_ARMOR_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)JewelryButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)ArmorButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Crafting/jewelry_tabIcon_icon_up.dds"
+                pressed="EsoUI/Art/Crafting/jewelry_tabIcon_down.dds"
+                mouseOver="EsoUI/Art/Crafting/jewelry_tabIcon_icon_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_JEWELRY)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_JEWELRY_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)ConsumableButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)JewelryButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_consumables_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_consumables_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_consumables_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_CONSUMABLE)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_CONSUMABLE_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)CraftingButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)ConsumableButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_crafting_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_crafting_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_crafting_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_CRAFTING)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_CRAFTING_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)FurnishingButton" inheritAlpha="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)AllButton" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Crafting/provisioner_indexIcon_furnishings_up.dds"
+                pressed="EsoUI/Art/Crafting/provisioner_indexIcon_furnishings_down.dds"
+                mouseOver="EsoUI/Art/Crafting/provisioner_indexIcon_furnishings_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_FURNISHING)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_FURNISHING_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)CompanionButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)FurnishingButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_companion_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_companion_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_companion_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_COMPANION)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_COMPANION_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)MiscButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)CompanionButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Inventory/inventory_tabIcon_misc_up.dds"
+                pressed="EsoUI/Art/Inventory/inventory_tabIcon_misc_down.dds"
+                mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_misc_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_ITEM_TYPE_MISCELLANEOUS)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_MISCELLANEOUS_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)UnknownButton" inheritAlpha="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FurnishingButton" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Campaign/overview_indexIcon_bonus_up.dds"
+                pressed="EsoUI/Art/Campaign/overview_indexIcon_bonus_down.dds"
+                mouseOver="EsoUI/Art/Campaign/overview_indexIcon_bonus_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_RECIPE_MOTIF_UNKNOWN)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_UNKNOWN_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)KnownButton" inheritAlpha="true">
+              <Anchor point="LEFT" relativeTo="$(parent)UnknownButton" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Dimensions x="42" y="42"/>
+              <Textures
+                normal="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_up.dds"
+                pressed="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_down.dds"
+                mouseOver="EsoUI/Art/Journal/journal_tabIcon_loreLibrary_over.dds"/>
+              <OnClicked>
+                MasterMerchant:UpdateFilterState(self, MM_RECIPE_MOTIF_KNOWN)
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(GS_KNOWN_BUTTON))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <Control name="MasterMerchantFilterByNameDataRow" color="CFDCBD" virtual="true">
+      <Dimensions x="250" y="36"/>
+      <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+        <Texture name="$(parent)ItemIcon" alpha="1">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+          <TextureCoords left="0" right="1" top="0" bottom="1"/>
+        </Texture>
+        <Label name="$(parent)ItemName" inheritAlpha="true" text="Item Name" verticalAlignment="CENTER"
+               linkEnabled="true" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+          <Dimensions x="215" y="26"/>
+        </Label>
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>
+

@@ -1,0 +1,10 @@
+## APIVersion: 101031
+## Title: LibGuildStore Data File GS03Data
+## Description: GS03Data Stores Data
+## Version 1.0.0
+## AddOnVersion: 100
+## SavedVariables: GS03DataSavedVariables
+## DisableSavedVariablesAutoSaving: 1
+## IsLibrary: true
+
+GS03Data.lua
