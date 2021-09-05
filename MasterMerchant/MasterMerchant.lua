@@ -547,13 +547,13 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       bonanzaPrice = bonanzaPrice + item.price
       bonanzaSales = bonanzaSales + 1
     end -- end bonanza loop
-    if bonanzaSales >= 1 then
+    if bonanzaSales and bonanzaSales >= 1 then
       bonanzaPrice = bonanzaPrice / bonanzaCount
     end
     --[[found an average price of 0.07 which X 200 is 14g
     even 0.01 X 200 is 2g
     ]]--
-    if bonanzaPrice < 0.01 then bonanzaPrice = 0.01 end
+    if bonanzaPrice and bonanzaPrice < 0.01 then bonanzaPrice = 0.01 end
   end
   returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                  ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,

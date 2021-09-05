@@ -69,7 +69,7 @@ function internal:ImportMasterMerchantSales()
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
     local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
-    if (saledata['timestamp'] > daysOfHistoryToKeep) then
+    if (saledata['timestamp'] > daysOfHistoryToKeep) or not LibGuildStore_SavedVariables["useSalesHistory"] then
       local duplicate = internal:CheckForDuplicateSale(saledata['itemLink'], saledata['id'])
       if not duplicate then
         internal:addSalesData(saledata)
@@ -476,6 +476,7 @@ local idNumbers = {}
 local idData    = {}
 -- Bring seperate lists together we can still access the sales history all together
 function internal:ReferenceAllATTSales()
+  if not MasterMerchant then return end
   if not ArkadiusTradeToolsSalesData01 then return end
   internal:dm("Debug", "Bring AllATTSales data together")
   internal:ReferenceATTSales(ArkadiusTradeToolsSalesData01)

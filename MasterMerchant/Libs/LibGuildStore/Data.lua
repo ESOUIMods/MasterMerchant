@@ -87,7 +87,7 @@ local function GetItemLinkParseData(itemLink, itemType)
   return 0
 end
 
-local function GetItemTrait(itemLink, itemType)
+local function GetItemsTrait(itemLink, itemType)
   if itemType ~= ITEMTYPE_POISON and itemType ~= ITEMTYPE_POTION then
     return GetItemLinkTraitType(itemLink) or 0
   end
@@ -102,7 +102,7 @@ end
 local function CreateIndexFromLink(itemLink)
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   return GetRequiredLevel(itemLink,
-    itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkQuality(itemLink) .. ":" .. GetItemTrait(itemLink,
+    itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkQuality(itemLink) .. ":" .. GetItemsTrait(itemLink,
     itemType) .. ":" .. GetItemLinkParseData(itemLink, itemType)
 end
 
