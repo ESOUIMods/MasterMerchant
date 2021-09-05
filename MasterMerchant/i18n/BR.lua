@@ -22,6 +22,8 @@ ZO_CreateStringId("SK_HISTORY_DEPTH_NAME", "Tam. do Histórico de Vendas")
 ZO_CreateStringId("SK_HISTORY_DEPTH_TIP", "Quantons dias de dados de vendas devem ser armazenados. Diminuir isso pode reduzir o impacto deste addon na performance.")
 ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Mostra Informação de Preço")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "Inclui dados de preço baseado em vendas passadas nas dicas do item.")
+ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Show Bonanza Price")
+ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Include Bonanza pricing data based on trader listings you have seen in the last 24 hours.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Mostra Info. de Custo de Fabricação")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Inlui o custo de fabricação, baseado nos custos de ingredientes nas dicas item.")
 ZO_CreateStringId("SK_CALC_NAME", "Mostra Pilha da Calculadora de Preço")
@@ -52,6 +54,7 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Mostra Compras e Vendas totais na Lista
 
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Mostra Gráfico de Histórico de Preço")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Inclui um gráfico de histórico de vendas nas dicas do item.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")
@@ -98,6 +101,7 @@ ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filter By Type")
 -- toggle view mode
 ZO_CreateStringId("SK_SELLER_TOOLTIP", "Vista de classificação")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Inf. Item")
+
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[Ontem/%d dias atrás]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ".")
 
@@ -147,16 +151,17 @@ ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Preço M.M. (%s, %d dia): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Preço M.M. (%s, %d dias): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE", "M.M. has no data")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "M.M. não obteve dados nos últimos %d dias")
+ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Preço MM (%s vendas/%s itens, %d dia): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Preço MM (%s vendas/%s itens, %d dias): %s")
+ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s listagens/%s itens): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM has no data")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "MM não obteve dados nos últimos %d dias")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "por")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Liga no Chat")
-ZO_CreateStringId("MM_STATS_TO_CHAT", "Estatística no Chat")
+ZO_CreateStringId("MM_STATS_TO_CHAT", "MM Estatística no Chat")
 ZO_CreateStringId("MM_APP_NAME", "Master Merchant")
-ZO_CreateStringId("MM_APP_AUTHOR", "Khaibit & Philgo68")
+ZO_CreateStringId("MM_APP_AUTHOR", "Sharlikran, Philgo68, Khaibit")
 ZO_CreateStringId("MM_APP_MESSAGE_NAME", "[Master Merchant]")
 ZO_CreateStringId("MM_APP_TEXT_TIMES", " x ")
 ZO_CreateStringId("MM_ADVICE_ERROR", "Master Merchant não conseguiu entrar na Trading House para obter as informações de compras.")
@@ -298,8 +303,6 @@ ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
 ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: retaining %s Sales, %s Purchases, %s Listings, %s Posted, %s Canceled.")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Starting Guild and Item total initialization")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Init Guild and Item totals: %s seconds to init %s records.")
 ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimal Indexing Started...")
 ZO_CreateStringId("MM_FULL_INDEXING", "Full Indexing Started...")
 ZO_CreateStringId("MM_INDEXING_SUMMARY", "Indexing: %s seconds to index %s sales records, %s unique words")

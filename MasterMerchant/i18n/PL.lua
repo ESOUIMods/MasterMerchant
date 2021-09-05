@@ -1,4 +1,4 @@
-﻿-- MasterMerchant Polish Localization File - Taziff (Skrybowie Tamriel)
+-- MasterMerchant Polish Localization File - Taziff (Skrybowie Tamriel)
 -- Last Updated April 11, 2021
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
@@ -36,7 +36,7 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Powiadomienia czatu")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Pokaż powiadomienia w oknie czatu.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Raport sprzedaży offline")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Pokaż powiadomienia na czacie dla sprzedanych przedmiotów podczas bycia offline, gdy następnym razem się zalogujesz.")
-ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To...")
+ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Podrózż do...")
 
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
@@ -52,6 +52,7 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Pokaż sumy zakupów i sprzedaży na li
 
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Pokaż wykres historii cen")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Dołącz wykres historii sprzedaży w oknie przedmiotu.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Pokaż sprzedaż gildii")
@@ -148,9 +149,10 @@ ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Cena M.M. (%s, %d dzień): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Cena M.M. (%s, %d dni): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE", "M.M. nie ma danych")
+ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Cena MM (%s sprzedażs/%s przedmiotów, %s dzień): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Cena MM (%s sprzedażs/%s przedmiotów, %s dni): %s")
+ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s Aukcje/%s przedmiotów): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM nie ma danych")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "M.M. nie ma danych w ostatnich %d dniach")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "dla")
@@ -299,8 +301,6 @@ ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Inicjalizacja Master Merchant...")
 ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: zgromadzono %s sprzedaży, %s Purchases, %s Listings, %s Posted, %s Canceled.")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Start początkowej inicjalizacji gildii i przedmiotów")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Początkowa inicjalizacja gildii i przedmiotów: %s sekund do inicjalizacji %s rekordów.")
 ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimalne indeksowanie...")
 ZO_CreateStringId("MM_FULL_INDEXING", "Pełne indeksowanie...")
 ZO_CreateStringId("MM_INDEXING_SUMMARY", "Indeksowanie: %s sekund do zindeksowania %s wpisów sprzedaży, %s unikalnych wpisów")

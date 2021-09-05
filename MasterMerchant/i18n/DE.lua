@@ -1,4 +1,4 @@
-﻿-- MasterMerchant German Localization File
+-- MasterMerchant German Localization File
 -- Last Updated April 11, 2021
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
@@ -22,6 +22,8 @@ ZO_CreateStringId("SK_HISTORY_DEPTH_NAME", "Gr\195\182\195\159e der Historie")
 ZO_CreateStringId("SK_HISTORY_DEPTH_TIP", "Die Zahl der Tage die die Verkaufsdaten gespeichert werden. Eine Verringerung k\195\182nnte die Auswirkung auf die Leistung des Spieles verbessern.")
 ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Preisinformationen anzeigen")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "Zeigt Preisinformationen basierend auf vergangenen Verkäufen im Tooltip an.")
+ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Show Bonanza Price")
+ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Include Bonanza pricing data based on trader listings you have seen in the last 24 hours.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Show Crafting Cost Info")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Include crafting cost based on ingredient costs in item tooltips.")
 ZO_CreateStringId("SK_CALC_NAME", "Stackpreisrechner anzeigen")
@@ -36,7 +38,7 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Meldungen im Chat")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Zeigt Meldungen \195\188ber Verk\195\164ufe im Chat-Fenster an.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Offline Verkaufsreport")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Zeigt Meldungen im Chat für Verkäufe während man offline war.")
-ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To...")
+ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Reisen nach...")
 
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
@@ -52,6 +54,7 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Zeigt die Summe der Käufe und Verkäuf
 
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Preisverlaufsgrafik anzeigen")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Zeigt ein Diagramm über den Verlauf des Itempreises im Tooltip an.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")
@@ -148,16 +151,17 @@ ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "M.M. Preis (%s, %d Tag): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "M.M. Preis (%s, %d Tage): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE", "M.M. keine Daten")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "M.M. keine Daten in der letzten %d Tage")
+ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "MM Preis (%s Verkäufe/%s Artikels, %s Tag): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "MM Preis (%s Verkäufe/%s Artikels, %s Tage): %s")
+ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s Auflistung/%s Artikels): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM keine Daten")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "MM keine Daten in der letzten %d Tage")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "für")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Link im Chat")
-ZO_CreateStringId("MM_STATS_TO_CHAT", "Stats in den Chat")
+ZO_CreateStringId("MM_STATS_TO_CHAT", "MM Stats in den Chat")
 ZO_CreateStringId("MM_APP_NAME", "Master Merchant")
-ZO_CreateStringId("MM_APP_AUTHOR", "Khaibit & Philgo68")
+ZO_CreateStringId("MM_APP_AUTHOR", "Sharlikran, Philgo68, Khaibit")
 ZO_CreateStringId("MM_APP_MESSAGE_NAME", "[Master Merchant]")
 ZO_CreateStringId("MM_APP_TEXT_TIMES", " x ")
 ZO_CreateStringId("MM_ADVICE_ERROR", "Master Merchant konnte nicht in das Handelshaus Haken zu Kaufberatung.")
@@ -299,8 +303,6 @@ ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
 ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: retaining %s Sales, %s Purchases, %s Listings, %s Posted, %s Canceled.")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Starting Guild and Item total initialization")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Init Guild and Item totals: %s seconds to init %s records.")
 ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimal Indexing Started...")
 ZO_CreateStringId("MM_FULL_INDEXING", "Full Indexing Started...")
 ZO_CreateStringId("MM_INDEXING_SUMMARY", "Indexing: %s seconds to index %s sales records, %s unique words")
