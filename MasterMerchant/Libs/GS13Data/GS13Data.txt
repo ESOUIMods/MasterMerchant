@@ -1,0 +1,10 @@
+## APIVersion: 101031
+## Title: LibGuildStore Data File GS13Data
+## Description: GS13Data Stores Data
+## Version 1.0.0
+## AddOnVersion: 100
+## SavedVariables: GS13DataSavedVariables
+## DisableSavedVariablesAutoSaving: 1
+## IsLibrary: true
+
+GS13Data.lua

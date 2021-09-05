@@ -1,5 +1,5 @@
 function MasterMerchant.NewLink(itemLink, movement)
-  local subType, level = string.match(itemLink, '|H.-:item:.-:(%d-):(%d-):')
+  local subType, level = zo_strmatch(itemLink, '|H.-:item:.-:(%d-):(%d-):')
   subType              = tonumber(subType)
   level                = tonumber(level)
 
@@ -599,9 +599,3 @@ ItemChangeData[135][50]['LevelDown'] = { NewSubtype = 21, NewLevel = 50 }
 ItemChangeData[145][50]['LevelDown'] = { NewSubtype = 22, NewLevel = 50 }
 ItemChangeData[155][50]['LevelDown'] = { NewSubtype = 23, NewLevel = 50 }
 ItemChangeData[165][50]['LevelDown'] = { NewSubtype = 24, NewLevel = 50 }
-
-
-
-
-
-

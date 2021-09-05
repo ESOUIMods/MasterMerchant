@@ -1,4 +1,4 @@
-﻿-- MasterMerchant English Localization File
+-- MasterMerchant English Localization File
 -- Last Updated September 6, 2014
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
@@ -22,6 +22,8 @@ ZO_CreateStringId("SK_HISTORY_DEPTH_NAME", "セールス履歴サイズ")
 ZO_CreateStringId("SK_HISTORY_DEPTH_TIP", "何日までセールスデータを保存するかを設定します。この値を減らすとこのaddonのパフォーマンスが改善される場合があります。")
 ZO_CreateStringId("SK_SHOW_PRICING_NAME", "価格情報を表示")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "過去のセールスに基づいた価格データをツールチップに含めます。")
+ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Show Bonanza Price")
+ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Include Bonanza pricing data based on trader listings you have seen in the last 24 hours.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Show Crafting Cost Info")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Include crafting cost based on ingredient costs in item tooltips.")
 ZO_CreateStringId("SK_CALC_NAME", "スタック価格電卓を表示")
@@ -36,6 +38,10 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "チャットアラート")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "セールスアラートをチャットボックスに表示")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "オフラインセールスレポート")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "次にログインした時、オフライン時に売れたアイテムのアラートをチャットに表示します。")
+ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "に旅行する...")
+
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
 
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "以上な価格を無視")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "スタンダード偏差から遠い価格の取引を無視します。")
@@ -48,6 +54,7 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "MMウィンドウで選択した概算�
 
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "価格履歴グラフを表示")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "価格履歴グラフをアイテムツールチップに含めます。")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")
@@ -59,6 +66,9 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
+ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
+-- endTimeFrameText on MM Graph
+ZO_CreateStringId("MM_ENDTIMEFRAME_TEXT", "Now")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "単価を表示")
 ZO_CreateStringId("SK_SHOW_TOTAL", "合計価格を表示")
@@ -66,20 +76,37 @@ ZO_CreateStringId("SK_BUYER_COLUMN", "購入者")
 ZO_CreateStringId("SK_GUILD_COLUMN", "ギルド")
 ZO_CreateStringId("SK_ITEM_COLUMN", "売れたアイテム")
 ZO_CreateStringId("SK_TIME_COLUMN", "販売時間")
+ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Listed Item")
+ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Time Seen")
+ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "価格")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "価格(1個 )")
+
+-- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "アイテムをダブルクリックすることでチャットに表示します。")
 ZO_CreateStringId("SK_BUYER_TOOLTIP", "名前をダブルクリックすることでコンタクトを取ります。")
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "クリックして販売時間でソートします")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "クリックして販売価格でソートします。")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "統計ウィンドウを開きます。")
-ZO_CreateStringId("SK_SELLER_TOOLTIP", "販売者情報")
+ZO_CreateStringId("SK_SALES_TOOLTIP", "Sales View")
+ZO_CreateStringId("SK_PURCHASE_TOOLTIP", "Purchase View")
+ZO_CreateStringId("SK_BONANZA_TOOLTIP", "Bonanza View")
+ZO_CreateStringId("SK_MANAGEMENT_TOOLTIP", "Management View")
+ZO_CreateStringId("SK_FEEDBACK_TOOLTIP", "Send Feedback")
+ZO_CreateStringId("SK_CLOSE_TOOLTIP", "Close Window")
+ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Filter By Name")
+ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filter By Type")
+
+-- toggle view mode
+ZO_CreateStringId("SK_SELLER_TOOLTIP", "ランキングビュー")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "アイテム情報")
+
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[昨日/%d日前]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ",")
 
 -- Chat and center screen alerts/messages
-ZO_CreateStringId("SK_FIRST_SCAN", "最初にギルドをスキャンしています。これは数分かかることがあります！")
+ZO_CreateStringId("SK_FIRST_SCAN", "LibGuildStore にデータがありません。情報の保存方法によっては、LibHistoire からのデータのリクエストに時間がかかる場合があります。")
 ZO_CreateStringId("SK_REFRESH_LABEL", "更新")
 ZO_CreateStringId("SK_REFRESH_START", "更新を開始しました。")
 ZO_CreateStringId("SK_REFRESH_DONE", "更新が完了しました。")
@@ -117,16 +144,24 @@ ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "メインウィン�
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_STATS_TOGGLE", "ステータスウィンドウを表示/非表示")
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_GRAPH_TOGGLE", "Show/Hide Pricing History Graph")
 
+-- Old string for compatibility
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_SINGLE", "M.M. price (%s, %d day): %.2f")
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
+ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
+
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "M.M. 価格 (%s, %d 日): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "M.M. 価格 (%s, %d 日): %.2f")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE", "M.M. はデータがありません")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "M.M. は最後の%d日間のデータがありません。")
+ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "MM 価格 (%s 売上高/%s 販売商品, %s 日): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "MM 価格 (%s 売上高/%s 販売商品, %s 日々): %s")
+ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s リスト/%s 販売商品): %s")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM はデータがありません")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "MM は最後の%d日間のデータがありません。")
+ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "のため")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "チャットにリンク")
 ZO_CreateStringId("MM_STATS_TO_CHAT", "チャットにステータス")
 ZO_CreateStringId("MM_APP_NAME", "Master Merchant")
-ZO_CreateStringId("MM_APP_AUTHOR", "Khaibit & Philgo68")
+ZO_CreateStringId("MM_APP_AUTHOR", "Sharlikran, Philgo68, Khaibit")
 ZO_CreateStringId("MM_APP_MESSAGE_NAME", "[Master Merchant]")
 ZO_CreateStringId("MM_APP_TEXT_TIMES", " x ")
 ZO_CreateStringId("MM_ADVICE_ERROR", "Master MerchantがTrading Houseにフックすることができず購入アドバイスを提供できません。")
@@ -149,8 +184,9 @@ ZO_CreateStringId("MM_INDEX_LASTWEEK", "先週")
 ZO_CreateStringId("MM_INDEX_PRIORWEEK", "次週")
 ZO_CreateStringId("MM_INDEX_7DAY", "7日")
 ZO_CreateStringId("MM_INDEX_10DAY", "10日")
-ZO_CreateStringId("MM_INDEX_28DAY", "30日")
+ZO_CreateStringId("MM_INDEX_30DAY", "30日")
 ZO_CreateStringId("SK_SELLER_COLUMN", "販売者")
+ZO_CreateStringId("SK_LOCATION_COLUMN", "Location")
 ZO_CreateStringId("SK_RANK_COLUMN", "ランク")
 ZO_CreateStringId("SK_SALES_COLUMN", "販売")
 ZO_CreateStringId("SK_PURCHASES_COLUMN", "購入")
@@ -180,8 +216,9 @@ ZO_CreateStringId("MM_RANGE_FOCUS1", "集中1")
 ZO_CreateStringId("MM_RANGE_FOCUS2", "集中2")
 ZO_CreateStringId("MM_RANGE_FOCUS3", "集中3")
 ZO_CreateStringId("MM_RANGE_NONE", "なし")
-ZO_CreateStringId("MM_BLACKLIST_NAME", "プレイヤーとギルドのブラックリスト")
+ZO_CreateStringId("MM_BLACKLIST_NAME", "Guild & Account Filter")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "MMが計算時、無視したいプレイヤーとギルドの名前のリストです。")
+ZO_CreateStringId("MM_BLACKLIST_MENU", "Add Seller to Filter")
 
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Custom Timeframe")
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_TIP", "An extra timeframe to choose from in the item and guild lists.")
@@ -217,8 +254,8 @@ ZO_CreateStringId("MM_GRAPH_TIP", "%s %sで%sを%d個%sに、各%sで販売し�
 ZO_CreateStringId("MM_GRAPH_TIP_SINGLE", "%s %sで%sを%sに、%sで販売しました。")
 ZO_CreateStringId("MM_NO_DATA_DEAL_NAME", "取引レートのデータなし")
 ZO_CreateStringId("MM_NO_DATA_DEAL_TIP", "セールス履歴のないアイテムの取引レート。")
-ZO_CreateStringId("MM_GRAPH_INFO_NAME", "グラフポイントにヒント")
-ZO_CreateStringId("MM_GRAPH_INFO_TIP", "グラフポイントにセールス情報ツールチップを表示します。")
+ZO_CreateStringId("MM_GRAPH_INFO_NAME", "グラフポイントの詳細情報")
+ZO_CreateStringId("MM_GRAPH_INFO_TIP", "有効にすると、時間、ギルド、買い手、売り手、価格情報が表示されます。無効にすると、グラフポイントの個別の価格が表示されます。")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "レベル/品質セレクタ")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "レベル/品質を調整するボタンをアイテムポップアップに表示します。")
 
@@ -261,12 +298,11 @@ ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Guild Master Options")
 ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventory Options")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
+ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
-ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: retaining %s sales.")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Starting Guild and Item total initialization")
-ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Init Guild and Item totals: %s seconds to init %s records.")
+ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: retaining %s Sales, %s Purchases, %s Listings, %s Posted, %s Canceled.")
 ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimal Indexing Started...")
 ZO_CreateStringId("MM_FULL_INDEXING", "Full Indexing Started...")
 ZO_CreateStringId("MM_INDEXING_SUMMARY", "Indexing: %s seconds to index %s sales records, %s unique words")
@@ -335,3 +371,17 @@ ZO_CreateStringId("MM_GUILD_ITEM_SUMMARY_TIP", "Show Guild and Item totals after
 
 ZO_CreateStringId("MM_INDEXING_NAME", "Enable Indexing Summary")
 ZO_CreateStringId("MM_INDEXING_TIP", "Show Indexing totals after process is complete.")
+
+-- Bonanza filter windows
+ZO_CreateStringId("MM_FILTERBY_LINK_TITLE", "Filter By Item Name")
+ZO_CreateStringId("MM_FILTERBY_TYPE_TITLE", "Filter By Item Type")
+ZO_CreateStringId("MM_ITEMNAME_COLUMN", "ItemName")
+ZO_CreateStringId("MM_ITEM_ICON_COLUMN", "ItemIcon")
+ZO_CreateStringId("MM_ITEMNAME_TEXT", "Item Name")
+ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
+ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")
+ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
+ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")
+
+ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore not initialized. Information will not be refreshed.")
+
