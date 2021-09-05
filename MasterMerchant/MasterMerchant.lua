@@ -2316,47 +2316,17 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
               lastEvent[2] = textTime
               lastEvent[3] = 1
             end
-            -- German word order differs so argument order also needs to be changed
-            -- Also due to plurality differences in German, need to differentiate
-            -- single item sold vs. multiple of an item sold.
-            if MasterMerchant.effective_lang == 'de' then
-              if theEvent.quant > 1 then
-                MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_COLOR), theEvent.quant,
-                    zo_strformat('<<t:1>>', theEvent.itemLink),
-                    stringPrice, theEvent.guild, textTime) .. alertSuffix)
-              else
-                MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                  string.format(GetString(SK_SALES_ALERT_SINGLE_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
-                    stringPrice, theEvent.guild, textTime) .. alertSuffix)
-              end
-            else
-              MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
-                string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
-                  theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
-            end
+            MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE,
+              string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink),
+                theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
           end -- End of on screen announce
 
           -- Chat alert
           if MasterMerchant.systemSavedVariables.showChatAlerts then
-            if MasterMerchant.effective_lang == 'de' then
-              if theEvent.quant > 1 then
-                MasterMerchant:dm("Info",
-                  string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                    theEvent.quant, zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
-                    self.TextTimeSince(theEvent.timestamp, true)))
-              else
-                MasterMerchant:dm("Info",
-                  string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_SINGLE)),
-                    zo_strformat('<<t:1>>', theEvent.itemLink), stringPrice, theEvent.guild,
-                    self.TextTimeSince(theEvent.timestamp, true)))
-              end
-            else
-              MasterMerchant:dm("Info",
-                string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                  zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
+            MasterMerchant:dm("Info",
+              string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
+                zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
                   self.TextTimeSince(theEvent.timestamp, true)))
-            end
           end -- End of show chat alert
         end -- End of multiple alerts or numAlerts == 1
 
