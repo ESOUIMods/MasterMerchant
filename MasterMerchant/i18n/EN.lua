@@ -1,4 +1,4 @@
-﻿-- MasterMerchant English Localization File
+-- MasterMerchant English Localization File
 -- Last Updated April 11, 2021
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
@@ -39,7 +39,7 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Chat Alerts")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Show sales alerts in your chat box.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Offline Sales Report")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Show alerts in chat for items you sold while offline when you log in next.")
-ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To...")
+ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Travel To...")
 
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
