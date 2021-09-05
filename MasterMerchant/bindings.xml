@@ -11,7 +11,10 @@
   <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
     <Category name="MasterMerchant">
       <Action name="MasterMerchant_TOGGLE">
-        <Down>MasterMerchant.ToggleMasterMerchantWindow()</Down>
+        <Down>
+          MasterMerchant.ToggleMasterMerchantWindow()
+          MasterMerchant:ToggleMasterMerchantFilterWindows()
+        </Down>
       </Action>
       <Action name="MasterMerchant_STATS_TOGGLE">
         <Down>MasterMerchant.ToggleMasterMerchantStatsWindow()</Down>

@@ -8,7 +8,18 @@
 -->
 <GuiXml>
   <Controls>
-
+    <Label name="MM_Point" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="." mouseEnabled="true" virtual="true">
+      <OnMouseEnter>
+        ZO_Options_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        ZO_Options_OnMouseExit(self)
+      </OnMouseExit>
+      <OnMouseUp>
+        MM_Graph:MyGraphPointClickHandler(self, button, upInside, self.sellerName)
+      </OnMouseUp>
+    </Label>
+  
     <Backdrop name="MasterMerchantPrice" inherits="ZO_EditBackdrop" virtual="true">
       <Dimensions x="88" y="25"/>
       <Controls>
@@ -24,7 +35,20 @@
       <Dimensions x="372" y="150"/>
       <Controls>
         <Texture name="$(parent)Grid" textureFile="MasterMerchant/mm_chart_grid.dds" alpha=".2"/>
-        <Texture name="$(parent)Marker" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
+        <Texture name="$(parent)AveragePrice" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
+        <Texture name="$(parent)BonanzaPrice" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
+        <Label name="$(parent)HighPrice" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="HighPrice">
+          <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+        </Label>
+        <Label name="$(parent)LowPrice" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="LowPrice">
+          <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+        </Label>
+        <Label name="$(parent)StartTimeframe" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)Grid" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)EndTimeframe" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="Now">
+          <Anchor point="TOP" relativeTo="$(parent)Grid" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5"/>
+        </Label>
       </Controls>
     </Control>
 
@@ -35,22 +59,6 @@
         ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
       </OnLinkMouseUp>
     </Label>
-
-    <TopLevelControl name="MM_ExtraBackground" allowBringToTop="false" virtual="true">
-      <Dimensions x="290" y="750"/>
-      <Controls>
-        <Texture name="$(parent)ImageLeft" textureFile="EsoUI/Art/Miscellaneous/centerscreen_left.dds"
-                 mouseEnabled="true">
-          <Dimensions x="420" y="1024"/>
-          <Anchor point="TOPLEFT" offsetX="-65" offsetY="-115"/>
-        </Texture>
-        <Texture name="$(parent)ImageRight" textureFile="EsoUI/Art/Miscellaneous/centerscreen_right.dds"
-                 mouseEnabled="true">
-          <Dimensions x="64" y="1024"/>
-          <Anchor point="TOPLEFT" relativeTo="$(parent)ImageLeft" relativePoint="TOPRIGHT"/>
-        </Texture>
-      </Controls>
-    </TopLevelControl>
 
     <Control name="MasterMerchantPriceCalc" virtual="true" hidden="true" tier="high">
       <Dimensions x="170" y="95"/>

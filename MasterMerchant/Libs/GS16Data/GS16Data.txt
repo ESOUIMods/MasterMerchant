@@ -1,0 +1,10 @@
+## APIVersion: 101031
+## Title: LibGuildStore Data File GS16Data
+## Description: GS16Data Stores data
+## Version 1.0.0
+## AddOnVersion: 100
+## SavedVariables: GS16DataSavedVariables
+## DisableSavedVariablesAutoSaving: 1
+## IsLibrary: true
+
+GS16Data.lua

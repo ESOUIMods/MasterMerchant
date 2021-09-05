@@ -3,6 +3,7 @@
 -- Written February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
+local internal       = _G["LibGuildStore_Internal"]
 specialDWCount  = 0
 
 local mfloor    = math.floor
@@ -33,7 +34,7 @@ function MMSeller:new(_guild, _name, _outsideBuyer, _searchText)
   o.stack        = {}
   o.rank         = {}
   o.outsideBuyer = _outsideBuyer
-  o.searchText   = string.lower(_searchText or '')
+  o.searchText   = zo_strlower(_searchText or '')
   return o
 end
 
@@ -113,8 +114,8 @@ function MMGuild:new(_name)
       weekCutoff = 1595941200  -- Tuesday, 28-Jul-20 13:00:00 UTC
     end
 
-    while weekCutoff + (7 * 86400) < GetTimeStamp() do
-      weekCutoff = weekCutoff + (7 * 86400)
+    while weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS) < GetTimeStamp() do
+      weekCutoff = weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
     end
     return weekCutoff
   end
@@ -133,13 +134,14 @@ function MMGuild:new(_name)
   o.kiosk_cycle       = 0
   o.week_start        = 0
 
+  -- /script MasterMerchant:dm("Info", { GetGuildKioskCycleTimes() } )
   -- Calc Guild Week Cutoff
   local _, weekCutoff = GetGuildKioskCycleTimes()
   if weekCutoff == 0 then
     -- guild system is down, do something about it
     weekCutoff    = guild_system_offline() -- do not subtract time because of while loop
     o.week_start  = weekCutoff -- this is 7 day back already
-    o.kiosk_cycle = weekCutoff + (7 * 86400) -- add 7 days for when week would end
+    o.kiosk_cycle = weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS) -- add 7 days for when week would end
   end
 
   -- Calc Day Cutoff in Local Time
@@ -147,46 +149,46 @@ function MMGuild:new(_name)
 
   o.oneStart      = dayCutoff -- Today
 
-  o.twoStart      = o.oneStart - 86400 -- yesterday
+  o.twoStart      = o.oneStart - ZO_ONE_DAY_IN_SECONDS -- yesterday
 
   -- This Week
-  o.threeStart    = weekCutoff - 7 * 86400 -- GetGuildKioskCycleTimes() minus 7 days
+  o.threeStart    = weekCutoff - 7 * ZO_ONE_DAY_IN_SECONDS -- GetGuildKioskCycleTimes() minus 7 days
   o.threeEnd      = weekCutoff -- GetGuildKioskCycleTimes()
 
   -- Last Week
-  o.fourStart     = o.threeStart - 7 * 86400 -- last week Tuesday flip
+  o.fourStart     = o.threeStart - 7 * ZO_ONE_DAY_IN_SECONDS -- last week Tuesday flip
   o.fourEnd       = o.threeStart -- last week end
 
   -- Previous Week
-  o.fiveStart     = o.fourStart - 7 * 86400
+  o.fiveStart     = o.fourStart - 7 * ZO_ONE_DAY_IN_SECONDS
   o.fiveEnd       = o.fourStart -- prior week end
 
-  o.sixStart      = dayCutoff - 10 * 86400 -- last 10 days
-  o.sevenStart    = dayCutoff - 30 * 86400 -- last 30 days
-  o.eightStart    = dayCutoff - 7 * 86400 -- last 7 days
+  o.sixStart      = dayCutoff - 10 * ZO_ONE_DAY_IN_SECONDS -- last 10 days
+  o.sevenStart    = dayCutoff - 30 * ZO_ONE_DAY_IN_SECONDS -- last 30 days
+  o.eightStart    = dayCutoff - 7 * ZO_ONE_DAY_IN_SECONDS -- last 7 days
 
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_HOURS) then
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 3600 -- last x hours
-    o.nineEnd   = GetTimeStamp() + 7 * 86400
+    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_HOUR_IN_SECONDS -- last x hours
+    o.nineEnd   = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_DAYS) then
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 -- last x days
-    o.nineEnd   = GetTimeStamp() + 7 * 86400
+    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS -- last x days
+    o.nineEnd   = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_WEEKS) then
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 * 7 -- last x weeks
-    o.nineEnd   = GetTimeStamp() + 7 * 86400
+    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS * 7 -- last x weeks
+    o.nineEnd   = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) then
-    o.nineStart = weekCutoff - MasterMerchant.systemSavedVariables.customTimeframe * 86400 * 7 -- last x full guild weeks
+    o.nineStart = weekCutoff - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS * 7 -- last x full guild weeks
     o.nineEnd   = weekCutoff
   end
   if o.nineStart == nil then
     -- Default custom timeframe to Last 3 days if it's undefined
     MasterMerchant.systemSavedVariables.customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS)
     MasterMerchant.systemSavedVariables.customTimeframe     = 3
-    o.nineStart                                             = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * 86400 -- last x days
-    o.nineEnd                                               = GetTimeStamp() + 7 * 86400
+    o.nineStart                                             = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS -- last x days
+    o.nineEnd                                               = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
   end
 
   return o
@@ -232,37 +234,37 @@ function MMGuild:removeRankIndex(rankIndex)
   if (self.rank[rankIndex]) then self.rank[rankIndex] = nil end
 end
 
-function MMGuild:addSaleByDate(sellerName, date, amount, stack, wasKiosk, sort, searchText)
+function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)
   if sellerName == nil then return end
-  if date == nil then return end
-  if type(date) ~= 'number' then return end
-  if (date >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end ;
-  if (date >= self.twoStart and date < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort,
+  if timestamp == nil then return end
+  if type(timestamp) ~= 'number' then return end
+  if (timestamp >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end ;
+  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort,
     searchText) end ;
-  if (date >= self.threeStart and date < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort,
+  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort,
     searchText) end ;
-  if (date >= self.fourStart and date < self.fourEnd) then self:addSale(sellerName, 4, amount, stack, wasKiosk, sort,
+  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:addSale(sellerName, 4, amount, stack, wasKiosk, sort,
     searchText) end ;
-  if (date >= self.fiveStart and date < self.fiveEnd) then self:addSale(sellerName, 5, amount, stack, wasKiosk, sort,
+  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:addSale(sellerName, 5, amount, stack, wasKiosk, sort,
     searchText) end ;
-  if (date >= self.sixStart) then self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText) end ;
-  if (date >= self.sevenStart) then self:addSale(sellerName, 7, amount, stack, wasKiosk, sort, searchText) end ;
-  if (date >= self.eightStart) then self:addSale(sellerName, 8, amount, stack, wasKiosk, sort, searchText) end ;
-  if (date >= self.nineStart and date < self.nineEnd) then self:addSale(sellerName, 9, amount, stack, wasKiosk, sort,
+  if (timestamp >= self.sixStart) then self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText) end ;
+  if (timestamp >= self.sevenStart) then self:addSale(sellerName, 7, amount, stack, wasKiosk, sort, searchText) end ;
+  if (timestamp >= self.eightStart) then self:addSale(sellerName, 8, amount, stack, wasKiosk, sort, searchText) end ;
+  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:addSale(sellerName, 9, amount, stack, wasKiosk, sort,
     searchText) end ;
 end
 
-function MMGuild:removeSaleByDate(sellerName, date, amount, stack)
+function MMGuild:removeSaleByDate(sellerName, timestamp, amount, stack)
   if sellerName == nil then return end
-  if (date >= self.oneStart) then self:removeSale(sellerName, 1, amount) end ;
-  if (date >= self.twoStart and date < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end ;
-  if (date >= self.threeStart and date < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end ;
-  if (date >= self.fourStart and date < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end ;
-  if (date >= self.fiveStart and date < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end ;
-  if (date >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end ;
-  if (date >= self.sevenStart) then self:removeSale(sellerName, 7, amount, stack) end ;
-  if (date >= self.eightStart) then self:removeSale(sellerName, 8, amount, stack) end ;
-  if (date >= self.nineStart and date < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end ;
+  if (timestamp >= self.oneStart) then self:removeSale(sellerName, 1, amount) end ;
+  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end ;
+  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end ;
+  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end ;
+  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end ;
+  if (timestamp >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end ;
+  if (timestamp >= self.sevenStart) then self:removeSale(sellerName, 7, amount, stack) end ;
+  if (timestamp >= self.eightStart) then self:removeSale(sellerName, 8, amount, stack) end ;
+  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end ;
 end
 
 function MMGuild:sortRankIndex(rankIndex)
@@ -289,4 +291,9 @@ function MMGuild:sort()
   self:sortRankIndex(9)
 end
 
-
+function MMGuild:addPurchaseByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)
+  if sellerName == nil then return end
+  if timestamp == nil then return end
+  if type(timestamp) ~= 'number' then return end
+  self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText)
+end

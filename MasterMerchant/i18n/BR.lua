@@ -36,6 +36,10 @@ ZO_CreateStringId("SK_ALERT_CHAT_NAME", "Alertas no Chat")
 ZO_CreateStringId("SK_ALERT_CHAT_TIP", "Mostra alertas de vendas na sua janela de chat.")
 ZO_CreateStringId("SK_OFFLINE_SALES_NAME", "Relatório de Vendas Offline")
 ZO_CreateStringId("SK_OFFLINE_SALES_TIP", "Mostra alertas no chat para itens que você vendeu enquanto não estava no jogo na próxima vez que você entrar.")
+ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Trave To...")
+
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Disable ATT Warning")
+ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "If you enjoy using both MM and ATT together then please disable the warning that ATT files are active with this toggle.")
 
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Ignora Preços Atípicos")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Ignora transações com preços fora do desvio padrão.")
@@ -59,6 +63,9 @@ ZO_CreateStringId("SK_GUILD_SALES_TITLE", "Guild Sales")
 --  window titles - Both
 ZO_CreateStringId("SK_ITEM_REPORT_TITLE", "Item Report")
 ZO_CreateStringId("SK_SELER_REPORT_TITLE", "Seller’s Report")
+ZO_CreateStringId("SK_LISTING_REPORT_TITLE", "Trader Listings")
+-- endTimeFrameText on MM Graph
+ZO_CreateStringId("MM_ENDTIMEFRAME_TEXT", "Now")
 
 ZO_CreateStringId("SK_SHOW_UNIT", "Mostra Preço Unitário")
 ZO_CreateStringId("SK_SHOW_TOTAL", "Mostra Preço Total")
@@ -66,20 +73,36 @@ ZO_CreateStringId("SK_BUYER_COLUMN", "Comprador")
 ZO_CreateStringId("SK_GUILD_COLUMN", "Guilda")
 ZO_CreateStringId("SK_ITEM_COLUMN", "Item Vendido")
 ZO_CreateStringId("SK_TIME_COLUMN", "Tempo de Venda")
+ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Listed Item")
+ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Time Seen")
+ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Preço")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "Preço(unit.)")
+
+-- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Dê duplo-clique no item para colocá-lo no chat.")
 ZO_CreateStringId("SK_BUYER_TOOLTIP", "Dê duplo-clique em um nome para contactá-lo.")
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Clique para ordenar por tempo de venda.")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Clique para ordenar por preço de venda.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Abre a janela de estatísticas.")
-ZO_CreateStringId("SK_SELLER_TOOLTIP", "Inf. Vendedor")
+ZO_CreateStringId("SK_SALES_TOOLTIP", "Sales View")
+ZO_CreateStringId("SK_PURCHASE_TOOLTIP", "Purchase View")
+ZO_CreateStringId("SK_BONANZA_TOOLTIP", "Bonanza View")
+ZO_CreateStringId("SK_MANAGEMENT_TOOLTIP", "Management View")
+ZO_CreateStringId("SK_FEEDBACK_TOOLTIP", "Send Feedback")
+ZO_CreateStringId("SK_CLOSE_TOOLTIP", "Close Window")
+ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Filter By Name")
+ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filter By Type")
+
+-- toggle view mode
+ZO_CreateStringId("SK_SELLER_TOOLTIP", "Vista de classificação")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Inf. Item")
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[Ontem/%d dias atrás]>>")
 ZO_CreateStringId("SK_THOUSANDS_SEP", ".")
 
 -- Chat and center screen alerts/messages
-ZO_CreateStringId("SK_FIRST_SCAN", "Varrendo suas guildas pela primeira vez. Isso pode demorar alguns minutos!")
+ZO_CreateStringId("SK_FIRST_SCAN", "Não há dados na LibGuildStore. A solicitação de dados do LibHistoire pode levar algum tempo, dependendo de como as informações são armazenadas.")
 ZO_CreateStringId("SK_REFRESH_LABEL", "Atualiza")
 ZO_CreateStringId("SK_REFRESH_START", "Começando a atualizar.")
 ZO_CreateStringId("SK_REFRESH_DONE", "Atualização completa.")
@@ -117,11 +140,18 @@ ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "Mostra/Esconde Janel
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_STATS_TOGGLE", "Mostra/Esconde janela de Estatisticas")
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_GRAPH_TOGGLE", "Show/Hide Pricing History Graph")
 
+-- Old string for compatibility
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_SINGLE", "M.M. price (%s, %d day): %.2f")
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
+ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
+
 -- New values
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Preço M.M. (%s, %d dia): %.2f")
 ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Preço M.M. (%s, %d dias): %.2f")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "M.M. has no data")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "M.M. não obteve dados nos últimos %d dias")
+ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "por")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Liga no Chat")
 ZO_CreateStringId("MM_STATS_TO_CHAT", "Estatística no Chat")
@@ -149,8 +179,9 @@ ZO_CreateStringId("MM_INDEX_LASTWEEK", "Semana Passada")
 ZO_CreateStringId("MM_INDEX_PRIORWEEK", "Semana Anterior")
 ZO_CreateStringId("MM_INDEX_7DAY", "7 Dias")
 ZO_CreateStringId("MM_INDEX_10DAY", "10 Dias")
-ZO_CreateStringId("MM_INDEX_28DAY", "30 Dias")
+ZO_CreateStringId("MM_INDEX_30DAY", "30 Dias")
 ZO_CreateStringId("SK_SELLER_COLUMN", "Vendedor")
+ZO_CreateStringId("SK_LOCATION_COLUMN", "Location")
 ZO_CreateStringId("SK_RANK_COLUMN", "Rank")
 ZO_CreateStringId("SK_SALES_COLUMN", "Vendas")
 ZO_CreateStringId("SK_PURCHASES_COLUMN", "Compras")
@@ -178,9 +209,11 @@ ZO_CreateStringId("MM_CTRLSHIFT_TIME_TIP", "Número de dias que o histórico usa
 ZO_CreateStringId("MM_RANGE_ALL", "Tudo")
 ZO_CreateStringId("MM_RANGE_FOCUS1", "Foco 1")
 ZO_CreateStringId("MM_RANGE_FOCUS2", "Foco 2")
+ZO_CreateStringId("MM_RANGE_FOCUS3", "Foco 3")
 ZO_CreateStringId("MM_RANGE_NONE", "Nenhum")
-ZO_CreateStringId("MM_BLACKLIST_NAME", "Lista Negra de Jogadores e Guildas")
+ZO_CreateStringId("MM_BLACKLIST_NAME", "Guild & Account Filter")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "Lista os nomes dos jogadores e guildes que você quer que o MM ignore durante os cálculos.")
+ZO_CreateStringId("MM_BLACKLIST_MENU", "Add Seller to Filter")
 
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Timeframe Customizado ")
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_TIP", "um período de tempo extra para se escolher um item das listas de guildas.")
@@ -216,8 +249,8 @@ ZO_CreateStringId("MM_GRAPH_TIP", "Em %s %s vendeu %s x %d para %s por %s each."
 ZO_CreateStringId("MM_GRAPH_TIP_SINGLE", "Em %s %s vendeu um %s para %s por %s.")
 ZO_CreateStringId("MM_NO_DATA_DEAL_NAME", "Não há dados para avaliar")
 ZO_CreateStringId("MM_NO_DATA_DEAL_TIP", "A clssificação de um item sem histórico de vendas.")
-ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Dicas nos Pontos do Gráfico")
-ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Mostra dicas de informações de vendas nos pontos do gráfico.")
+ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Informações detalhadas nos pontos do gráfico")
+ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Enabled exibirá informações de hora, guilda, comprador, vendedor e preço. Desativado mostrará o preço individual do ponto do gráfico.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Seletores de Nível/Qualidade")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Mostra botões no popup do item para ajustar nível/qualidade.")
 
@@ -260,10 +293,11 @@ ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Guild Master Options")
 ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventory Options")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
+ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
-ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: retaining %s sales.")
+ZO_CreateStringId("MM_INITIALIZED", "Master Merchant Initialized: retaining %s Sales, %s Purchases, %s Listings, %s Posted, %s Canceled.")
 ZO_CreateStringId("MM_INIT_ITEM_HISTORY", "Starting Guild and Item total initialization")
 ZO_CreateStringId("MM_INIT_ITEM_HISTORY_SUMMARY", "Init Guild and Item totals: %s seconds to init %s records.")
 ZO_CreateStringId("MM_MINIMAL_INDEXING", "Minimal Indexing Started...")
@@ -334,3 +368,17 @@ ZO_CreateStringId("MM_GUILD_ITEM_SUMMARY_TIP", "Show Guild and Item totals after
 
 ZO_CreateStringId("MM_INDEXING_NAME", "Enable Indexing Summary")
 ZO_CreateStringId("MM_INDEXING_TIP", "Show Indexing totals after process is complete.")
+
+-- Bonanza filter windows
+ZO_CreateStringId("MM_FILTERBY_LINK_TITLE", "Filter By Item Name")
+ZO_CreateStringId("MM_FILTERBY_TYPE_TITLE", "Filter By Item Type")
+ZO_CreateStringId("MM_ITEMNAME_COLUMN", "ItemName")
+ZO_CreateStringId("MM_ITEM_ICON_COLUMN", "ItemIcon")
+ZO_CreateStringId("MM_ITEMNAME_TEXT", "Item Name")
+ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Add Name To Filter")
+ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Craft Cost to Chat")
+ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
+ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")
+
+ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore not initialized. Information will not be refreshed.")
+
