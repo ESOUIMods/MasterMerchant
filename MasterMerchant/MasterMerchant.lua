@@ -858,7 +858,7 @@ end
 function MasterMerchant:CraftCostPriceTip(itemLink, chatText)
   local cost = self:itemCraftPrice(itemLink)
   if cost then
-    craftTip             = "Craft Cost: %s"
+    craftTip             = GetString(MM_CRAFTCOST_PRICE_TIP)
     local craftTipString = self.LocalizedNumber(cost)
     -- chatText
     if not chatText then craftTip = craftTip .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
@@ -1130,7 +1130,7 @@ function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, 
   if button == MOUSE_BUTTON_INDEX_RIGHT and linkType == ITEM_LINK_TYPE and type(link) == 'string' and #link > 0 and link ~= '' then
     zo_callLater(function()
       if MasterMerchant:itemCraftPrice(link) then
-        AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
+        AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
       end
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
       AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end,
@@ -1152,7 +1152,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
     if (link ~= "" and zo_strmatch(link, '|H.-:item:(.-):')) then
       ClearMenu()
 
-      AddMenuItem("Craft Cost to Chat", function() MasterMerchant:onItemActionLinkCCLink(link) end)
+      AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
       AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT),
         function() ZO_LinkHandler_InsertLink(string.format(SI_TOOLTIP_ITEM_NAME, link)) end)
@@ -1342,7 +1342,7 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
   if (link and zo_strmatch(link, '|H.-:item:(.-):')) then
     zo_callLater(function()
       if MasterMerchant:itemCraftPrice(link) then
-        AddMenuItem("Craft Cost to Chat", function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
+        AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
       end
       AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end,
         MENU_ADD_OPTION_LABEL)
