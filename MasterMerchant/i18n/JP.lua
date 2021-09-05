@@ -384,4 +384,4 @@ ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Remove From Filter")
 ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")
 
 ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore not initialized. Information will not be refreshed.")
-
+ZO_CreateStringId("MM_CRAFTCOST_PRICE_TIP", "Craft Cost: %s")

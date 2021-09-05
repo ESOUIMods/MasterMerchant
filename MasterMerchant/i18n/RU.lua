@@ -385,4 +385,4 @@ ZO_CreateStringId("MM_FILTER_MENU_REMOVE_ITEM", "Убрать из фильтр�
 ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Сбросить фильтр")
 
 ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore не загружена. Информация не будет обновлена.")
-
+ZO_CreateStringId("MM_CRAFTCOST_PRICE_TIP", "Стоимость изготовления: %s")
