@@ -118,8 +118,6 @@ ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "\195\171tes vous s\195\187r de voulo
 ZO_CreateStringId("SK_RESET_DONE", "R\195\169initialiser l'historique des ventes.")
 ZO_CreateStringId("SK_SALES_ALERT", "Vous avez vendu %s x%d pour %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t \195\160 %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_COLOR", "Vous avez vendu %s x%d pour |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFF\195\160 %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE", "Vous avez vendu %s pour %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t \195\160 %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_SINGLE_COLOR", "Vous avez vendu |cD5B526%s pour %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFF\195\160 %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP", "Vous avez vendu %d biens pour un total de %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t dans les magasins de guildes.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Vous avez vendu %d biens pour un total de |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFdans les magasins de guildes.")
 ZO_CreateStringId("SK_SALES_REPORT", "Rapport des ventes:")
