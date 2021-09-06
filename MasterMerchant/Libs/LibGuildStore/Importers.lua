@@ -8,6 +8,15 @@ local purchases_data    = _G["LibGuildStore_PurchaseData"]
 local pr_index          = _G["LibGuildStore_PurchaseIndex"]
 
 ----------------------------------------
+----- ImportPricingData           -----
+----------------------------------------
+function internal:ImportPricingData()
+  GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = {}
+  GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["pricingData"]
+  if GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] == nil then GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = {} end
+end
+
+----------------------------------------
 ----- ImportShoppingList           -----
 ----------------------------------------
 

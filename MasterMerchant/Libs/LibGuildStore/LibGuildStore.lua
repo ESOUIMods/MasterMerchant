@@ -234,6 +234,8 @@ internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
 
   if GS17DataSavedVariables["pricingdatana"] == nil then GS17DataSavedVariables["pricingdatana"] = {} end
   if GS17DataSavedVariables["pricingdataeu"] == nil then GS17DataSavedVariables["pricingdataeu"] = {} end
+  if GS17DataSavedVariables["pricingdatana"]["pricingdataall"] == nil then GS17DataSavedVariables["pricingdatana"]["pricingdataall"] = {} end
+  if GS17DataSavedVariables["pricingdataeu"]["pricingdataall"] == nil then GS17DataSavedVariables["pricingdataeu"]["pricingdataall"] = {} end
 
   if GS17DataSavedVariables["namefilterna"] == nil then GS17DataSavedVariables["namefilterna"] = {} end
   if GS17DataSavedVariables["namefiltereu"] == nil then GS17DataSavedVariables["namefiltereu"] = {} end
@@ -376,8 +378,12 @@ local function Initilizze()
       end)
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.GUILD_SELECTION_CHANGED,
       function(guildData)
-        local selectedGuildId = guildData.guildId
-        MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+        if MasterMerchant.systemSavedVariables.priceCalcAll then
+          MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
+        else
+          local selectedGuildId                           = GetSelectedTradingHouseGuildId()
+          MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+        end
       end)
   else
     -- for vanilla without AwesomeGuildStore to add purchace data

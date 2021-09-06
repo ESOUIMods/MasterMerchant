@@ -255,6 +255,25 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
+    name = GetString(GS_IMPORT_PD_BUTTON),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportShoppingListData",
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    title = "Import MM Pricing Data",
+    text = [[Import MM pricing data into LibGuildStore. Previous pricing data will only be avalable as central pricing data. It will not import the same pricing data into each seperate guild.]]
+  }
+  optionsData[#optionsData + 1] = {
+    type = "button",
+    name = GetString(GS_IMPORT_PD_NAME),
+    tooltip = GetString(GS_IMPORT_PD_TIP),
+    func = function()
+      internal:ImportPricingData()
+    end,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
     name = GetString(GS_RESET_NA_BUTTON),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#ResetData",
