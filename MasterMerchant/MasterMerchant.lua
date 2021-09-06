@@ -3348,7 +3348,7 @@ function MasterMerchant:Initialize()
     LEQ:Add(function()
       if internal:ArkadiusDataActive() then
         if not MasterMerchant.systemSavedVariables.disableAttWarn then
-          MasterMerchant:dm("Info", "ATT is an effective and modular framework that provides sales information to users. While you can use both ATT and MM simultaneously importing your current ATT data, and disabling ATT will increase performance and reduce load times.")
+          MasterMerchant:dm("Info", GetString(MM_ATT_DATA_ENABLED))
         end
       end
     end, 'ArkadiusDataActive')

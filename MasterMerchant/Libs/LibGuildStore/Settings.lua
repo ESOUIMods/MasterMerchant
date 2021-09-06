@@ -184,7 +184,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type = "description",
     title = "Import ATT Sales",
-    text = [[Arkadius Trade Tools sales data is not account specific so you only need to do this once per server NA or EU, not once per account.]]
+    text = GetString(GS_IMPORT_ATT_DESC),
   }
   optionsData[#optionsData + 1] = {
     type = "button",

@@ -167,9 +167,8 @@ function internal:ImportATTSales()
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
 
-    LEQ:Add(function()
-      internal:DatabaseBusy(false)
-    end, '')
+    LEQ:Add(function() internal:DatabaseBusy(false) end, 'DatabaseBusy')
+    LEQ:Add(function() internal:dm("Info", GetString(GS_IMPORT_ATT_FINISHED)) end, 'Done')
     LEQ:Start()
   end
 

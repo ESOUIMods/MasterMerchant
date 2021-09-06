@@ -33,6 +33,8 @@ ZO_CreateStringId("GS_IMPORT_MM_OVERRIDE_TIP", "Принудительно им�
 ZO_CreateStringId("GS_IMPORT_ATT_BUTTON", "Импорт данных ATT")
 ZO_CreateStringId("GS_IMPORT_ATT_NAME", "Импорт данных ATT")
 ZO_CreateStringId("GS_IMPORT_ATT_TIP", "Импортировать все данные продаж из ATT в LibGuildStore.")
+ZO_CreateStringId("GS_IMPORT_ATT_DESC", "Arkadius Trade Tools sales data is not account specific so you only need import once for NA or EU servers, not once per account.")
+ZO_CreateStringId("GS_IMPORT_ATT_FINISHED", "Arkadius Trade Tools sales data has been imported. Using more then one Addon with the same data increases memroy usage and load times.")
 
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_BUTTON", "Импорт покупок из ATT")
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_NAME", "Импорт покупок из ATT")

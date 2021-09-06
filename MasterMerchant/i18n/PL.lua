@@ -386,3 +386,7 @@ ZO_CreateStringId("MM_CRAFTCOST_PRICE_TIP", "Craft Cost: %s")
 
 ZO_CreateStringId("SK_ALL_CALC_NAME", "Save Central Priceing Data")
 ZO_CreateStringId("SK_ALL_CALC_TIP", "Enabled, all pricing data is the same for all guilds. If disabled then pricing data is saved differently per guild.")
+
+-- notifications
+ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] You can import ATT data into Master Merchat from the LibGuildStore settings menu. You can disable this notification from MasterMerchant settings under Debug Options.")
+
