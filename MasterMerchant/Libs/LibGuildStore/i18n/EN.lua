@@ -1,4 +1,4 @@
-﻿ZO_CreateStringId("GS_DEBUG_OPTIONS", "Debug Options")
+ZO_CreateStringId("GS_DEBUG_OPTIONS", "Debug Options")
 ZO_CreateStringId("GS_REFRESH_BUTTON", "Refresh")
 ZO_CreateStringId("GS_RESET_NA_BUTTON", "Reset NA")
 ZO_CreateStringId("GS_RESET_EU_BUTTON", "Reset EU")
@@ -38,6 +38,10 @@ ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_TIP", "Import ATT Purchases data into 
 ZO_CreateStringId("GS_IMPORT_SL_BUTTON", "Import Shoppinglist Data")
 ZO_CreateStringId("GS_IMPORT_SL_NAME", "Import Shoppinglist")
 ZO_CreateStringId("GS_IMPORT_SL_TIP", "Import Shoppinglist data into LibGuildStore.")
+
+ZO_CreateStringId("GS_IMPORT_PD_BUTTON", "Import Pricing Data")
+ZO_CreateStringId("GS_IMPORT_PD_NAME", "Import Pricing Data")
+ZO_CreateStringId("GS_IMPORT_PD_TIP", "Import Pricing Data into LibGuildStore. Will only be available when using central pricing data. For individual guilds you will need to establish new pricing data per guild.")
 
 ZO_CreateStringId("GS_HELP_DUPS", "/lgs dups  - scans your history to purge duplicate entries")
 ZO_CreateStringId("GS_HELP_CLEAN", "/lgs clean - cleans out bad sales records (invalid information)")

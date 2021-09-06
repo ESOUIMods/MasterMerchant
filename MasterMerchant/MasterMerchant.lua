@@ -1280,6 +1280,13 @@ function MasterMerchant.PostPendingItem(self)
     GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] or {}
     GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
 
+    if MasterMerchant.systemSavedVariables.priceCalcAll then
+      GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
+      GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
+      GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] or {}
+      GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
+    end
+
     if MasterMerchant.systemSavedVariables.displayListingMessage then
       MasterMerchant:dm("Info",
         string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
@@ -1985,8 +1992,17 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showCalc = value end,
       default = MasterMerchant.systemDefault.showCalc,
     },
-    -- should we display a Min Profit Filter in AGS?
+    -- Should we use one price for all or save by guild?
     [22] = {
+      type = 'checkbox',
+      name = GetString(SK_ALL_CALC_NAME),
+      tooltip = GetString(SK_ALL_CALC_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.priceCalcAll end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.priceCalcAll = value end,
+      default = MasterMerchant.systemDefault.priceCalcAll,
+    },
+    -- should we display a Min Profit Filter in AGS?
+    [23] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -1995,7 +2011,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.minProfitFilter,
     },
     -- should we display profit instead of margin?
-    [23] = {
+    [24] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -2003,14 +2019,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
       default = MasterMerchant.systemDefault.saucy,
     },
-    [24] = {
+    [25] = {
       type = "header",
       name = GetString(GUILD_MASTER_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildMasterOptions",
     },
     -- should we add taxes to the export?
-    [25] = {
+    [26] = {
       type = 'checkbox',
       name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -2018,13 +2034,13 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
-    [26] = {
+    [27] = {
       type = "header",
       name = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MMDebugOptions",
     },
-    [27] = {
+    [28] = {
       type = 'checkbox',
       name = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
@@ -2032,7 +2048,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
     },
-    [28] = {
+    [29] = {
       type = 'checkbox',
       name = GetString(MM_DISABLE_ATT_WARN_NAME),
       tooltip = GetString(MM_DISABLE_ATT_WARN_TIP),
@@ -2754,8 +2770,14 @@ function MasterMerchant.SetupPendingPost(self)
     local selectedGuildId  = GetSelectedTradingHouseGuildId()
     local pricingData      = nil
 
-    if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] then
-      pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex]
+    if MasterMerchant.systemSavedVariables.priceCalcAll then
+      if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] and GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] and GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex] then
+          pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex]
+      end
+    else
+      if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] then
+          pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex]
+      end
     end
 
     if pricingData then
@@ -2841,6 +2863,7 @@ EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER
 ]]--
 
 -- ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
+-- ["pricingData"]
 -- self.savedVariables.verbose = value
 -- self.acctSavedVariables.delayInit = nil
 -- self:ActiveSettings().verbose = value
@@ -2889,6 +2912,7 @@ function MasterMerchant:Initialize()
     showCraftCost = true,
     showGraph = true,
     showCalc = true,
+    priceCalcAll = true,
     minProfitFilter = true,
     rankIndex = 1,
     rankIndexRoster = 1,
@@ -3099,8 +3123,12 @@ function MasterMerchant:Initialize()
   end
 
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_SELECTED_GUILD_CHANGED, function()
-    local selectedGuildId = GetSelectedTradingHouseGuildId()
-    MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+    if MasterMerchant.systemSavedVariables.priceCalcAll then
+      MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
+    else
+      local selectedGuildId = GetSelectedTradingHouseGuildId()
+      MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+    end
   end)
 
   -- Because we allow manual toggling of the MasterMerchant window in those scenes (without
@@ -3230,6 +3258,13 @@ function MasterMerchant:Initialize()
         GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
         GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
         GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = price / stackCount
+
+        if MasterMerchant.systemSavedVariables.priceCalcAll then
+          GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
+          GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
+          GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] or {}
+          GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex] = price / stackCount
+        end
 
       end)
   else
@@ -3424,8 +3459,12 @@ function MasterMerchant:InitScrollLists()
 
   -- for mods using the old syntax
   if GS17DataSavedVariables then
-    local selectedGuildId                           = GetSelectedTradingHouseGuildId()
-    MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+    if MasterMerchant.systemSavedVariables.priceCalcAll then
+      MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
+    else
+      local selectedGuildId                           = GetSelectedTradingHouseGuildId()
+      MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+    end
   end
 
   MasterMerchant.isInitialized = true
@@ -3608,7 +3647,12 @@ function MasterMerchant.Slash(allArgs)
   end
 
   if args == 'clearprices' then
-    GS17DataSavedVariables[internal.pricingNamespace] = {}
+    if MasterMerchant.systemSavedVariables.priceCalcAll then
+      GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = {}
+    else
+      GS17DataSavedVariables[internal.pricingNamespace] = {}
+    end
+
     MasterMerchant:dm("Info", GetString(MM_CLEAR_SAVED_PRICES))
     return
   end

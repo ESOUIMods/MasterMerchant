@@ -42,6 +42,10 @@ ZO_CreateStringId("GS_IMPORT_SL_BUTTON", "Импорт данных ShoppingList
 ZO_CreateStringId("GS_IMPORT_SL_NAME", "Импорт ShoppingList")
 ZO_CreateStringId("GS_IMPORT_SL_TIP", "Импортировать данные покупок из ShoppingList в LibGuildStore.")
 
+ZO_CreateStringId("GS_IMPORT_PD_BUTTON", "Import Pricing Data")
+ZO_CreateStringId("GS_IMPORT_PD_NAME", "Import Pricing Data")
+ZO_CreateStringId("GS_IMPORT_PD_TIP", "Import Pricing Data into LibGuildStore. Will only be available when using central pricing data. For individual guilds you will need to establish new pricing data per guild.")
+
 ZO_CreateStringId("GS_HELP_DUPS", "/lgs dups  — ищет и удаляет записи-дубликаты из журнала")
 ZO_CreateStringId("GS_HELP_CLEAN", "/lgs clean  — удаляет из журнала сбойные записи")
 ZO_CreateStringId("GS_HELP_SLIDE", "/lgs slide  — переносит журнал продаж на указанное @имя (напр. с @kindredspiritgr на @kindredspiritgrSlid)  /lgs slideback для возврата обратно.")
