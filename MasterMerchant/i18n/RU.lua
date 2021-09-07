@@ -385,9 +385,8 @@ ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Сбросить фильтр")
 ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore не загружена. Информация не будет обновлена.")
 ZO_CreateStringId("MM_CRAFTCOST_PRICE_TIP", "Стоимость изготовления: %s")
 
-ZO_CreateStringId("SK_ALL_CALC_NAME", "Save Central Priceing Data")
-ZO_CreateStringId("SK_ALL_CALC_TIP", "Enabled, all pricing data is the same for all guilds. If disabled then pricing data is saved differently per guild.")
+ZO_CreateStringId("SK_ALL_CALC_NAME", "Общие для всех гильдий цены выставления")
+ZO_CreateStringId("SK_ALL_CALC_TIP", "Если включено, указанные при выставлении предметов на продажу цены не разделяются по гильдиям. Если отключено, цены хранятся отдельно для каждой гильдии.")
 
 -- notifications
 ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] You can import ATT data into Master Merchat from the LibGuildStore settings menu. You can disable this notification from MasterMerchant settings under Debug Options.")
-

@@ -44,9 +44,9 @@ ZO_CreateStringId("GS_IMPORT_SL_BUTTON", "Импорт данных ShoppingList
 ZO_CreateStringId("GS_IMPORT_SL_NAME", "Импорт ShoppingList")
 ZO_CreateStringId("GS_IMPORT_SL_TIP", "Импортировать данные покупок из ShoppingList в LibGuildStore.")
 
-ZO_CreateStringId("GS_IMPORT_PD_BUTTON", "Import Pricing Data")
-ZO_CreateStringId("GS_IMPORT_PD_NAME", "Import Pricing Data")
-ZO_CreateStringId("GS_IMPORT_PD_TIP", "Import Pricing Data into LibGuildStore. Will only be available when using central pricing data. For individual guilds you will need to establish new pricing data per guild.")
+ZO_CreateStringId("GS_IMPORT_PD_BUTTON", "Импорт цен выставлений")
+ZO_CreateStringId("GS_IMPORT_PD_NAME", "Импорт цен выставлений")
+ZO_CreateStringId("GS_IMPORT_PD_TIP", "Импортировать записанные при выставлении предметов на продажу цены в LibGuildStore. Доступно только, если включены общие цены выставления для всех гильдий. Если вы хотите хранить цены выставления отдельно по каждой гильдии, то вам придётся набирать их с чистого листа.")
 
 ZO_CreateStringId("GS_HELP_DUPS", "/lgs dups  — ищет и удаляет записи-дубликаты из журнала")
 ZO_CreateStringId("GS_HELP_CLEAN", "/lgs clean  — удаляет из журнала сбойные записи")
