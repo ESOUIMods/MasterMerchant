@@ -923,11 +923,11 @@ function MMScrollList:SetupReportsRow(control, data)
 
   control.rowId:SetFont(string.format(fontString, 12))
   control.seller:SetFont(string.format(fontString, 15))
-  control.guild:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-  control.itemName:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-  control.quant:SetFont(string.format(fontString, ((isFullSize and 15) or 10)) .. '|soft-shadow-thin')
-  control.sellTime:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
-  control.price:SetFont(string.format(fontString, ((isFullSize and 15) or 11)))
+  control.guild:SetFont(string.format(fontString, 15))
+  control.itemName:SetFont(string.format(fontString, 15))
+  control.quant:SetFont(string.format(fontString, 15) .. '|soft-shadow-thin')
+  control.sellTime:SetFont(string.format(fontString, 15))
+  control.price:SetFont(string.format(fontString, 15))
 
   control.rowId:SetText(data.sortIndex)
 
@@ -1934,7 +1934,10 @@ end
 
 function MasterMerchant:updateCalc()
   local stackSize = zo_strmatch(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
-  local totalPrice = math.floor(tonumber(MasterMerchantPriceCalculatorUnitCostAmount:GetText()) * tonumber(stackSize))
+  local unitPrice = MasterMerchantPriceCalculatorUnitCostAmount:GetText()
+  if not stackSize or tonumber(stackSize) < 1 then internal:dm("Info", string.format("%s is not a valid stack size", stackSize)) return end
+  if not unitPrice or tonumber(unitPrice) < 0.01 then internal:dm("Info", string.format("%s is not a valid unit price", unitPrice)) return end
+  local totalPrice = math.floor(tonumber(unitPrice) * tonumber(stackSize))
   MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
 end
