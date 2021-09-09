@@ -1252,7 +1252,7 @@ function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, contro
 end
 
 function MasterMerchant.PostPendingItem(self)
-  --MasterMerchant:dm("Debug", "PostPendingItem")
+  --internal:dm("Debug", "PostPendingItem")
   if self.pendingItemSlot and self.pendingSaleIsValid then
     local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
     local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
@@ -1275,20 +1275,20 @@ function MasterMerchant.PostPendingItem(self)
     internal:addPostedItem(theEvent)
     MasterMerchant.listIsDirty[REPORTS] = true
 
-    GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][guildId] = GS17DataSavedVariables[internal.pricingNamespace][guildId] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] or {}
-    GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
-
     if MasterMerchant.systemSavedVariables.priceCalcAll then
       GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
       GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
       GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] or {}
       GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
+    else
+      GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
+      GS17DataSavedVariables[internal.pricingNamespace][guildId] = GS17DataSavedVariables[internal.pricingNamespace][guildId] or {}
+      GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID] or {}
+      GS17DataSavedVariables[internal.pricingNamespace][guildId][theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
     end
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
-      MasterMerchant:dm("Info",
+      internal:dm("Info",
         string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
           zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice, guildName))
     end
@@ -1983,7 +1983,7 @@ function MasterMerchant:LibAddonInit()
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
-    -- Should we show the stack price calculator?
+    -- Should we show the stack price calculator in the Vanilla UI?
     [21] = {
       type = 'checkbox',
       name = GetString(SK_CALC_NAME),
@@ -2728,7 +2728,7 @@ function MasterMerchant:InitRosterChanges()
 end
 
 function MasterMerchant.SetupPendingPost(self)
-  --MasterMerchant:dm("Debug", "SetupPendingPost")
+  --internal:dm("Debug", "SetupPendingPost")
   OriginalSetupPendingPost(self)
 
   if (self.pendingItemSlot) then
@@ -3213,27 +3213,27 @@ function MasterMerchant:Initialize()
   ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnHide',
     function() self:remStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
 
+  --[[ This is to save the sale price however AGS has its own routines and uses
+  its value first so this is usually not seen, although it does save NA and EU
+  separately
+  ]]--
   if AwesomeGuildStore then
-    --[[ This is to save the sale price however AGS has its own routines and uses
-    its value first so this is usually not seen, although it does save NA and EU
-    separately
-    ]]--
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
         local theIID = GetItemLinkItemId(itemLink)
         local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
         local selectedGuildId = GetSelectedTradingHouseGuildId()
 
-        GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
-        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
-        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
-        GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = price / stackCount
-
         if MasterMerchant.systemSavedVariables.priceCalcAll then
           GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
           GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
           GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] or {}
           GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex] = price / stackCount
+        else
+          GS17DataSavedVariables[internal.pricingNamespace] = GS17DataSavedVariables[internal.pricingNamespace] or {}
+          GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+          GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] or {}
+          GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] = price / stackCount
         end
 
       end)
