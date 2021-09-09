@@ -8,18 +8,7 @@
 -->
 <GuiXml>
   <Controls>
-    <Label name="MM_Point" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="." mouseEnabled="true" virtual="true">
-      <OnMouseEnter>
-        ZO_Options_OnMouseEnter(self)
-      </OnMouseEnter>
-      <OnMouseExit>
-        ZO_Options_OnMouseExit(self)
-      </OnMouseExit>
-      <OnMouseUp>
-        MM_Graph:MyGraphPointClickHandler(self, button, upInside, self.sellerName)
-      </OnMouseUp>
-    </Label>
-  
+
     <Backdrop name="MasterMerchantPrice" inherits="ZO_EditBackdrop" virtual="true">
       <Dimensions x="88" y="25"/>
       <Controls>
@@ -37,18 +26,6 @@
         <Texture name="$(parent)Grid" textureFile="MasterMerchant/mm_chart_grid.dds" alpha=".2"/>
         <Texture name="$(parent)AveragePrice" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
         <Texture name="$(parent)BonanzaPrice" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
-        <Label name="$(parent)HighPrice" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="HighPrice">
-          <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
-        </Label>
-        <Label name="$(parent)LowPrice" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="LowPrice">
-          <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
-        </Label>
-        <Label name="$(parent)StartTimeframe" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
-          <Anchor point="TOP" relativeTo="$(parent)Grid" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
-        </Label>
-        <Label name="$(parent)EndTimeframe" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="LEFT" text="Now">
-          <Anchor point="TOP" relativeTo="$(parent)Grid" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="5"/>
-        </Label>
       </Controls>
     </Control>
 
