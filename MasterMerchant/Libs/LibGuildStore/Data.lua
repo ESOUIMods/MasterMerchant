@@ -330,6 +330,7 @@ function internal:AddSalesTableData(key, value)
 end
 
 function internal:SetupListener(guildId)
+  internal:dm("Debug", "SetupListener: " .. guildId)
   -- listener
   internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
   local lastReceivedEventID

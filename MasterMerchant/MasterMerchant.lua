@@ -2832,6 +2832,16 @@ end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
 ]]--
 
+local function CompleteMasterMerchantSetup()
+  MasterMerchant.isInitialized = true
+  MasterMerchant.listIsDirty[ITEMS] = true
+  MasterMerchant.listIsDirty[GUILDS] = true
+  MasterMerchant.listIsDirty[LISTINGS] = true
+  MasterMerchant.listIsDirty[PURCHASES] = true
+  MasterMerchant.listIsDirty[REPORTS] = true
+  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings, internal.totalPosted, internal.totalCanceled))
+end
+
 -- ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
 -- ["pricingData"]
 -- self.savedVariables.verbose = value
@@ -3310,6 +3320,8 @@ function MasterMerchant:Initialize()
     LEQ:Add(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
     LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
+    LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
+    LEQ:Add(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
     LEQ:Add(function()
       if internal:MasterMerchantDataActive() then
         MasterMerchant:dm("Info", "The old MMxxData modules are only needed for importing MM data. Please disable all MMxxData modules to increase performance and reduce load times.")
@@ -3413,7 +3425,6 @@ function MasterMerchant:InitScrollLists()
     end
   end
 
-  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings, internal.totalPosted, internal.totalCanceled))
 
     --[[ Sales exist, but no way to know from what source
     previously this would set a variable of veryFirstScan to false
@@ -3436,13 +3447,6 @@ function MasterMerchant:InitScrollLists()
       MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
     end
   end
-
-  MasterMerchant.isInitialized = true
-  MasterMerchant.listIsDirty[ITEMS] = true
-  MasterMerchant.listIsDirty[GUILDS] = true
-  MasterMerchant.listIsDirty[LISTINGS] = true
-  MasterMerchant.listIsDirty[PURCHASES] = true
-  MasterMerchant.listIsDirty[REPORTS] = true
 end
 
 local dealInfoCache               = {}

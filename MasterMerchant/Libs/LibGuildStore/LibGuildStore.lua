@@ -106,7 +106,7 @@ function internal:SetupListenerLibHistoire()
   for i = 1, GetNumGuilds() do
     local guildId                         = GetGuildId(i)
     internal.LibHistoireListener[guildId] = {}
-    internal:SetupListener(guildId)
+    zo_callLater(function() internal:SetupListener(guildId) end, 1500 * i)
   end
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     internal:StartQueue()
@@ -303,7 +303,6 @@ local function SetupData()
 
   LEQ:Add(function() internal:dm("Info", "LibGuildStore Index Data Finished...") end, "LibGuildStoreIndexData")
   -- and...
-  LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
   LEQ:Start()
 end
 
