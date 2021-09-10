@@ -97,20 +97,35 @@ function MasterMerchant:CheckTime()
   return GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * daysRange), daysRange
 end
 
+local function BuildBlacklistTable(str)
+   local t = {}
+   local function helper(line)
+      if line ~= "" then
+          t[line] = true
+      end
+      return ""
+   end
+   helper((str:gsub("(.-)\r?\n", helper)))
+   if next(t) then return t end
+end
+
 function RemoveSalesPerBlacklist(list, timeCheck, daysRange)
   local useDaysRange   = daysRange ~= 10000
   local dataList       = { }
   local count          = 0
-  local lowerBlacklist = MasterMerchant.systemSavedVariables.blacklist and MasterMerchant.systemSavedVariables.blacklist:lower() or ""
+  local blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
   local oldestTime     = nil
   local newestTime     = nil
   for i, item in pairs(list) do
-    local currentGuild  = string.lower(internal:GetGuildNameByIndex(item.guild)) or ""
-    local currentBuyer  = string.lower(internal:GetAccountNameByIndex(item.buyer)) or ""
-    local currentSeller = string.lower(internal:GetAccountNameByIndex(item.seller)) or ""
-    if (not zo_plainstrfind(lowerBlacklist, currentBuyer)) and
-      (not zo_plainstrfind(lowerBlacklist, currentSeller)) and
-      (not zo_plainstrfind(lowerBlacklist, currentGuild)) then
+    if blacklistTable then
+      local currentGuild  = internal:GetGuildNameByIndex(item.guild)
+      local currentBuyer  = internal:GetAccountNameByIndex(item.buyer)
+      local currentSeller = internal:GetAccountNameByIndex(item.seller)
+      local nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentBuyer and blacklistTable[currentBuyer]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
+    else
+      nameInBlacklist = false
+    end
+    if not nameInBlacklist then
       if useDaysRange then
         if item.timestamp > timeCheck then
           if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
@@ -132,15 +147,18 @@ end
 function RemoveListingsPerBlacklist(list)
   local dataList       = { }
   local count          = 0
-  local lowerBlacklist = MasterMerchant.systemSavedVariables.blacklist and MasterMerchant.systemSavedVariables.blacklist:lower() or ""
+  local blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
   local oldestTime     = nil
   local newestTime     = nil
   for i, item in pairs(list) do
-    local currentGuild  = internal:GetGuildNameByIndex(item['guild'])
-    local currentBuyer  = internal:GetAccountNameByIndex(item['buyer'])
-    local currentSeller = internal:GetAccountNameByIndex(item['seller'])
-    if (not zo_plainstrfind(lowerBlacklist, currentSeller:lower())) and
-      (not zo_plainstrfind(lowerBlacklist, currentGuild:lower())) then
+    if blacklistTable then
+      local currentGuild  = internal:GetGuildNameByIndex(item.guild)
+      local currentSeller = internal:GetAccountNameByIndex(item.seller)
+      local nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
+    else
+      nameInBlacklist = false
+    end
+    if not nameInBlacklist then
       if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
       if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
       count = count + 1
@@ -365,7 +383,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   local timeCheck, daysRange = self:CheckTime()
 
   -- make sure we have a list of sales to work with
-  if MasterMerchant:itemIDHasSales(theIID, itemIndex) and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
+  if MasterMerchant:itemIDHasSales(theIID, itemIndex) then
     local newestTime           = nil
     local initCount            = 0
     local nameString  = sales_data[theIID][itemIndex].itemDesc
@@ -388,8 +406,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       if MasterMerchant.systemSavedVariables.trimOutliers then
         if #list >= 3 then
           local quartile1, quartile3, quartileRange = stats.interquartileRange(list)
-          list, initCount, oldestTime, newestTime   = stats.evaluateQuartileRangeTable(list, quartile1, quartile3,
-            quartileRange)
+          list, initCount, oldestTime, newestTime   = stats.evaluateQuartileRangeTable(list, quartile1, quartile3, quartileRange)
         end
       end
       --[[TODO: what is goBack
@@ -476,22 +493,21 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
             ]]--
             if clickable then
               local stringPrice = self.LocalizedNumber(individualSale)
-              if item.quant == 1 then
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
-                  math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
-                  string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller,
-                    nameString, currentBuyer, stringPrice)
+              local timeframe = math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)
+              if timeframe < 2 then
+                timeframeString = MM_INDEX_3DAY
               else
-                tooltip = zo_strformat(GetString(SK_TIME_DAYS),
-                  math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)) .. " " ..
-                  string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller,
-                    nameString, item.quant, currentBuyer, stringPrice)
+                timeframeString = timeframe .. " days ago"
+              end
+              if item.quant == 1 then
+                tooltip = timeframeString .. " " .. string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild, currentSeller, nameString, currentBuyer, stringPrice)
+              else
+                tooltip = timeframeString .. " " .. string.format(GetString(MM_GRAPH_TIP), currentGuild, currentSeller, nameString, item.quant, currentBuyer, stringPrice)
               end
             else -- clickable
-              tooltip = MasterMerchant.LocalizedNumber(individualSale) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+              tooltip = stringPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
             end
-            table.insert(salesPoints,
-              { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, currentSeller })
+            table.insert(salesPoints, { item.timestamp, individualSale, self.guildColor[currentGuild], tooltip, currentSeller })
           end -- end skip dots
         end -- end for loop on list
         if timeInterval > ZO_ONE_DAY_IN_SECONDS then
@@ -504,31 +520,6 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         ]]--
         if avgPrice < 0.01 then avgPrice = 0.01 end
       end
-    end
-  else
-    if MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
-      local itemInfo = MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
-      avgPrice = itemInfo.avgPrice
-      legitSales = itemInfo.numSales
-      daysHistory = itemInfo.numDays
-      countSold = itemInfo.numItems
-      local graphInformation = itemInfo.graphInfo
-      oldestTime = graphInformation.oldestTime
-      lowPrice = graphInformation.low
-      highPrice = graphInformation.high
-      salesPoints = graphInformation.points
-    end
-  end
-  if not avgOnly and not priceEval and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
-    local itemInfo = {
-      avgPrice = avgPrice,
-      numSales = legitSales,
-      numDays = daysHistory,
-      numItems = countSold,
-      graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints },
-    }
-    if legitSales and legitSales > 200 then
-      MasterMerchant:SetItemCacheById(theIID, itemIndex, daysRange, itemInfo)
     end
   end
   if not avgOnly and MasterMerchant:itemIDHasListings(theIID, itemIndex) then
