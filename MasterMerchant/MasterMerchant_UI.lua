@@ -1049,10 +1049,12 @@ function MMScrollList:New(control)
     internal:dm("Warn", control:GetName())
   end
 
+  --[[
   ZO_PostHook(skList, 'RefreshData', function()
     local texCon = skList.list.scrollbar:GetThumbTextureControl()
     if texCon:GetHeight() < 10 then skList.list.scrollbar:SetThumbTextureHeight(10) end
   end)
+  ]]--
 
   return skList
 end
