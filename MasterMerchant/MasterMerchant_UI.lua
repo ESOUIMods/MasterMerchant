@@ -1020,8 +1020,8 @@ function MMScrollList:InitializeDataType(controlName)
     ZO_ScrollList_AddDataType(self.list, 1, 'MasterMerchantReportsDataRow', 36,
       function(control, data) self:SetupReportsRow(control, data) end)
   else
-    internal:dm("Warn", "Shit Hit the fan MMScrollList:InitializeDataType")
-    internal:dm("Warn", controlName)
+    MasterMerchant:dm("Warn", "Shit Hit the fan MMScrollList:InitializeDataType")
+    MasterMerchant:dm("Warn", controlName)
   end
   self:RefreshData()
 end
@@ -1045,8 +1045,8 @@ function MMScrollList:New(control)
     skList.sortHeaderGroup:SelectHeaderByKey('time')
     ZO_SortHeader_OnMouseExit(MasterMerchantReportsWindowHeadersSellTime)
   else
-    internal:dm("Warn", "Shit Hit the fan MMScrollList:New")
-    internal:dm("Warn", control:GetName())
+    MasterMerchant:dm("Warn", "Shit Hit the fan MMScrollList:New")
+    MasterMerchant:dm("Warn", control:GetName())
   end
 
   --[[
@@ -1937,8 +1937,8 @@ end
 function MasterMerchant:updateCalc()
   local stackSize = zo_strmatch(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
   local unitPrice = MasterMerchantPriceCalculatorUnitCostAmount:GetText()
-  if not stackSize or tonumber(stackSize) < 1 then internal:dm("Info", string.format("%s is not a valid stack size", stackSize)) return end
-  if not unitPrice or tonumber(unitPrice) < 0.01 then internal:dm("Info", string.format("%s is not a valid unit price", unitPrice)) return end
+  if not stackSize or tonumber(stackSize) < 1 then MasterMerchant:dm("Info", string.format("%s is not a valid stack size", stackSize)) return end
+  if not unitPrice or tonumber(unitPrice) < 0.01 then MasterMerchant:dm("Info", string.format("%s is not a valid unit price", unitPrice)) return end
   local totalPrice = math.floor(tonumber(unitPrice) * tonumber(stackSize))
   MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
@@ -2631,7 +2631,7 @@ function MasterMerchant:ToggleBuyerSeller()
 
     MasterMerchant:RefreshAlteredWindowData(true)
   else
-    internal:dm("Warn", "Shit Hit the fan ToggleBuyerSeller")
+    MasterMerchant:dm("Warn", "Shit Hit the fan ToggleBuyerSeller")
     MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
   end
 end
@@ -2938,7 +2938,7 @@ function MasterMerchant:SwitchSalesViewMode()
     MasterMerchant:RefreshAlteredWindowData(true)
     ZO_Scroll_ResetToTop(self.purchasesScrollList.list)
   else
-    internal:dm("Warn", "Shit Hit the fan SwitchSalesViewMode")
+    MasterMerchant:dm("Warn", "Shit Hit the fan SwitchSalesViewMode")
     MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
   end
 end
@@ -2989,7 +2989,7 @@ function MasterMerchant:SwitchReportsViewMode()
     MasterMerchant:RefreshAlteredWindowData(true)
     ZO_Scroll_ResetToTop(self.reportsScrollList.list)
   else
-    internal:dm("Warn", "Shit Hit the fan SwitchSalesViewMode")
+    MasterMerchant:dm("Warn", "Shit Hit the fan SwitchSalesViewMode")
     MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
   end
 end
