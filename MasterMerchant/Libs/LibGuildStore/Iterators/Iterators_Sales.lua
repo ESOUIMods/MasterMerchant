@@ -1120,7 +1120,7 @@ function internal:checkForDoubles()
       for versionid, _ in pairs(versionlist) do
         for j = i + 1, 15, 1 do
           if dataList[j][itemid] and dataList[j][itemid][versionid] then
-            MasterMerchant:dm("Info", itemid .. '/' .. versionid .. ' is in ' .. i .. ' and ' .. j .. '.')
+            internal:dm("Info", itemid .. '/' .. versionid .. ' is in ' .. i .. ' and ' .. j .. '.')
           end
         end
       end

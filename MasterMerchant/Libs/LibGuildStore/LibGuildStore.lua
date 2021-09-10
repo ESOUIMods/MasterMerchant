@@ -66,7 +66,6 @@ function internal:QueueCheckStatus()
     )
     ]]--
     internal:dm("Info", GetString(GS_REFRESH_FINISHED))
-    lib.guildStoreReady                                      = true
     LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
     internal:DatabaseBusy(false)
     MasterMerchant.listIsDirty[ITEMS] = true
@@ -302,6 +301,7 @@ local function SetupData()
   LEQ:Add(function() internal:IndexCancelledItemData() end, 'IndexCancelledItemData')
 
   LEQ:Add(function() internal:dm("Info", "LibGuildStore Index Data Finished...") end, "LibGuildStoreIndexData")
+  LEQ:Add(function() lib.guildStoreReady = true end, "LibGuildStoreIndexData")
   -- and...
   LEQ:Start()
 end
@@ -319,8 +319,6 @@ local function Initilizze()
       internal.guildMemberInfo[guildId][string.lower(guildMemInfo)] = true
     end
   end
-  SetupData()
-
   internal:LibAddonInit()
 
   if AwesomeGuildStore then
@@ -421,6 +419,7 @@ local function Initilizze()
     AGS.callback.ITEM_CANCELLED = "ItemCancelled"
     AGS.callback.ITEM_POSTED = "ItemPosted"
   ]]--
+  SetupData()
 end
 
 local function CheckImportStatus()

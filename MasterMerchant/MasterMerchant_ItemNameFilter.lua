@@ -40,8 +40,8 @@ function IFScrollList:SortScrollList()
   if self.currentSortKey == 'itemName' then
     MasterMerchant:SortByItemFilterName(self.currentSortOrder, self)
   else
-    internal:dm("Warn", "Shit Hit the fan IFScrollList:SortScrollList")
-    internal:dm("Warn", self.currentSortKey)
+    MasterMerchant:dm("Warn", "Shit Hit the fan IFScrollList:SortScrollList")
+    MasterMerchant:dm("Warn", self.currentSortKey)
   end
 end
 
@@ -84,8 +84,8 @@ function IFScrollList:InitializeDataType(controlName)
     ZO_ScrollList_AddDataType(self.list, 1, 'MasterMerchantFilterByNameDataRow', 36,
       function(control, data) self:SetupNameFiltersRow(control, data) end)
   else
-    internal:dm("Warn", "Shit Hit the fan IFScrollList:InitializeDataType")
-    internal:dm("Warn", controlName)
+    MasterMerchant:dm("Warn", "Shit Hit the fan IFScrollList:InitializeDataType")
+    MasterMerchant:dm("Warn", controlName)
   end
   self.currentSortKey = "itemName"
   self.currentSortOrder = ZO_SORT_ORDER_UP
@@ -99,8 +99,8 @@ function IFScrollList:New(control)
     skList.sortHeaderGroup:SelectHeaderByKey('name')
     ZO_SortHeader_OnMouseExit(MasterMerchantFilterByNameWindowHeadersItemName)
   else
-    internal:dm("Warn", "Shit Hit the fan IFScrollList:New")
-    internal:dm("Warn", control:GetName())
+    MasterMerchant:dm("Warn", "Shit Hit the fan IFScrollList:New")
+    MasterMerchant:dm("Warn", control:GetName())
   end
 
   --[[

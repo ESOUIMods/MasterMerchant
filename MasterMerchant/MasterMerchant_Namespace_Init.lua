@@ -66,13 +66,7 @@ if SDLV then MasterMerchant.viewer = true else MasterMerchant.viewer = false end
 
 local function create_log(log_type, log_content)
   if not MasterMerchant.viewer and log_type == "Info" then
-    if CHAT_ROUTER then
-      CHAT_ROUTER:AddSystemMessage(log_content)
-    elseif RequestDebugPrintText then
-      RequestDebugPrintText(log_content)
-    else
-      d(log_content)
-    end
+    CHAT_ROUTER:AddSystemMessage(log_content)
     return
   end
   if not MasterMerchant.logger then return end

@@ -1252,7 +1252,7 @@ function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, contro
 end
 
 function MasterMerchant.PostPendingItem(self)
-  --internal:dm("Debug", "PostPendingItem")
+  --MasterMerchant:dm("Debug", "PostPendingItem")
   if self.pendingItemSlot and self.pendingSaleIsValid then
     local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
     local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
@@ -1288,7 +1288,7 @@ function MasterMerchant.PostPendingItem(self)
     end
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
-      internal:dm("Info",
+      MasterMerchant:dm("Info",
         string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
           zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice, guildName))
     end
@@ -2214,6 +2214,7 @@ end
 -- via the 'refresh' or 'reset' buttons.
 
 function MasterMerchant:PostScanParallel(guildName, doAlert)
+  if not MasterMerchant.isInitialized then return end
   -- If the index is blank (first scan after login or after reset),
   -- build the indexes now that we have a scanned table.
   -- self:setScanningParallel(false, guildName)
@@ -2728,7 +2729,7 @@ function MasterMerchant:InitRosterChanges()
 end
 
 function MasterMerchant.SetupPendingPost(self)
-  --internal:dm("Debug", "SetupPendingPost")
+  --MasterMerchant:dm("Debug", "SetupPendingPost")
   OriginalSetupPendingPost(self)
 
   if (self.pendingItemSlot) then
@@ -2833,6 +2834,7 @@ EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER
 ]]--
 
 local function CompleteMasterMerchantSetup()
+  MasterMerchant:dm("Debug", "CompleteMasterMerchantSetup")
   MasterMerchant.isInitialized = true
   MasterMerchant.listIsDirty[ITEMS] = true
   MasterMerchant.listIsDirty[GUILDS] = true
@@ -2850,8 +2852,8 @@ end
 -- self.systemSavedVariables.verbose = value
 -- MasterMerchant.systemSavedVariables.verbose = value
 -- Init function
-function MasterMerchant:Initialize()
-  MasterMerchant:dm("Debug", "Initialize")
+function MasterMerchant:FirstInitialize()
+  MasterMerchant:dm("Debug", "FirstInitialize")
   -- SavedVar defaults
   old_defaults                 = {
     dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
@@ -2981,7 +2983,7 @@ function MasterMerchant:Initialize()
 
       -- TODO Check historyDepth is only set once on first run
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
-    internal:dm("Debug", "Checked Old MM Settings")
+    MasterMerchant:dm("Debug", "Checked Old MM Settings")
     if MasterMerchant.systemSavedVariables.historyDepth then
       LibGuildStore_SavedVariables["historyDepth"] = math.max(MasterMerchant.systemSavedVariables.historyDepth, LibGuildStore_SavedVariables["historyDepth"])
     end
@@ -3280,7 +3282,10 @@ function MasterMerchant:Initialize()
     originalCall(control, slot)
     self:SwitchPrice(control, slot)
   end
+end
 
+function MasterMerchant:SecondInitialize()
+  MasterMerchant:dm("Debug", "SecondInitialize")
   --[[
   Order of events:
 
@@ -3531,13 +3536,29 @@ function MasterMerchant:RegisterFonts()
   LMP:Register("font", "Fontin SmallCaps", [[MasterMerchant/Fonts/fontin_sans_sc.otf]])
 end
 
+local function CheckLibGuildStoreReady()
+  MasterMerchant:dm("Debug", "CheckLibGuildStoreReady")
+  local LGS = LibGuildStore
+  if LGS.guildStoreReady then
+    MasterMerchant:SecondInitialize()
+  else
+    zo_callLater(function() CheckLibGuildStoreReady() end, 10000)
+  end
+end
+
+local function OnPlayerActivated(eventCode)
+  MasterMerchant:dm("Debug", "OnPlayerActivated")
+  CheckLibGuildStoreReady()
+  EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name, EVENT_PLAYER_ACTIVATED)
+end
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
+
 local function OnAddOnLoaded(eventCode, addOnName)
   if addOnName:find('^ZO_') then return end
   if addOnName == MasterMerchant.name then
-    MasterMerchant:dm("Debug", "OnAddOnLoaded")
-    MasterMerchant:Initialize()
     -- Set up /mm as a slash command toggle for the main window
     SLASH_COMMANDS['/mm'] = MasterMerchant.Slash
+    MasterMerchant:FirstInitialize()
   elseif addOnName == "AwesomeGuildStore" then
     -- Set up AGS integration, if it's installed
     MasterMerchant:initAGSIntegration()
