@@ -125,6 +125,27 @@ function internal:RenewExtraSalesData(otherData)
   end
 end
 
+--/script LibGuildStore_Internal:UpdateExtraSalesData(GS08DataSavedVariables["dataeu"][43525]["1:0:3:0:0"])
+function internal:UpdateExtraSalesData(savedVars)
+  internal:dm("Debug", "UpdateExtraSalesData")
+  local newestTime = nil
+  local oldestTime = nil
+  local totalCount = 0
+  if savedVars['sales'] then
+    for sale, saleData in pairs(savedVars['sales']) do
+      totalCount = totalCount + 1
+      if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+      if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
+    end
+    savedVars.totalCount = totalCount
+    savedVars.newestTime = newestTime
+    savedVars.oldestTime = oldestTime
+    savedVars.wasAltered = false
+  else
+    internal:dm("Warn", "Wait, hold up, somethin ain't right!")
+  end
+end
+
 function internal:RenewExtraListingsData(otherData)
   local savedVars = otherData[internal.listingsNamespace]
 

@@ -112,6 +112,7 @@ function internal:addSalesData(theEvent)
     local nextLocation  = #sales_data[theIID][itemIndex]['sales'] + 1
     searchItemDesc      = sales_data[theIID][itemIndex].itemDesc
     searchItemAdderText = sales_data[theIID][itemIndex].itemAdderText
+    sales_data[theIID][itemIndex].newestTime = newEvent.timestamp
     if sales_data[theIID][itemIndex]['sales'][nextLocation] == nil then
       table.insert(sales_data[theIID][itemIndex]['sales'], nextLocation, newEvent)
       insertedIndex = nextLocation
@@ -129,6 +130,8 @@ function internal:addSalesData(theEvent)
       itemAdderText = searchItemAdderText,
       itemDesc = searchItemDesc,
       sales = { newEvent } }
+      sales_data[theIID][itemIndex].newestTime = newEvent.timestamp
+      sales_data[theIID][itemIndex].oldestTime = newEvent.timestamp
     --internal:dm("Debug", newEvent)
   end
   sales_data[theIID][itemIndex].wasAltered = true
