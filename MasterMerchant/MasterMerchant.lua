@@ -407,7 +407,8 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       -- not clickable or detailed
       tooltip = stringPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
     end
-    table.insert(salesPoints, { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller })
+    table.insert(salesPoints,
+      { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller })
   end
 
   local function ProcessSalesInfo(item)
@@ -432,6 +433,15 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     if not skipDots then ProcessDots(individualSale, item) end -- end skip dots
   end
 
+  local function ProcessBonanzaSale(item)
+    if bonanzaCount == nil then bonanzaCount = 0 end
+    if bonanzaPrice == nil then bonanzaPrice = 0 end
+    if bonanzaSales == nil then bonanzaSales = 0 end
+    bonanzaCount = bonanzaCount + item.quant
+    bonanzaPrice = bonanzaPrice + item.price
+    bonanzaSales = bonanzaSales + 1
+  end
+
   -- 10000 for numDays is more or less like saying it is undefined
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
@@ -454,6 +464,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
 
   -- make sure we have a list of sales to work with
   if MasterMerchant:itemIDHasSales(theIID, itemIndex) and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
+    if not sales_data[theIID][itemIndex].oldestTime then internal:UpdateExtraSalesData(sales_data[theIID][itemIndex]) end
     nameString = sales_data[theIID][itemIndex].itemDesc
     oldestTime = sales_data[theIID][itemIndex].oldestTime
     newestTime = sales_data[theIID][itemIndex].newestTime
@@ -494,7 +505,9 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       dayInterval = math.floor((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS) + 1
     end
     local useDaysRange = daysRange ~= 10000
-    -- start loop
+    -- timeInterval determined reset if SHIFT CTRL used
+    oldestTime = nil
+    -- start loop for non outliers
     for i, item in pairs(list) do
       currentGuild = internal:GetGuildNameByIndex(item.guild)
       currentBuyer = internal:GetAccountNameByIndex(item.buyer)
@@ -503,17 +516,20 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       if blacklistTable then
         nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentBuyer and blacklistTable[currentBuyer]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
       end
-      local validTimeDate = item.timestamp > timeCheck
       if not nameInBlacklist and not MasterMerchant.systemSavedVariables.trimOutliers then
         if useDaysRange then
           if validTimeDate then
+            local validTimeDate = item.timestamp > timeCheck
+            if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
             ProcessSalesInfo(item)
           end
         else
+          if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
           ProcessSalesInfo(item)
         end
       else
         if useDaysRange then
+          local validTimeDate = item.timestamp > timeCheck
           if validTimeDate then
             table.insert(outliersList, item)
           end
@@ -525,32 +541,36 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     if MasterMerchant.systemSavedVariables.trimOutliers then
       if #outliersList >= 3 then
         local quartile1, quartile3, quartileRange = stats.interquartileRange(outliersList)
-        outliersList, oldestTime, newestTime = stats.evaluateQuartileRangeTable(outliersList, quartile1, quartile3, quartileRange)
-      end
-      timeInterval = newestTime - oldestTime
-      if timeInterval > ZO_ONE_DAY_IN_SECONDS then
-        dayInterval = math.floor((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS) + 1
-      end
-      for i, item in pairs(outliersList) do
-        currentGuild = internal:GetGuildNameByIndex(item.guild)
-        currentBuyer = internal:GetAccountNameByIndex(item.buyer)
-        currentSeller = internal:GetAccountNameByIndex(item.seller)
-        local nameInBlacklist = false
-        if blacklistTable then
-          nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentBuyer and blacklistTable[currentBuyer]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
-        end
-        local validTimeDate = item.timestamp > timeCheck
-        if not nameInBlacklist then
-          if useDaysRange then
-            if validTimeDate then
-              ProcessSalesInfo(item)
-            end
+        oldestTime = nil
+        for i, item in pairs(outliersList) do
+          currentGuild = internal:GetGuildNameByIndex(item.guild)
+          currentBuyer = internal:GetAccountNameByIndex(item.buyer)
+          currentSeller = internal:GetAccountNameByIndex(item.seller)
+          local individualSale = item.price / item.quant
+          if (individualSale < (quartile1 - 1.5 * quartileRange)) or (individualSale > (quartile3 + 1.5 * quartileRange)) then
+            --Debug(string.format("%s : %s was not in range",k,individualSale))
           else
-            ProcessSalesInfo(item)
+            -- within range
+            local nameInBlacklist = false
+            if blacklistTable then
+              nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentBuyer and blacklistTable[currentBuyer]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
+            end
+            if not nameInBlacklist then
+              if useDaysRange then
+                local validTimeDate = item.timestamp > timeCheck
+                if validTimeDate then
+                  if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+                  ProcessSalesInfo(item)
+                end
+              else
+                if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+                ProcessSalesInfo(item)
+              end
+            end
           end
-        end
-      end -- end for loop for outliers
-    end
+        end -- end for loop for outliers
+      end -- end trim outliers if more then 3
+    end -- end trim outliers
     if legitSales and legitSales >= 1 then
       if timeInterval > ZO_ONE_DAY_IN_SECONDS then
         avgPrice = avgPrice / weigtedCountSold
@@ -593,16 +613,19 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
     if #bonanzaList >= 3 then
       local bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange = stats.interquartileRange(bonanzaList)
-      bonanzaList = stats.evaluateQuartileRangeTable(bonanzaList, bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange)
+      for i, item in pairs(bonanzaList) do
+        local individualSale = item.price / item.quant
+        if (individualSale < (bonanzaQuartile1 - 1.5 * bonanzaQuartileRange)) or (individualSale > (bonanzaQuartile3 + 1.5 * bonanzaQuartileRange)) then
+          --Debug(string.format("%s : %s was not in range",k,individualSale))
+        else
+          ProcessBonanzaSale(item)
+        end
+      end -- end bonanza loop
+    else
+      for i, item in pairs(bonanzaList) do
+        ProcessBonanzaSale(item)
+      end -- end bonanza loop
     end
-    for i, item in pairs(bonanzaList) do
-      if bonanzaCount == nil then bonanzaCount = 0 end
-      if bonanzaPrice == nil then bonanzaPrice = 0 end
-      if bonanzaSales == nil then bonanzaSales = 0 end
-      bonanzaCount = bonanzaCount + item.quant
-      bonanzaPrice = bonanzaPrice + item.price
-      bonanzaSales = bonanzaSales + 1
-    end -- end bonanza loop
     if bonanzaSales and bonanzaSales >= 1 then
       bonanzaPrice = bonanzaPrice / bonanzaCount
     end
@@ -2011,7 +2034,10 @@ function MasterMerchant:LibAddonInit()
       name = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliers end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.trimOutliers = value end,
+      setFunc = function(value)
+        MasterMerchant.systemSavedVariables.trimOutliers = value
+        MasterMerchant.itemInformationCache = { }
+      end,
       default = MasterMerchant.systemDefault.trimOutliers,
     },
     -- should we trim off decimals?
