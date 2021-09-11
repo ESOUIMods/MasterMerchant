@@ -104,14 +104,17 @@ function internal:RenewExtraSalesData(otherData)
   for itemID, itemIndex in pairs(savedVars) do
     for field, itemIndexData in pairs(itemIndex) do
       if itemIndexData.wasAltered then
+        local newestTime = nil
         local oldestTime = nil
         local totalCount = 0
         for sale, saleData in pairs(itemIndexData['sales']) do
           totalCount = totalCount + 1
           if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+          if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
         end
         if savedVars[itemID][field] then
           savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].newestTime = newestTime
           savedVars[itemID][field].oldestTime = oldestTime
           savedVars[itemID][field].wasAltered = false
         else
@@ -178,6 +181,7 @@ function internal:AddExtraSalesData(otherData)
         totalCount = totalCount + 1
         if saleData.timestamp then
           if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+          if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
         else
           if internal:is_empty_or_nil(saleData) then
             internal:dm("Warn", "Empty Table Detected!")
@@ -190,6 +194,7 @@ function internal:AddExtraSalesData(otherData)
       if savedVars[itemID][field] then
         savedVars[itemID][field].totalCount = totalCount
         savedVars[itemID][field].oldestTime = oldestTime
+        savedVars[itemID][field].newestTime = newestTime
         savedVars[itemID][field].wasAltered = false
       else
         --internal:dm("Warn", "Empty or nil savedVars[internal.dataNamespace]")
