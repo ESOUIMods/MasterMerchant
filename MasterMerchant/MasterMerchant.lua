@@ -551,15 +551,17 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         end
       end -- end for loop for outliers
     end
-    if timeInterval > ZO_ONE_DAY_IN_SECONDS then
-      avgPrice = avgPrice / weigtedCountSold
-    else
-      avgPrice = avgPrice / countSold
+    if legitSales and legitSales >= 1 then
+      if timeInterval > ZO_ONE_DAY_IN_SECONDS then
+        avgPrice = avgPrice / weigtedCountSold
+      else
+        avgPrice = avgPrice / countSold
+      end
+      --[[found an average price of 0.07 which X 200 is 14g
+      even 0.01 X 200 is 2g
+      ]]--
+      if avgPrice < 0.01 then avgPrice = 0.01 end
     end
-    --[[found an average price of 0.07 which X 200 is 14g
-    even 0.01 X 200 is 2g
-    ]]--
-    if avgPrice < 0.01 then avgPrice = 0.01 end
   else
     if MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
       local itemInfo = MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
