@@ -2889,27 +2889,27 @@ function MasterMerchant:ReferenceSales(otherData)
 end
 
 -- Bring seperate lists together we can still access the sales history all together
-function MasterMerchant:ReferenceSalesAllContainers()
+function MasterMerchant:ReferenceOldMMSalesContainers()
   self.systemSavedVariables.dataLocations = self.systemSavedVariables.dataLocations or {}
   self.systemSavedVariables.dataLocations[GetWorldName()] = true
   if internal:CheckMasterMerchantData() then return end
-  MasterMerchant:dm("Debug", "ReferenceSalesAllContainers")
-  self:ReferenceSales(MM00Data)
-  self:ReferenceSales(MM01Data)
-  self:ReferenceSales(MM02Data)
-  self:ReferenceSales(MM03Data)
-  self:ReferenceSales(MM04Data)
-  self:ReferenceSales(MM05Data)
-  self:ReferenceSales(MM06Data)
-  self:ReferenceSales(MM07Data)
-  self:ReferenceSales(MM08Data)
-  self:ReferenceSales(MM09Data)
-  self:ReferenceSales(MM10Data)
-  self:ReferenceSales(MM11Data)
-  self:ReferenceSales(MM12Data)
-  self:ReferenceSales(MM13Data)
-  self:ReferenceSales(MM14Data)
-  self:ReferenceSales(MM15Data)
+  MasterMerchant:dm("Debug", "ReferenceOldMMSalesContainers")
+  self:ReferenceOldMMSales(MM00Data)
+  self:ReferenceOldMMSales(MM01Data)
+  self:ReferenceOldMMSales(MM02Data)
+  self:ReferenceOldMMSales(MM03Data)
+  self:ReferenceOldMMSales(MM04Data)
+  self:ReferenceOldMMSales(MM05Data)
+  self:ReferenceOldMMSales(MM06Data)
+  self:ReferenceOldMMSales(MM07Data)
+  self:ReferenceOldMMSales(MM08Data)
+  self:ReferenceOldMMSales(MM09Data)
+  self:ReferenceOldMMSales(MM10Data)
+  self:ReferenceOldMMSales(MM11Data)
+  self:ReferenceOldMMSales(MM12Data)
+  self:ReferenceOldMMSales(MM13Data)
+  self:ReferenceOldMMSales(MM14Data)
+  self:ReferenceOldMMSales(MM15Data)
 end
 
 --[[ register event monitor
