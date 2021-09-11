@@ -262,8 +262,6 @@ local function SetupData()
   LEQ:Add(function() internal:ReferencePurchaseDataContainer() end, 'ReferencePurchaseDataContainer')
   LEQ:Add(function() internal:ReferencePostedItemsDataContainer() end, 'ReferencePostedItemsDataContainer')
   LEQ:Add(function() internal:ReferenceCancelledItemDataContainer() end, 'ReferenceCancelledItemDataContainer')
-  LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
-  LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   -- AddNewData, which adds counts
   LEQ:Add(function() internal:AddExtraSalesDataAllContainers() end, 'AddExtraSalesDataAllContainers')
   LEQ:Add(function() internal:AddExtraListingsDataAllContainers() end, 'AddExtraListingsDataAllContainers')
@@ -509,7 +507,10 @@ function internal:SlashImportMMSales()
       return
     end
     internal:dm("Info", "Import MasterMerchant Sales")
-    internal:ImportMasterMerchantSales()
+    local LEQ = LibExecutionQueue:new()
+    LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
+    LEQ:Add(function() internal:ImportMasterMerchantSales() end, 'ImportMasterMerchantSales')
+    LEQ:Start()
 end
 
 function internal:SlashImportATTSales()
@@ -522,7 +523,10 @@ function internal:SlashImportATTSales()
       return
     end
     internal:dm("Info", "Import ATT Sales")
-    internal:ImportATTSales()
+    local LEQ = LibExecutionQueue:new()
+    LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
+    LEQ:Add(function() internal:ImportATTSales() end, 'ImportATTSales')
+    LEQ:Start()
 end
 
 function internal.Slash(allArgs)
