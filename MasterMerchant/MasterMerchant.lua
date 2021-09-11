@@ -345,6 +345,13 @@ end
 
 -- Computes the weighted moving average across available data
 function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
+  -- 10000 for numDays is more or less like saying it is undefined
+  --[[TODO why is there a days range of 10000. I get that it kinda means
+  all days but the daysHistory seems to be the actual number to be using.
+  For example when you press SHIFT or CTRL then daysHistory and daysRange
+  are the same. However, when you do not modify the data, then daysRange
+  is 10000 and daysHistory is however many days you have.
+  ]]--
   -- setup early local variables
   local list = {}
   local outliersList = {}
@@ -446,13 +453,35 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   local timeCheck, daysRange = self:CheckTime()
 
   -- make sure we have a list of sales to work with
-  if MasterMerchant:itemIDHasSales(theIID, itemIndex) then
+  if MasterMerchant:itemIDHasSales(theIID, itemIndex) and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
     nameString = sales_data[theIID][itemIndex].itemDesc
     oldestTime = sales_data[theIID][itemIndex].oldestTime
     newestTime = sales_data[theIID][itemIndex].newestTime
     local blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
     list = sales_data[theIID][itemIndex]['sales']
 
+    --[[
+    if daysRange ~= 10000 then
+      list, initCount, oldestTime, newestTime = UseSalesByTimestamp(list, timeCheck)
+    end
+    ]]--
+
+    --[[1-2-2021 Our sales data is now ready to be trimmed if
+    trim outliers is active.
+    ]]--
+    --[[1-2-2021 We have determined that there is more then one sale
+    in the table and the dayshistory using the daysrange.
+
+    We can now trim outliers if the uses has that active
+    ]]--
+
+    --[[1-2-2021 First we will see if the data is already
+    calculated.
+
+    1-2-2021 Needs updated
+
+    local lookupDataFound = dataPresent(theIID, itemIndex, daysRange)
+    ]]--
     if (daysRange == 10000) then
       local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS)
       daysHistory = quotient + math.floor(0.5 + remainder)
@@ -496,7 +525,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     if MasterMerchant.systemSavedVariables.trimOutliers then
       if #outliersList >= 3 then
         local quartile1, quartile3, quartileRange = stats.interquartileRange(outliersList)
-        outliersList, oldestTime, newestTime   = stats.evaluateQuartileRangeTable(outliersList, quartile1, quartile3, quartileRange)
+        outliersList, oldestTime, newestTime = stats.evaluateQuartileRangeTable(outliersList, quartile1, quartile3, quartileRange)
       end
       timeInterval = newestTime - oldestTime
       if timeInterval > ZO_ONE_DAY_IN_SECONDS then
@@ -514,10 +543,10 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         if not nameInBlacklist then
           if useDaysRange then
             if validTimeDate then
-            ProcessSalesInfo(item)
+              ProcessSalesInfo(item)
             end
           else
-          ProcessSalesInfo(item)
+            ProcessSalesInfo(item)
           end
         end
       end -- end for loop for outliers
@@ -531,6 +560,31 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     even 0.01 X 200 is 2g
     ]]--
     if avgPrice < 0.01 then avgPrice = 0.01 end
+  else
+    if MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
+      local itemInfo = MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
+      avgPrice = itemInfo.avgPrice
+      legitSales = itemInfo.numSales
+      daysHistory = itemInfo.numDays
+      countSold = itemInfo.numItems
+      local graphInformation = itemInfo.graphInfo
+      oldestTime = graphInformation.oldestTime
+      lowPrice = graphInformation.low
+      highPrice = graphInformation.high
+      salesPoints = graphInformation.points
+    end
+  end
+  if not avgOnly and not priceEval and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
+    local itemInfo = {
+      avgPrice = avgPrice,
+      numSales = legitSales,
+      numDays = daysHistory,
+      numItems = countSold,
+      graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints },
+    }
+    if legitSales and legitSales > 1500 then
+      MasterMerchant:SetItemCacheById(theIID, itemIndex, daysRange, itemInfo)
+    end
   end
   if not avgOnly and MasterMerchant:itemIDHasListings(theIID, itemIndex) then
     bonanzaList = listings_data[theIID][itemIndex]['sales']
