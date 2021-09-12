@@ -518,8 +518,8 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       end
       if not nameInBlacklist and not MasterMerchant.systemSavedVariables.trimOutliers then
         if useDaysRange then
+          local validTimeDate = item.timestamp > timeCheck
           if validTimeDate then
-            local validTimeDate = item.timestamp > timeCheck
             if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
             ProcessSalesInfo(item)
           end
@@ -1847,7 +1847,10 @@ function MasterMerchant:LibAddonInit()
           name = GetString(MM_BLACKLIST_NAME),
           tooltip = GetString(MM_BLACKLIST_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.blacklist end,
-          setFunc = function(value) MasterMerchant.systemSavedVariables.blacklist = value end,
+          setFunc = function(value)
+            MasterMerchant.systemSavedVariables.blacklist = value
+            MasterMerchant.itemInformationCache = { }
+          end,
           default = MasterMerchant.systemDefault.blacklist,
           isMultiline = true,
           textType = TEXT_TYPE_ALL,
@@ -3655,6 +3658,7 @@ EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_PLAYER_ACTIVATED, OnPl
 local function OnAddOnLoaded(eventCode, addOnName)
   if addOnName:find('^ZO_') then return end
   if addOnName == MasterMerchant.name then
+    MasterMerchant:dm("Debug", "MasterMerchant Loaded")
     -- Set up /mm as a slash command toggle for the main window
     SLASH_COMMANDS['/mm'] = MasterMerchant.Slash
     MasterMerchant:FirstInitialize()
