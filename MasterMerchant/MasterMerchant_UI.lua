@@ -1954,6 +1954,7 @@ function MasterMerchant:remStatsItemTooltip()
     ItemTooltip.textPool:ReleaseAllObjects()
   end
   ItemTooltip.mmText = nil
+  ItemTooltip.mmTTCText = nil
   ItemTooltip.mmBonanzaText = nil
   ItemTooltip.mmCraftText = nil
   ItemTooltip.mmTextDebug = nil
@@ -1969,6 +1970,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   local tipLine = nil
   local bonanzaTipline = nil
+  local tipLineTTC = nil
   local craftCostLine = nil
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
   -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
@@ -1987,6 +1989,9 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
   end
   if statsInfo.bonanzaPrice then
     bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, false)
+  end
+  if TamrielTradeCentre then
+    tipLineTTC = MasterMerchant:TTCPriceTip(itemLink)
   end
 
   if not tooltip.textPool then
@@ -2126,9 +2131,9 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
     if MasterMerchant.systemSavedVariables.showPricing then
 
       if not tooltip.mmText then
-        tooltip:AddVerticalPadding(5)
+        tooltip:AddVerticalPadding(3)
         ZO_Tooltip_AddDivider(tooltip)
-        tooltip:AddVerticalPadding(5)
+        tooltip:AddVerticalPadding(3)
         tooltip.mmText = tooltip.textPool:AcquireObject()
         tooltip:AddControl(tooltip.mmText)
         tooltip.mmText:SetAnchor(CENTER)
@@ -2145,7 +2150,7 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
 
       if bonanzaTipline then
         if not tooltip.mmBonanzaText then
-          tooltip:AddVerticalPadding(5)
+          tooltip:AddVerticalPadding(3)
           tooltip.mmBonanzaText = tooltip.textPool:AcquireObject()
           tooltip:AddControl(tooltip.mmBonanzaText)
           tooltip.mmBonanzaText:SetAnchor(CENTER)
@@ -2159,11 +2164,29 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
 
     end
 
+    if MasterMerchant.systemSavedVariables.showAltTtcTipline then
+
+      if tipLineTTC then
+        if not tooltip.mmTTCText then
+          tooltip:AddVerticalPadding(3)
+          tooltip.mmTTCText = tooltip.textPool:AcquireObject()
+          tooltip:AddControl(tooltip.mmTTCText)
+          tooltip.mmTTCText:SetAnchor(CENTER)
+        end
+
+        if tooltip.mmTTCText then
+          tooltip.mmTTCText:SetText(tipLineTTC)
+          tooltip.mmTTCText:SetColor(1, 1, 1, 1)
+        end
+      end
+
+    end
+
     if MasterMerchant.systemSavedVariables.showCraftCost then
 
       if craftCostLine then
         if not tooltip.mmCraftText then
-          tooltip:AddVerticalPadding(5)
+          tooltip:AddVerticalPadding(3)
           tooltip.mmCraftText = tooltip.textPool:AcquireObject()
           tooltip:AddControl(tooltip.mmCraftText)
           tooltip.mmCraftText:SetAnchor(CENTER)
@@ -2186,10 +2209,10 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
       if not tooltip.mmGraph then
         tooltip.mmGraph = tooltip.graphPool:AcquireObject()
         if not tooltip.mmText then
-          tooltip:AddVerticalPadding(5)
+          tooltip:AddVerticalPadding(3)
           ZO_Tooltip_AddDivider(tooltip)
         end
-        tooltip:AddVerticalPadding(5)
+        tooltip:AddVerticalPadding(3)
         tooltip:AddControl(tooltip.mmGraph)
         tooltip.mmGraph:SetAnchor(CENTER)
       end
@@ -2247,9 +2270,9 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
     -- No price but may have craft cost
     if MasterMerchant.systemSavedVariables.showCraftCost and craftCostLine then
       if not tooltip.mmCraftText then
-        tooltip:AddVerticalPadding(5)
+        tooltip:AddVerticalPadding(3)
         ZO_Tooltip_AddDivider(tooltip)
-        tooltip:AddVerticalPadding(5)
+        tooltip:AddVerticalPadding(3)
         tooltip.mmCraftText = tooltip.textPool:AcquireObject()
         tooltip:AddControl(tooltip.mmCraftText)
         tooltip.mmCraftText:SetAnchor(CENTER)
@@ -2265,9 +2288,9 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
     if MasterMerchant.systemSavedVariables.showBonanzaPricing and bonanzaTipline then
       if not tooltip.mmBonanzaText then
         if not tooltip.mmCraftText then
-          tooltip:AddVerticalPadding(5)
+          tooltip:AddVerticalPadding(3)
           ZO_Tooltip_AddDivider(tooltip)
-          tooltip:AddVerticalPadding(5)
+          tooltip:AddVerticalPadding(3)
         end
         tooltip.mmBonanzaText = tooltip.textPool:AcquireObject()
         tooltip:AddControl(tooltip.mmBonanzaText)
@@ -2278,7 +2301,27 @@ function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
         tooltip.mmBonanzaText:SetText(bonanzaTipline)
         tooltip.mmBonanzaText:SetColor(1, 1, 1, 1)
       end
-    end
+    end -- end Bonanza price
+
+    -- No price but may have TTC Price
+    if MasterMerchant.systemSavedVariables.showAltTtcTipline and tipLineTTC then
+      if not tooltip.mmTTCText then
+        if not tooltip.mmCraftText and not tooltip.mmBonanzaText then
+          tooltip:AddVerticalPadding(3)
+          ZO_Tooltip_AddDivider(tooltip)
+          tooltip:AddVerticalPadding(3)
+        end
+        tooltip.mmTTCText = tooltip.textPool:AcquireObject()
+        tooltip:AddControl(tooltip.mmTTCText)
+        tooltip.mmTTCText:SetAnchor(CENTER)
+      end
+
+      if tooltip.mmTTCText then
+        tooltip.mmTTCText:SetText(tipLineTTC)
+        tooltip.mmTTCText:SetColor(1, 1, 1, 1)
+      end
+    end -- end TTC tipline
+
   end
 
   if MasterMerchant.systemSavedVariables.useLibDebugLogger then
@@ -2350,6 +2393,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
     end
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
+    Popup.mmTTCText = nil
     Popup.mmCraftText = nil
     Popup.mmTextDebug = nil
     Popup.mmQualityDown = nil
@@ -2371,6 +2415,7 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
   end
   Popup.mmText = nil
   Popup.mmBonanzaText = nil
+  Popup.mmTTCText = nil
   Popup.mmCraftText = nil
   Popup.mmTextDebug = nil
   Popup.mmQualityDown = nil
@@ -2499,6 +2544,7 @@ function MasterMerchant:addStatsItemTooltip()
       end
       ItemTooltip.mmText = nil
       ItemTooltip.mmBonanzaText = nil
+      ItemTooltip.mmTTCText = nil
       ItemTooltip.mmCraftText = nil
       ItemTooltip.mmTextDebug = nil
       ItemTooltip.mmQualityDown = nil

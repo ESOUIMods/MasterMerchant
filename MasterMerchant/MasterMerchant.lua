@@ -786,6 +786,22 @@ function MasterMerchant:BonanzaPriceTip(bonanzaPrice, bonanzaSales, bonanzaCount
   return formatedBonanzaString
 end
 
+function MasterMerchant:TTCPriceTip(itemLink)
+  local formatedTTCString = nil
+  local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+  if priceStats and priceStats.Avg then
+    local suggestedPriceString = self.LocalizedNumber(priceStats.SuggestedPrice)
+    local avgPriceString = self.LocalizedNumber(priceStats.Avg)
+    suggestedPriceString = suggestedPriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+    avgPriceString = avgPriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+    formatedTTCString = string.format(GetString(MM_TTC_ALT_TIP), priceStats.EntryCount, suggestedPriceString, avgPriceString)
+  else
+    formatedTTCString = GetString(MM_NO_TTC_PRICE)
+  end
+
+  return formatedTTCString
+end
+
 function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
   local numIngredients = GetItemLinkRecipeNumIngredients(itemLink)
   if numIngredients > 0 then
@@ -1579,7 +1595,18 @@ end
 -- Table where the guild roster columns shall be placed
 MasterMerchant.guild_columns = {}
 MasterMerchant.UI_GuildTime = nil
-
+MasterMerchant.dealCalcChoices = {
+  "TTC Suggested",
+  "TTC Average",
+  "MM Average",
+  "Bonanza Price",
+}
+MasterMerchant.dealCalcValues = {
+  MasterMerchant.USE_TTC_SUGGESTED,
+  MasterMerchant.USE_TTC_AVERAGE,
+  MasterMerchant.USE_MM_AVERAGE,
+  MasterMerchant.USE_BONANZA,
+}
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
   -- configure font choices
@@ -2001,8 +2028,17 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showBonanzaPricing = value end,
       default = MasterMerchant.systemDefault.showBonanzaPricing,
     },
-    -- Whether or not to show tooltips on the graph points
+    -- Whether or not to show the alternate TTC price in tooltips
     [13] = {
+      type = 'checkbox',
+      name = GetString(SK_SHOW_TTC_PRICE_NAME),
+      tooltip = GetString(SK_SHOW_TTC_PRICE_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.showAltTtcTipline end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.showAltTtcTipline = value end,
+      default = MasterMerchant.systemDefault.showAltTtcTipline,
+    },
+    -- Whether or not to show tooltips on the graph points
+    [14] = {
       type = 'checkbox',
       name = GetString(MM_GRAPH_INFO_NAME),
       tooltip = GetString(MM_GRAPH_INFO_TIP),
@@ -2014,7 +2050,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.displaySalesDetails,
     },
     -- Whether or not to show the crafting costs data in tooltips
-    [14] = {
+    [15] = {
       type = 'checkbox',
       name = GetString(SK_SHOW_CRAFT_COST_NAME),
       tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
@@ -2023,7 +2059,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showCraftCost,
     },
     -- Whether or not to show the quality/level adjustment buttons
-    [15] = {
+    [16] = {
       type = 'checkbox',
       name = GetString(MM_LEVEL_QUALITY_NAME),
       tooltip = GetString(MM_LEVEL_QUALITY_TIP),
@@ -2032,7 +2068,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.displayItemAnalysisButtons,
     },
     -- should we trim outliers prices?
-    [16] = {
+    [17] = {
       type = 'checkbox',
       name = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
@@ -2044,7 +2080,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.trimOutliers,
     },
     -- should we trim off decimals?
-    [17] = {
+    [18] = {
       type = 'checkbox',
       name = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
@@ -2052,14 +2088,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimDecimals = value end,
       default = MasterMerchant.systemDefault.trimDecimals,
     },
-    [18] = {
+    [19] = {
       type = "header",
       name = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
     },
     -- should we replace inventory values?
-    [19] = {
+    [20] = {
       type = 'checkbox',
       name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
@@ -2067,14 +2103,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.replaceInventoryValues = value end,
       default = MasterMerchant.systemDefault.replaceInventoryValues,
     },
-    [20] = {
+    [21] = {
       type = "header",
       name = GetString(GUILD_STORE_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
     -- Should we show the stack price calculator in the Vanilla UI?
-    [21] = {
+    [22] = {
       type = 'checkbox',
       name = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
@@ -2083,7 +2119,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showCalc,
     },
     -- Should we use one price for all or save by guild?
-    [22] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(SK_ALL_CALC_NAME),
       tooltip = GetString(SK_ALL_CALC_TIP),
@@ -2092,7 +2128,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.priceCalcAll,
     },
     -- should we display a Min Profit Filter in AGS?
-    [23] = {
+    [24] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -2101,7 +2137,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.minProfitFilter,
     },
     -- should we display profit instead of margin?
-    [24] = {
+    [25] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -2109,14 +2145,25 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
       default = MasterMerchant.systemDefault.saucy,
     },
-    [25] = {
+    -- Deal Filter Price
+    [26] = {
+      type = 'dropdown',
+      name = GetString(SK_DEAL_CALC_TYPE_NAME),
+      tooltip = GetString(SK_DEAL_CALC_TYPE_TIP),
+      choices = MasterMerchant.dealCalcChoices,
+      choicesValues = MasterMerchant.dealCalcValues,
+      getFunc = function() return MasterMerchant.systemSavedVariables.dealCalcToUse end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.dealCalcToUse = value end,
+      default = MasterMerchant.systemDefault.dealCalcToUse,
+    },
+    [27] = {
       type = "header",
       name = GetString(GUILD_MASTER_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildMasterOptions",
     },
     -- should we add taxes to the export?
-    [26] = {
+    [28] = {
       type = 'checkbox',
       name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -2124,13 +2171,13 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
-    [27] = {
+    [29] = {
       type = "header",
       name = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MMDebugOptions",
     },
-    [28] = {
+    [30] = {
       type = 'checkbox',
       name = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
@@ -2138,7 +2185,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
     },
-    [29] = {
+    [31] = {
       type = 'checkbox',
       name = GetString(MM_DISABLE_ATT_WARN_NAME),
       tooltip = GetString(MM_DISABLE_ATT_WARN_TIP),
@@ -2987,6 +3034,7 @@ function MasterMerchant:FirstInitialize()
     offlineSales = true,
     showPricing = true,
     showBonanzaPricing = true,
+    showAltTtcTipline = false,
     showCraftCost = true,
     showGraph = true,
     showCalc = true,
@@ -3040,6 +3088,7 @@ function MasterMerchant:FirstInitialize()
     minItemCount = 20,
     maxItemCount = 5000,
     disableAttWarn = false,
+    dealCalcToUse = MasterMerchant.USE_MM_AVERAGE,
   }
 
   -- Finished setting up defaults, assign to global
@@ -3560,7 +3609,13 @@ local dealInfoCache = {}
 MasterMerchant.ClearDealInfoCache = function()
   ZO_ClearTable(dealInfoCache)
 end
-
+--/script d({TamrielTradeCentrePrice:GetPriceInfo("|H1:item:34349:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")})
+--[[
+  MasterMerchant.USE_TTC_SUGGESTED,
+  MasterMerchant.USE_TTC_AVERAGE,
+  MasterMerchant.USE_MM_AVERAGE,
+  MasterMerchant.USE_BONANZA,
+]]--
 MasterMerchant.GetDealInfo = function(itemLink, purchasePrice, stackCount)
   local key = string.format("%s_%d_%d", itemLink, purchasePrice, stackCount)
   if (not dealInfoCache[key]) then
@@ -3568,15 +3623,40 @@ MasterMerchant.GetDealInfo = function(itemLink, purchasePrice, stackCount)
     local salesCount = 0
     local theIID = GetItemLinkItemId(itemLink)
     local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-    local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
-    if tipStats.avgPrice then
-      setPrice = tipStats['avgPrice']
-      salesCount = tipStats['numSales']
+    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_MM_AVERAGE then
+      local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
+      if tipStats.avgPrice then
+        setPrice = tipStats['avgPrice']
+        salesCount = tipStats['numSales']
+      end
+    end
+    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_BONANZA then
+      local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, false, true)
+      if tipStats.bonanzaPrice then
+        setPrice = tipStats.bonanzaPrice
+        salesCount = tipStats.bonanzaSales
+      end
+    end
+    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_AVERAGE then
+      local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+      if priceStats.Avg then
+        setPrice = priceStats.Avg
+        salesCount = priceStats.EntryCount
+      end
+    end
+    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED then
+      local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+      if priceStats.Avg then
+        setPrice = priceStats.SuggestedPrice
+        salesCount = priceStats.EntryCount
+      end
     end
     dealInfoCache[key] = { MasterMerchant.DealCalc(setPrice, salesCount, purchasePrice, stackCount) }
   end
+  MasterMerchant.a_test  = dealInfoCache
   return unpack(dealInfoCache[key])
 end
+
 
 function MasterMerchant:SendNote(gold)
   MasterMerchantFeedback:SetHidden(true)

@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant         = { }
 MasterMerchant.name    = 'MasterMerchant'
-MasterMerchant.version = '3.6.56'
+MasterMerchant.version = '3.6.57'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -205,6 +205,11 @@ MasterMerchant.originalRosterStatsCallback   = nil
 MasterMerchant.originalRosterBuildMasterList = nil
 
 MasterMerchant.itemInformationCache          = { }
+
+MasterMerchant.USE_TTC_SUGGESTED = 1
+MasterMerchant.USE_TTC_AVERAGE = 2
+MasterMerchant.USE_MM_AVERAGE = 3
+MasterMerchant.USE_BONANZA = 4
 
 ----------------------------------------
 ----- Gamepad                      -----
