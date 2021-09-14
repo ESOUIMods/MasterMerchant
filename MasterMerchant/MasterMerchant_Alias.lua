@@ -18,7 +18,15 @@ function MasterMerchant:TimeCheck()
   ]]--
 end
 
+function MasterMerchant:CheckTime()
+  --[[
+  this does nothing because LibPrice has no idea what MM
+  is doing. Don't mess with it or I'll make it local.
+  ]]--
+end
+
 function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
+  MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access itemPriceTip directly.")
 
   local tipStats = MasterMerchant:itemStats(itemLink, false)
   if tipStats.avgPrice then
@@ -48,12 +56,33 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
 end
 
 function MasterMerchant:itemStats(itemLink, clickable)
+  MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access itemStats directly.")
   local itemID    = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
 end
 
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
+  MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access toolTipStats directly.")
   return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
 end
 
+function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
+  MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access addStatsAndGraph directly.")
+  MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
+end
+
+function MasterMerchant:addStatsItemTooltip()
+  MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access addStatsItemTooltip directly.")
+  MasterMerchant:GenerateStatsItemTooltip()
+end
+
+function MasterMerchant:onItemActionLinkStatsLink(itemLink)
+  MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access onItemActionLinkStatsLink directly.")
+  MasterMerchant:OnItemLinkAction(itemLink)
+end
+
+function MasterMerchant:SwitchPrice(control, slot)
+  MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access SwitchPrice directly.")
+  MasterMerchant:SwitchUnitPrice(control, slot)
+end

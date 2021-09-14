@@ -1097,7 +1097,7 @@ function MMScrollList:FilterScrollList()
     -- return item sales
     if MasterMerchant.salesViewMode ~= MasterMerchant.personalSalesViewMode and (searchText == nil or searchText == '') then
       -- everything unfiltered (filter to the default time range)
-      local timeCheck = MasterMerchant:CheckTime()
+      local timeCheck = MasterMerchant:CheckTimeframe()
       for k, v in pairs(sales_data) do
         for j, dataList in pairs(v) do
           -- IPAIRS
@@ -1480,7 +1480,7 @@ function MMScrollList:FilterScrollList()
     end
 
   elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
-    local timeCheck = MasterMerchant:CheckTime()
+    local timeCheck = MasterMerchant:CheckTimeframe()
     if (searchText == nil or searchText == '') then
       for k, v in pairs(purchases_data) do
         for j, dataList in pairs(v) do
@@ -1961,7 +1961,7 @@ function MasterMerchant:remStatsItemTooltip()
   ItemTooltip.mmQualityDown = nil
 end
 
-function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
+function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
 
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
@@ -2401,7 +2401,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
   self.isShiftPressed = IsShiftKeyDown()
   self.isCtrlPressed = IsControlKeyDown()
 
-  self:addStatsAndGraph(Popup, Popup.mmActiveTip)
+  self:GenerateStatsAndGraph(Popup, Popup.mmActiveTip)
 end
 
 function MasterMerchant:remStatsPopupTooltip(Popup)
@@ -2440,7 +2440,7 @@ end
 -- ItemTooltips get used all over the place, we have to figure out
 -- who the control generating the tooltip is so we know
 -- how to grab the item data
-function MasterMerchant:addStatsItemTooltip()
+function MasterMerchant:GenerateStatsItemTooltip()
   if not MasterMerchant.isInitialized then return end
   local skMoc = moc()
   -- Make sure we don't double-add stats or try to add them to nothing
@@ -2552,7 +2552,7 @@ function MasterMerchant:addStatsItemTooltip()
     self.tippingControl = skMoc
     self.isShiftPressed = IsShiftKeyDown()
     self.isCtrlPressed = IsControlKeyDown()
-    self:addStatsAndGraph(ItemTooltip, itemLink)
+    self:GenerateStatsAndGraph(ItemTooltip, itemLink)
   end
 
 end

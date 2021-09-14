@@ -225,7 +225,7 @@ function MM_Graph:AddPoint(x, y, color, tipText, sellerName)
 end
 
 function MM_Graph:AddYLabel(text, y)
-  --[[TODO This errors when I try to use it. In addStatsAndGraph
+  --[[TODO This errors when I try to use it. In GenerateStatsAndGraph
   MasterMerchantGraph is assigned to tooltip.graphPool and looks
   for the control 'Graph' which is defined in the XML.
   ]]--
