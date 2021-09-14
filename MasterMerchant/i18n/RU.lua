@@ -157,7 +157,7 @@ ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d предмет/%d предм
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Цена от MM (%s прод./%s шт., %s д.): %s")
 ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Цена от MM (%s прод./%s шт., %s д.): %s")
 ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza-цена (%s разм./%s шт.): %s")
-ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s Sales] Sug: %s, Avg: %s")
+ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s listings] Sug: %s, Avg: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "У MM нет данных")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "У MM нет данных за последние <<1[%d день/%d дня/%d дней]>>")
