@@ -11,7 +11,16 @@ function MasterMerchant.makeIndexFromLink(itemLink)
   return internal.GetOrCreateIndexFromLink(itemLink)
 end
 
+MasterMerchant.messageLogTable = {}
+local function GenerateLogMessage(key)
+  if not MasterMerchant.messageLogTable[key] then
+    MasterMerchant.messageLogTable[key] = true
+    MasterMerchant:dm("Debug", string.format("The author accessed %s.", key))
+  end
+end
+
 function MasterMerchant:TimeCheck()
+  GenerateLogMessage("TimeCheck")
   --[[
   this does nothing because LibPrice has no idea what MM
   is doing. Don't mess with it or I'll make it local.
@@ -19,6 +28,7 @@ function MasterMerchant:TimeCheck()
 end
 
 function MasterMerchant:CheckTime()
+  GenerateLogMessage("CheckTime")
   --[[
   this does nothing because LibPrice has no idea what MM
   is doing. Don't mess with it or I'll make it local.
@@ -26,7 +36,7 @@ function MasterMerchant:CheckTime()
 end
 
 function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
-  --MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access itemPriceTip directly.")
+  GenerateLogMessage("itemPriceTip")
 
   local tipStats = MasterMerchant:itemStats(itemLink, false)
   if tipStats.avgPrice then
@@ -56,33 +66,33 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
 end
 
 function MasterMerchant:itemStats(itemLink, clickable)
-  --MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access itemStats directly.")
+  GenerateLogMessage("itemStats")
   local itemID    = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
 end
 
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
-  --MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access toolTipStats directly.")
+  GenerateLogMessage("toolTipStats")
   return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
 end
 
 function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
-  --MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access addStatsAndGraph directly.")
+  GenerateLogMessage("addStatsAndGraph")
   MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
 end
 
 function MasterMerchant:addStatsItemTooltip()
-  --MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access addStatsItemTooltip directly.")
+  GenerateLogMessage("addStatsItemTooltip")
   MasterMerchant:GenerateStatsItemTooltip()
 end
 
 function MasterMerchant:onItemActionLinkStatsLink(itemLink)
-  --MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access onItemActionLinkStatsLink directly.")
+  GenerateLogMessage("onItemActionLinkStatsLink")
   MasterMerchant:OnItemLinkAction(itemLink)
 end
 
 function MasterMerchant:SwitchPrice(control, slot)
-  --MasterMerchant:dm("Info", "Please inform me of any mods that use MM information. The author should not access SwitchPrice directly.")
+  GenerateLogMessage("SwitchPrice")
   MasterMerchant:SwitchUnitPrice(control, slot)
 end

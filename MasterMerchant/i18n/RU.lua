@@ -6,6 +6,19 @@
 -- Distribution without license is prohibited!
 -- Translation provided by @mychaelo (EU Server)
 
+--[[DO NOT Translate these strings
+NIE tłumacz tych ciągów
+NE PAS traduire ces chaînes
+Übersetze diese Zeichenfolgen NICHT
+НЕ переводите эти строки
+これらの文字列を翻訳しないでください
+NO traduzca estas cadenas
+]]--
+ZO_CreateStringId("MM_APP_TEXT_TIMES", " x ")
+
+--[[END OF DO NOT Translate these strings
+]]--
+
 -- Options Menu
 ZO_CreateStringId("SK_ALERT_ANNOUNCE_NAME", "Оповещения")
 ZO_CreateStringId("SK_ALERT_ANNOUNCE_TIP", "Выводить оповещения на экран.")
@@ -168,7 +181,6 @@ ZO_CreateStringId("MM_STATS_TO_CHAT", "Цену от MM в чат")
 ZO_CreateStringId("MM_APP_NAME", "Master Merchant")
 ZO_CreateStringId("MM_APP_AUTHOR", "Sharlikran, Philgo68, Khaibit")
 ZO_CreateStringId("MM_APP_MESSAGE_NAME", "[Master Merchant]")
-ZO_CreateStringId("MM_APP_TEXT_TIMES", " × ")
 ZO_CreateStringId("MM_ADVICE_ERROR", "Master Merchant не смог внедриться в интерфейс магазина для фильтрования цен.")
 
 ZO_CreateStringId("MM_TOTAL_TITLE", "Всего: ")
@@ -396,3 +408,5 @@ ZO_CreateStringId("SK_ALL_CALC_TIP", "Если включено, указанн�
 
 -- notifications
 ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] You can import ATT data into Master Merchat from the LibGuildStore settings menu. You can disable this notification from MasterMerchant settings under Debug Options.")
+ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "This will force a UI reload when complete.")
+
