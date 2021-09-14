@@ -69,7 +69,7 @@ function MasterMerchant.InitDealFilterClass()
   function DealFilter:FilterLocalResult(result)
     local index                     = result.itemUniqueId
     local itemLink                  = GetTradingHouseSearchResultItemLink(index)
-    local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
+    local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
     return not ((dealValue or -5) + 1 < self.localMin or (dealValue or 5) + 1 > self.localMax)
   end
 
@@ -126,7 +126,7 @@ function MasterMerchant.InitProfitFilterClass()
   function ProfitFilter:FilterLocalResult(result)
     local index                     = result.itemUniqueId
     local itemLink                  = GetTradingHouseSearchResultItemLink(index)
-    local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
+    local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
 
     if not profit or (profit < (self.localMin or MIN_PROFIT)) or (profit > (self.localMax or MAX_PROFIT)) then
       return false
@@ -136,5 +136,3 @@ function MasterMerchant.InitProfitFilterClass()
 
   return ProfitFilter
 end
-
-

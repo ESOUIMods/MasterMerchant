@@ -587,6 +587,7 @@ function internal:ResetListingsData()
   LEQ:Add(function() internal:DatabaseBusy(false) end, 'DatabaseBusy_false')
   LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshFilters() end, 'RefreshFilters')
   LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
+  LEQ:Add(function() ReloadUI() end, 'Done')
   LEQ:Start()
 end
 

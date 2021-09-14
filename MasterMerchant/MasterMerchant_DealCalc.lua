@@ -5,7 +5,10 @@
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
 
-function MasterMerchant.DealCalc(setPrice, salesCount, purchasePrice, stackCount)
+--[[TODO Update DealCalculator this so it doesn't return -1 for things and makes more
+sense when you view it in the guild store
+]]--
+function MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stackCount)
   if MasterMerchant.CustomDealCalc[GetDisplayName()] then
     return MasterMerchant.CustomDealCalc[GetDisplayName()](setPrice, salesCount, purchasePrice, stackCount)
   end

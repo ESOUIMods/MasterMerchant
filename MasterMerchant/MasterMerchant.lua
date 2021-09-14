@@ -75,7 +75,7 @@ function MasterMerchant:setupGuildColors()
   end
 end
 
-function MasterMerchant:CheckTime()
+function MasterMerchant:CheckTimeframe()
   -- setup focus info
   local range = MasterMerchant.systemSavedVariables.defaultDays
   if IsControlKeyDown() and IsShiftKeyDown() then
@@ -337,7 +337,11 @@ function MasterMerchant:GetWritCount(itemLink)
   writcount = quotient + math.floor(0.5 + remainder)
   return writcount
 end
-
+-- MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
+-- GetItemLinkItemId("|H1:item:180571:363:50:0:0:0:0:0:0:0:0:0:0:0:0:25:0:0:0:10000:0|h|h")
+-- 180571  50:16:4:11:0
+-- LibGuildStore_Internal.GetOrCreateIndexFromLink("|H1:item:180571:363:50:0:0:0:0:0:0:0:0:0:0:0:0:25:0:0:0:10000:0|h|h")
+-- MasterMerchant:GetTooltipStats(180571, "50:16:4:11:0", false, true)
 -- Computes the weighted moving average across available data
 function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   -- 10000 for numDays is more or less like saying it is undefined
@@ -455,7 +459,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   if priceEval then skipDots = true end
 
   -- set time for cache
-  local timeCheck, daysRange = self:CheckTime()
+  local timeCheck, daysRange = self:CheckTimeframe()
 
   -- make sure we have a list of sales to work with
   if MasterMerchant:itemIDHasSales(theIID, itemIndex) and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
@@ -621,12 +625,16 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         ProcessBonanzaSale(item)
       end -- end bonanza loop
     end
-    if bonanzaCount and bonanzaCount < 1 then
+    if (bonanzaCount and bonanzaCount < 1) or (bonanzaSales and bonanzaSales < 1) then
       if bonanzaPrice == nil then
         MasterMerchant:dm("Warn", "Bonanza information seems incomplete")
+        MasterMerchant:dm("Debug", "bonanzaList")
         MasterMerchant:dm("Debug", bonanzaList)
+        MasterMerchant:dm("Debug", "bonanzaPrice")
         MasterMerchant:dm("Debug", bonanzaPrice)
+        MasterMerchant:dm("Debug", "bonanzaSales")
         MasterMerchant:dm("Debug", bonanzaSales)
+        MasterMerchant:dm("Debug", "bonanzaCount")
         MasterMerchant:dm("Debug", bonanzaCount)
       end
       bonanzaPrice = nil
@@ -678,7 +686,7 @@ function MasterMerchant:itemLinkHasListings(itemLink)
 end
 
 function MasterMerchant:ItemCacheStats(itemLink, clickable)
-  local timeCheck, daysRange = self:CheckTime()
+  local timeCheck, daysRange = self:CheckTimeframe()
   if MasterMerchant:ItemCacheHasInfoByItemLink(itemLink, daysRange) then
     local itemID = GetItemLinkItemId(itemLink)
     local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
@@ -1167,7 +1175,7 @@ end
 
 -- |H1:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
 -- |H0:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
-function MasterMerchant:onItemActionLinkStatsLink(itemLink)
+function MasterMerchant:OnItemLinkAction(itemLink)
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   local tipLine = nil
@@ -1233,7 +1241,7 @@ function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, 
       if MasterMerchant:itemCraftPrice(link) then
         AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
       end
-      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:OnItemLinkAction(link) end)
       AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end,
         MENU_ADD_OPTION_LABEL)
 
@@ -1254,7 +1262,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
       ClearMenu()
 
       AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
-      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:onItemActionLinkStatsLink(link) end)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:OnItemLinkAction(link) end)
       AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT),
         function() ZO_LinkHandler_InsertLink(string.format(SI_TOOLTIP_ITEM_NAME, link)) end)
 
@@ -1333,7 +1341,7 @@ function MasterMerchant:my_AddFilterHandler_OnLinkMouseUp(itemLink, button, cont
     end
     AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(itemLink) end,
       MENU_ADD_OPTION_LABEL)
-    AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(itemLink) end,
+    AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:OnItemLinkAction(itemLink) end,
       MENU_ADD_OPTION_LABEL)
     AddMenuItem(GetString(MM_FILTER_MENU_ADD_ITEM), function() MasterMerchant:AddToFilterTable(itemLink) end)
     ShowMenu(control)
@@ -1459,7 +1467,7 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
       end
       AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end,
         MENU_ADD_OPTION_LABEL)
-      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:onItemActionLinkStatsLink(link) end,
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:OnItemLinkAction(link) end,
         MENU_ADD_OPTION_LABEL)
       ShowMenu(self)
     end, 50)
@@ -2558,7 +2566,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
   end
 
   local itemLink = GetTradingHouseListingItemLink(result.slotIndex)
-  local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
+  local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
   if dealValue then
     if dealValue > -1 then
       if MasterMerchant.systemSavedVariables.saucy then
@@ -2646,7 +2654,7 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
   local index = result.slotIndex
   if (AwesomeGuildStore) then index = result.itemUniqueId end
   local itemLink = GetTradingHouseSearchResultItemLink(index)
-  local dealValue, margin, profit = MasterMerchant.GetDealInfo(itemLink, result.purchasePrice, result.stackCount)
+  local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
   if dealValue then
     if dealValue > -1 then
       if MasterMerchant.systemSavedVariables.saucy then
@@ -3375,7 +3383,7 @@ function MasterMerchant:FirstInitialize()
   -- We'll add stats to tooltips for items we have data for, if desired
   ZO_PreHookHandler(PopupTooltip, 'OnUpdate', function() self:addStatsPopupTooltip(PopupTooltip) end)
   ZO_PreHookHandler(PopupTooltip, 'OnHide', function() self:remStatsPopupTooltip(PopupTooltip) end)
-  ZO_PreHookHandler(ItemTooltip, 'OnUpdate', function() self:addStatsItemTooltip() end)
+  ZO_PreHookHandler(ItemTooltip, 'OnUpdate', function() self:GenerateStatsItemTooltip() end)
   ZO_PreHookHandler(ItemTooltip, 'OnHide', function() self:remStatsItemTooltip() end)
 
   ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnUpdate',
@@ -3429,7 +3437,7 @@ function MasterMerchant:FirstInitialize()
 
       listView.dataTypes[1].setupCallback = function(control, slot)
         originalCall(control, slot)
-        self:SwitchPrice(control, slot)
+        self:SwitchUnitPrice(control, slot)
       end
     end
   end
@@ -3438,7 +3446,7 @@ function MasterMerchant:FirstInitialize()
   local originalCall = ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback
   ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback = function(control, slot)
     originalCall(control, slot)
-    self:SwitchPrice(control, slot)
+    self:SwitchUnitPrice(control, slot)
   end
 end
 
@@ -3508,7 +3516,7 @@ function MasterMerchant:SecondInitialize()
   end, 10)
 end
 
-function MasterMerchant:SwitchPrice(control, slot)
+function MasterMerchant:SwitchUnitPrice(control, slot)
   if MasterMerchant.systemSavedVariables.replaceInventoryValues then
     local bagId = control.dataEntry.data.bagId
     local slotIndex = control.dataEntry.data.slotIndex
@@ -3625,7 +3633,7 @@ end
   MasterMerchant.USE_MM_AVERAGE,
   MasterMerchant.USE_BONANZA,
 ]]--
-MasterMerchant.GetDealInfo = function(itemLink, purchasePrice, stackCount)
+MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount)
   local key = string.format("%s_%d_%d", itemLink, purchasePrice, stackCount)
   if (not dealInfoCache[key]) then
     local setPrice = nil
@@ -3660,7 +3668,7 @@ MasterMerchant.GetDealInfo = function(itemLink, purchasePrice, stackCount)
         salesCount = priceStats.EntryCount
       end
     end
-    dealInfoCache[key] = { MasterMerchant.DealCalc(setPrice, salesCount, purchasePrice, stackCount) }
+    dealInfoCache[key] = { MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stackCount) }
   end
   MasterMerchant.a_test  = dealInfoCache
   return unpack(dealInfoCache[key])
