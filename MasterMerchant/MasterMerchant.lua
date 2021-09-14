@@ -109,53 +109,23 @@ local function BuildBlacklistTable(str)
   if next(t) then return t end
 end
 
-function RemoveSalesPerBlacklist(list, timeCheck, daysRange)
-  local useDaysRange = daysRange ~= 10000
-  local dataList = { }
-  local count = 0
-  local blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
-  local oldestTime = nil
-  local newestTime = nil
-  for i, item in pairs(list) do
-    if blacklistTable then
-      local currentGuild = internal:GetGuildNameByIndex(item.guild)
-      local currentBuyer = internal:GetAccountNameByIndex(item.buyer)
-      local currentSeller = internal:GetAccountNameByIndex(item.seller)
-      local nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentBuyer and blacklistTable[currentBuyer]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
-    else
-      nameInBlacklist = false
-    end
-    if not nameInBlacklist then
-      if useDaysRange then
-        if item.timestamp > timeCheck then
-          if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-          if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-          count = count + 1
-          table.insert(dataList, item)
-        end
-      else
-        if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-        if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-        count = count + 1
-        table.insert(dataList, item)
-      end
-    end
-  end
-  return dataList, count, oldestTime, newestTime
-end
-
 function RemoveListingsPerBlacklist(list)
-  local dataList = { }
-  local blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
+  local currentGuild = nil
+  local currentSeller = nil
+  local blacklistTable = nil
   local nameInBlacklist = nil
+  local dataList = { }
+
+  local function IsNameInBlacklist()
+    if not blacklistTable then return false end
+    if currentGuild and blacklistTable[currentGuild] then return true end
+    if currentSeller and blacklistTable[currentSeller] then return true end
+    return false
+  end
+
+  blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
   for i, item in pairs(list) do
-    if blacklistTable then
-      local currentGuild = internal:GetGuildNameByIndex(item.guild)
-      local currentSeller = internal:GetAccountNameByIndex(item.seller)
-      nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
-    else
-      nameInBlacklist = false
-    end
+    nameInBlacklist = IsNameInBlacklist()
     if not nameInBlacklist then
       table.insert(dataList, item)
     end
@@ -377,8 +347,19 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   local weigtedCountSold = 0
   local dayInterval = 0
   local nameString = nil
-  local clickable = false
-  local skipDots = false
+  local clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
+  local skipDots = not MasterMerchant.systemSavedVariables.showGraph
+  local nameInBlacklist = false
+  local blacklistTable = nil
+  local ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
+
+  local function IsNameInBlacklist()
+    if not blacklistTable then return false end
+    if currentGuild and blacklistTable[currentGuild] then return true end
+    if currentBuyer and blacklistTable[currentBuyer] then return true end
+    if currentSeller and blacklistTable[currentSeller] then return true end
+    return false
+  end
 
   -- local function for processing the dots on the graph
   local function ProcessDots(individualSale, item)
@@ -454,8 +435,6 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
                        ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
   if not MasterMerchant.isInitialized then return returnData end
 
-  clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
-  skipDots = not MasterMerchant.systemSavedVariables.showGraph
   if priceEval then skipDots = true end
 
   -- set time for cache
@@ -467,7 +446,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     nameString = sales_data[theIID][itemIndex].itemDesc
     oldestTime = sales_data[theIID][itemIndex].oldestTime
     newestTime = sales_data[theIID][itemIndex].newestTime
-    local blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
+    blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
     list = sales_data[theIID][itemIndex]['sales']
 
     --[[
@@ -511,11 +490,8 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       currentGuild = internal:GetGuildNameByIndex(item.guild)
       currentBuyer = internal:GetAccountNameByIndex(item.buyer)
       currentSeller = internal:GetAccountNameByIndex(item.seller)
-      local nameInBlacklist = false
-      if blacklistTable then
-        nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentBuyer and blacklistTable[currentBuyer]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
-      end
-      if not nameInBlacklist and not MasterMerchant.systemSavedVariables.trimOutliers then
+      nameInBlacklist = IsNameInBlacklist()
+      if not nameInBlacklist and not ignoreOutliers then
         if useDaysRange then
           local validTimeDate = item.timestamp > timeCheck
           if validTimeDate then
@@ -537,7 +513,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         end
       end
     end -- end for loop for non outliers
-    if MasterMerchant.systemSavedVariables.trimOutliers then
+    if ignoreOutliers then
       if #outliersList >= 3 then
         local quartile1, quartile3, quartileRange = stats.interquartileRange(outliersList)
         oldestTime = nil
@@ -550,10 +526,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
             --Debug(string.format("%s : %s was not in range",k,individualSale))
           else
             -- within range
-            local nameInBlacklist = false
-            if blacklistTable then
-              nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentBuyer and blacklistTable[currentBuyer]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
-            end
+            nameInBlacklist = IsNameInBlacklist()
             if not nameInBlacklist then
               if useDaysRange then
                 local validTimeDate = item.timestamp > timeCheck
@@ -568,7 +541,29 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
             end
           end
         end -- end for loop for outliers
-      end -- end trim outliers if more then 3
+      else
+        -- end trim outliers if more then 3
+        oldestTime = nil
+        for i, item in pairs(outliersList) do
+          currentGuild = internal:GetGuildNameByIndex(item.guild)
+          currentBuyer = internal:GetAccountNameByIndex(item.buyer)
+          currentSeller = internal:GetAccountNameByIndex(item.seller)
+          -- within range
+          nameInBlacklist = IsNameInBlacklist()
+          if not nameInBlacklist then
+            if useDaysRange then
+              local validTimeDate = item.timestamp > timeCheck
+              if validTimeDate then
+                if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+                ProcessSalesInfo(item)
+              end
+            else
+              if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+              ProcessSalesInfo(item)
+            end
+          end
+        end -- end for loop for outliers less then 3
+      end -- end trim outliers if less then 3
     end -- end trim outliers
     if legitSales and legitSales >= 1 then
       if timeInterval > ZO_ONE_DAY_IN_SECONDS then
@@ -1175,6 +1170,8 @@ end
 
 -- |H1:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
 -- |H0:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
+-- |H1:item:95396:363:50:0:0:0:0:0:0:0:0:0:0:0:0:35:0:0:0:400:0|h|h
+-- |H1:item:151661:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
 function MasterMerchant:OnItemLinkAction(itemLink)
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
@@ -3670,10 +3667,8 @@ MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount
     end
     dealInfoCache[key] = { MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stackCount) }
   end
-  MasterMerchant.a_test  = dealInfoCache
   return unpack(dealInfoCache[key])
 end
-
 
 function MasterMerchant:SendNote(gold)
   MasterMerchantFeedback:SetHidden(true)
