@@ -1,4 +1,4 @@
--- Last Updated September 5, 2021
+-- Last Updated September 14, 2021
 -- Translation provided by @mychaelo (EU Server)
 
 ZO_CreateStringId("GS_DEBUG_OPTIONS", "Параметры отладки")
@@ -33,8 +33,8 @@ ZO_CreateStringId("GS_IMPORT_MM_OVERRIDE_TIP", "Принудительно им�
 ZO_CreateStringId("GS_IMPORT_ATT_BUTTON", "Импорт данных ATT")
 ZO_CreateStringId("GS_IMPORT_ATT_NAME", "Импорт данных ATT")
 ZO_CreateStringId("GS_IMPORT_ATT_TIP", "Импортировать все данные продаж из ATT в LibGuildStore.")
-ZO_CreateStringId("GS_IMPORT_ATT_DESC", "Arkadius Trade Tools sales data is not account specific so you only need import once for NA or EU servers, not once per account.")
-ZO_CreateStringId("GS_IMPORT_ATT_FINISHED", "Arkadius Trade Tools sales data has been imported. Using more then one Addon with the same data increases memroy usage and load times.")
+ZO_CreateStringId("GS_IMPORT_ATT_DESC", "Данные продаж в Arkadius Trade Tools не привязаны к учётной записи, а потому их надо импортировать лишь для каждого сервера, а не для каждой учётной записи.")
+ZO_CreateStringId("GS_IMPORT_ATT_FINISHED", "Данные продаж Arkadius Trade Tools были импортированы. Использование нескольких модификаций для одного и того же набора данных увеличивает потребление памяти и время загрузки.")
 
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_BUTTON", "Импорт покупок из ATT")
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_NAME", "Импорт покупок из ATT")

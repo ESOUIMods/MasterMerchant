@@ -1,5 +1,5 @@
 -- MasterMerchant Russian Localization File
--- Last Updated September 4, 2021
+-- Last Updated September 14, 2021
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
@@ -24,17 +24,17 @@ ZO_CreateStringId("SK_HISTORY_DEPTH_TIP", "Сколько дней должны 
 ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Инфоблок с ценами")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "Добавлять в подсказки предметов информацию о ценах на основе записанных продаж.")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Цена на прилавках от Bonanza")
-ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Добавлять цену от Bonanza, рассчитанную на основе посещённых за последние 24 часа магазинов. This does not remove the Bonanza price from the Graph.")
-ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Show Alternate TTC Price")
-ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Include Alternate TTC condensed price tooltip.")
+ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Добавлять цену от Bonanza, рассчитанную на основе посещённых за последние 24 часа магазинов. Отключение этого параметра не убирает Bonanza-линию с графика.")
+ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Альтернативная цена от TTC")
+ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Добавлять данные от TTC в сокращённом виде.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Расчётная цена изготовления")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Добавлять стоимость изготовления, полученную суммированием цен на ингредиенты из подсказки предмета.")
 ZO_CreateStringId("SK_CALC_NAME", "Показывать оптовый калькулятор")
 ZO_CreateStringId("SK_CALC_TIP", "Показывать небольшой калькулятор при выставлении предмета на продажу для расчёта оптовой цены.")
 ZO_CreateStringId("SK_WINDOW_FONT_NAME", "Шрифт окна")
 ZO_CreateStringId("SK_WINDOW_FONT_TIP", "Шрифт текста в окне Master Merchant.")
-ZO_CreateStringId("SK_DEAL_CALC_TYPE_NAME", "Deal Calculator Type")
-ZO_CreateStringId("SK_DEAL_CALC_TYPE_TIP", "Choose from the MM Average, TTC Average, TTC Suggested, Bonanza Average prices for the deal calculator.")
+ZO_CreateStringId("SK_DEAL_CALC_TYPE_NAME", "Способ расчёта выгодности")
+ZO_CreateStringId("SK_DEAL_CALC_TYPE_TIP", "Доступные способы вычисления:\n• MM Average — от средней цены по MM\n• TTC Average — от средней цены по TTC\n• TTC Suggested — от рек. цены TTC\n• Bonanza Average — от средней цены на прилавках по MM")
 ZO_CreateStringId("SK_ALERT_OPTIONS_NAME", "Настройки оповещений")
 ZO_CreateStringId("SK_ALERT_OPTIONS_TIP", "Параметры для настройки типа и звука оповещений.")
 ZO_CreateStringId("SK_ALERT_TYPE_NAME", "Звук")
@@ -157,8 +157,8 @@ ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d предмет/%d предм
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Цена от MM (%s прод./%s шт., %s д.): %s")
 ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Цена от MM (%s прод./%s шт., %s д.): %s")
 ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza-цена (%s разм./%s шт.): %s")
-ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s listings] Sug: %s, Avg: %s")
-ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")
+ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s разм.] рек.: %s, ср.: %s")
+ZO_CreateStringId("MM_NO_TTC_PRICE", "[У TTC нет данных]")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "У MM нет данных")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "У MM нет данных за последние <<1[%d день/%d дня/%d дней]>>")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "У Bonanza нет данных")
@@ -395,4 +395,4 @@ ZO_CreateStringId("SK_ALL_CALC_NAME", "Общие для всех гильдий
 ZO_CreateStringId("SK_ALL_CALC_TIP", "Если включено, указанные при выставлении предметов на продажу цены не разделяются по гильдиям. Если отключено, цены хранятся отдельно для каждой гильдии.")
 
 -- notifications
-ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] You can import ATT data into Master Merchat from the LibGuildStore settings menu. You can disable this notification from MasterMerchant settings under Debug Options.")
+ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] Вы можете импортировать данные из ATT в Master Merchant в меню настроек LibGuildStore. Это уведомление отключается в настройках Master Merchant в разделе параметров отладки.")
