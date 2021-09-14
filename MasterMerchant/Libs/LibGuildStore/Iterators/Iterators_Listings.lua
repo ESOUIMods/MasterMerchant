@@ -24,6 +24,7 @@ function internal:CheckForDuplicateListings(itemLink, eventID, timestamp)
 end
 
 function internal:addListingData(theEvent)
+  if not MasterMerchant.isInitialized then return end
   --internal:dm("Debug", "addListingData")
   --[[ TODO use guild ID and name for lookup table
     local theEvent            = {

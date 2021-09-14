@@ -146,26 +146,21 @@ end
 
 function RemoveListingsPerBlacklist(list)
   local dataList = { }
-  local count = 0
   local blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
-  local oldestTime = nil
-  local newestTime = nil
+  local nameInBlacklist = nil
   for i, item in pairs(list) do
     if blacklistTable then
       local currentGuild = internal:GetGuildNameByIndex(item.guild)
       local currentSeller = internal:GetAccountNameByIndex(item.seller)
-      local nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
+      nameInBlacklist = (blacklistTable and currentGuild and blacklistTable[currentGuild]) or (blacklistTable and currentSeller and blacklistTable[currentSeller])
     else
       nameInBlacklist = false
     end
     if not nameInBlacklist then
-      if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-      if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-      count = count + 1
       table.insert(dataList, item)
     end
   end
-  return dataList, count, oldestTime, newestTime
+  return dataList
 end
 
 function UseSalesByTimestamp(list, timeCheck)
