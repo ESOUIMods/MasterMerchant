@@ -1963,7 +1963,6 @@ end
 
 function MasterMerchant:addStatsAndGraph(tooltip, itemLink)
 
-  local bonanzaPriceFound = false
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
   local itemID = GetItemLinkItemId(itemLink)

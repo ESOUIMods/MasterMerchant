@@ -621,6 +621,18 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
         ProcessBonanzaSale(item)
       end -- end bonanza loop
     end
+    if bonanzaCount and bonanzaCount < 1 then
+      if bonanzaPrice == nil then
+        MasterMerchant:dm("Warn", "Bonanza information seems incomplete")
+        MasterMerchant:dm("Debug", bonanzaList)
+        MasterMerchant:dm("Debug", bonanzaPrice)
+        MasterMerchant:dm("Debug", bonanzaSales)
+        MasterMerchant:dm("Debug", bonanzaCount)
+      end
+      bonanzaPrice = nil
+      bonanzaSales = nil
+      bonanzaCount = nil
+    end
     if bonanzaSales and bonanzaSales >= 1 then
       bonanzaPrice = bonanzaPrice / bonanzaCount
     end
@@ -1167,8 +1179,7 @@ function MasterMerchant:onItemActionLinkStatsLink(itemLink)
       statsInfo.numDays, true)
   end
   if statsInfo.bonanzaPrice then
-    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales,
-      statsInfo.bonanzaCount, true)
+    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, true)
   end
 
   if not tipLine then
@@ -2608,6 +2619,9 @@ function MasterMerchant:initBuyingAdvice()
   end
 end
 
+--[[ TODO update this for the colors and the value so that when there
+isn't any buying advice then it is blank or 0
+]]--
 function MasterMerchant.AddBuyingAdvice(rowControl, result)
   local buyingAdvice = rowControl:GetNamedChild('BuyingAdvice')
   if (not buyingAdvice) then
