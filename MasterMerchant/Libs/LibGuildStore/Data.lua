@@ -569,8 +569,8 @@ function internal:ResetListingsData()
   GS13DataSavedVariables[internal.listingsToReset] = {}
   GS14DataSavedVariables[internal.listingsToReset] = {}
   GS15DataSavedVariables[internal.listingsToReset] = {}
+  MasterMerchant.listIsDirty[LISTINGS] = true
 
-  local LEQ = LibExecutionQueue:new()
   local lr_index = {}
   _G["LibGuildStore_ListingsIndex"] = lr_index
   lr_index.anIndexCount = 0
@@ -579,12 +579,13 @@ function internal:ResetListingsData()
   internal.listedItems = {}
   internal.listedSellers = {}
 
+  local LEQ = LibExecutionQueue:new()
   LEQ:Add(function() internal:DatabaseBusy(true) end, 'DatabaseBusy_true')
   LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
   LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
   LEQ:Add(function() internal:IndexListingsData() end, 'IndexListingsData')
-  LEQ:Add(function() MasterMerchant.listIsDirty[LISTINGS] = true end, 'listIsDirty')
   LEQ:Add(function() internal:DatabaseBusy(false) end, 'DatabaseBusy_false')
+  LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshFilters() end, 'RefreshFilters')
   LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
   LEQ:Start()
 end
