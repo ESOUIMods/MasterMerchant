@@ -1,0 +1,32 @@
+function LootLog.GetItemLinkCollectionStatus( itemLink )
+    -- Returns:
+    -- 0: Not a collectible
+    -- 1: Collectible and not collected
+    -- 2: Collectible and collected
+
+    if (IsItemLinkSetCollectionPiece(itemLink)) then
+        if (IsItemSetCollectionPieceUnlocked(GetItemLinkItemId(itemLink))) then
+            return 2
+        else
+            return 1
+        end
+    else
+        local id = GetItemLinkContainerCollectibleId(itemLink)
+        if (id > 0) then
+            if (IsCollectibleOwnedByDefId(id)) then
+                return 2
+            elseif (GetCollectibleCategoryType(id) == COLLECTIBLE_CATEGORY_TYPE_COMBINATION_FRAGMENT and not CanCombinationFragmentBeUnlocked(id)) then
+                return 2
+            else
+                return 1
+            end
+        end
+        return 0
+    end
+end
+
+-----------------
+
+ Ah. sorry. I did say you can use ITEM_DATABASE_UPDATE, but seeing how it works that's actually not the case. the ItemDatabase is an internal component which shouldn't be used by other addons as it can change behavior at any time and will break whatever you build on top of it. You should just use the SEARCH_RESULTS_RECEIVED callback and GetTradingHouseSearchResultItemInfo. that function will return the itemUniqueId for the items on the currently loaded page.
+ 
+ 

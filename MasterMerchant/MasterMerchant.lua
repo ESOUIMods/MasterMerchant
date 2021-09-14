@@ -347,11 +347,11 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   local weigtedCountSold = 0
   local dayInterval = 0
   local nameString = nil
-  local clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
-  local skipDots = not MasterMerchant.systemSavedVariables.showGraph
+  local clickable = nil
+  local skipDots = nil
   local nameInBlacklist = false
   local blacklistTable = nil
-  local ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
+  local ignoreOutliers = nil
 
   local function IsNameInBlacklist()
     if not blacklistTable then return false end
@@ -434,6 +434,9 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
                        ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
                        ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
   if not MasterMerchant.isInitialized then return returnData end
+  clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
+  skipDots = not MasterMerchant.systemSavedVariables.showGraph
+  ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
 
   if priceEval then skipDots = true end
 
