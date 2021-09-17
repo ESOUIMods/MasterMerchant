@@ -154,6 +154,7 @@ internal.defaults                = {
   historyDepthSL = 60,
   historyDepthPI = 180,
   historyDepthCI = 180,
+  libHistoireScanByTimestamp = false,
 }
 
 if not LibGuildStore_SavedVariables then LibGuildStore_SavedVariables = internal.saveVarsDefaults end

@@ -796,10 +796,12 @@ function MMScrollList:SetupPurchasesRow(control, data)
   If the seller is the player, color the seller green.  Otherwise, blue.
   local acctName = GetDisplayName()
   if zo_strlower(buyerString) == zo_strlower(acctName) then
+    124D05
     control.seller:SetNormalFontColor(0.18, 0.77, 0.05, 1)
     control.seller:SetPressedFontColor(0.18, 0.77, 0.05, 1)
     control.seller:SetMouseOverFontColor(0.32, 0.90, 0.18, 1)
   else
+    15365E
     control.seller:SetNormalFontColor(0.21, 0.54, 0.94, 1)
     control.seller:SetPressedFontColor(0.21, 0.54, 0.94, 1)
     control.seller:SetMouseOverFontColor(0.34, 0.67, 1, 1)

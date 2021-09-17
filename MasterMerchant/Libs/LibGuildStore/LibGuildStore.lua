@@ -67,6 +67,7 @@ function internal:QueueCheckStatus()
     ]]--
     internal:dm("Info", GetString(GS_REFRESH_FINISHED))
     LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
+    LibGuildStore_SavedVariables.libHistoireScanByTimestamp = false
     internal:DatabaseBusy(false)
     MasterMerchant.listIsDirty[ITEMS] = true
     MasterMerchant.listIsDirty[GUILDS]   = true
@@ -118,6 +119,7 @@ local function SetupLibGuildStore()
     return
   end
   internal:dm("Debug", "SetupLibGuildStore For First Run")
+  LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
   for guildNum = 1, GetNumGuilds() do
     local guildId                                                = GetGuildId(guildNum)
     LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
@@ -130,6 +132,7 @@ function internal:RefreshLibGuildStore()
   internal:dm("Debug", "RefreshLibGuildStore")
   internal:dm("Info", GetString(GS_REFRESH_STARTING))
   internal:DatabaseBusy(true)
+  LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     internal.LibHistoireListener[guildId]:Stop()
@@ -194,6 +197,7 @@ internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
     useSalesHistory = true,
     overrideMMImport = false,
     updateAdditionalText = false,
+    libHistoireScanByTimestamp = false,
   }
   internal.systemDefault = systemDefault
   local sv = LibGuildStore_SavedVariables

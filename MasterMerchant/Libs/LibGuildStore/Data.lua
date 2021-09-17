@@ -334,11 +334,16 @@ function internal:SetupListener(guildId)
   -- listener
   internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
   local lastReceivedEventID
-  if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] then
-    --internal:dm("Info", string.format("internal Saved Var: %s, guildId: (%s)", LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId], guildId))
-    lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId])
-    --internal:dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
-    internal.LibHistoireListener[guildId]:SetAfterEventId(lastReceivedEventID)
+  if LibGuildStore_SavedVariables.libHistoireScanByTimestamp then
+    local setAfterTimestamp = GetTimeStamp() - ((LibGuildStore_SavedVariables.historyDepth + 1) * ZO_ONE_DAY_IN_SECONDS)
+    internal.LibHistoireListener[guildId]:SetAfterEventTime(setAfterTimestamp)
+  else
+    if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] then
+      --internal:dm("Info", string.format("internal Saved Var: %s, guildId: (%s)", LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId], guildId))
+      lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId])
+      --internal:dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
+      internal.LibHistoireListener[guildId]:SetAfterEventId(lastReceivedEventID)
+    end
   end
   internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
     if eventType == GUILD_EVENT_ITEM_SOLD then
