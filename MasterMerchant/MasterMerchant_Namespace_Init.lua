@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant         = { }
 MasterMerchant.name    = 'MasterMerchant'
-MasterMerchant.version = '3.6.64'
+MasterMerchant.version = '3.6.66'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -69,7 +69,6 @@ local function create_log(log_type, log_content)
     CHAT_ROUTER:AddSystemMessage(log_content)
     return
   end
-  if not MasterMerchant.logger then return end
   if log_type == "Debug" then
     MasterMerchant.logger:Debug(log_content)
   end

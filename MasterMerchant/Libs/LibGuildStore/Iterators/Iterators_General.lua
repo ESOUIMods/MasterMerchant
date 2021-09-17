@@ -2,7 +2,6 @@ local lib            = _G["LibGuildStore"]
 local internal       = _G["LibGuildStore_Internal"]
 
 local ASYNC          = LibAsync
-local LGH            = LibHistoire
 
 ----------------------------------------
 ----- Helpers                      -----
@@ -366,26 +365,7 @@ end
 
 function internal:DatabaseBusy(start)
   internal.isDatabaseBusy = start
-  --[[
-  if start then
-    for i = 1, GetNumGuilds() do
-      local guildId = GetGuildId(i)
-      internal.LibHistoireListener[guildId]:Stop()
-      internal.LibHistoireListener[guildId] = {}
-    end
-  end
-  if not start then
-    internal:SetupListenerLibHistoire()
-  end
-  ]]--
   if not MasterMerchant then return end
-
-  --[[ TODO this may be used for something else
-  MasterMerchantResetButton:SetEnabled(not start)
-  MasterMerchantGuildResetButton:SetEnabled(not start)
-  MasterMerchantRefreshButton:SetEnabled(not start)
-  MasterMerchantGuildRefreshButton:SetEnabled(not start)
-  ]]--
 
   if not start then
     MasterMerchantWindowMenuFooterLoadingIcon.animation:Stop()

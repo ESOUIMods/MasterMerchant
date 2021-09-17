@@ -1609,18 +1609,30 @@ end
 -- Table where the guild roster columns shall be placed
 MasterMerchant.guild_columns = {}
 MasterMerchant.UI_GuildTime = nil
-MasterMerchant.dealCalcChoices = {
-  "TTC Suggested",
-  "TTC Average",
-  "MM Average",
-  "Bonanza Price",
-}
-MasterMerchant.dealCalcValues = {
-  MasterMerchant.USE_TTC_SUGGESTED,
-  MasterMerchant.USE_TTC_AVERAGE,
-  MasterMerchant.USE_MM_AVERAGE,
-  MasterMerchant.USE_BONANZA,
-}
+
+if TamrielTradeCentre then
+  MasterMerchant.dealCalcChoices = {
+    "TTC Suggested",
+    "TTC Average",
+    "MM Average",
+    "Bonanza Price",
+  }
+  MasterMerchant.dealCalcValues = {
+    MasterMerchant.USE_TTC_SUGGESTED,
+    MasterMerchant.USE_TTC_AVERAGE,
+    MasterMerchant.USE_MM_AVERAGE,
+    MasterMerchant.USE_BONANZA,
+  }
+else
+  MasterMerchant.dealCalcChoices = {
+    "MM Average",
+    "Bonanza Price",
+  }
+  MasterMerchant.dealCalcValues = {
+    MasterMerchant.USE_MM_AVERAGE,
+    MasterMerchant.USE_BONANZA,
+  }
+end
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
   -- configure font choices
@@ -2565,32 +2577,36 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
     sellingAdvice:SetFont('/esoui/common/fonts/univers67.otf|14|soft-shadow-thin')
   end
 
-  local itemLink = GetTradingHouseListingItemLink(result.slotIndex)
-  local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
-  if dealValue then
-    if dealValue > -1 then
-      if MasterMerchant.systemSavedVariables.saucy then
-        sellingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+  --[[TODO make sure that the itemLink is not an empty string by mistake
+  ]]--
+  local itemLink = GetTradingHouseListingItemLink(result.slotIndex) 
+  if itemLink and itemLink ~= "" then
+    local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
+    if dealValue then
+      if dealValue > -1 then
+        if MasterMerchant.systemSavedVariables.saucy then
+          sellingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+        else
+          sellingAdvice:SetText(string.format('%.2f', margin) .. '%')
+        end
+        -- TODO I think this colors the number in the guild store
+        --[[
+        ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON, {color: someColorDef})
+        ]]--
+        local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
+        if dealValue == 0 then
+          r = 0.98;
+          g = 0.01;
+          b = 0.01;
+        end
+        sellingAdvice:SetColor(r, g, b, 1)
+        sellingAdvice:SetHidden(false)
       else
-        sellingAdvice:SetText(string.format('%.2f', margin) .. '%')
+        sellingAdvice:SetHidden(true)
       end
-      -- TODO I think this colors the number in the guild store
-      --[[
-      ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON, {color: someColorDef})
-      ]]--
-      local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
-      if dealValue == 0 then
-        r = 0.98;
-        g = 0.01;
-        b = 0.01;
-      end
-      sellingAdvice:SetColor(r, g, b, 1)
-      sellingAdvice:SetHidden(false)
     else
       sellingAdvice:SetHidden(true)
     end
-  else
-    sellingAdvice:SetHidden(true)
   end
   sellingAdvice = nil
 end
@@ -3634,6 +3650,7 @@ end
   MasterMerchant.USE_BONANZA,
 ]]--
 MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount)
+
   local key = string.format("%s_%d_%d", itemLink, purchasePrice, stackCount)
   if (not dealInfoCache[key]) then
     local setPrice = nil
@@ -3654,16 +3671,16 @@ MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount
         salesCount = tipStats.bonanzaSales
       end
     end
-    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_AVERAGE then
+    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
       local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-      if priceStats.Avg then
+      if priceStats and priceStats.Avg then
         setPrice = priceStats.Avg
         salesCount = priceStats.EntryCount
       end
     end
-    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED then
+    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
       local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-      if priceStats.Avg then
+      if priceStats and priceStats.SuggestedPrice then
         setPrice = priceStats.SuggestedPrice
         salesCount = priceStats.EntryCount
       end

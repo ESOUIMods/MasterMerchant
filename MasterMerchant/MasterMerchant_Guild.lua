@@ -275,7 +275,7 @@ function MMGuild:sortRankIndex(rankIndex)
   local i = 1
   while self.ranks[rankIndex] and self.ranks[rankIndex][i] do
     self.ranks[rankIndex][i].rank[rankIndex] = i
-    i                                        = i + 1
+    i = i + 1
   end
 end
 

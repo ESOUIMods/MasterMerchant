@@ -49,7 +49,6 @@ local function create_log(log_type, log_content)
     CHAT_ROUTER:AddSystemMessage(log_content)
     return
   end
-  if not internal.logger then return end
   if log_type == "Debug" then
     internal.logger:Debug(log_content)
   end
