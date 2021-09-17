@@ -1,0 +1,25 @@
+[quote=sirinsidiator]
+The ItemDatabase is an internal component which shouldn't be used by other addons as it can change behavior at any time and will break whatever you build on top of it.
+
+The way I handle it is to create a table "internal" which I use for myself to make clear that other addons have no business accessing it. if anyone still does it, it's on them.
+so instead of MasterMerchant:BonanzaPriceTip I'd have MasterMerchant.internal:BonanzaPriceTip
+[/quote]
+I don't want to put words in Sirinsidiator's mouth as it were but I do not believe he would alter AGS or any of his mods if someone overrode his mods functionality. He would leave it up to the author to take care of.
+
+When checking for prices be sure to check for the following
+
+MasterMerchant.isInitialized
+LibGuildStore.guildStoreReady
+
+If both are not true do not request information from MM.
+
+When requesting the average price 
+
+local statsData = MasterMerchant:itemStats(itemLink, false)
+
+Returns a table with some values that are not needed. Some you may want are the following.
+
+local avgPrice = statsData.avgPrice -- average MM price
+local numSales = statsData.numSales -- actual count of items sold such as 123
+local numDays = statsData.numDays -- the date of the oldest sale
+local numItems = statsData.numItems -- actual stack count total such as 12345 : (123 sales/12345 items)
