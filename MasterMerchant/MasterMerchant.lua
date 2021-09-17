@@ -2950,65 +2950,6 @@ function MasterMerchant.SetupPendingPost(self)
   end
 end
 
-function MasterMerchant:ReferenceSales(otherData)
-  otherData.savedVariables.dataLocations = otherData.savedVariables.dataLocations or {}
-  otherData.savedVariables.dataLocations[GetWorldName()] = true
-  if LibGuildStore then return end
-
-  for itemid, versionlist in pairs(otherData.savedVariables.SalesData) do
-    if self.salesData[itemid] then
-      for versionid, versiondata in pairs(versionlist) do
-        if self.salesData[itemid][versionid] then
-          if versiondata.sales then
-            self.salesData[itemid][versionid].sales = self.salesData[itemid][versionid].sales or {}
-            -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
-              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(self.salesData[itemid][versionid].sales, saledata)
-              end
-            end
-            local _, first = next(versiondata.sales, nil)
-            if first then
-              self.salesData[itemid][versionid].itemIcon = GetItemLinkInfo(first.itemLink)
-              self.salesData[itemid][versionid].itemAdderText = self.addedSearchToItem(first.itemLink)
-              self.salesData[itemid][versionid].itemDesc = GetItemLinkName(first.itemLink)
-            end
-          end
-        else
-          self.salesData[itemid][versionid] = versiondata
-        end
-      end
-      otherData.savedVariables.SalesData[itemid] = nil
-    else
-      self.salesData[itemid] = versionlist
-    end
-  end
-end
-
--- Bring seperate lists together we can still access the sales history all together
-function MasterMerchant:ReferenceSalesAllContainers()
-  self.systemSavedVariables.dataLocations = self.systemSavedVariables.dataLocations or {}
-  self.systemSavedVariables.dataLocations[GetWorldName()] = true
-  if internal:CheckMasterMerchantData() then return end
-  MasterMerchant:dm("Debug", "ReferenceSalesAllContainers")
-  self:ReferenceSales(MM00Data)
-  self:ReferenceSales(MM01Data)
-  self:ReferenceSales(MM02Data)
-  self:ReferenceSales(MM03Data)
-  self:ReferenceSales(MM04Data)
-  self:ReferenceSales(MM05Data)
-  self:ReferenceSales(MM06Data)
-  self:ReferenceSales(MM07Data)
-  self:ReferenceSales(MM08Data)
-  self:ReferenceSales(MM09Data)
-  self:ReferenceSales(MM10Data)
-  self:ReferenceSales(MM11Data)
-  self:ReferenceSales(MM12Data)
-  self:ReferenceSales(MM13Data)
-  self:ReferenceSales(MM14Data)
-  self:ReferenceSales(MM15Data)
-end
-
 --[[ register event monitor
 local function OnPlayerDeactivated(eventCode)
   EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
@@ -3047,6 +2988,11 @@ function MasterMerchant:FirstInitialize()
   -- SavedVar defaults
   old_defaults = {
     dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
+    pricingData = {}, -- added 12-31 but has always been there
+    historyDepth = 30,
+    minItemCount = 20,
+    maxItemCount = 5000,
+    blacklist = '',
   }
 
   local systemDefault = {
@@ -3160,10 +3106,13 @@ function MasterMerchant:FirstInitialize()
   --[[ MasterMerchant.systemSavedVariables.scanHistory is no longer used for MasterMerchant.systemSavedVariables.scanHistory
   acording to the comment below but elf.acctSavedVariables is used when you are supposedly
   swaping between acoutwide or not such as mentioned above
+
+  ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"][GetUnitName("player")][GetDisplayName()]
+
+  ^^^ For reference may not be correct
   ]]--
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), old_defaults)
-  self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil,
-    'MasterMerchant')
+  self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
   MasterMerchant.show_log = self.systemSavedVariables.useLibDebugLogger
 
   local sv = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
@@ -3256,7 +3205,6 @@ function MasterMerchant:FirstInitialize()
     MasterMerchant.systemSavedVariables.blacklist = self.savedVariables.blacklist
     self.savedVariables.blacklist = nil
   end
-
 
   -- MoveFromOldAcctSavedVariables STEP Removed
   -- AdjustItemsAllContainers() STEP Removed
@@ -3520,7 +3468,6 @@ function MasterMerchant:SecondInitialize()
   zo_callLater(function()
     local LEQ = LibExecutionQueue:new()
     LEQ:Add(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
-    LEQ:Add(function() MasterMerchant:ReferenceSalesAllContainers() end, 'ReferenceSalesAllContainers')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:Add(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
