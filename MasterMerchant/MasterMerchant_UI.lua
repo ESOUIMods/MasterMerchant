@@ -781,15 +781,19 @@ function MMScrollList:SetupPurchasesRow(control, data)
   -- Plus add a marker if buyer is not in-guild (kiosk sale)
 
   local buyerString
+  --[[TODO determine whether or not to allos both
   if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
     buyerString = currentBuyer
   else
     buyerString = currentSeller
   end
+  ]]--
+  buyerString = currentSeller
 
   control.seller:GetLabelControl():SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.seller:SetText(buyerString)
-  -- If the seller is the player, color the seller green.  Otherwise, blue.
+  --[[TODO determine whether or not to allos both
+  If the seller is the player, color the seller green.  Otherwise, blue.
   local acctName = GetDisplayName()
   if zo_strlower(buyerString) == zo_strlower(acctName) then
     control.seller:SetNormalFontColor(0.18, 0.77, 0.05, 1)
@@ -800,6 +804,10 @@ function MMScrollList:SetupPurchasesRow(control, data)
     control.seller:SetPressedFontColor(0.21, 0.54, 0.94, 1)
     control.seller:SetMouseOverFontColor(0.34, 0.67, 1, 1)
   end
+  ]]--
+  control.seller:SetNormalFontColor(0.21, 0.54, 0.94, 1)
+  control.seller:SetPressedFontColor(0.21, 0.54, 0.94, 1)
+  control.seller:SetMouseOverFontColor(0.34, 0.67, 1, 1)
 
   control.seller:SetHandler('OnMouseUp', function(self, upInside)
     MasterMerchant:my_NameHandler_OnLinkMouseUp(buyerString, upInside, self)
