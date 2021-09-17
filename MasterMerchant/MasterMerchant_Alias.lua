@@ -20,7 +20,15 @@ local function GenerateLogMessage(key)
 end
 
 function MasterMerchant:TimeCheck()
-  GenerateLogMessage("TimeCheck")
+  GenerateLogMessage("ColonTimeCheck")
+  --[[
+  this does nothing because LibPrice has no idea what MM
+  is doing. Don't mess with it or I'll make it local.
+  ]]--
+end
+
+function MasterMerchant.TimeCheck()
+  GenerateLogMessage("DotTimeCheck")
   --[[
   this does nothing because LibPrice has no idea what MM
   is doing. Don't mess with it or I'll make it local.
