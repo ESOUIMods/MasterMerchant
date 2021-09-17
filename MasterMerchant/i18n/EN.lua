@@ -260,6 +260,8 @@ ZO_CreateStringId("MM_MAX_ITEM_COUNT_TIP", "Maximum number of sales for an item 
 
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Replace Inventory Values")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Display the MM price on the inventory grid.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Replacement Value Type")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Choose from the MM Average, TTC Average, TTC Suggested, and Bonanza Average prices on the inventory grid.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Display Listing Message")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Displays a message in chat window for each guild store listing you make.")
@@ -408,5 +410,5 @@ ZO_CreateStringId("SK_ALL_CALC_TIP", "Enabled, all pricing data is the same for 
 
 -- notifications
 ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] You can import ATT data into Master Merchat from the LibGuildStore settings menu. You can disable this notification from MasterMerchant settings under Debug Options.")
-ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "This will force a UI reload when complete.")
-
+ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "This will force a UI reload when complete.")
+ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "You will need to reload your UI after changing this value.")

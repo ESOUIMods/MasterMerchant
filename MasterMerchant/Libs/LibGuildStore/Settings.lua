@@ -331,7 +331,7 @@ function internal:LibAddonInit()
       internal.listingsToReset             = internal.listingsNamespace
       ZO_Dialogs_ShowDialog("MasterMerchantResetListingsConfirmation")
     end,
-    warning = GetString(MM_RESET_LISTINGS_WARN),
+    warning = GetString(MM_RESET_LISTINGS_WARN_FORCE),
   }
 
   -- And make the options panel

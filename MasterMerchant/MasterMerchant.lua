@@ -2128,15 +2128,29 @@ function MasterMerchant:LibAddonInit()
       getFunc = function() return MasterMerchant.systemSavedVariables.replaceInventoryValues end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.replaceInventoryValues = value end,
       default = MasterMerchant.systemDefault.replaceInventoryValues,
+      warning = GetString(MM_RESET_LISTINGS_WARN),
     },
+    -- replace inventory value type
     [21] = {
+      type = 'dropdown',
+      name = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_NAME),
+      tooltip = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_TIP),
+      choices = MasterMerchant.dealCalcChoices,
+      choicesValues = MasterMerchant.dealCalcValues,
+      getFunc = function() return MasterMerchant.systemSavedVariables.replacementTypeToUse end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.replacementTypeToUse = value end,
+      default = MasterMerchant.systemDefault.replacementTypeToUse,
+      disabled = function() return not MasterMerchant.systemSavedVariables.replaceInventoryValues end,
+      warning = GetString(MM_RESET_LISTINGS_WARN),
+    },
+    [22] = {
       type = "header",
       name = GetString(GUILD_STORE_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
     -- Should we show the stack price calculator in the Vanilla UI?
-    [22] = {
+    [23] = {
       type = 'checkbox',
       name = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
@@ -2145,7 +2159,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showCalc,
     },
     -- Should we use one price for all or save by guild?
-    [23] = {
+    [24] = {
       type = 'checkbox',
       name = GetString(SK_ALL_CALC_NAME),
       tooltip = GetString(SK_ALL_CALC_TIP),
@@ -2154,7 +2168,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.priceCalcAll,
     },
     -- should we display a Min Profit Filter in AGS?
-    [24] = {
+    [25] = {
       type = 'checkbox',
       name = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
@@ -2163,7 +2177,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.minProfitFilter,
     },
     -- should we display profit instead of margin?
-    [25] = {
+    [26] = {
       type = 'checkbox',
       name = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
@@ -2172,7 +2186,7 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.saucy,
     },
     -- Deal Filter Price
-    [26] = {
+    [27] = {
       type = 'dropdown',
       name = GetString(SK_DEAL_CALC_TYPE_NAME),
       tooltip = GetString(SK_DEAL_CALC_TYPE_TIP),
@@ -2182,14 +2196,14 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.dealCalcToUse = value end,
       default = MasterMerchant.systemDefault.dealCalcToUse,
     },
-    [27] = {
+    [28] = {
       type = "header",
       name = GetString(GUILD_MASTER_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildMasterOptions",
     },
     -- should we add taxes to the export?
-    [28] = {
+    [29] = {
       type = 'checkbox',
       name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
@@ -2197,13 +2211,13 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
-    [29] = {
+    [30] = {
       type = "header",
       name = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MMDebugOptions",
     },
-    [30] = {
+    [31] = {
       type = 'checkbox',
       name = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
@@ -2211,7 +2225,7 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
     },
-    [31] = {
+    [32] = {
       type = 'checkbox',
       name = GetString(MM_DISABLE_ATT_WARN_NAME),
       tooltip = GetString(MM_DISABLE_ATT_WARN_TIP),
@@ -2579,7 +2593,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
 
   --[[TODO make sure that the itemLink is not an empty string by mistake
   ]]--
-  local itemLink = GetTradingHouseListingItemLink(result.slotIndex) 
+  local itemLink = GetTradingHouseListingItemLink(result.slotIndex)
   if itemLink and itemLink ~= "" then
     local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
     if dealValue then
@@ -3080,6 +3094,7 @@ function MasterMerchant:FirstInitialize()
     trimOutliers = false,
     trimDecimals = false,
     replaceInventoryValues = false,
+    replacementTypeToUse = MasterMerchant.USE_MM_AVERAGE,
     displaySalesDetails = false,
     displayItemAnalysisButtons = false,
     noSalesInfoDeal = 2,
@@ -3533,6 +3548,7 @@ function MasterMerchant:SecondInitialize()
 end
 
 function MasterMerchant:SwitchUnitPrice(control, slot)
+  local averagePrice = 0
   if MasterMerchant.systemSavedVariables.replaceInventoryValues then
     local bagId = control.dataEntry.data.bagId
     local slotIndex = control.dataEntry.data.slotIndex
@@ -3541,28 +3557,40 @@ function MasterMerchant:SwitchUnitPrice(control, slot)
     if itemLink then
       local theIID = GetItemLinkItemId(itemLink)
       local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-      local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
-      if tipStats.avgPrice then
-        --[[
-        if control.dataEntry.data.rawName == "Fortified Nirncrux" then
-        MasterMerchant.ShowChildren(control, 20)
-        --d(control.dataEntry.data.rawName)
-        d(control.dataEntry.data.bagId)
-        d(control.dataEntry.data.slotIndex)
-        d(control.dataEntry.data.statPrice)
-        d(control.dataEntry.data.sellPrice)
-        d(control.dataEntry.data.stackSellPrice)
-        --d(control.dataEntry.data)
+
+      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_MM_AVERAGE then
+        local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
+        if tipStats.avgPrice then
+          averagePrice = tipStats.avgPrice
         end
-        --]]
+      end
+      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_BONANZA then
+        local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, false, true)
+        if tipStats.bonanzaPrice then
+          averagePrice = tipStats.bonanzaPrice
+        end
+      end
+      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
+        local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
+        if priceStats and priceStats.Avg > 0 then
+          averagePrice = priceStats.Avg
+        end
+      end
+      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
+        local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
+        if priceStats and priceStats.SuggestedPrice > 0 then
+          averagePrice = priceStats.SuggestedPrice
+        end
+      end
+
+      if averagePrice and  averagePrice > 0 then
         if not control.dataEntry.data.mmOriginalPrice then
           control.dataEntry.data.mmOriginalPrice = control.dataEntry.data.sellPrice
           control.dataEntry.data.mmOriginalStackPrice = control.dataEntry.data.stackSellPrice
         end
 
-        control.dataEntry.data.mmPrice = tonumber(string.format('%.0f', tipStats.avgPrice))
-        control.dataEntry.data.stackSellPrice = tonumber(string.format('%.0f',
-          tipStats.avgPrice * control.dataEntry.data.stackCount))
+        control.dataEntry.data.mmPrice = tonumber(string.format('%.0f', averagePrice))
+        control.dataEntry.data.stackSellPrice = tonumber(string.format('%.0f', averagePrice * control.dataEntry.data.stackCount))
         control.dataEntry.data.sellPrice = control.dataEntry.data.mmPrice
 
         local sellPriceControl = control:GetNamedChild("SellPrice")
@@ -3656,7 +3684,7 @@ function MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
   if priceStats then priceStats.SuggestedPrice = priceStats.SuggestedPrice or 0 end
   if priceStats then priceStats.EntryCount = priceStats.EntryCount or 1 end
   return priceStats
-end  
+end
 
 MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount)
 
@@ -3682,7 +3710,7 @@ MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount
     end
     if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
       local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-      if priceStats and priceStats.Avg > 0  then
+      if priceStats and priceStats.Avg > 0 then
         setPrice = priceStats.Avg
         salesCount = priceStats.EntryCount
       end
