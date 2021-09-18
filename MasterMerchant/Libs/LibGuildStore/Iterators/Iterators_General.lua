@@ -99,17 +99,20 @@ end
 
 function internal:RenewExtraSalesData(otherData)
   local savedVars = otherData[internal.dataNamespace]
+  local newestTime = nil
+  local oldestTime = nil
+  local totalCount = 0
 
   for itemID, itemIndex in pairs(savedVars) do
     for field, itemIndexData in pairs(itemIndex) do
-      if itemIndexData.wasAltered then
-        local newestTime = nil
-        local oldestTime = nil
-        local totalCount = 0
+      if itemIndexData["wasAltered"] then
+        newestTime = nil
+        oldestTime = nil
+        totalCount = 0
         for sale, saleData in pairs(itemIndexData['sales']) do
           totalCount = totalCount + 1
-          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
-          if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
+          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
         end
         if savedVars[itemID][field] then
           savedVars[itemID][field].totalCount = totalCount
@@ -192,22 +195,26 @@ end
 
 function internal:AddExtraSalesData(otherData)
   local savedVars = otherData[internal.dataNamespace]
+  local oldestTime = nil
+  local newestTime = nil
+  local totalCount = 0
 
   for itemID, itemIndex in pairs(savedVars) do
     for field, itemIndexData in pairs(itemIndex) do
-      local oldestTime = nil
-      local totalCount = 0
+      oldestTime = nil
+      newestTime = nil
+      totalCount = 0
       for sale, saleData in pairs(itemIndexData['sales']) do
-        totalCount = totalCount + 1
-        if saleData.timestamp then
-          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
-          if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
+        if saleData and saleData["timestamp"] then
+          totalCount = totalCount + 1
+          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
         else
-          if internal:is_empty_or_nil(saleData) then
-            internal:dm("Warn", "Empty Table Detected!")
-            internal:dm("Warn", itemID)
-            internal:dm("Warn", sale)
-            itemIndexData['sales'][sale] = nil
+          if GS17DataSavedVariables["erroneous_records"] == nil then GS17DataSavedVariables["erroneous_records"] = {} end
+          if GS17DataSavedVariables["erroneous_records"][itemID] == nil then GS17DataSavedVariables["erroneous_records"][itemID] = {} end
+          if GS17DataSavedVariables["erroneous_records"][itemID][field] == nil then GS17DataSavedVariables["erroneous_records"][itemID][field] = {} end
+          if next(saleData) then
+            table.insert(GS17DataSavedVariables["erroneous_records"][itemID][field], saleData)
           end
         end
       end
@@ -217,7 +224,17 @@ function internal:AddExtraSalesData(otherData)
         savedVars[itemID][field].newestTime = newestTime
         savedVars[itemID][field].wasAltered = false
       else
-        --internal:dm("Warn", "Empty or nil savedVars[internal.dataNamespace]")
+          dataInfo = {
+            itemID = itemID,
+            itemIndexData = field,
+            totalCount = totalCount,
+          }
+          if GS17DataSavedVariables["warnings"] == nil then GS17DataSavedVariables["warnings"] = {} end
+          if GS17DataSavedVariables["warnings"][itemID] == nil then GS17DataSavedVariables["warnings"][itemID] = {} end
+          if GS17DataSavedVariables["warnings"][itemID][field] == nil then GS17DataSavedVariables["warnings"][itemID][field] = {} end
+          if next(dataInfo) then
+            table.insert(GS17DataSavedVariables["warnings"][itemID][field], dataInfo)
+          end
       end
     end
   end
