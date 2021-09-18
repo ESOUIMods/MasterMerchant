@@ -1197,13 +1197,13 @@ function MasterMerchant:OnItemLinkAction(itemLink)
       tipLine = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), numDays)
     end
   end
-  if not bonanzaTipline then
-    bonanzaTipline = ""
+  if bonanzaTipline then
+    bonanzaTipline = MasterMerchant.concat(":", bonanzaTipline)
   end
   local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
   if (not ChatEditControl:HasFocus()) then StartChatInput() end
   local itemText = string.gsub(itemLink, '|H0', '|H1')
-  ChatEditControl:InsertText(MasterMerchant.concat(tipLine, ":", bonanzaTipline, GetString(MM_TIP_FOR), itemText))
+  ChatEditControl:InsertText(MasterMerchant.concat(tipLine, bonanzaTipline, GetString(MM_TIP_FOR), itemText))
 end
 
 function MasterMerchant:onItemActionLinkCCLink(itemLink)
