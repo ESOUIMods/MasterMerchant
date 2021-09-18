@@ -1,7 +1,13 @@
+-- Last Updated September 5, 2021
+-- Original file Sharlikran
+
 ZO_CreateStringId("GS_DEBUG_OPTIONS", "Debug Options")
 ZO_CreateStringId("GS_REFRESH_BUTTON", "Refresh")
+ZO_CreateStringId("GS_REFRESH_DESC", "LibHistoire data is not account specific so you only need to do this once per server NA or EU, not once per account.")
 ZO_CreateStringId("GS_RESET_NA_BUTTON", "Reset NA")
+ZO_CreateStringId("GS_RESET_NA_DESC", "This will only reset NA LibGuildStore Data.")
 ZO_CreateStringId("GS_RESET_EU_BUTTON", "Reset EU")
+ZO_CreateStringId("GS_RESET_EU_DESC", "This will only reset EU LibGuildStore Data.")
 ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE_NAME", "Refresh Libhistoire")
 ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE_TIP", "Refresh all Libhistoire data based on your sales history size.")
 ZO_CreateStringId("GS_RESET_NA_NAME", "Reset NA")
@@ -16,12 +22,14 @@ ZO_CreateStringId("GS_TRUNCATE_POSTED_COMPLETE", "Trimming Posted Items Complete
 ZO_CreateStringId("GS_TRUNCATE_CANCELLED_COMPLETE", "Trimming Cancelled Items Complete: %s seconds to trim, %s old records removed.")
 
 ZO_CreateStringId("GS_RESET_LISTINGS_BUTTON", "Reset Listings")
+ZO_CreateStringId("GS_RESET_LISTINGS_DESC", "This will only reset listings for the current server type NA or EU.")
 ZO_CreateStringId("GS_RESET_LISTINGS_NAME", "Reset Listings Data")
 ZO_CreateStringId("GS_RESET_LISTINGS_TIP", "Reset all LibGuildStore listings.")
 ZO_CreateStringId("GS_RESET_LISTINGS_CONFIRM_TITLE", "Confirm Listings Reset")
 ZO_CreateStringId("GS_RESET_LISTINGS_CONFIRM_MAIN", "Are you sure you wish to reset your Listings Data? You will need to visit traders to collect new data.")
 
 ZO_CreateStringId("GS_IMPORT_MM_BUTTON", "Import MM Data")
+ZO_CreateStringId("GS_IMPORT_MM_DESC", "Until MM 3.6.x Master Merchant data was not saved separately for NA and EU servers. It is not recomended to import data from a different server type as the prices can be different.")
 ZO_CreateStringId("GS_IMPORT_MM_NAME", "Import MM Data")
 ZO_CreateStringId("GS_IMPORT_MM_TIP", "Import all MM data into LibGuildStore.")
 ZO_CreateStringId("GS_IMPORT_MM_OVERRIDE_NAME", "Override MM Import")
@@ -34,14 +42,17 @@ ZO_CreateStringId("GS_IMPORT_ATT_DESC", "Arkadius Trade Tools sales data is not 
 ZO_CreateStringId("GS_IMPORT_ATT_FINISHED", "Arkadius Trade Tools sales data has been imported. Using more then one Addon with the same data increases memroy usage and load times.")
 
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_BUTTON", "Import ATT Purchases")
+ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_DESC", "Arkadius Trade Tools purchases data does not save the specific purchace ID. You may unintentionally import a duplicate purchace. Which could include a purchase made while both ATT and the ShoppingList (stand alone version) were active.")
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_NAME", "Import ATT Purchases")
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_TIP", "Import ATT Purchases data into LibGuildStore.")
 
 ZO_CreateStringId("GS_IMPORT_SL_BUTTON", "Import Shoppinglist Data")
+ZO_CreateStringId("GS_IMPORT_SL_DESC", "Import ShoppingList data into LibGuildStore. Previous ShoppingList data did not save the unique ID for the purchase, you may have some duplicates until the purchase is older and becomes trimmed.")
 ZO_CreateStringId("GS_IMPORT_SL_NAME", "Import Shoppinglist")
 ZO_CreateStringId("GS_IMPORT_SL_TIP", "Import Shoppinglist data into LibGuildStore.")
 
 ZO_CreateStringId("GS_IMPORT_PD_BUTTON", "Import Pricing Data")
+ZO_CreateStringId("GS_IMPORT_PD_DESC", "Import MM pricing data into LibGuildStore. Previous pricing data will only be avalable as central pricing data. It will not import the same pricing data into each seperate guild.")
 ZO_CreateStringId("GS_IMPORT_PD_NAME", "Import Pricing Data")
 ZO_CreateStringId("GS_IMPORT_PD_TIP", "Import Pricing Data into LibGuildStore. Will only be available when using central pricing data. For individual guilds you will need to establish new pricing data per guild.")
 
@@ -138,3 +149,18 @@ ZO_CreateStringId("GS_VIEW_CANCELED_ITEMS", "Show Canceled Items")
 ZO_CreateStringId("GS_POSTED_ITEMS_TITLE", "Posted Items")
 -- window title viewSize - All sales
 ZO_CreateStringId("GS_CANCELED_ITEMS_TITLE", "Canceled Items")
+
+ZO_CreateStringId("GS_LIBGUILDSTORE_INITIALIZING", "LibGuildStore Initializing")
+ZO_CreateStringId("GS_LIBGUILDSTORE_TRUNCATE", "LibGuildStore Truncate Records Started...")
+ZO_CreateStringId("GS_LIBGUILDSTORE_HISTORY_INIT", "LibGuildStore History Initialization Started...")
+ZO_CreateStringId("GS_LIBGUILDSTORE_INDEX_DATA", "LibGuildStore Index Data Finished...")
+ZO_CreateStringId("GS_LIBGUILDSTORE_BUSY", "LibGuildStore is busy")
+
+ZO_CreateStringId("GS_IMPORT_ATT_SALES", "Import ATT Sales")
+ZO_CreateStringId("GS_ATT_MISSING", "Arkadius Trade Tools Sales Data not detected.")
+ZO_CreateStringId("GS_IMPORT_MM_SALES", "Import MasterMerchant Sales")
+ZO_CreateStringId("GS_MM_MISSING", "Old Master Merchant sales not detected.")
+ZO_CreateStringId("GS_MM_EU_NA_IMPORT_WARN", "Your MM data contains values from both NA and EU servers. All versions prior to 3.6.x did not separate NA and EU sales data. You must override this in the LibGuildStore settings.")
+ZO_CreateStringId("GS_MM_EU_NA_DIFFERENT_SERVER_WARN", "You are attempting to import NA or EU MM data, however you logged into a different server type. You must override this in the LibGuildStore settings.")
+ZO_CreateStringId("GS_RESET_EU_INSTEAD", "Reset aborted because LibHistoire would refresh EU Data instead.")
+ZO_CreateStringId("GS_RESET_NA_INSTEAD", "Reset aborted because LibHistoire would refresh NA Data instead.")

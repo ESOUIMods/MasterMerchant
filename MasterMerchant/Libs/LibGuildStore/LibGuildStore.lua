@@ -259,7 +259,7 @@ local function SetupData()
   internal:dm("Debug", "SetupData")
   local LEQ = LibExecutionQueue:new()
   LEQ:Add(function() BuildLookupTables() end, 'BuildLookupTables')
-  LEQ:Add(function() internal:dm("Info", "LibGuildStore Initializing") end, "LibGuildStoreInitializing")
+  LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INITIALIZING)) end, "LibGuildStoreInitializing")
   -- Place data into containers
   LEQ:Add(function() internal:ReferenceSalesDataContainer() end, 'ReferenceSalesDataContainer')
   LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
@@ -271,7 +271,7 @@ local function SetupData()
   LEQ:Add(function() internal:AddExtraListingsDataAllContainers() end, 'AddExtraListingsDataAllContainers')
   -- Truncate
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
-    LEQ:Add(function() internal:dm("Info", "LibGuildStore Truncate Records Started...") end, "LibGuildStoreReferenceTables")
+    LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_TRUNCATE)) end, "LibGuildStoreReferenceTables")
   end
   LEQ:Add(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
   LEQ:Add(function() internal:TruncatePurchaseHistory() end, 'TruncatePurchaseHistory')
@@ -283,7 +283,7 @@ local function SetupData()
   LEQ:Add(function() internal:RenewExtraListingsDataAllContainers() end, 'RenewExtraListingsDataAllContainers')
   -- and...
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
-    LEQ:Add(function() internal:dm("Info", "LibGuildStore History Initialization Started...") end, "LibGuildStoreReferenceTables")
+    LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_HISTORY_INIT)) end, "LibGuildStoreReferenceTables")
   end
   LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
   LEQ:Add(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
@@ -302,7 +302,7 @@ local function SetupData()
   LEQ:Add(function() internal:IndexPostedItemsData() end, 'IndexPostedItemsData')
   LEQ:Add(function() internal:IndexCancelledItemData() end, 'IndexCancelledItemData')
 
-  LEQ:Add(function() internal:dm("Info", "LibGuildStore Index Data Finished...") end, "LibGuildStoreIndexData")
+  LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INDEX_DATA)) end, "LibGuildStoreIndexData")
   LEQ:Add(function() lib.guildStoreReady = true end, "LibGuildStoreIndexData")
   -- and...
   LEQ:Start()
@@ -444,8 +444,6 @@ local function CheckServerImportType()
 
   if internal.dataNamespace == internal.GS_NA_NAMESPACE and euDetected then return true end
   if internal.dataNamespace == internal.GS_EU_NAMESPACE and naDetected then return true end
-  internal:dm("Info", naDetected)
-  internal:dm("Info", euDetected)
   return false
 end
 
@@ -491,26 +489,22 @@ end
 
 function internal:SlashImportMMSales()
   if internal.isDatabaseBusy then
-    internal:dm("Info", "LibGuildStore is busy")
+    internal:dm("Info", GetString(GS_LIBGUILDSTORE_BUSY))
     return
   end
   if internal:CheckMasterMerchantData() then
-    internal:dm("Info", "Old Master Merchant sales not detected.")
+    internal:dm("Info", GetString(GS_MM_MISSING))
     return
   end
   if CheckImportStatus() and not LibGuildStore_SavedVariables.overrideMMImport then
-    internal:dm("Info", "Your MM data contains values from both NA and EU servers.")
-    internal:dm("Info", "All versions prior to 3.6.x did not separate NA and EU sales data.")
-    internal:dm("Info", "You must override this in the LibGuildStore settings.")
+    internal:dm("Info", GetString(GS_MM_EU_NA_IMPORT_WARN))
     return
   end
   if CheckServerImportType() and not LibGuildStore_SavedVariables.overrideMMImport then
-    internal:dm("Info", "You are attempting to import NA or EU MM data,")
-    internal:dm("Info", "however you logged into a different server type.")
-    internal:dm("Info", "You must override this in the LibGuildStore settings.")
+    internal:dm("Info", GetString(GS_MM_EU_NA_DIFFERENT_SERVER_WARN))
     return
   end
-  internal:dm("Info", "Import MasterMerchant Sales")
+  internal:dm("Info", GetString(GS_IMPORT_MM_SALES))
   local LEQ = LibExecutionQueue:new()
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ImportMasterMerchantSales() end, 'ImportMasterMerchantSales')
@@ -519,14 +513,14 @@ end
 
 function internal:SlashImportATTSales()
   if internal.isDatabaseBusy then
-    internal:dm("Info", "LibGuildStore is busy")
+    internal:dm("Info", GetString(GS_LIBGUILDSTORE_BUSY))
     return
   end
   if internal:CheckArkadiusData() then
-    internal:dm("Info", "Arkadius Trade Tools Sales Data not detected.")
+    internal:dm("Info", GetString(GS_ATT_MISSING))
     return
   end
-  internal:dm("Info", "Import ATT Sales")
+  internal:dm("Info", GetString(GS_IMPORT_ATT_SALES))
   local LEQ = LibExecutionQueue:new()
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   LEQ:Add(function() internal:ImportATTSales() end, 'ImportATTSales')
