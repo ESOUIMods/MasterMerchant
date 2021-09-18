@@ -2,12 +2,12 @@ MM_Graph = ZO_Object:Subclass()
 MM_Graph.itemLink = nil
 
 function MM_Graph:New(control, pointTemplate, labelTemplate)
-  local graph     = ZO_Object.New(self)
+  local graph = ZO_Object.New(self)
 
-  graph.control   = control
+  graph.control = control
 
-  pointTemplate   = pointTemplate or "MM_Point"
-  labelTemplate   = labelTemplate or "MMGraphLabel"
+  pointTemplate = pointTemplate or "MM_Point"
+  labelTemplate = labelTemplate or "MMGraphLabel"
 
   graph.pointPool = ZO_ControlPool:New(pointTemplate, control, "Point")
   graph.labelPool = ZO_ControlPool:New(labelTemplate, control, "Label")
@@ -52,16 +52,16 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   -- self.xxxxxx / self.x_bonanzaPriceMarker
 
   self.x_oldestTimestamp = x_oldestTimestamp
-  self.x_currentTimestamp   = x_currentTimestamp
+  self.x_currentTimestamp = x_currentTimestamp
   self.y_lowestPriceValue = y_lowestPriceValue
-  self.y_highestPriceValue   = y_highestPriceValue
+  self.y_highestPriceValue = y_highestPriceValue
   self.x_averagePriceValue = x_averagePriceValue
   self.x_bonanzaPriceValue = x_bonanzaPriceValue
 
   self:Clear()
 
-  self.paddingY    = 0
-  self.paddingX    = 0
+  self.paddingY = 0
+  self.paddingX = 0
 
   -- self.x_startLabel = self.labelPool:AcquireObject()
   -- self.x_endLabel   = self.labelPool:AcquireObject()
@@ -97,11 +97,11 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   self.x_averagePriceMarker:ClearAnchors()
   self.x_bonanzaPriceMarker:ClearAnchors()
 
-  local x, y   = self.control:GetDimensions()
-  local top    = self.paddingY
+  local x, y = self.control:GetDimensions()
+  local top = self.paddingY
   local bottom = self.x_startLabelMarker:GetFontHeight() * 1.25 + self.paddingY
 
-  self.ySize   = y - (top + bottom)
+  self.ySize = y - (top + bottom)
 
   -- self.y_lowestPriceLabel:SetAnchor(LEFT, self.control, BOTTOMLEFT, self.paddingX, -bottom)
   self.y_lowestPriceLabelMarker:SetText(y_highestPriceText)
@@ -130,13 +130,13 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   self.y_lowestPriceLabelMarker:SetHidden(false)
   self.y_highestPriceLabelMarker:SetHidden(false)
 
-  self.xSize  = x - (left + right)
+  self.xSize = x - (left + right)
 
   self.xStart = left
   self.yStart = bottom
 
-  self.grid   = self.control:GetNamedChild('Grid')
-  local grid  = self.grid
+  self.grid = self.control:GetNamedChild('Grid')
+  local grid = self.grid
   grid:ClearAnchors()
   grid:SetAnchor(BOTTOMLEFT, self.control, BOTTOMLEFT, left, -bottom)
   grid:SetAnchor(TOPRIGHT, self.control, BOTTOMLEFT, left + self.xSize, -(bottom + self.ySize))
@@ -144,8 +144,8 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   -- local _, point, relTo, relPoint, offsX, offsY = self.x_averagePriceLabel:GetAnchor(0)
   -- MasterMerchant
   -- PopupTooltipGraph
-    if  self.x_averagePriceValue < 15 then self.x_averagePriceValue = 15 end
-    if  self.x_averagePriceValue > 105 then self.x_averagePriceValue = 105 end
+  if self.x_averagePriceValue < 15 then self.x_averagePriceValue = 15 end
+  if self.x_averagePriceValue > 105 then self.x_averagePriceValue = 105 end
 
   self.x_averagePriceLabel:SetAnchor(RIGHT, self.grid, BOTTOMLEFT, -5, -self.x_averagePriceValue)
   self.x_averagePriceMarker:SetAnchor(BOTTOMLEFT, self.grid, BOTTOMLEFT, 0, -(self.x_averagePriceValue - 1))
@@ -155,8 +155,8 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   if x_bonanzaPriceValue then
     local originalBonanzaPriceValue = ((self.x_bonanzaPriceValue - self.y_lowestPriceValue) / (self.y_highestPriceValue - self.y_lowestPriceValue)) * self.ySize
     self.x_bonanzaPriceValue = originalBonanzaPriceValue
-    if  self.x_bonanzaPriceValue < 15 then self.x_bonanzaPriceValue = 15 end
-    if  self.x_bonanzaPriceValue > 105 then self.x_bonanzaPriceValue = 105 end
+    if self.x_bonanzaPriceValue < 15 then self.x_bonanzaPriceValue = 15 end
+    if self.x_bonanzaPriceValue > 105 then self.x_bonanzaPriceValue = 105 end
 
     local priceDif = math.abs(originalAveragePriceValue - originalBonanzaPriceValue)
     local isOverlapping = priceDif < 15

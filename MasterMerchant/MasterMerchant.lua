@@ -430,9 +430,9 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   is 10000 and daysHistory is however many days you have.
   ]]--
 
-  local returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+  local returnData = { ['avgPrice']     = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                        ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
-                       ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+                       ['graphInfo']    = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
   if not MasterMerchant.isInitialized then return returnData end
   clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
   skipDots = not MasterMerchant.systemSavedVariables.showGraph
@@ -595,10 +595,10 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   end
   if not avgOnly and not priceEval and not MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange) then
     local itemInfo = {
-      avgPrice = avgPrice,
-      numSales = legitSales,
-      numDays = daysHistory,
-      numItems = countSold,
+      avgPrice  = avgPrice,
+      numSales  = legitSales,
+      numDays   = daysHistory,
+      numItems  = countSold,
       graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints },
     }
     if legitSales and legitSales > 1500 then
@@ -647,9 +647,9 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     ]]--
     if bonanzaPrice and bonanzaPrice < 0.01 then bonanzaPrice = 0.01 end
   end
-  returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+  returnData = { ['avgPrice']     = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                  ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount,
-                 ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+                 ['graphInfo']    = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
   return returnData
 end
 
@@ -1020,8 +1020,7 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
     end
 
     if (recNumber >= endNumber) then
-      MasterMerchant:dm("Info",
-        '|cFFFF00Recipes Initialized -- Found information on ' .. MasterMerchant.recipeCount .. ' recipes.|r')
+      MasterMerchant:dm("Info", '|cFFFF00Recipes Initialized -- Found information on ' .. MasterMerchant.recipeCount .. ' recipes.|r')
       MasterMerchant.systemSavedVariables.recipeData = MasterMerchant.recipeData
       break
     end
@@ -1135,11 +1134,11 @@ function MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect)
         '|H.-:item:(.-):') .. ':' .. internal.GetOrCreateIndexFromLink(glyph)
 
       MasterMerchant.virtualRecipe[mmGlyph] = {
-        [1] = { ['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
+        [1] = { ['item']            = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
           potencyNum), ['required'] = 1 },
-        [2] = { ['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
+        [2] = { ['item']            = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
           essenceNum), ['required'] = 1 },
-        [3] = { ['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
+        [3] = { ['item']           = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
           aspectNum), ['required'] = 1 }
       }
     end
@@ -1376,14 +1375,14 @@ function MasterMerchant.PostPendingItem(self)
     local guildId, guildName = GetCurrentTradingHouseGuildDetails()
 
     local theEvent = {
-      guild = guildName,
-      guildId = guildId,
-      itemLink = itemLink,
-      quant = stackCount,
+      guild     = guildName,
+      guildId   = guildId,
+      itemLink  = itemLink,
+      quant     = stackCount,
       timestamp = GetTimeStamp(),
-      price = self.invoiceSellPrice.sellPrice,
-      seller = GetDisplayName(),
-      id = itemUniqueId,
+      price     = self.invoiceSellPrice.sellPrice,
+      seller    = GetDisplayName(),
+      id        = itemUniqueId,
     }
     internal:addPostedItem(theEvent)
     MasterMerchant.listIsDirty[REPORTS] = true
@@ -1597,12 +1596,12 @@ function MasterMerchant:SalesStats(statsDays)
   end
 
   -- Return the statistical data in a convenient table
-  return { numSold = itemsSold,
-           numDays = dayWindow,
-           totalDays = overallDayWindow,
-           totalGold = goldMade,
-           avgGold = goldPerDay,
-           biggestSale = largestSingle,
+  return { numSold      = itemsSold,
+           numDays      = dayWindow,
+           totalDays    = overallDayWindow,
+           totalGold    = goldMade,
+           avgGold      = goldPerDay,
+           biggestSale  = largestSingle,
            kioskPercent = kioskPercentage, }
 end
 
@@ -1639,30 +1638,30 @@ function MasterMerchant:LibAddonInit()
   MasterMerchant:SetFontListChoices()
   MasterMerchant:dm("Debug", "LibAddonInit")
   local panelData = {
-    type = 'panel',
-    name = 'Master Merchant',
-    displayName = GetString(MM_APP_NAME),
-    author = GetString(MM_APP_AUTHOR),
-    version = self.version,
-    website = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
-    feedback = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
-    donation = "https://sharlikran.github.io/",
-    registerForRefresh = true,
+    type                = 'panel',
+    name                = 'Master Merchant',
+    displayName         = GetString(MM_APP_NAME),
+    author              = GetString(MM_APP_AUTHOR),
+    version             = self.version,
+    website             = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
+    feedback            = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
+    donation            = "https://sharlikran.github.io/",
+    registerForRefresh  = true,
     registerForDefaults = true,
   }
   LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
 
   local optionsData = {
-    [1] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_WINDOW_NAME),
-      width = "full",
+    [1]  = {
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_WINDOW_NAME),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MasterMerchantWindowOptions",
     },
     -- Open main window with mailbox scenes
-    [2] = {
-      type = 'checkbox',
-      name = GetString(SK_OPEN_MAIL_NAME),
+    [2]  = {
+      type    = 'checkbox',
+      name    = GetString(SK_OPEN_MAIL_NAME),
       tooltip = GetString(SK_OPEN_MAIL_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithMail end,
       setFunc = function(value)
@@ -1681,9 +1680,9 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.openWithMail,
     },
     -- Open main window with trading house scene
-    [3] = {
-      type = 'checkbox',
-      name = GetString(SK_OPEN_STORE_NAME),
+    [3]  = {
+      type    = 'checkbox',
+      name    = GetString(SK_OPEN_STORE_NAME),
       tooltip = GetString(SK_OPEN_STORE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.openWithStore end,
       setFunc = function(value)
@@ -1700,9 +1699,9 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.openWithStore,
     },
     -- Show full sale price or post-tax price
-    [4] = {
-      type = 'checkbox',
-      name = GetString(SK_FULL_SALE_NAME),
+    [4]  = {
+      type    = 'checkbox',
+      name    = GetString(SK_FULL_SALE_NAME),
       tooltip = GetString(SK_FULL_SALE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showFullPrice end,
       setFunc = function(value)
@@ -1715,9 +1714,9 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.showFullPrice,
     },
     -- Font to use
-    [5] = {
-      type = 'dropdown',
-      name = GetString(SK_WINDOW_FONT_NAME),
+    [5]  = {
+      type    = 'dropdown',
+      name    = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
       choices = MasterMerchant.fontListChoices,
       getFunc = function() return MasterMerchant.systemSavedVariables.windowFont end,
@@ -1731,24 +1730,24 @@ function MasterMerchant:LibAddonInit()
       default = MasterMerchant.systemDefault.windowFont,
     },
     -- 6 Sound and Alert options
-    [6] = {
-      type = 'submenu',
-      name = GetString(SK_ALERT_OPTIONS_NAME),
-      tooltip = GetString(SK_ALERT_OPTIONS_TIP),
-      helpUrl = "https://esouimods.github.io/3-master_merchant.html#AlertOptions",
+    [6]  = {
+      type     = 'submenu',
+      name     = GetString(SK_ALERT_OPTIONS_NAME),
+      tooltip  = GetString(SK_ALERT_OPTIONS_TIP),
+      helpUrl  = "https://esouimods.github.io/3-master_merchant.html#AlertOptions",
       controls = {
         -- On-Screen Alerts
         [1] = {
-          type = 'checkbox',
-          name = GetString(SK_ALERT_ANNOUNCE_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ALERT_ANNOUNCE_NAME),
           tooltip = GetString(SK_ALERT_ANNOUNCE_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showAnnounceAlerts end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showAnnounceAlerts = value end,
           default = MasterMerchant.systemDefault.showAnnounceAlerts,
         },
         [2] = {
-          type = 'checkbox',
-          name = GetString(SK_ALERT_CYRODIIL_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ALERT_CYRODIIL_NAME),
           tooltip = GetString(SK_ALERT_CYRODIIL_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showCyroAlerts end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showCyroAlerts = value end,
@@ -1756,8 +1755,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Chat Alerts
         [3] = {
-          type = 'checkbox',
-          name = GetString(SK_ALERT_CHAT_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ALERT_CHAT_NAME),
           tooltip = GetString(SK_ALERT_CHAT_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showChatAlerts end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showChatAlerts = value end,
@@ -1765,8 +1764,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Sound to use for alerts
         [4] = {
-          type = 'dropdown',
-          name = GetString(SK_ALERT_TYPE_NAME),
+          type    = 'dropdown',
+          name    = GetString(SK_ALERT_TYPE_NAME),
           tooltip = GetString(SK_ALERT_TYPE_TIP),
           choices = self:SoundKeys(),
           getFunc = function() return self:SearchSounds(MasterMerchant.systemSavedVariables.alertSoundName) end,
@@ -1778,8 +1777,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Whether or not to show multiple alerts for multiple sales
         [5] = {
-          type = 'checkbox',
-          name = GetString(SK_MULT_ALERT_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_MULT_ALERT_NAME),
           tooltip = GetString(SK_MULT_ALERT_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.showMultiple end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.showMultiple = value end,
@@ -1787,8 +1786,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- Offline sales report
         [6] = {
-          type = 'checkbox',
-          name = GetString(SK_OFFLINE_SALES_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_OFFLINE_SALES_NAME),
           tooltip = GetString(SK_OFFLINE_SALES_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.offlineSales end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.offlineSales = value end,
@@ -1796,58 +1795,58 @@ function MasterMerchant:LibAddonInit()
         },
         -- should we display the item listed message?
         [7] = {
-          type = 'checkbox',
-          name = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
-          tooltip = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.displayListingMessage end,
-          setFunc = function(value) MasterMerchant.systemSavedVariables.displayListingMessage = value end,
-          default = MasterMerchant.systemDefault.displayListingMessage,
+          type     = 'checkbox',
+          name     = GetString(MM_DISPLAY_LISTING_MESSAGE_NAME),
+          tooltip  = GetString(MM_DISPLAY_LISTING_MESSAGE_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.displayListingMessage end,
+          setFunc  = function(value) MasterMerchant.systemSavedVariables.displayListingMessage = value end,
+          default  = MasterMerchant.systemDefault.displayListingMessage,
           disabled = function() return MasterMerchant.AwesomeGuildStoreDetected end,
         },
       },
     },
     -- 7 Tip display and calculation options
-    [7] = {
-      type = 'submenu',
-      name = GetString(MM_CALC_OPTIONS_NAME),
-      tooltip = GetString(MM_CALC_OPTIONS_TIP),
-      helpUrl = "https://esouimods.github.io/3-master_merchant.html#CalculationDisplayOptions",
+    [7]  = {
+      type     = 'submenu',
+      name     = GetString(MM_CALC_OPTIONS_NAME),
+      tooltip  = GetString(MM_CALC_OPTIONS_TIP),
+      helpUrl  = "https://esouimods.github.io/3-master_merchant.html#CalculationDisplayOptions",
       controls = {
         -- On-Screen Alerts
-        [1] = {
-          type = 'slider',
-          name = GetString(MM_DAYS_FOCUS_ONE_NAME),
+        [1]  = {
+          type    = 'slider',
+          name    = GetString(MM_DAYS_FOCUS_ONE_NAME),
           tooltip = GetString(MM_DAYS_FOCUS_ONE_TIP),
-          min = 1,
-          max = 90,
+          min     = 1,
+          max     = 90,
           getFunc = function() return MasterMerchant.systemSavedVariables.focus1 end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.focus1 = value end,
           default = MasterMerchant.systemDefault.focus1,
         },
-        [2] = {
-          type = 'slider',
-          name = GetString(MM_DAYS_FOCUS_TWO_NAME),
+        [2]  = {
+          type    = 'slider',
+          name    = GetString(MM_DAYS_FOCUS_TWO_NAME),
           tooltip = GetString(MM_DAYS_FOCUS_TWO_TIP),
-          min = 1,
-          max = 90,
+          min     = 1,
+          max     = 90,
           getFunc = function() return MasterMerchant.systemSavedVariables.focus2 end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.focus2 = value end,
           default = MasterMerchant.systemDefault.focus2,
         },
-        [3] = {
-          type = 'slider',
-          name = GetString(MM_DAYS_FOCUS_THREE_NAME),
+        [3]  = {
+          type    = 'slider',
+          name    = GetString(MM_DAYS_FOCUS_THREE_NAME),
           tooltip = GetString(MM_DAYS_FOCUS_THREE_TIP),
-          min = 1,
-          max = 90,
+          min     = 1,
+          max     = 90,
           getFunc = function() return MasterMerchant.systemSavedVariables.focus3 end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.focus3 = value end,
           default = MasterMerchant.systemDefault.focus3,
         },
         -- default time range
-        [4] = {
-          type = 'dropdown',
-          name = GetString(MM_DEFAULT_TIME_NAME),
+        [4]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_DEFAULT_TIME_NAME),
           tooltip = GetString(MM_DEFAULT_TIME_TIP),
           choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.defaultDays end,
@@ -1855,9 +1854,9 @@ function MasterMerchant:LibAddonInit()
           default = MasterMerchant.systemDefault.defaultDays,
         },
         -- shift time range
-        [5] = {
-          type = 'dropdown',
-          name = GetString(MM_SHIFT_TIME_NAME),
+        [5]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_SHIFT_TIME_NAME),
           tooltip = GetString(MM_SHIFT_TIME_TIP),
           choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.shiftDays end,
@@ -1865,9 +1864,9 @@ function MasterMerchant:LibAddonInit()
           default = MasterMerchant.systemDefault.shiftDays,
         },
         -- ctrl time range
-        [6] = {
-          type = 'dropdown',
-          name = GetString(MM_CTRL_TIME_NAME),
+        [6]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_CTRL_TIME_NAME),
           tooltip = GetString(MM_CTRL_TIME_TIP),
           choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.ctrlDays end,
@@ -1875,47 +1874,47 @@ function MasterMerchant:LibAddonInit()
           default = MasterMerchant.systemDefault.ctrlDays,
         },
         -- ctrl-shift time range
-        [7] = {
-          type = 'dropdown',
-          name = GetString(MM_CTRLSHIFT_TIME_NAME),
+        [7]  = {
+          type    = 'dropdown',
+          name    = GetString(MM_CTRLSHIFT_TIME_NAME),
           tooltip = GetString(MM_CTRLSHIFT_TIME_TIP),
           choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
           getFunc = function() return MasterMerchant.systemSavedVariables.ctrlShiftDays end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.ctrlShiftDays = value end,
           default = MasterMerchant.systemDefault.ctrlShiftDays,
         },
-        [8] = {
-          type = 'slider',
-          name = GetString(MM_NO_DATA_DEAL_NAME),
+        [8]  = {
+          type    = 'slider',
+          name    = GetString(MM_NO_DATA_DEAL_NAME),
           tooltip = GetString(MM_NO_DATA_DEAL_TIP),
-          min = 0,
-          max = 5,
+          min     = 0,
+          max     = 5,
           getFunc = function() return MasterMerchant.systemSavedVariables.noSalesInfoDeal end,
           setFunc = function(value) MasterMerchant.systemSavedVariables.noSalesInfoDeal = value end,
           default = MasterMerchant.systemDefault.noSalesInfoDeal,
         },
         -- blacklisted players and guilds
-        [9] = {
-          type = 'editbox',
-          name = GetString(MM_BLACKLIST_NAME),
-          tooltip = GetString(MM_BLACKLIST_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.blacklist end,
-          setFunc = function(value)
+        [9]  = {
+          type        = 'editbox',
+          name        = GetString(MM_BLACKLIST_NAME),
+          tooltip     = GetString(MM_BLACKLIST_TIP),
+          getFunc     = function() return MasterMerchant.systemSavedVariables.blacklist end,
+          setFunc     = function(value)
             MasterMerchant.systemSavedVariables.blacklist = value
             MasterMerchant.itemInformationCache = { }
           end,
-          default = MasterMerchant.systemDefault.blacklist,
+          default     = MasterMerchant.systemDefault.blacklist,
           isMultiline = true,
-          textType = TEXT_TYPE_ALL,
-          width = "full"
+          textType    = TEXT_TYPE_ALL,
+          width       = "full"
         },
         -- customTimeframe
         [10] = {
-          type = 'slider',
-          name = GetString(MM_CUSTOM_TIMEFRAME_NAME),
+          type    = 'slider',
+          name    = GetString(MM_CUSTOM_TIMEFRAME_NAME),
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_TIP),
-          min = 1,
-          max = 24 * 31,
+          min     = 1,
+          max     = 24 * 31,
           getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframe end,
           setFunc = function(value)
             MasterMerchant.systemSavedVariables.customTimeframe = value
@@ -1927,8 +1926,8 @@ function MasterMerchant:LibAddonInit()
         },
         -- shift time range
         [11] = {
-          type = 'dropdown',
-          name = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
+          type    = 'dropdown',
+          name    = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
           tooltip = GetString(MM_CUSTOM_TIMEFRAME_SCALE_TIP),
           choices = { GetString(MM_CUSTOM_TIMEFRAME_HOURS), GetString(MM_CUSTOM_TIMEFRAME_DAYS), GetString(MM_CUSTOM_TIMEFRAME_WEEKS), GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) },
           getFunc = function() return MasterMerchant.systemSavedVariables.customTimeframeType end,
@@ -1943,15 +1942,15 @@ function MasterMerchant:LibAddonInit()
       },
     },
     -- 8 guild roster menu
-    [8] = {
-      type = 'submenu',
-      name = GetString(MM_GUILD_ROSTER_OPTIONS_NAME),
-      tooltip = GetString(MM_GUILD_ROSTER_OPTIONS_TIP),
+    [8]  = {
+      type     = 'submenu',
+      name     = GetString(MM_GUILD_ROSTER_OPTIONS_NAME),
+      tooltip  = GetString(MM_GUILD_ROSTER_OPTIONS_TIP),
       controls = {
         -- should we display info on guild roster?
         [1] = {
-          type = 'checkbox',
-          name = GetString(SK_ROSTER_INFO_NAME),
+          type    = 'checkbox',
+          name    = GetString(SK_ROSTER_INFO_NAME),
           tooltip = GetString(SK_ROSTER_INFO_TIP),
           getFunc = function() return MasterMerchant.systemSavedVariables.diplayGuildInfo end,
           setFunc = function(value)
@@ -1970,67 +1969,67 @@ function MasterMerchant:LibAddonInit()
           default = MasterMerchant.systemDefault.diplayGuildInfo,
         },
         [2] = {
-          type = 'checkbox',
-          name = GetString(MM_SALES_COLUMN_NAME),
-          tooltip = GetString(MM_SALES_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplaySalesInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_SALES_COLUMN_NAME),
+          tooltip  = GetString(MM_SALES_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplaySalesInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplaySalesInfo = value
             MasterMerchant.guild_columns['sold']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplaySalesInfo,
+          default  = MasterMerchant.systemDefault.diplaySalesInfo,
         },
         -- guild roster options
         [3] = {
-          type = 'checkbox',
-          name = GetString(MM_PURCHASES_COLUMN_NAME),
-          tooltip = GetString(MM_PURCHASES_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplayPurchasesInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_PURCHASES_COLUMN_NAME),
+          tooltip  = GetString(MM_PURCHASES_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplayPurchasesInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplayPurchasesInfo = value
             MasterMerchant.guild_columns['bought']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplayPurchasesInfo,
+          default  = MasterMerchant.systemDefault.diplayPurchasesInfo,
         },
         [4] = {
-          type = 'checkbox',
-          name = GetString(MM_TAXES_COLUMN_NAME),
-          tooltip = GetString(MM_TAXES_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplayTaxesInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_TAXES_COLUMN_NAME),
+          tooltip  = GetString(MM_TAXES_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplayTaxesInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplayTaxesInfo = value
             MasterMerchant.guild_columns['per']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplayTaxesInfo,
+          default  = MasterMerchant.systemDefault.diplayTaxesInfo,
         },
         [5] = {
-          type = 'checkbox',
-          name = GetString(MM_COUNT_COLUMN_NAME),
-          tooltip = GetString(MM_COUNT_COLUMN_TIP),
-          getFunc = function() return MasterMerchant.systemSavedVariables.diplayCountInfo end,
-          setFunc = function(value)
+          type     = 'checkbox',
+          name     = GetString(MM_COUNT_COLUMN_NAME),
+          tooltip  = GetString(MM_COUNT_COLUMN_TIP),
+          getFunc  = function() return MasterMerchant.systemSavedVariables.diplayCountInfo end,
+          setFunc  = function(value)
             MasterMerchant.systemSavedVariables.diplayCountInfo = value
             MasterMerchant.guild_columns['count']:IsDisabled(not value)
           end,
           disabled = function() return not MasterMerchant.systemSavedVariables.diplayGuildInfo end,
-          default = MasterMerchant.systemDefault.diplayCountInfo,
+          default  = MasterMerchant.systemDefault.diplayCountInfo,
         },
       },
     },
     -- 9 Other Tooltips -----------------------------------
-    [9] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
-      width = "full",
+    [9]  = {
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#OtherTooltipOptions",
     },
     -- Whether or not to show the pricing graph in tooltips
     [10] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_GRAPH_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_GRAPH_NAME),
       tooltip = GetString(SK_SHOW_GRAPH_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showGraph end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showGraph = value end,
@@ -2038,8 +2037,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the pricing data in tooltips
     [11] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_PRICING_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_PRICING_NAME),
       tooltip = GetString(SK_SHOW_PRICING_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showPricing end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showPricing = value end,
@@ -2047,8 +2046,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the bonanza price in tooltips
     [12] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_BONANZA_PRICE_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_BONANZA_PRICE_NAME),
       tooltip = GetString(SK_SHOW_BONANZA_PRICE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showBonanzaPricing end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showBonanzaPricing = value end,
@@ -2056,8 +2055,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the alternate TTC price in tooltips
     [13] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_TTC_PRICE_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_TTC_PRICE_NAME),
       tooltip = GetString(SK_SHOW_TTC_PRICE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showAltTtcTipline end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAltTtcTipline = value end,
@@ -2065,8 +2064,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show tooltips on the graph points
     [14] = {
-      type = 'checkbox',
-      name = GetString(MM_GRAPH_INFO_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_GRAPH_INFO_NAME),
       tooltip = GetString(MM_GRAPH_INFO_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.displaySalesDetails end,
       setFunc = function(value)
@@ -2077,8 +2076,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the crafting costs data in tooltips
     [15] = {
-      type = 'checkbox',
-      name = GetString(SK_SHOW_CRAFT_COST_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_SHOW_CRAFT_COST_NAME),
       tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showCraftCost end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showCraftCost = value end,
@@ -2086,8 +2085,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Whether or not to show the quality/level adjustment buttons
     [16] = {
-      type = 'checkbox',
-      name = GetString(MM_LEVEL_QUALITY_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_LEVEL_QUALITY_NAME),
       tooltip = GetString(MM_LEVEL_QUALITY_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.displayItemAnalysisButtons end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.displayItemAnalysisButtons = value end,
@@ -2095,8 +2094,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we trim outliers prices?
     [17] = {
-      type = 'checkbox',
-      name = GetString(SK_TRIM_OUTLIERS_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliers end,
       setFunc = function(value)
@@ -2107,23 +2106,23 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we trim off decimals?
     [18] = {
-      type = 'checkbox',
-      name = GetString(SK_TRIM_DECIMALS_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.trimDecimals end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimDecimals = value end,
       default = MasterMerchant.systemDefault.trimDecimals,
     },
     [19] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
     },
     -- should we replace inventory values?
     [20] = {
-      type = 'checkbox',
-      name = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.replaceInventoryValues end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.replaceInventoryValues = value end,
@@ -2132,27 +2131,27 @@ function MasterMerchant:LibAddonInit()
     },
     -- replace inventory value type
     [21] = {
-      type = 'dropdown',
-      name = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_NAME),
-      tooltip = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_TIP),
-      choices = MasterMerchant.dealCalcChoices,
+      type          = 'dropdown',
+      name          = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_NAME),
+      tooltip       = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_TIP),
+      choices       = MasterMerchant.dealCalcChoices,
       choicesValues = MasterMerchant.dealCalcValues,
-      getFunc = function() return MasterMerchant.systemSavedVariables.replacementTypeToUse end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.replacementTypeToUse = value end,
-      default = MasterMerchant.systemDefault.replacementTypeToUse,
-      disabled = function() return not MasterMerchant.systemSavedVariables.replaceInventoryValues end,
-      warning = GetString(MM_RESET_LISTINGS_WARN),
+      getFunc       = function() return MasterMerchant.systemSavedVariables.replacementTypeToUse end,
+      setFunc       = function(value) MasterMerchant.systemSavedVariables.replacementTypeToUse = value end,
+      default       = MasterMerchant.systemDefault.replacementTypeToUse,
+      disabled      = function() return not MasterMerchant.systemSavedVariables.replaceInventoryValues end,
+      warning       = GetString(MM_RESET_LISTINGS_WARN),
     },
     [22] = {
-      type = "header",
-      name = GetString(GUILD_STORE_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(GUILD_STORE_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
     },
     -- Should we show the stack price calculator in the Vanilla UI?
     [23] = {
-      type = 'checkbox',
-      name = GetString(SK_CALC_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showCalc end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showCalc = value end,
@@ -2160,8 +2159,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- Should we use one price for all or save by guild?
     [24] = {
-      type = 'checkbox',
-      name = GetString(SK_ALL_CALC_NAME),
+      type    = 'checkbox',
+      name    = GetString(SK_ALL_CALC_NAME),
       tooltip = GetString(SK_ALL_CALC_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.priceCalcAll end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.priceCalcAll = value end,
@@ -2169,8 +2168,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we display a Min Profit Filter in AGS?
     [25] = {
-      type = 'checkbox',
-      name = GetString(MM_MIN_PROFIT_FILTER_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.minProfitFilter end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.minProfitFilter = value end,
@@ -2178,8 +2177,8 @@ function MasterMerchant:LibAddonInit()
     },
     -- should we display profit instead of margin?
     [26] = {
-      type = 'checkbox',
-      name = GetString(MM_SAUCY_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.saucy end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
@@ -2187,47 +2186,47 @@ function MasterMerchant:LibAddonInit()
     },
     -- Deal Filter Price
     [27] = {
-      type = 'dropdown',
-      name = GetString(SK_DEAL_CALC_TYPE_NAME),
-      tooltip = GetString(SK_DEAL_CALC_TYPE_TIP),
-      choices = MasterMerchant.dealCalcChoices,
+      type          = 'dropdown',
+      name          = GetString(SK_DEAL_CALC_TYPE_NAME),
+      tooltip       = GetString(SK_DEAL_CALC_TYPE_TIP),
+      choices       = MasterMerchant.dealCalcChoices,
       choicesValues = MasterMerchant.dealCalcValues,
-      getFunc = function() return MasterMerchant.systemSavedVariables.dealCalcToUse end,
-      setFunc = function(value) MasterMerchant.systemSavedVariables.dealCalcToUse = value end,
-      default = MasterMerchant.systemDefault.dealCalcToUse,
+      getFunc       = function() return MasterMerchant.systemSavedVariables.dealCalcToUse end,
+      setFunc       = function(value) MasterMerchant.systemSavedVariables.dealCalcToUse = value end,
+      default       = MasterMerchant.systemDefault.dealCalcToUse,
     },
     [28] = {
-      type = "header",
-      name = GetString(GUILD_MASTER_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(GUILD_MASTER_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildMasterOptions",
     },
     -- should we add taxes to the export?
     [29] = {
-      type = 'checkbox',
-      name = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showAmountTaxes end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
     },
     [30] = {
-      type = "header",
-      name = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
-      width = "full",
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
+      width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MMDebugOptions",
     },
     [31] = {
-      type = 'checkbox',
-      name = GetString(MM_DEBUG_LOGGER_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.useLibDebugLogger end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
     },
     [32] = {
-      type = 'checkbox',
-      name = GetString(MM_DISABLE_ATT_WARN_NAME),
+      type    = 'checkbox',
+      name    = GetString(MM_DISABLE_ATT_WARN_NAME),
       tooltip = GetString(MM_DISABLE_ATT_WARN_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.disableAttWarn end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.disableAttWarn = value end,
@@ -2760,16 +2759,16 @@ function MasterMerchant:InitRosterChanges()
   MasterMerchant:dm("Debug", "InitRosterChanges")
   -- LibGuildRoster adding the Sold Column
   MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({
-    key = 'MM_Sold',
+    key      = 'MM_Sold',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplaySalesInfo,
-    width = 110,
-    header = {
+    width    = 110,
+    header   = {
       title = GetString(SK_SALES_COLUMN),
       align = TEXT_ALIGN_RIGHT
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function(guildId, data, index)
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local amountSold = 0
 
@@ -2794,16 +2793,16 @@ function MasterMerchant:InitRosterChanges()
 
   -- LibGuildRoster adding the Bought Column
   MasterMerchant.guild_columns['bought'] = LibGuildRoster:AddColumn({
-    key = 'MM_Bought',
+    key      = 'MM_Bought',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayPurchasesInfo,
-    width = 110,
-    header = {
+    width    = 110,
+    header   = {
       title = GetString(SK_PURCHASES_COLUMN),
       align = TEXT_ALIGN_RIGHT
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function(guildId, data, index)
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local amountBought = 0
 
@@ -2828,17 +2827,17 @@ function MasterMerchant:InitRosterChanges()
 
   -- LibGuildRoster adding the Tax Column
   MasterMerchant.guild_columns['per'] = LibGuildRoster:AddColumn({
-    key = 'MM_PerChg',
+    key      = 'MM_PerChg',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayTaxesInfo,
-    width = 90,
-    header = {
-      title = GetString(SK_PER_CHANGE_COLUMN),
-      align = TEXT_ALIGN_RIGHT,
+    width    = 90,
+    header   = {
+      title   = GetString(SK_PER_CHANGE_COLUMN),
+      align   = TEXT_ALIGN_RIGHT,
       tooltip = GetString(SK_PER_CHANGE_TIP)
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function(guildId, data, index)
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local amountSold = 0
 
@@ -2862,16 +2861,16 @@ function MasterMerchant:InitRosterChanges()
 
   -- LibGuildRoster adding the Count Column
   MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({
-    key = 'MM_Count',
+    key      = 'MM_Count',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayCountInfo,
-    width = 70,
-    header = {
+    width    = 70,
+    header   = {
       title = GetString(SK_COUNT_COLUMN),
       align = TEXT_ALIGN_RIGHT
     },
-    row = {
-      align = TEXT_ALIGN_RIGHT,
-      data = function(guildId, data, index)
+    row      = {
+      align  = TEXT_ALIGN_RIGHT,
+      data   = function(guildId, data, index)
 
         local saleCount = 0
 
@@ -2988,101 +2987,101 @@ function MasterMerchant:FirstInitialize()
   -- SavedVar defaults
   old_defaults = {
     dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
-    pricingData = {}, -- added 12-31 but has always been there
-    historyDepth = 30,
-    minItemCount = 20,
-    maxItemCount = 5000,
-    blacklist = '',
+    pricingData   = {}, -- added 12-31 but has always been there
+    historyDepth  = 30,
+    minItemCount  = 20,
+    maxItemCount  = 5000,
+    blacklist     = '',
   }
 
   local systemDefault = {
     -- old settings
-    dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
-    pricingData = {}, -- added 12-31 but has always been there
-    showChatAlerts = false,
-    showMultiple = true,
-    openWithMail = true,
-    openWithStore = true,
-    showFullPrice = true,
-    salesWinLeft = 30, -- winLeft
-    salesWinTop = 85, -- winTop
-    guildWinLeft = 30,
-    guildWinTop = 85,
-    listingWinLeft = 30,
-    listingWinTop = 85,
-    purchaseWinLeft = 30,
-    purchaseWinTop = 85,
-    reportsWinLeft = 30,
-    reportsWinTop = 85,
-    statsWinLeft = 720,
-    statsWinTop = 820,
-    feedbackWinLeft = 720,
-    feedbackWinTop = 420,
-    windowFont = "ProseAntique",
-    showAnnounceAlerts = true,
-    showCyroAlerts = true,
-    alertSoundName = "Book_Acquired",
-    showUnitPrice = false,
-    viewSize = ITEMS,
-    offlineSales = true,
-    showPricing = true,
-    showBonanzaPricing = true,
-    showAltTtcTipline = true,
-    showCraftCost = true,
-    showGraph = true,
-    showCalc = true,
-    priceCalcAll = true,
-    minProfitFilter = true,
-    rankIndex = 1,
-    rankIndexRoster = 1,
-    viewBuyerSeller = 'buyer',
-    viewGuildBuyerSeller = 'seller',
-    trimOutliers = false,
-    trimDecimals = false,
-    replaceInventoryValues = false,
-    replacementTypeToUse = MasterMerchant.USE_MM_AVERAGE,
-    displaySalesDetails = false,
-    displayItemAnalysisButtons = false,
-    noSalesInfoDeal = 2,
-    focus1 = 10,
-    focus2 = 3,
-    focus3 = 30,
-    blacklist = '',
-    defaultDays = GetString(MM_RANGE_ALL),
-    shiftDays = GetString(MM_RANGE_FOCUS1),
-    ctrlDays = GetString(MM_RANGE_FOCUS2),
-    ctrlShiftDays = GetString(MM_RANGE_FOCUS3),
-    saucy = false,
-    displayListingMessage = false,
+    dataLocations                   = {}, -- unused as of 5-15-2021 but has to stay here
+    pricingData                     = {}, -- added 12-31 but has always been there
+    showChatAlerts                  = false,
+    showMultiple                    = true,
+    openWithMail                    = true,
+    openWithStore                   = true,
+    showFullPrice                   = true,
+    salesWinLeft                    = 30, -- winLeft
+    salesWinTop                     = 85, -- winTop
+    guildWinLeft                    = 30,
+    guildWinTop                     = 85,
+    listingWinLeft                  = 30,
+    listingWinTop                   = 85,
+    purchaseWinLeft                 = 30,
+    purchaseWinTop                  = 85,
+    reportsWinLeft                  = 30,
+    reportsWinTop                   = 85,
+    statsWinLeft                    = 720,
+    statsWinTop                     = 820,
+    feedbackWinLeft                 = 720,
+    feedbackWinTop                  = 420,
+    windowFont                      = "ProseAntique",
+    showAnnounceAlerts              = true,
+    showCyroAlerts                  = true,
+    alertSoundName                  = "Book_Acquired",
+    showUnitPrice                   = false,
+    viewSize                        = ITEMS,
+    offlineSales                    = true,
+    showPricing                     = true,
+    showBonanzaPricing              = true,
+    showAltTtcTipline               = true,
+    showCraftCost                   = true,
+    showGraph                       = true,
+    showCalc                        = true,
+    priceCalcAll                    = true,
+    minProfitFilter                 = true,
+    rankIndex                       = 1,
+    rankIndexRoster                 = 1,
+    viewBuyerSeller                 = 'buyer',
+    viewGuildBuyerSeller            = 'seller',
+    trimOutliers                    = false,
+    trimDecimals                    = false,
+    replaceInventoryValues          = false,
+    replacementTypeToUse            = MasterMerchant.USE_MM_AVERAGE,
+    displaySalesDetails             = false,
+    displayItemAnalysisButtons      = false,
+    noSalesInfoDeal                 = 2,
+    focus1                          = 10,
+    focus2                          = 3,
+    focus3                          = 30,
+    blacklist                       = '',
+    defaultDays                     = GetString(MM_RANGE_ALL),
+    shiftDays                       = GetString(MM_RANGE_FOCUS1),
+    ctrlDays                        = GetString(MM_RANGE_FOCUS2),
+    ctrlShiftDays                   = GetString(MM_RANGE_FOCUS3),
+    saucy                           = false,
+    displayListingMessage           = false,
     -- settingsToUse
-    customTimeframe = 90,
-    customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS),
-    diplayGuildInfo = false,
-    diplayPurchasesInfo = true,
-    diplaySalesInfo = true,
-    diplayTaxesInfo = true,
-    diplayCountInfo = true,
-    showAmountTaxes = false,
-    useLibDebugLogger = false, -- added 11-28
+    customTimeframe                 = 90,
+    customTimeframeType             = GetString(MM_CUSTOM_TIMEFRAME_DAYS),
+    diplayGuildInfo                 = false,
+    diplayPurchasesInfo             = true,
+    diplaySalesInfo                 = true,
+    diplayTaxesInfo                 = true,
+    diplayCountInfo                 = true,
+    showAmountTaxes                 = false,
+    useLibDebugLogger               = false, -- added 11-28
     --[[TODO settings moved to LGS or removed
     ]]--
     -- conversion vars
     verThreeItemIDConvertedToString = false, -- this only converts id64 at this time
-    shouldReindex = false,
-    shouldAdderText = false,
-    showGuildInitSummary = false,
-    showIndexingSummary = false,
-    lastReceivedEventID = {}, -- unused, see LGS
+    shouldReindex                   = false,
+    shouldAdderText                 = false,
+    showGuildInitSummary            = false,
+    showIndexingSummary             = false,
+    lastReceivedEventID             = {}, -- unused, see LGS
     --[[you can assign this as the default but it needs to be a global var
     customTimeframeText = tostring(90) .. ' ' .. GetString(MM_CUSTOM_TIMEFRAME_DAYS),
     ]]--
-    minimalIndexing = false,
-    useSalesHistory = false,
-    historyDepth = 30,
-    minItemCount = 20,
-    maxItemCount = 5000,
-    disableAttWarn = false,
-    dealCalcToUse = MasterMerchant.USE_MM_AVERAGE,
+    minimalIndexing                 = false,
+    useSalesHistory                 = false,
+    historyDepth                    = 30,
+    minItemCount                    = 20,
+    maxItemCount                    = 5000,
+    disableAttWarn                  = false,
+    dealCalcToUse                   = MasterMerchant.USE_MM_AVERAGE,
   }
 
   -- Finished setting up defaults, assign to global
@@ -3324,14 +3323,14 @@ function MasterMerchant:FirstInitialize()
       local icon, itemName, displayQuality, stackCount, sellerName, timeRemaining, salePrice, currencyType, itemUniqueId, salePricePerUnit = GetTradingHouseListingItemInfo(index)
       local guildId, guildName = GetCurrentTradingHouseGuildDetails()
       local theEvent = {
-        guild = guildName,
-        guildId = guildId,
-        itemLink = itemLink,
-        quant = stackCount,
+        guild     = guildName,
+        guildId   = guildId,
+        itemLink  = itemLink,
+        quant     = stackCount,
         timestamp = GetTimeStamp(),
-        price = salePrice,
-        seller = sellerName,
-        id = itemUniqueId,
+        price     = salePrice,
+        seller    = sellerName,
+        id        = itemUniqueId,
       }
       internal:addCancelledItem(theEvent)
       MasterMerchant.listIsDirty[REPORTS] = true
@@ -3530,7 +3529,7 @@ function MasterMerchant:SwitchUnitPrice(control, slot)
         end
       end
 
-      if averagePrice and  averagePrice > 0 then
+      if averagePrice and averagePrice > 0 then
         if not control.dataEntry.data.mmOriginalPrice then
           control.dataEntry.data.mmOriginalPrice = control.dataEntry.data.sellPrice
           control.dataEntry.data.mmOriginalStackPrice = control.dataEntry.data.stackSellPrice

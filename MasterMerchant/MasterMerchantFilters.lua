@@ -80,285 +80,285 @@ MM_ITEM_SUBTYPE_MISCELLANEOUS_TRASH = 8
 MM_ITEM_SUBTYPE_MISCELLANEOUS_MISCELLANEOUS = 9
 
 MasterMerchant.filterTypes = {
-  [MM_ITEM_TYPE_ALL] = {
-    up = "EsoUI/Art/Inventory/inventory_tabIcon_all_up.dds",
-    down = "EsoUI/Art/Inventory/inventory_tabIcon_all_down.dds",
+  [MM_ITEM_TYPE_ALL]           = {
+    up           = "EsoUI/Art/Inventory/inventory_tabIcon_all_up.dds",
+    down         = "EsoUI/Art/Inventory/inventory_tabIcon_all_down.dds",
     filterActive = true,
   },
-  [MM_ITEM_TYPE_WEAPON] = {
-    up = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_up.dds",
-    down = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_down.dds",
-    filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderWeaponsButton,
-    [MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_1handed_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_1handed_down.dds",
+  [MM_ITEM_TYPE_WEAPON]        = {
+    up                                    = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_up.dds",
+    down                                  = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_down.dds",
+    filterActive                          = false,
+    button                                = MasterMerchantFilterByTypeWindowMenuHeaderWeaponsButton,
+    [MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED]   = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_1handed_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_1handed_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_WEAPON_TWO_HANDED] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_2handed_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_2handed_down.dds",
+    [MM_ITEM_SUBTYPE_WEAPON_TWO_HANDED]   = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_2handed_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_2handed_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_WEAPON_BOW] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_bow_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_bow_down.dds",
+    [MM_ITEM_SUBTYPE_WEAPON_BOW]          = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_bow_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_bow_down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_WEAPON_DESTRO_STAFF] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_damageStaff_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_damageStaff_down.dds",
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_damageStaff_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_damageStaff_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_WEAPON_RESTO_STAFF] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_healStaff_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_healStaff_down.dds",
+    [MM_ITEM_SUBTYPE_WEAPON_RESTO_STAFF]  = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_healStaff_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_healStaff_down.dds",
       filterActive = false,
     },
   },
-  [MM_ITEM_TYPE_ARMOR] = {
-    up = "EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds",
-    down = "EsoUI/Art/Inventory/inventory_tabIcon_armor_down.dds",
-    filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderArmorButton,
-    [MM_ITEM_SUBTYPE_ARMOR_LIGHT] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_armorLight_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_armorLight_down.dds",
+  [MM_ITEM_TYPE_ARMOR]         = {
+    up                             = "EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds",
+    down                           = "EsoUI/Art/Inventory/inventory_tabIcon_armor_down.dds",
+    filterActive                   = false,
+    button                         = MasterMerchantFilterByTypeWindowMenuHeaderArmorButton,
+    [MM_ITEM_SUBTYPE_ARMOR_LIGHT]  = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_armorLight_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_armorLight_down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_ARMOR_MEDIUM] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_armorMedium_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_armorMedium_down.dds",
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_armorMedium_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_armorMedium_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_ARMOR_HEAVY] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_armorHeavy_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_armorHeavy_down.dds",
+    [MM_ITEM_SUBTYPE_ARMOR_HEAVY]  = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_armorHeavy_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_armorHeavy_down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_ARMOR_SHIELD] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_shield_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_shield_down.dds",
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_shield_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_shield_down.dds",
       filterActive = false,
     },
   },
-  [MM_ITEM_TYPE_JEWELRY] = {
-    up = "EsoUI/Art/Crafting/jewelry_tabIcon_icon_up.dds",
-    down = "EsoUI/Art/Crafting/jewelry_tabIcon_down.dds",
-    filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderJewelryButton,
+  [MM_ITEM_TYPE_JEWELRY]       = {
+    up                             = "EsoUI/Art/Crafting/jewelry_tabIcon_icon_up.dds",
+    down                           = "EsoUI/Art/Crafting/jewelry_tabIcon_down.dds",
+    filterActive                   = false,
+    button                         = MasterMerchantFilterByTypeWindowMenuHeaderJewelryButton,
     [MM_ITEM_SUBTYPE_JEWELRY_NECK] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Necklace_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Necklace_Down.dds",
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Necklace_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Necklace_Down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_JEWELRY_RING] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Ring_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Ring_Down.dds",
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Ring_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Apparel_Accessories_Ring_Down.dds",
       filterActive = false,
     },
   },
-  [MM_ITEM_TYPE_CONSUMABLE] = {
-    up = "EsoUI/Art/Inventory/inventory_tabIcon_consumables_up.dds",
-    down = "EsoUI/Art/Inventory/inventory_tabIcon_consumables_down.dds",
-    filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderConsumableButton,
-    [MM_ITEM_SUBTYPE_CONSUMABLE_FOOD] = {
-      up = "EsoUI/Art/Crafting/provisioner_indexIcon_meat_up.dds",
-      down = "EsoUI/Art/Crafting/provisioner_indexIcon_meat_down.dds",
+  [MM_ITEM_TYPE_CONSUMABLE]    = {
+    up                                         = "EsoUI/Art/Inventory/inventory_tabIcon_consumables_up.dds",
+    down                                       = "EsoUI/Art/Inventory/inventory_tabIcon_consumables_down.dds",
+    filterActive                               = false,
+    button                                     = MasterMerchantFilterByTypeWindowMenuHeaderConsumableButton,
+    [MM_ITEM_SUBTYPE_CONSUMABLE_FOOD]          = {
+      up           = "EsoUI/Art/Crafting/provisioner_indexIcon_meat_up.dds",
+      down         = "EsoUI/Art/Crafting/provisioner_indexIcon_meat_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_DRINK] = {
-      up = "EsoUI/Art/Crafting/provisioner_indexIcon_beer_up.dds",
-      down = "EsoUI/Art/Crafting/provisioner_indexIcon_beer_down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_DRINK]         = {
+      up           = "EsoUI/Art/Crafting/provisioner_indexIcon_beer_up.dds",
+      down         = "EsoUI/Art/Crafting/provisioner_indexIcon_beer_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_RECIPE] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_recipe_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_recipe_down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_RECIPE]        = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_recipe_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_recipe_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_POTION] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Potionsolvent_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Potionsolvent_Down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_POTION]        = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Potionsolvent_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Potionsolvent_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_POISON] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Poisonsolvent_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Poisonsolvent_Down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_POISON]        = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Poisonsolvent_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Potions_Poisonsolvent_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_STYLE_MOTIF] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Racial_Style_Motif_Book_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Racial_Style_Motif_Book_Down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_STYLE_MOTIF]   = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Racial_Style_Motif_Book_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Racial_Style_Motif_Book_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_MASTER_WRIT] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Master_Writ_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Master_Writ_Down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_MASTER_WRIT]   = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Master_Writ_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Master_Writ_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_CONTAINER] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_container_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_container_down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_CONTAINER]     = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_container_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_container_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_repair_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_repair_down.dds",
+    [MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM]   = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_repair_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_repair_down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_misc_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_misc_down.dds",
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_misc_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_misc_down.dds",
       filterActive = false,
     },
   },
-  [MM_ITEM_TYPE_CRAFTING] = {
-    up = "EsoUI/Art/Inventory/inventory_tabIcon_crafting_up.dds",
-    down = "EsoUI/Art/Inventory/inventory_tabIcon_crafting_down.dds",
-    filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderCraftingButton,
-    [MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Blacksmithing_Mats_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Blacksmithing_Mats_Down.dds",
+  [MM_ITEM_TYPE_CRAFTING]      = {
+    up                                             = "EsoUI/Art/Inventory/inventory_tabIcon_crafting_up.dds",
+    down                                           = "EsoUI/Art/Inventory/inventory_tabIcon_crafting_down.dds",
+    filterActive                                   = false,
+    button                                         = MasterMerchantFilterByTypeWindowMenuHeaderCraftingButton,
+    [MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING]       = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Blacksmithing_Mats_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Blacksmithing_Mats_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_CLOTHING] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Tailoring_Mats_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Tailoring_Mats_Down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_CLOTHING]            = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Tailoring_Mats_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Tailoring_Mats_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Woodworking_Mats_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Woodworking_Mats_Down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING]         = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Woodworking_Mats_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Woodworking_Mats_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Jewelrymaking_Mats_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Jewelrymaking_Mats_Down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING]     = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Jewelrymaking_Mats_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Materials_Jewelrymaking_Mats_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY] = {
-      up = "EsoUI/Art/Crafting/alchemy_tabIcon_reagent_up.dds",
-      down = "EsoUI/Art/Crafting/alchemy_tabIcon_reagent_down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY]             = {
+      up           = "EsoUI/Art/Crafting/alchemy_tabIcon_reagent_up.dds",
+      down         = "EsoUI/Art/Crafting/alchemy_tabIcon_reagent_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_enchanting_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_enchanting_down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING]          = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_enchanting_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_enchanting_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_provisioning_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_provisioning_down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING]        = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_provisioning_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_provisioning_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_STYLE_MATERIAL] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_styleMaterial_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_styleMaterial_down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_STYLE_MATERIAL]      = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_styleMaterial_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_styleMaterial_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_itemTrait_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_itemTrait_down.dds",
+    [MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM]          = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_itemTrait_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_Craftbag_itemTrait_down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_CRAFTING_FURNISHING_MATERIAL] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_furnishing_material_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_furnishing_material_Down.dds",
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_furnishing_material_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_furnishing_material_Down.dds",
       filterActive = false,
     },
   },
-  [MM_ITEM_TYPE_FURNISHING] = {
-    up = "EsoUI/Art/Crafting/provisioner_indexIcon_furnishings_up.dds",
-    down = "EsoUI/Art/Crafting/provisioner_indexIcon_furnishings_down.dds",
+  [MM_ITEM_TYPE_FURNISHING]    = {
+    up           = "EsoUI/Art/Crafting/provisioner_indexIcon_furnishings_up.dds",
+    down         = "EsoUI/Art/Crafting/provisioner_indexIcon_furnishings_down.dds",
     filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderFurnishingButton,
+    button       = MasterMerchantFilterByTypeWindowMenuHeaderFurnishingButton,
   },
-  [MM_ITEM_TYPE_COMPANION] = {
-    up = "EsoUI/Art/Inventory/inventory_tabIcon_companion_up.dds",
-    down = "EsoUI/Art/Inventory/inventory_tabIcon_companion_down.dds",
-    filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderCompanionButton,
+  [MM_ITEM_TYPE_COMPANION]     = {
+    up                                  = "EsoUI/Art/Inventory/inventory_tabIcon_companion_up.dds",
+    down                                = "EsoUI/Art/Inventory/inventory_tabIcon_companion_down.dds",
+    filterActive                        = false,
+    button                              = MasterMerchantFilterByTypeWindowMenuHeaderCompanionButton,
     [MM_ITEM_SUBTYPE_COMPANION_WEAPONS] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_down.dds",
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_weapons_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_COMPANION_ARMOR] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_armor_down.dds",
+    [MM_ITEM_SUBTYPE_COMPANION_ARMOR]   = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_armor_down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_COMPANION_JEWELRY] = {
-      up = "EsoUI/Art/Crafting/jewelry_tabIcon_icon_up.dds",
-      down = "EsoUI/Art/Crafting/jewelry_tabIcon_down.dds",
+      up           = "EsoUI/Art/Crafting/jewelry_tabIcon_icon_up.dds",
+      down         = "EsoUI/Art/Crafting/jewelry_tabIcon_down.dds",
       filterActive = false,
     },
   },
   [MM_ITEM_TYPE_MISCELLANEOUS] = {
-    up = "EsoUI/Art/Inventory/inventory_tabIcon_misc_up.dds",
-    down = "EsoUI/Art/Inventory/inventory_tabIcon_misc_down.dds",
-    filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderMiscButton,
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_appearance_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_appearance_down.dds",
+    up                                            = "EsoUI/Art/Inventory/inventory_tabIcon_misc_up.dds",
+    down                                          = "EsoUI/Art/Inventory/inventory_tabIcon_misc_down.dds",
+    filterActive                                  = false,
+    button                                        = MasterMerchantFilterByTypeWindowMenuHeaderMiscButton,
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE]    = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_appearance_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_appearance_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_GLYPH] = {
-      up = "EsoUI/Art/TradingHouse/Tradinghouse_Glyphs_Trio_Up.dds",
-      down = "EsoUI/Art/TradingHouse/Tradinghouse_Glyphs_Trio_Down.dds",
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_GLYPH]         = {
+      up           = "EsoUI/Art/TradingHouse/Tradinghouse_Glyphs_Trio_Up.dds",
+      down         = "EsoUI/Art/TradingHouse/Tradinghouse_Glyphs_Trio_Down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_SOUL_GEM] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_soulgem_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_soulgem_down.dds",
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_SOUL_GEM]      = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_soulgem_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_soulgem_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_SIEGE] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_siege_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_siege_down.dds",
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_SIEGE]         = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_siege_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_siege_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_TOOL] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_tool_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_tool_down.dds",
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_TOOL]          = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_tool_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_tool_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_trophy_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_trophy_down.dds",
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY]        = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_trophy_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_trophy_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_LURE] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_bait_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_bait_down.dds",
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_LURE]          = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_bait_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_bait_down.dds",
       filterActive = false,
     },
-    [MM_ITEM_SUBTYPE_MISCELLANEOUS_TRASH] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_trash_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_trash_down.dds",
+    [MM_ITEM_SUBTYPE_MISCELLANEOUS_TRASH]         = {
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_trash_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_trash_down.dds",
       filterActive = false,
     },
     [MM_ITEM_SUBTYPE_MISCELLANEOUS_MISCELLANEOUS] = {
-      up = "EsoUI/Art/Inventory/inventory_tabIcon_misc_up.dds",
-      down = "EsoUI/Art/Inventory/inventory_tabIcon_misc_down.dds",
+      up           = "EsoUI/Art/Inventory/inventory_tabIcon_misc_up.dds",
+      down         = "EsoUI/Art/Inventory/inventory_tabIcon_misc_down.dds",
       filterActive = false,
     },
   },
-  [MM_RECIPE_MOTIF_UNKNOWN] = {
-    up = "EsoUI/Art/Campaign/overview_indexIcon_bonus_up.dds",
-    down = "EsoUI/Art/Campaign/overview_indexIcon_bonus_down.dds",
+  [MM_RECIPE_MOTIF_UNKNOWN]    = {
+    up           = "EsoUI/Art/Campaign/overview_indexIcon_bonus_up.dds",
+    down         = "EsoUI/Art/Campaign/overview_indexIcon_bonus_down.dds",
     filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderUnknownButton,
+    button       = MasterMerchantFilterByTypeWindowMenuHeaderUnknownButton,
   },
-  [MM_RECIPE_MOTIF_KNOWN] = {
-    up = "EsoUI/Art/Journal/journal_tabIcon_loreLibrary_up.dds",
-    down = "EsoUI/Art/Journal/journal_tabIcon_loreLibrary_down.dds",
+  [MM_RECIPE_MOTIF_KNOWN]      = {
+    up           = "EsoUI/Art/Journal/journal_tabIcon_loreLibrary_up.dds",
+    down         = "EsoUI/Art/Journal/journal_tabIcon_loreLibrary_down.dds",
     filterActive = false,
-    button = MasterMerchantFilterByTypeWindowMenuHeaderKnownButton,
+    button       = MasterMerchantFilterByTypeWindowMenuHeaderKnownButton,
   },
 }
 
@@ -433,145 +433,145 @@ function MasterMerchant:ResetFilterState(control, filterType)
 end
 
 local MM_ITEM_FILTER_ITEM_SUBTYPES = {
-  [MM_ITEM_TYPE_WEAPON] = {
-    [WEAPONTYPE_AXE] = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
-    [WEAPONTYPE_HAMMER] = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
-    [WEAPONTYPE_SWORD] = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
-    [WEAPONTYPE_DAGGER] = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
-    [WEAPONTYPE_TWO_HANDED_AXE] = MM_ITEM_SUBTYPE_WEAPON_TWO_HANDED,
+  [MM_ITEM_TYPE_WEAPON]        = {
+    [WEAPONTYPE_AXE]               = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
+    [WEAPONTYPE_HAMMER]            = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
+    [WEAPONTYPE_SWORD]             = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
+    [WEAPONTYPE_DAGGER]            = MM_ITEM_SUBTYPE_WEAPON_ONE_HANDED,
+    [WEAPONTYPE_TWO_HANDED_AXE]    = MM_ITEM_SUBTYPE_WEAPON_TWO_HANDED,
     [WEAPONTYPE_TWO_HANDED_HAMMER] = MM_ITEM_SUBTYPE_WEAPON_TWO_HANDED,
-    [WEAPONTYPE_TWO_HANDED_SWORD] = MM_ITEM_SUBTYPE_WEAPON_TWO_HANDED,
-    [WEAPONTYPE_BOW] = MM_ITEM_SUBTYPE_WEAPON_BOW,
-    [WEAPONTYPE_FIRE_STAFF] = MM_ITEM_SUBTYPE_WEAPON_DESTRO_STAFF,
-    [WEAPONTYPE_FROST_STAFF] = MM_ITEM_SUBTYPE_WEAPON_DESTRO_STAFF,
-    [WEAPONTYPE_LIGHTNING_STAFF] = MM_ITEM_SUBTYPE_WEAPON_DESTRO_STAFF,
-    [WEAPONTYPE_HEALING_STAFF] = MM_ITEM_SUBTYPE_WEAPON_RESTO_STAFF,
+    [WEAPONTYPE_TWO_HANDED_SWORD]  = MM_ITEM_SUBTYPE_WEAPON_TWO_HANDED,
+    [WEAPONTYPE_BOW]               = MM_ITEM_SUBTYPE_WEAPON_BOW,
+    [WEAPONTYPE_FIRE_STAFF]        = MM_ITEM_SUBTYPE_WEAPON_DESTRO_STAFF,
+    [WEAPONTYPE_FROST_STAFF]       = MM_ITEM_SUBTYPE_WEAPON_DESTRO_STAFF,
+    [WEAPONTYPE_LIGHTNING_STAFF]   = MM_ITEM_SUBTYPE_WEAPON_DESTRO_STAFF,
+    [WEAPONTYPE_HEALING_STAFF]     = MM_ITEM_SUBTYPE_WEAPON_RESTO_STAFF,
   },
-  [MM_ITEM_TYPE_ARMOR] = {
-    [ARMORTYPE_HEAVY] = MM_ITEM_SUBTYPE_ARMOR_HEAVY,
-    [ARMORTYPE_LIGHT] = MM_ITEM_SUBTYPE_ARMOR_LIGHT,
-    [ARMORTYPE_MEDIUM] = MM_ITEM_SUBTYPE_ARMOR_MEDIUM,
+  [MM_ITEM_TYPE_ARMOR]         = {
+    [ARMORTYPE_HEAVY]   = MM_ITEM_SUBTYPE_ARMOR_HEAVY,
+    [ARMORTYPE_LIGHT]   = MM_ITEM_SUBTYPE_ARMOR_LIGHT,
+    [ARMORTYPE_MEDIUM]  = MM_ITEM_SUBTYPE_ARMOR_MEDIUM,
     [WEAPONTYPE_SHIELD] = MM_ITEM_SUBTYPE_ARMOR_SHIELD,
   },
-  [MM_ITEM_TYPE_JEWELRY] = {
+  [MM_ITEM_TYPE_JEWELRY]       = {
     [EQUIP_TYPE_RING] = MM_ITEM_SUBTYPE_JEWELRY_RING,
     [EQUIP_TYPE_NECK] = MM_ITEM_SUBTYPE_JEWELRY_NECK,
   },
-  [MM_ITEM_TYPE_COMPANION] = {
-    [ITEMTYPE_WEAPON] = MM_ITEM_SUBTYPE_COMPANION_WEAPONS,
-    [ITEMTYPE_ARMOR] = MM_ITEM_SUBTYPE_COMPANION_ARMOR,
+  [MM_ITEM_TYPE_COMPANION]     = {
+    [ITEMTYPE_WEAPON]      = MM_ITEM_SUBTYPE_COMPANION_WEAPONS,
+    [ITEMTYPE_ARMOR]       = MM_ITEM_SUBTYPE_COMPANION_ARMOR,
     [MM_ITEM_TYPE_JEWELRY] = MM_ITEM_SUBTYPE_COMPANION_JEWELRY,
   },
-  [MM_ITEM_TYPE_CONSUMABLE] = {
-    [ITEMTYPE_FOOD] = MM_ITEM_SUBTYPE_CONSUMABLE_FOOD,
-    [ITEMTYPE_DRINK] = MM_ITEM_SUBTYPE_CONSUMABLE_DRINK,
-    [ITEMTYPE_RECIPE] = MM_ITEM_SUBTYPE_CONSUMABLE_RECIPE,
-    [ITEMTYPE_POTION] = MM_ITEM_SUBTYPE_CONSUMABLE_POTION,
-    [ITEMTYPE_POISON] = MM_ITEM_SUBTYPE_CONSUMABLE_POISON,
-    [ITEMTYPE_RACIAL_STYLE_MOTIF] = MM_ITEM_SUBTYPE_CONSUMABLE_STYLE_MOTIF,
-    [ITEMTYPE_MASTER_WRIT] = MM_ITEM_SUBTYPE_CONSUMABLE_MASTER_WRIT,
+  [MM_ITEM_TYPE_CONSUMABLE]    = {
+    [ITEMTYPE_FOOD]                          = MM_ITEM_SUBTYPE_CONSUMABLE_FOOD,
+    [ITEMTYPE_DRINK]                         = MM_ITEM_SUBTYPE_CONSUMABLE_DRINK,
+    [ITEMTYPE_RECIPE]                        = MM_ITEM_SUBTYPE_CONSUMABLE_RECIPE,
+    [ITEMTYPE_POTION]                        = MM_ITEM_SUBTYPE_CONSUMABLE_POTION,
+    [ITEMTYPE_POISON]                        = MM_ITEM_SUBTYPE_CONSUMABLE_POISON,
+    [ITEMTYPE_RACIAL_STYLE_MOTIF]            = MM_ITEM_SUBTYPE_CONSUMABLE_STYLE_MOTIF,
+    [ITEMTYPE_MASTER_WRIT]                   = MM_ITEM_SUBTYPE_CONSUMABLE_MASTER_WRIT,
     -- CONTAINER
-    [ITEMTYPE_CONTAINER] = MM_ITEM_SUBTYPE_CONSUMABLE_CONTAINER,
-    [ITEMTYPE_CONTAINER_CURRENCY] = MM_ITEM_SUBTYPE_CONSUMABLE_CONTAINER,
+    [ITEMTYPE_CONTAINER]                     = MM_ITEM_SUBTYPE_CONSUMABLE_CONTAINER,
+    [ITEMTYPE_CONTAINER_CURRENCY]            = MM_ITEM_SUBTYPE_CONSUMABLE_CONTAINER,
     -- REPAIR_ITEM
-    [ITEMTYPE_TOOL] = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
-    [ITEMTYPE_AVA_REPAIR] = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
-    [ITEMTYPE_CROWN_REPAIR] = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
-    [ITEMTYPE_GROUP_REPAIR] = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
+    [ITEMTYPE_TOOL]                          = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
+    [ITEMTYPE_AVA_REPAIR]                    = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
+    [ITEMTYPE_CROWN_REPAIR]                  = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
+    [ITEMTYPE_GROUP_REPAIR]                  = MM_ITEM_SUBTYPE_CONSUMABLE_REPAIR_ITEM,
     --MISC
-    [ITEMTYPE_FISH] = MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS,
-    [ITEMTYPE_RECALL_STONE] = MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS,
-    [ITEMTYPE_DYE_STAMP] = MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS,
+    [ITEMTYPE_FISH]                          = MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS,
+    [ITEMTYPE_RECALL_STONE]                  = MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS,
+    [ITEMTYPE_DYE_STAMP]                     = MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS,
     [MM_ITEM_SUBTYPE_CONSUMABLE_COLLECTIBLE] = MM_ITEM_SUBTYPE_CONSUMABLE_MISCELLANEOUS,
   },
-  [MM_ITEM_TYPE_CRAFTING] = {
+  [MM_ITEM_TYPE_CRAFTING]      = {
     -- ITEM_TYPE_DISPLAY_CATEGORY_BLACKSMITHING
-    [ITEMTYPE_BLACKSMITHING_RAW_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING,
-    [ITEMTYPE_BLACKSMITHING_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING,
-    [ITEMTYPE_BLACKSMITHING_BOOSTER] = MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING,
+    [ITEMTYPE_BLACKSMITHING_RAW_MATERIAL]   = MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING,
+    [ITEMTYPE_BLACKSMITHING_MATERIAL]       = MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING,
+    [ITEMTYPE_BLACKSMITHING_BOOSTER]        = MM_ITEM_SUBTYPE_CRAFTING_BLACKSMITHING,
     -- ITEM_TYPE_DISPLAY_CATEGORY_CLOTHING
-    [ITEMTYPE_CLOTHIER_RAW_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_CLOTHING,
-    [ITEMTYPE_CLOTHIER_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_CLOTHING,
-    [ITEMTYPE_CLOTHIER_BOOSTER] = MM_ITEM_SUBTYPE_CRAFTING_CLOTHING,
+    [ITEMTYPE_CLOTHIER_RAW_MATERIAL]        = MM_ITEM_SUBTYPE_CRAFTING_CLOTHING,
+    [ITEMTYPE_CLOTHIER_MATERIAL]            = MM_ITEM_SUBTYPE_CRAFTING_CLOTHING,
+    [ITEMTYPE_CLOTHIER_BOOSTER]             = MM_ITEM_SUBTYPE_CRAFTING_CLOTHING,
     -- ITEM_TYPE_DISPLAY_CATEGORY_WOODWORKING
-    [ITEMTYPE_WOODWORKING_RAW_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING,
-    [ITEMTYPE_WOODWORKING_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING,
-    [ITEMTYPE_WOODWORKING_BOOSTER] = MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING,
+    [ITEMTYPE_WOODWORKING_RAW_MATERIAL]     = MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING,
+    [ITEMTYPE_WOODWORKING_MATERIAL]         = MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING,
+    [ITEMTYPE_WOODWORKING_BOOSTER]          = MM_ITEM_SUBTYPE_CRAFTING_WOODWORKING,
     -- ITEM_TYPE_DISPLAY_CATEGORY_JEWELRYCRAFTING
     [ITEMTYPE_JEWELRYCRAFTING_RAW_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING,
-    [ITEMTYPE_JEWELRYCRAFTING_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING,
-    [ITEMTYPE_JEWELRYCRAFTING_RAW_BOOSTER] = MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING,
-    [ITEMTYPE_JEWELRYCRAFTING_BOOSTER] = MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING,
+    [ITEMTYPE_JEWELRYCRAFTING_MATERIAL]     = MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING,
+    [ITEMTYPE_JEWELRYCRAFTING_RAW_BOOSTER]  = MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING,
+    [ITEMTYPE_JEWELRYCRAFTING_BOOSTER]      = MM_ITEM_SUBTYPE_CRAFTING_JEWELRYCRAFTING,
     -- ITEM_TYPE_DISPLAY_CATEGORY_ALCHEMY
-    [ITEMTYPE_REAGENT] = MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY,
-    [ITEMTYPE_POTION_BASE] = MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY,
-    [ITEMTYPE_POISON_BASE] = MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY,
+    [ITEMTYPE_REAGENT]                      = MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY,
+    [ITEMTYPE_POTION_BASE]                  = MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY,
+    [ITEMTYPE_POISON_BASE]                  = MM_ITEM_SUBTYPE_CRAFTING_ALCHEMY,
     -- ITEM_TYPE_DISPLAY_CATEGORY_ENCHANTING
-    [ITEMTYPE_ENCHANTING_RUNE_ASPECT] = MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING,
-    [ITEMTYPE_ENCHANTING_RUNE_POTENCY] = MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING,
-    [ITEMTYPE_ENCHANTING_RUNE_ESSENCE] = MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING,
+    [ITEMTYPE_ENCHANTING_RUNE_ASPECT]       = MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING,
+    [ITEMTYPE_ENCHANTING_RUNE_POTENCY]      = MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING,
+    [ITEMTYPE_ENCHANTING_RUNE_ESSENCE]      = MM_ITEM_SUBTYPE_CRAFTING_ENCHANTING,
     -- ITEM_TYPE_DISPLAY_CATEGORY_PROVISIONING
-    [ITEMTYPE_INGREDIENT] = MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING,
-    [ITEMTYPE_SPICE] = MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING,
-    [ITEMTYPE_FLAVORING] = MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING,
+    [ITEMTYPE_INGREDIENT]                   = MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING,
+    [ITEMTYPE_SPICE]                        = MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING,
+    [ITEMTYPE_FLAVORING]                    = MM_ITEM_SUBTYPE_CRAFTING_PROVISIONING,
     -- ITEM_TYPE_DISPLAY_CATEGORY_STYLE_MATERIAL
-    [ITEMTYPE_STYLE_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_STYLE_MATERIAL,
-    [ITEMTYPE_RAW_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_STYLE_MATERIAL,
+    [ITEMTYPE_STYLE_MATERIAL]               = MM_ITEM_SUBTYPE_CRAFTING_STYLE_MATERIAL,
+    [ITEMTYPE_RAW_MATERIAL]                 = MM_ITEM_SUBTYPE_CRAFTING_STYLE_MATERIAL,
     -- ITEM_TYPE_DISPLAY_CATEGORY_TRAIT_ITEM
-    [ITEMTYPE_ARMOR_TRAIT] = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
-    [ITEMTYPE_WEAPON_TRAIT] = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
-    [ITEMTYPE_JEWELRY_RAW_TRAIT] = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
-    [ITEMTYPE_JEWELRY_TRAIT] = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
+    [ITEMTYPE_ARMOR_TRAIT]                  = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
+    [ITEMTYPE_WEAPON_TRAIT]                 = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
+    [ITEMTYPE_JEWELRY_RAW_TRAIT]            = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
+    [ITEMTYPE_JEWELRY_TRAIT]                = MM_ITEM_SUBTYPE_CRAFTING_TRAIT_ITEM,
     -- ITEM_TYPE_DISPLAY_CATEGORY_FURNISHING_MATERIAL
-    [ITEMTYPE_FURNISHING_MATERIAL] = MM_ITEM_SUBTYPE_CRAFTING_FURNISHING_MATERIAL,
+    [ITEMTYPE_FURNISHING_MATERIAL]          = MM_ITEM_SUBTYPE_CRAFTING_FURNISHING_MATERIAL,
   },
   -- MM_ITEM_TYPE_FURNISHING there is no subtype
   [MM_ITEM_TYPE_MISCELLANEOUS] = {
-    [ITEMTYPE_COSTUME] = MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE,
-    [ITEMTYPE_DISGUISE] = MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE,
-    [ITEMTYPE_TABARD] = MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE,
-    [ITEMTYPE_GLYPH_WEAPON] = MM_ITEM_SUBTYPE_MISCELLANEOUS_GLYPH,
-    [ITEMTYPE_GLYPH_ARMOR] = MM_ITEM_SUBTYPE_MISCELLANEOUS_GLYPH,
+    [ITEMTYPE_COSTUME]       = MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE,
+    [ITEMTYPE_DISGUISE]      = MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE,
+    [ITEMTYPE_TABARD]        = MM_ITEM_SUBTYPE_MISCELLANEOUS_APPEARANCE,
+    [ITEMTYPE_GLYPH_WEAPON]  = MM_ITEM_SUBTYPE_MISCELLANEOUS_GLYPH,
+    [ITEMTYPE_GLYPH_ARMOR]   = MM_ITEM_SUBTYPE_MISCELLANEOUS_GLYPH,
     [ITEMTYPE_GLYPH_JEWELRY] = MM_ITEM_SUBTYPE_MISCELLANEOUS_GLYPH,
-    [ITEMTYPE_SOUL_GEM] = MM_ITEM_SUBTYPE_MISCELLANEOUS_SOUL_GEM,
-    [ITEMTYPE_SIEGE] = MM_ITEM_SUBTYPE_MISCELLANEOUS_SIEGE,
+    [ITEMTYPE_SOUL_GEM]      = MM_ITEM_SUBTYPE_MISCELLANEOUS_SOUL_GEM,
+    [ITEMTYPE_SIEGE]         = MM_ITEM_SUBTYPE_MISCELLANEOUS_SIEGE,
     -- [ITEMTYPE_LOCKPICK] = MM_ITEM_SUBTYPE_MISCELLANEOUS_TOOL,
-    [ITEMTYPE_TROPHY] = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY,
-    [ITEMTYPE_COLLECTIBLE] = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY,
-    [ITEMTYPE_TREASURE] = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY,
-    [ITEMTYPE_LURE] = MM_ITEM_SUBTYPE_MISCELLANEOUS_LURE,
-    [ITEMTYPE_TRASH] = MM_ITEM_SUBTYPE_MISCELLANEOUS_TRASH,
+    [ITEMTYPE_TROPHY]        = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY,
+    [ITEMTYPE_COLLECTIBLE]   = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY,
+    [ITEMTYPE_TREASURE]      = MM_ITEM_SUBTYPE_MISCELLANEOUS_TROPHY,
+    [ITEMTYPE_LURE]          = MM_ITEM_SUBTYPE_MISCELLANEOUS_LURE,
+    [ITEMTYPE_TRASH]         = MM_ITEM_SUBTYPE_MISCELLANEOUS_TRASH,
   },
 }
 
 function MasterMerchant:IsItemLinkTypeConsumable(itemType)
   local consumables = {
     -- FOOD
-    [ITEMTYPE_FOOD] = true,
+    [ITEMTYPE_FOOD]               = true,
     -- DRINK
-    [ITEMTYPE_DRINK] = true,
+    [ITEMTYPE_DRINK]              = true,
     -- RECIPE
-    [ITEMTYPE_RECIPE] = true,
+    [ITEMTYPE_RECIPE]             = true,
     -- POTION
-    [ITEMTYPE_POTION] = true,
+    [ITEMTYPE_POTION]             = true,
     -- POISON
-    [ITEMTYPE_POISON] = true,
+    [ITEMTYPE_POISON]             = true,
     -- STYLE_MOTIF
     [ITEMTYPE_RACIAL_STYLE_MOTIF] = true,
     -- MASTER_WRIT
-    [ITEMTYPE_MASTER_WRIT] = true,
+    [ITEMTYPE_MASTER_WRIT]        = true,
     -- CONTAINER
-    [ITEMTYPE_CONTAINER] = true,
+    [ITEMTYPE_CONTAINER]          = true,
     [ITEMTYPE_CONTAINER_CURRENCY] = true,
     -- REPAIR_ITEM
-    [ITEMTYPE_TOOL] = true,
-    [ITEMTYPE_AVA_REPAIR] = true,
-    [ITEMTYPE_CROWN_REPAIR] = true,
-    [ITEMTYPE_GROUP_REPAIR] = true,
+    [ITEMTYPE_TOOL]               = true,
+    [ITEMTYPE_AVA_REPAIR]         = true,
+    [ITEMTYPE_CROWN_REPAIR]       = true,
+    [ITEMTYPE_GROUP_REPAIR]       = true,
     --MISC
-    [ITEMTYPE_FISH] = true,
-    [ITEMTYPE_RECALL_STONE] = true,
-    [ITEMTYPE_DYE_STAMP] = true,
+    [ITEMTYPE_FISH]               = true,
+    [ITEMTYPE_RECALL_STONE]       = true,
+    [ITEMTYPE_DYE_STAMP]          = true,
   }
   if consumables[itemType] then
     return true
@@ -582,44 +582,44 @@ end
 function MasterMerchant:IsItemLinkTypeCrafting(itemType)
   local craftingMats = {
     -- ITEM_TYPE_DISPLAY_CATEGORY_BLACKSMITHING
-    [ITEMTYPE_BLACKSMITHING_RAW_MATERIAL] = true,
-    [ITEMTYPE_BLACKSMITHING_MATERIAL] = true,
-    [ITEMTYPE_BLACKSMITHING_BOOSTER] = true,
+    [ITEMTYPE_BLACKSMITHING_RAW_MATERIAL]   = true,
+    [ITEMTYPE_BLACKSMITHING_MATERIAL]       = true,
+    [ITEMTYPE_BLACKSMITHING_BOOSTER]        = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_CLOTHING
-    [ITEMTYPE_CLOTHIER_RAW_MATERIAL] = true,
-    [ITEMTYPE_CLOTHIER_MATERIAL] = true,
-    [ITEMTYPE_CLOTHIER_BOOSTER] = true,
+    [ITEMTYPE_CLOTHIER_RAW_MATERIAL]        = true,
+    [ITEMTYPE_CLOTHIER_MATERIAL]            = true,
+    [ITEMTYPE_CLOTHIER_BOOSTER]             = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_WOODWORKING
-    [ITEMTYPE_WOODWORKING_RAW_MATERIAL] = true,
-    [ITEMTYPE_WOODWORKING_MATERIAL] = true,
-    [ITEMTYPE_WOODWORKING_BOOSTER] = true,
+    [ITEMTYPE_WOODWORKING_RAW_MATERIAL]     = true,
+    [ITEMTYPE_WOODWORKING_MATERIAL]         = true,
+    [ITEMTYPE_WOODWORKING_BOOSTER]          = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_JEWELRYCRAFTING
     [ITEMTYPE_JEWELRYCRAFTING_RAW_MATERIAL] = true,
-    [ITEMTYPE_JEWELRYCRAFTING_MATERIAL] = true,
-    [ITEMTYPE_JEWELRYCRAFTING_RAW_BOOSTER] = true,
-    [ITEMTYPE_JEWELRYCRAFTING_BOOSTER] = true,
+    [ITEMTYPE_JEWELRYCRAFTING_MATERIAL]     = true,
+    [ITEMTYPE_JEWELRYCRAFTING_RAW_BOOSTER]  = true,
+    [ITEMTYPE_JEWELRYCRAFTING_BOOSTER]      = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_ALCHEMY
-    [ITEMTYPE_REAGENT] = true,
-    [ITEMTYPE_POTION_BASE] = true,
-    [ITEMTYPE_POISON_BASE] = true,
+    [ITEMTYPE_REAGENT]                      = true,
+    [ITEMTYPE_POTION_BASE]                  = true,
+    [ITEMTYPE_POISON_BASE]                  = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_ENCHANTING
-    [ITEMTYPE_ENCHANTING_RUNE_ASPECT] = true,
-    [ITEMTYPE_ENCHANTING_RUNE_POTENCY] = true,
-    [ITEMTYPE_ENCHANTING_RUNE_ESSENCE] = true,
+    [ITEMTYPE_ENCHANTING_RUNE_ASPECT]       = true,
+    [ITEMTYPE_ENCHANTING_RUNE_POTENCY]      = true,
+    [ITEMTYPE_ENCHANTING_RUNE_ESSENCE]      = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_PROVISIONING
-    [ITEMTYPE_INGREDIENT] = true,
-    [ITEMTYPE_SPICE] = true,
-    [ITEMTYPE_FLAVORING] = true,
+    [ITEMTYPE_INGREDIENT]                   = true,
+    [ITEMTYPE_SPICE]                        = true,
+    [ITEMTYPE_FLAVORING]                    = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_STYLE_MATERIAL
-    [ITEMTYPE_STYLE_MATERIAL] = true,
-    [ITEMTYPE_RAW_MATERIAL] = true,
+    [ITEMTYPE_STYLE_MATERIAL]               = true,
+    [ITEMTYPE_RAW_MATERIAL]                 = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_TRAIT_ITEM
-    [ITEMTYPE_ARMOR_TRAIT] = true,
-    [ITEMTYPE_WEAPON_TRAIT] = true,
-    [ITEMTYPE_JEWELRY_RAW_TRAIT] = true,
-    [ITEMTYPE_JEWELRY_TRAIT] = true,
+    [ITEMTYPE_ARMOR_TRAIT]                  = true,
+    [ITEMTYPE_WEAPON_TRAIT]                 = true,
+    [ITEMTYPE_JEWELRY_RAW_TRAIT]            = true,
+    [ITEMTYPE_JEWELRY_TRAIT]                = true,
     -- ITEM_TYPE_DISPLAY_CATEGORY_FURNISHING_MATERIAL
-    [ITEMTYPE_FURNISHING_MATERIAL] = true,
+    [ITEMTYPE_FURNISHING_MATERIAL]          = true,
   }
   if craftingMats[itemType] then
     return true
@@ -630,25 +630,25 @@ end
 function MasterMerchant:IsItemLinkTypeMiscellaneous(itemType)
   local miscellaneousTypes = {
     -- APPEARANCE
-    [ITEMTYPE_COSTUME] = true,
-    [ITEMTYPE_DISGUISE] = true,
-    [ITEMTYPE_TABARD] = true,
+    [ITEMTYPE_COSTUME]       = true,
+    [ITEMTYPE_DISGUISE]      = true,
+    [ITEMTYPE_TABARD]        = true,
     -- GLYPH
-    [ITEMTYPE_GLYPH_WEAPON] = true,
-    [ITEMTYPE_GLYPH_ARMOR] = true,
+    [ITEMTYPE_GLYPH_WEAPON]  = true,
+    [ITEMTYPE_GLYPH_ARMOR]   = true,
     [ITEMTYPE_GLYPH_JEWELRY] = true,
     -- SOUL_GEM
-    [ITEMTYPE_SOUL_GEM] = true,
+    [ITEMTYPE_SOUL_GEM]      = true,
     -- SIEGE
-    [ITEMTYPE_SIEGE] = true,
+    [ITEMTYPE_SIEGE]         = true,
     -- TROPHY
-    [ITEMTYPE_TROPHY] = true,
-    [ITEMTYPE_COLLECTIBLE] = true,
-    [ITEMTYPE_TREASURE] = true,
+    [ITEMTYPE_TROPHY]        = true,
+    [ITEMTYPE_COLLECTIBLE]   = true,
+    [ITEMTYPE_TREASURE]      = true,
     -- LURE
-    [ITEMTYPE_LURE] = true,
+    [ITEMTYPE_LURE]          = true,
     -- TRASH
-    [ITEMTYPE_TRASH] = true,
+    [ITEMTYPE_TRASH]         = true,
   }
   if miscellaneousTypes[itemType] then
     return true
@@ -659,9 +659,9 @@ end
 function MasterMerchant:IsItemLinkLearnedCollectible(specializedItemType)
   if not specializedItemType then return false end
   local specializedItemtypesOfContainers = {
-    [SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE] = true,
+    [SPECIALIZED_ITEMTYPE_CONTAINER_STYLE_PAGE]   = true,
     [SPECIALIZED_ITEMTYPE_COLLECTIBLE_STYLE_PAGE] = true,
-    [SPECIALIZED_ITEMTYPE_CONTAINER] = true,
+    [SPECIALIZED_ITEMTYPE_CONTAINER]              = true,
   }
   if specializedItemtypesOfContainers[specializedItemType] then
     return true

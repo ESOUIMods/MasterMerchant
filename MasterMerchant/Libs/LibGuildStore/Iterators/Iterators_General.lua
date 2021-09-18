@@ -1,7 +1,7 @@
-local lib            = _G["LibGuildStore"]
-local internal       = _G["LibGuildStore_Internal"]
+local lib = _G["LibGuildStore"]
+local internal = _G["LibGuildStore_Internal"]
 
-local ASYNC          = LibAsync
+local ASYNC = LibAsync
 
 ----------------------------------------
 ----- Helpers                      -----
@@ -11,7 +11,7 @@ local ASYNC          = LibAsync
 function internal:CompareItemIds(dataset)
   internal:dm("Debug", "CompareItemIds")
   local saveData = dataset[internal.dataNamespace]
-  local itemIds  = {}
+  local itemIds = {}
   for itemID, itemData in pairs(saveData) do
     for itemIndex, itemIndexData in pairs(itemData) do
       for key, sale in pairs(itemIndexData['sales']) do
@@ -67,12 +67,12 @@ end
 function internal:IsValidItemLink(itemLink)
   -- itemLink should be the full link here
   local validLink = true
-  local _, count  = string.gsub(itemLink, ':', ':')
+  local _, count = string.gsub(itemLink, ':', ':')
   if count ~= 22 then
     internal:dm("Debug", "count ~= 22")
     validLink = false
   end
-  local theIID      = GetItemLinkItemId(itemLink)
+  local theIID = GetItemLinkItemId(itemLink)
   local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
   if not theIID then
     internal:dm("Debug", "theIID was nil I guess?")
@@ -88,7 +88,7 @@ function internal:IsValidItemLink(itemLink)
     validLink = false
   end
   if not validLink then
-    internal:dm("Debug", { MasterMerchant.ItemCodeText(itemLink) } )
+    internal:dm("Debug", { MasterMerchant.ItemCodeText(itemLink) })
   end
   return validLink
 end
@@ -174,7 +174,7 @@ end
 
 -- DEBUG
 function internal:VerifyItemLinks(hash, task)
-  local saveFile   = _G[string.format("GS%02dDataSavedVariables", hash)]
+  local saveFile = _G[string.format("GS%02dDataSavedVariables", hash)]
   local fileString = string.format("GS%02dDataSavedVariables", hash)
   task:Then(function(task) internal:dm("Debug", string.format("VerifyItemLinks for: %s", fileString)) end)
   task:Then(function(task) internal:dm("Debug", hash) end)
@@ -224,17 +224,17 @@ function internal:AddExtraSalesData(otherData)
         savedVars[itemID][field].newestTime = newestTime
         savedVars[itemID][field].wasAltered = false
       else
-          dataInfo = {
-            itemID = itemID,
-            itemIndexData = field,
-            totalCount = totalCount,
-          }
-          if GS17DataSavedVariables["warnings"] == nil then GS17DataSavedVariables["warnings"] = {} end
-          if GS17DataSavedVariables["warnings"][itemID] == nil then GS17DataSavedVariables["warnings"][itemID] = {} end
-          if GS17DataSavedVariables["warnings"][itemID][field] == nil then GS17DataSavedVariables["warnings"][itemID][field] = {} end
-          if next(dataInfo) then
-            table.insert(GS17DataSavedVariables["warnings"][itemID][field], dataInfo)
-          end
+        dataInfo = {
+          itemID        = itemID,
+          itemIndexData = field,
+          totalCount    = totalCount,
+        }
+        if GS17DataSavedVariables["warnings"] == nil then GS17DataSavedVariables["warnings"] = {} end
+        if GS17DataSavedVariables["warnings"][itemID] == nil then GS17DataSavedVariables["warnings"][itemID] = {} end
+        if GS17DataSavedVariables["warnings"][itemID][field] == nil then GS17DataSavedVariables["warnings"][itemID][field] = {} end
+        if next(dataInfo) then
+          table.insert(GS17DataSavedVariables["warnings"][itemID][field], dataInfo)
+        end
       end
     end
   end

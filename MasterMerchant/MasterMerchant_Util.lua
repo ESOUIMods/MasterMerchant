@@ -16,7 +16,7 @@ function MasterMerchant:ssup(inputTable, numElements)
         local testVal = inputTable[j]
         if not (tableVal < testVal) then break end
         inputTable[i] = testVal;
-        i             = j
+        i = j
       end
       inputTable[i] = tableVal
     end
@@ -32,7 +32,7 @@ function MasterMerchant:ssdown(inputTable, numElements)
         local testVal = inputTable[j]
         if not (tableVal > testVal) then break end
         inputTable[i] = testVal;
-        i             = j
+        i = j
       end
       inputTable[i] = tableVal
     end
@@ -52,7 +52,7 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
         local testVal = inputTable[j]
         if not comparison(tableVal, testVal) then break end
         inputTable[i] = testVal
-        i             = j
+        i = j
       end
       inputTable[i] = tableVal
     end
@@ -75,7 +75,7 @@ end
 
 function MasterMerchant.ShowChildren(control, startNum, endNum)
   local numChildren = zo_min(control:GetNumChildren(), endNum)
-  local numStart    = zo_min(startNum, numChildren)
+  local numStart = zo_min(startNum, numChildren)
   for i = numStart, numChildren do
     local child = control:GetChild(i)
 
@@ -94,9 +94,9 @@ end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
   if itemLink then
-    local theIID    = GetItemLinkItemId(itemLink)
+    local theIID = GetItemLinkItemId(itemLink)
     local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-    local tipStats  = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
+    local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
     if tipStats.avgPrice then
       return tipStats.avgPrice
     end
@@ -137,19 +137,19 @@ end
 -- ||t80%:80%:/esoui/art/currency/gold_mipmap.dds||t
 -- '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
 local function IsValueInteger(value)
-    return value % 2 == 0
+  return value % 2 == 0
 end
 
 function MasterMerchant.LocalizedNumber(amount)
-	if not amount then
-		return tostring(0)
-	end
-	-- Check if amount is an integer
-	if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount) then
-		return ZO_CommaDelimitNumber(zo_floor(amount))
-	end
-	-- Round to two decimal values
-	return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
+  if not amount then
+    return tostring(0)
+  end
+  -- Check if amount is an integer
+  if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount) then
+    return ZO_CommaDelimitNumber(zo_floor(amount))
+  end
+  -- Round to two decimal values
+  return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
 end
 
 -- Create a textual representation of a time interval

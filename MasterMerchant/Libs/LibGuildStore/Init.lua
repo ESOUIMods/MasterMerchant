@@ -1,31 +1,31 @@
-local libName, libVersion         = "LibGuildStore", 100
-local lib                         = {}
-local internal                    = {}
-local mm_sales_data               = {}
-local att_sales_data              = {}
-local sales_data                  = {}
-local sr_index                    = {}
-local purchases_data              = {}
-local pr_index                    = {}
-local listings_data               = {}
-local lr_index                    = {}
-local posted_items_data           = {}
-local pir_index                   = {}
-local cancelled_items_data        = {}
-local cr_index                    = {}
-_G["LibGuildStore"]               = lib
-_G["LibGuildStore_Internal"]      = internal
-_G["LibGuildStore_MM_SalesData"]  = mm_sales_data
+local libName, libVersion = "LibGuildStore", 100
+local lib = {}
+local internal = {}
+local mm_sales_data = {}
+local att_sales_data = {}
+local sales_data = {}
+local sr_index = {}
+local purchases_data = {}
+local pr_index = {}
+local listings_data = {}
+local lr_index = {}
+local posted_items_data = {}
+local pir_index = {}
+local cancelled_items_data = {}
+local cr_index = {}
+_G["LibGuildStore"] = lib
+_G["LibGuildStore_Internal"] = internal
+_G["LibGuildStore_MM_SalesData"] = mm_sales_data
 _G["LibGuildStore_ATT_SalesData"] = att_sales_data
-_G["LibGuildStore_SalesData"]     = sales_data
-_G["LibGuildStore_SalesIndex"]    = sr_index
-_G["LibGuildStore_PurchaseData"]  = purchases_data
+_G["LibGuildStore_SalesData"] = sales_data
+_G["LibGuildStore_SalesIndex"] = sr_index
+_G["LibGuildStore_PurchaseData"] = purchases_data
 _G["LibGuildStore_PurchaseIndex"] = pr_index
-_G["LibGuildStore_ListingsData"]  = listings_data
+_G["LibGuildStore_ListingsData"] = listings_data
 _G["LibGuildStore_ListingsIndex"] = lr_index
-_G["LibGuildStore_PostedItemsData"]  = posted_items_data
+_G["LibGuildStore_PostedItemsData"] = posted_items_data
 _G["LibGuildStore_PostedItemsIndex"] = pir_index
-_G["LibGuildStore_CancelledItemsData"]  = cancelled_items_data
+_G["LibGuildStore_CancelledItemsData"] = cancelled_items_data
 _G["LibGuildStore_CancelledItemsIndex"] = cr_index
 
 sr_index.anIndexCount = 0
@@ -34,11 +34,11 @@ lr_index.anIndexCount = 0
 pir_index.anIndexCount = 0
 cr_index.anIndexCount = 0
 
-lib.libName                       = libName
-lib.libVersion                    = libVersion
+lib.libName = libName
+lib.libVersion = libVersion
 
 if LibDebugLogger then
-  local logger    = LibDebugLogger.Create(libName)
+  local logger = LibDebugLogger.Create(libName)
   internal.logger = logger
 end
 local SDLV = DebugLogViewer
@@ -71,7 +71,7 @@ local function emit_message(log_type, text)
 end
 
 local function emit_table(log_type, t, indent, table_history)
-  indent        = indent or "."
+  indent = indent or "."
   table_history = table_history or {}
 
   for k, v in pairs(t) do
@@ -119,7 +119,7 @@ end
 ----- lang setup                            -----
 -------------------------------------------------
 
-internal.client_lang    = GetCVar("Language.2")
+internal.client_lang = GetCVar("Language.2")
 internal.effective_lang = nil
 internal.supported_lang = { "en", }
 if internal:is_in(internal.client_lang, internal.supported_lang) then
@@ -139,67 +139,67 @@ internal.saveVarsDefaults = {
   lastReceivedEventID = {},
 }
 -- These defaults are used with the Lam menu not the startup routine
-internal.defaults                = {
+internal.defaults = {
   -- ["firstRun"] = true not needed when reset
-  updateAdditionalText = false,
-  historyDepth = 90,
-  minItemCount = 20,
-  maxItemCount = 5000,
-  showGuildInitSummary = false,
-  showIndexingSummary = false,
-  showTruncateSummary = false,
-  minimalIndexing = false,
-  useSalesHistory = false,
-  overrideMMImport = false,
-  historyDepthSL = 60,
-  historyDepthPI = 180,
-  historyDepthCI = 180,
+  updateAdditionalText       = false,
+  historyDepth               = 90,
+  minItemCount               = 20,
+  maxItemCount               = 5000,
+  showGuildInitSummary       = false,
+  showIndexingSummary        = false,
+  showTruncateSummary        = false,
+  minimalIndexing            = false,
+  useSalesHistory            = false,
+  overrideMMImport           = false,
+  historyDepthSL             = 60,
+  historyDepthPI             = 180,
+  historyDepthCI             = 180,
   libHistoireScanByTimestamp = false,
 }
 
 if not LibGuildStore_SavedVariables then LibGuildStore_SavedVariables = internal.saveVarsDefaults end
-internal.LibHistoireListener     = { } -- added for debug on 10-31
-internal.alertQueue              = { }
-internal.guildMemberInfo         = { }
-internal.accountNameByIdLookup   = { }
-internal.traderIdByNameLookup   = { }
-internal.itemLinkNameByIdLookup  = { }
-internal.guildNameByIdLookup     = { }
+internal.LibHistoireListener = { } -- added for debug on 10-31
+internal.alertQueue = { }
+internal.guildMemberInfo = { }
+internal.accountNameByIdLookup = { }
+internal.traderIdByNameLookup = { }
+internal.itemLinkNameByIdLookup = { }
+internal.guildNameByIdLookup = { }
 internal.guildStoreSearchResults = { }
-internal.guildStoreSales         = { } -- holds all sales
-internal.guildStoreListings      = { } -- holds all listings
-internal.verboseLevel            = 4
-internal.eventsNeedProcessing    = {}
-internal.timeEstimated           = {}
-internal.isDatabaseBusy          = false
-internal.guildItems              = nil
-internal.myItems                 = nil
-internal.guildSales              = nil
-internal.guildPurchases          = nil
-internal.currentGuilds           = {}
+internal.guildStoreSales = { } -- holds all sales
+internal.guildStoreListings = { } -- holds all listings
+internal.verboseLevel = 4
+internal.eventsNeedProcessing = {}
+internal.timeEstimated = {}
+internal.isDatabaseBusy = false
+internal.guildItems = nil
+internal.myItems = nil
+internal.guildSales = nil
+internal.guildPurchases = nil
+internal.currentGuilds = {}
 
-internal.totalSales              = 0
-internal.totalPurchases          = 0
-internal.totalListings           = 0
-internal.totalPosted           = 0
-internal.totalCanceled           = 0
+internal.totalSales = 0
+internal.totalPurchases = 0
+internal.totalListings = 0
+internal.totalPosted = 0
+internal.totalCanceled = 0
 
-internal.purchasedItems          = nil
-internal.purchasedBuyer        = nil
-internal.listedItems             = nil
-internal.listedSellers           = nil
+internal.purchasedItems = nil
+internal.purchasedBuyer = nil
+internal.listedItems = nil
+internal.listedSellers = nil
 
-internal.cancelledItems          = nil
-internal.cancelledSellers        = nil
-internal.postedItems             = nil
-internal.postedSellers           = nil
+internal.cancelledItems = nil
+internal.cancelledSellers = nil
+internal.postedItems = nil
+internal.postedSellers = nil
 
-internal.GS_NA_NAMESPACE          = "datana"
-internal.GS_EU_NAMESPACE          = "dataeu"
+internal.GS_NA_NAMESPACE = "datana"
+internal.GS_EU_NAMESPACE = "dataeu"
 internal.GS_NA_LIBHISTOIRE_NAMESPACE = "libhistoirena"
 internal.GS_EU_LIBHISTOIRE_NAMESPACE = "libhistoireeu"
-internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
-internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
+internal.GS_NA_LISTING_NAMESPACE = "listingsna"
+internal.GS_EU_LISTING_NAMESPACE = "listingseu"
 internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
 internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
 internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
@@ -207,8 +207,8 @@ internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
 internal.GS_NA_FIRST_RUN_NAMESPACE = "firstRunNa"
 internal.GS_EU_FIRST_RUN_NAMESPACE = "firstRunEu"
 
-internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
-internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
+internal.GS_NA_POSTED_NAMESPACE = "posteditemsna"
+internal.GS_EU_POSTED_NAMESPACE = "posteditemseu"
 internal.GS_NA_CANCELLED_NAMESPACE = "cancelleditemsna"
 internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
 
@@ -223,25 +223,25 @@ internal.NON_GUILD_MEMBER_PURCHASE = 0
 internal.GUILD_MEMBER_PURCHASE = 1
 internal.IMPORTED_PURCHASE = 2
 
-internal.GS_CHECK_ACCOUNTNAME    = "AccountNames"
-internal.GS_CHECK_ITEMLINK       = "ItemLink"
-internal.GS_CHECK_GUILDNAME      = "GuildNames"
-internal.PlayerSpecialText       = 'hfdkkdfunlajjamdhsiwsuwj'
-internal.dataToReset             = ""
-internal.listingsToReset         = ""
+internal.GS_CHECK_ACCOUNTNAME = "AccountNames"
+internal.GS_CHECK_ITEMLINK = "ItemLink"
+internal.GS_CHECK_GUILDNAME = "GuildNames"
+internal.PlayerSpecialText = 'hfdkkdfunlajjamdhsiwsuwj'
+internal.dataToReset = ""
+internal.listingsToReset = ""
 
-internal.dataNamespace           = ""
-internal.libHistoireNamespace    = ""
-internal.listingsNamespace       = ""
-internal.purchasesNamespace      = ""
-internal.firstrunNamespace       = ""
-internal.postedNamespace         = ""
-internal.cancelledNamespace      = ""
-internal.visitedNamespace        = ""
-internal.pricingNamespace        = ""
-internal.nameFilterNamespace     = ""
+internal.dataNamespace = ""
+internal.libHistoireNamespace = ""
+internal.listingsNamespace = ""
+internal.purchasesNamespace = ""
+internal.firstrunNamespace = ""
+internal.postedNamespace = ""
+internal.cancelledNamespace = ""
+internal.visitedNamespace = ""
+internal.pricingNamespace = ""
+internal.nameFilterNamespace = ""
 
-lib.guildStoreReady              = false -- when no more events are pending
+lib.guildStoreReady = false -- when no more events are pending
 
 --[[TODO
 local currencyFormatDealOptions = {
@@ -250,18 +250,18 @@ local currencyFormatDealOptions = {
 --- the other qualities
 }
 ]]--
-internal.potionVarientTable      = {
-  [0] = 0,
-  [1] = 0,
-  [3] = 1,
-  [10] = 2,
-  [19] = 2, -- level 19 pots I found
-  [20] = 3,
-  [24] = 3, -- level 24 pots I found
-  [30] = 4,
-  [39] = 4, -- level 39 pots I found
-  [40] = 5,
-  [44] = 5, -- level 44 pots I found
+internal.potionVarientTable = {
+  [0]   = 0,
+  [1]   = 0,
+  [3]   = 1,
+  [10]  = 2,
+  [19]  = 2, -- level 19 pots I found
+  [20]  = 3,
+  [24]  = 3, -- level 24 pots I found
+  [30]  = 4,
+  [39]  = 4, -- level 39 pots I found
+  [40]  = 5,
+  [44]  = 5, -- level 44 pots I found
   [125] = 6,
   [129] = 7,
   [134] = 8,

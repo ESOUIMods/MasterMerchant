@@ -1,5 +1,5 @@
-local lib           = _G["LibGuildStore"]
-local internal      = _G["LibGuildStore_Internal"]
+local lib = _G["LibGuildStore"]
+local internal = _G["LibGuildStore_Internal"]
 
 --[[ can nout use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
@@ -14,17 +14,17 @@ local REPORTS = 'reports_vs'
 function internal:CheckStatus()
   --internal:dm("Debug", "CheckStatus")
   for guildNum = 1, GetNumGuilds() do
-    local guildId                               = GetGuildId(guildNum)
-    local guildName                             = GetGuildName(guildId)
-    local numEvents                             = GetNumGuildEvents(guildId, GUILD_HISTORY_STORE)
+    local guildId = GetGuildId(guildNum)
+    local guildName = GetGuildName(guildId)
+    local numEvents = GetNumGuildEvents(guildId, GUILD_HISTORY_STORE)
     local eventCount, processingSpeed, timeLeft = internal.LibHistoireListener[guildId]:GetPendingEventMetrics()
 
-    timeLeft                                    = math.floor(timeLeft)
+    timeLeft = math.floor(timeLeft)
 
     if timeLeft ~= -1 or processingSpeed ~= -1 then internal.timeEstimated[guildId] = true end
 
     if (numEvents == 0 and eventCount == 1 and processingSpeed == -1 and timeLeft == -1) then
-      internal.timeEstimated[guildId]        = true
+      internal.timeEstimated[guildId] = true
       internal.eventsNeedProcessing[guildId] = false
     end
 
@@ -48,13 +48,13 @@ end
 
 function internal:StartQueue()
   internal:dm("Debug", "StartQueue")
-  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
+  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS) -- 60000 1 minute
 end
 
 function internal:QueueCheckStatus()
   local eventsRemaining = internal:CheckStatus()
   if eventsRemaining then
-    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS ) -- 60000 1 minute
+    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS) -- 60000 1 minute
     internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED))
   else
     --[[
@@ -70,7 +70,7 @@ function internal:QueueCheckStatus()
     LibGuildStore_SavedVariables.libHistoireScanByTimestamp = false
     internal:DatabaseBusy(false)
     MasterMerchant.listIsDirty[ITEMS] = true
-    MasterMerchant.listIsDirty[GUILDS]   = true
+    MasterMerchant.listIsDirty[GUILDS] = true
   end
 end
 
@@ -79,32 +79,32 @@ local function SetNamespace()
   if GetWorldName() == 'NA Megaserver' then
     internal.firstrunNamespace = internal.GS_NA_FIRST_RUN_NAMESPACE
     internal.libHistoireNamespace = internal.GS_NA_LIBHISTOIRE_NAMESPACE
-    internal.dataNamespace     = internal.GS_NA_NAMESPACE
+    internal.dataNamespace = internal.GS_NA_NAMESPACE
     internal.listingsNamespace = internal.GS_NA_LISTING_NAMESPACE
     internal.purchasesNamespace = internal.GS_NA_PURCHASE_NAMESPACE
-    internal.postedNamespace      = internal.GS_NA_POSTED_NAMESPACE
-    internal.cancelledNamespace      = internal.GS_NA_CANCELLED_NAMESPACE
-    internal.visitedNamespace      = internal.GS_NA_VISIT_TRADERS_NAMESPACE
-    internal.pricingNamespace        = internal.GS_NA_PRICING_NAMESPACE
-    internal.nameFilterNamespace= internal.GS_NA_NAME_FILTER_NAMESPACE
+    internal.postedNamespace = internal.GS_NA_POSTED_NAMESPACE
+    internal.cancelledNamespace = internal.GS_NA_CANCELLED_NAMESPACE
+    internal.visitedNamespace = internal.GS_NA_VISIT_TRADERS_NAMESPACE
+    internal.pricingNamespace = internal.GS_NA_PRICING_NAMESPACE
+    internal.nameFilterNamespace = internal.GS_NA_NAME_FILTER_NAMESPACE
   else
     internal.firstrunNamespace = internal.GS_EU_FIRST_RUN_NAMESPACE
     internal.libHistoireNamespace = internal.GS_EU_LIBHISTOIRE_NAMESPACE
-    internal.dataNamespace     = internal.GS_EU_NAMESPACE
+    internal.dataNamespace = internal.GS_EU_NAMESPACE
     internal.listingsNamespace = internal.GS_EU_LISTING_NAMESPACE
     internal.purchasesNamespace = internal.GS_EU_PURCHASE_NAMESPACE
-    internal.postedNamespace      = internal.GS_EU_POSTED_NAMESPACE
-    internal.cancelledNamespace      = internal.GS_EU_CANCELLED_NAMESPACE
-    internal.visitedNamespace      = internal.GS_EU_VISIT_TRADERS_NAMESPACE
-    internal.pricingNamespace        = internal.GS_EU_PRICING_NAMESPACE
-    internal.nameFilterNamespace= internal.GS_EU_NAME_FILTER_NAMESPACE
+    internal.postedNamespace = internal.GS_EU_POSTED_NAMESPACE
+    internal.cancelledNamespace = internal.GS_EU_CANCELLED_NAMESPACE
+    internal.visitedNamespace = internal.GS_EU_VISIT_TRADERS_NAMESPACE
+    internal.pricingNamespace = internal.GS_EU_PRICING_NAMESPACE
+    internal.nameFilterNamespace = internal.GS_EU_NAME_FILTER_NAMESPACE
   end
 end
 
 function internal:SetupListenerLibHistoire()
   internal:dm("Debug", "SetupListenerLibHistoire")
   for i = 1, GetNumGuilds() do
-    local guildId                         = GetGuildId(i)
+    local guildId = GetGuildId(i)
     internal.LibHistoireListener[guildId] = {}
     zo_callLater(function() internal:SetupListener(guildId) end, 1500 * i)
   end
@@ -121,10 +121,10 @@ local function SetupLibGuildStore()
   internal:dm("Debug", "SetupLibGuildStore For First Run")
   LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
   for guildNum = 1, GetNumGuilds() do
-    local guildId                                                = GetGuildId(guildNum)
+    local guildId = GetGuildId(guildNum)
     LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
-    internal.eventsNeedProcessing[guildId]                       = true
-    internal.timeEstimated[guildId]                              = false
+    internal.eventsNeedProcessing[guildId] = true
+    internal.timeEstimated[guildId] = false
   end
 end
 
@@ -137,73 +137,73 @@ function internal:RefreshLibGuildStore()
     local guildId = GetGuildId(guildNum)
     internal.LibHistoireListener[guildId]:Stop()
     LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
-    internal.eventsNeedProcessing[guildId]                       = true
-    internal.timeEstimated[guildId]                              = false
+    internal.eventsNeedProcessing[guildId] = true
+    internal.timeEstimated[guildId] = false
   end
 end
 
 local function SetupLibHistoireContainers()
   internal:dm("Debug", "SetupLibHistoireContainers")
   for i = 1, GetNumGuilds() do
-    local guildId   = GetGuildId(i)
+    local guildId = GetGuildId(i)
     local guildName = GetGuildName(guildId)
     internal.LibHistoireListener[guildId] = {}
   end
 end
 
 local function SetupDefaults()
---[[
-internal.GS_NA_NAMESPACE          = "datana"
-internal.GS_EU_NAMESPACE          = "dataeu"
-internal.GS_NA_LIBHISTOIRE_NAMESPACE = "libhistoirena"
-internal.GS_EU_LIBHISTOIRE_NAMESPACE = "libhistoireeu"
-internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
-internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
-internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
-internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
-internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
-internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
-internal.GS_NA_FIRST_RUN_NAMESPACE = "firstRunNa"
-internal.GS_EU_FIRST_RUN_NAMESPACE = "firstRunEu"
+  --[[
+  internal.GS_NA_NAMESPACE          = "datana"
+  internal.GS_EU_NAMESPACE          = "dataeu"
+  internal.GS_NA_LIBHISTOIRE_NAMESPACE = "libhistoirena"
+  internal.GS_EU_LIBHISTOIRE_NAMESPACE = "libhistoireeu"
+  internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
+  internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
+  internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
+  internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
+  internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
+  internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
+  internal.GS_NA_FIRST_RUN_NAMESPACE = "firstRunNa"
+  internal.GS_EU_FIRST_RUN_NAMESPACE = "firstRunEu"
 
-internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
-internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
-internal.GS_NA_CANCELLED_NAMESPACE = "cancelleditemsna"
-internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
+  internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
+  internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
+  internal.GS_NA_CANCELLED_NAMESPACE = "cancelleditemsna"
+  internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
 
-internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
-internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
+  internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
+  internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
 
-internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
-internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
-]]--
+  internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
+  internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
+  ]]--
   internal:dm("Debug", "SetupDefaults")
   SetNamespace()
-  local systemDefault          = {
-    version = 2,
+  local systemDefault = {
+    version                              = 2,
     [internal.GS_NA_FIRST_RUN_NAMESPACE] = true,
     [internal.GS_EU_FIRST_RUN_NAMESPACE] = true,
-    lastReceivedEventID = {},
-    historyDepthSL = 180,
-    historyDepthPI = 180,
-    historyDepthCI = 180,
-    minimalIndexing = false,
-    historyDepth = 90,
-    minItemCount = 20,
-    maxItemCount = 5000,
-    showIndexingSummary = false,
-    showTruncateSummary = false,
-    showGuildInitSummary = false,
-    useSalesHistory = true,
-    overrideMMImport = false,
-    updateAdditionalText = false,
-    libHistoireScanByTimestamp = false,
+    lastReceivedEventID                  = {},
+    historyDepthSL                       = 180,
+    historyDepthPI                       = 180,
+    historyDepthCI                       = 180,
+    minimalIndexing                      = false,
+    historyDepth                         = 90,
+    minItemCount                         = 20,
+    maxItemCount                         = 5000,
+    showIndexingSummary                  = false,
+    showTruncateSummary                  = false,
+    showGuildInitSummary                 = false,
+    useSalesHistory                      = true,
+    overrideMMImport                     = false,
+    updateAdditionalText                 = false,
+    libHistoireScanByTimestamp           = false,
   }
   internal.systemDefault = systemDefault
   local sv = LibGuildStore_SavedVariables
   for key, val in pairs(sv) do
     -- Delete key-value pair if the key can't also be found in the default settings (except for version)
-    if ( key ~= "lastReceivedEventID" and key ~= "version" ) and systemDefault[key] == nil then
+    if (key ~= "lastReceivedEventID" and key ~= "version") and systemDefault[key] == nil then
       sv[key] = nil
     end
   end
@@ -213,7 +213,7 @@ internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
   end
   -- for some reason the above loop does not assign the empty table
   for guildNum = 1, GetNumGuilds() do
-    local guildId                                                = GetGuildId(guildNum)
+    local guildId = GetGuildId(guildNum)
     if LibGuildStore_SavedVariables["lastReceivedEventID"] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"] = {} end
     if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] = {} end
     if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0" end
@@ -311,7 +311,7 @@ end
 local function Initilizze()
   SetupDefaults()
   for i = 1, GetNumGuilds() do
-    local guildId   = GetGuildId(i)
+    local guildId = GetGuildId(i)
     local guildName = GetGuildName(guildId)
     internal.currentGuilds[guildId] = guildName
     internal.alertQueue[guildName] = {}
@@ -326,15 +326,15 @@ local function Initilizze()
   if AwesomeGuildStore then
     -- register for purchace
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_PURCHASED, function(itemData)
-      local theEvent            = {
-        guild = itemData.guildName,
-        itemLink = itemData.itemLink,
-        quant = itemData.stackCount,
+      local theEvent = {
+        guild     = itemData.guildName,
+        itemLink  = itemData.itemLink,
+        quant     = itemData.stackCount,
         timestamp = GetTimeStamp(),
-        price = itemData.purchasePrice,
-        seller = itemData.sellerName,
-        id = Id64ToString(itemData.itemUniqueId),
-        buyer = GetDisplayName()
+        price     = itemData.purchasePrice,
+        seller    = itemData.sellerName,
+        id        = Id64ToString(itemData.itemUniqueId),
+        buyer     = GetDisplayName()
       }
       internal:addPurchaseData(theEvent)
       MasterMerchant.listIsDirty[PURCHASES] = true
@@ -343,19 +343,19 @@ local function Initilizze()
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_DATABASE_UPDATE,
       function(itemDatabase, guildId, hasAnyResultAlreadyStored)
         internal.guildStoreSearchResults = itemDatabase
-        local allData                    = itemDatabase.data
+        local allData = itemDatabase.data
         internal:processAwesomeGuildStore(allData, guildId)
       end)
 
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
-        local theEvent            = {
-          guild = GetGuildName(guildId),
-          itemLink = itemLink,
-          quant = stackCount,
+        local theEvent = {
+          guild     = GetGuildName(guildId),
+          itemLink  = itemLink,
+          quant     = stackCount,
           timestamp = GetTimeStamp(),
-          price = price,
-          seller = GetDisplayName(),
+          price     = price,
+          seller    = GetDisplayName(),
         }
         internal:addPostedItem(theEvent)
         MasterMerchant.listIsDirty[REPORTS] = true
@@ -364,13 +364,13 @@ local function Initilizze()
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_CANCELLED,
       function(guildId, itemLink, price, stackCount)
         -- opps needs the names since addCanceledItem handles the hasing
-        local theEvent            = {
-          guild = GetGuildName(guildId),
-          itemLink = itemLink,
-          quant = stackCount,
+        local theEvent = {
+          guild     = GetGuildName(guildId),
+          itemLink  = itemLink,
+          quant     = stackCount,
           timestamp = GetTimeStamp(),
-          price = price,
-          seller = GetDisplayName(),
+          price     = price,
+          seller    = GetDisplayName(),
         }
         internal:addCancelledItem(theEvent)
         MasterMerchant.listIsDirty[REPORTS] = true
@@ -380,7 +380,7 @@ local function Initilizze()
         if MasterMerchant.systemSavedVariables.priceCalcAll then
           MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
         else
-          local selectedGuildId                           = GetSelectedTradingHouseGuildId()
+          local selectedGuildId = GetSelectedTradingHouseGuildId()
           MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
         end
       end)
@@ -451,93 +451,93 @@ end
 
 function internal:CheckMasterMerchantData()
   if not MM00DataSavedVariables and not MM01DataSavedVariables and not MM02DataSavedVariables and
-     not MM03DataSavedVariables and not MM04DataSavedVariables and not MM05DataSavedVariables and
-     not MM06DataSavedVariables and not MM07DataSavedVariables and not MM08DataSavedVariables and
-     not MM09DataSavedVariables and not MM10DataSavedVariables and not MM11DataSavedVariables and
-     not MM12DataSavedVariables and not MM13DataSavedVariables and not MM14DataSavedVariables and
-     not MM15DataSavedVariables then return true end
+    not MM03DataSavedVariables and not MM04DataSavedVariables and not MM05DataSavedVariables and
+    not MM06DataSavedVariables and not MM07DataSavedVariables and not MM08DataSavedVariables and
+    not MM09DataSavedVariables and not MM10DataSavedVariables and not MM11DataSavedVariables and
+    not MM12DataSavedVariables and not MM13DataSavedVariables and not MM14DataSavedVariables and
+    not MM15DataSavedVariables then return true end
   return false
 end
 
 function internal:CheckArkadiusData()
   if not ArkadiusTradeToolsSalesData01 and not ArkadiusTradeToolsSalesData02 and not ArkadiusTradeToolsSalesData03 and
-     not ArkadiusTradeToolsSalesData04 and not ArkadiusTradeToolsSalesData05 and not ArkadiusTradeToolsSalesData06 and
-     not ArkadiusTradeToolsSalesData07 and not ArkadiusTradeToolsSalesData08 and not ArkadiusTradeToolsSalesData09 and
-     not ArkadiusTradeToolsSalesData10 and not ArkadiusTradeToolsSalesData11 and not ArkadiusTradeToolsSalesData12 and
-     not ArkadiusTradeToolsSalesData13 and not ArkadiusTradeToolsSalesData14 and not ArkadiusTradeToolsSalesData15 and
-     not ArkadiusTradeToolsSalesData16 then return true end
+    not ArkadiusTradeToolsSalesData04 and not ArkadiusTradeToolsSalesData05 and not ArkadiusTradeToolsSalesData06 and
+    not ArkadiusTradeToolsSalesData07 and not ArkadiusTradeToolsSalesData08 and not ArkadiusTradeToolsSalesData09 and
+    not ArkadiusTradeToolsSalesData10 and not ArkadiusTradeToolsSalesData11 and not ArkadiusTradeToolsSalesData12 and
+    not ArkadiusTradeToolsSalesData13 and not ArkadiusTradeToolsSalesData14 and not ArkadiusTradeToolsSalesData15 and
+    not ArkadiusTradeToolsSalesData16 then return true end
   return false
 end
 
 function internal:MasterMerchantDataActive()
   if MM00DataSavedVariables or MM01DataSavedVariables or MM02DataSavedVariables or
-     MM03DataSavedVariables or MM04DataSavedVariables or MM05DataSavedVariables or
-     MM06DataSavedVariables or MM07DataSavedVariables or MM08DataSavedVariables or
-     MM09DataSavedVariables or MM10DataSavedVariables or MM11DataSavedVariables or
-     MM12DataSavedVariables or MM13DataSavedVariables or MM14DataSavedVariables and
-     MM15DataSavedVariables then return true end
+    MM03DataSavedVariables or MM04DataSavedVariables or MM05DataSavedVariables or
+    MM06DataSavedVariables or MM07DataSavedVariables or MM08DataSavedVariables or
+    MM09DataSavedVariables or MM10DataSavedVariables or MM11DataSavedVariables or
+    MM12DataSavedVariables or MM13DataSavedVariables or MM14DataSavedVariables and
+    MM15DataSavedVariables then return true end
   return false
 end
 
 function internal:ArkadiusDataActive()
   if ArkadiusTradeToolsSalesData01 or ArkadiusTradeToolsSalesData02 or ArkadiusTradeToolsSalesData03 or
-     ArkadiusTradeToolsSalesData04 or ArkadiusTradeToolsSalesData05 or ArkadiusTradeToolsSalesData06 or
-     ArkadiusTradeToolsSalesData07 or ArkadiusTradeToolsSalesData08 or ArkadiusTradeToolsSalesData09 or
-     ArkadiusTradeToolsSalesData10 or ArkadiusTradeToolsSalesData11 or ArkadiusTradeToolsSalesData12 or
-     ArkadiusTradeToolsSalesData13 or ArkadiusTradeToolsSalesData14 or ArkadiusTradeToolsSalesData15 or
-     ArkadiusTradeToolsSalesData16 then return true end
+    ArkadiusTradeToolsSalesData04 or ArkadiusTradeToolsSalesData05 or ArkadiusTradeToolsSalesData06 or
+    ArkadiusTradeToolsSalesData07 or ArkadiusTradeToolsSalesData08 or ArkadiusTradeToolsSalesData09 or
+    ArkadiusTradeToolsSalesData10 or ArkadiusTradeToolsSalesData11 or ArkadiusTradeToolsSalesData12 or
+    ArkadiusTradeToolsSalesData13 or ArkadiusTradeToolsSalesData14 or ArkadiusTradeToolsSalesData15 or
+    ArkadiusTradeToolsSalesData16 then return true end
   return false
 end
 
 function internal:SlashImportMMSales()
-    if internal.isDatabaseBusy then
-      internal:dm("Info", "LibGuildStore is busy")
-      return
-    end
-    if internal:CheckMasterMerchantData() then
-      internal:dm("Info", "Old Master Merchant sales not detected.")
-      return
-    end
-    if CheckImportStatus() and not LibGuildStore_SavedVariables.overrideMMImport then
-      internal:dm("Info", "Your MM data contains values from both NA and EU servers.")
-      internal:dm("Info", "All versions prior to 3.6.x did not separate NA and EU sales data.")
-      internal:dm("Info", "You must override this in the LibGuildStore settings.")
-      return
-    end
-    if CheckServerImportType() and not LibGuildStore_SavedVariables.overrideMMImport then
-      internal:dm("Info", "You are attempting to import NA or EU MM data,")
-      internal:dm("Info", "however you logged into a different server type.")
-      internal:dm("Info", "You must override this in the LibGuildStore settings.")
-      return
-    end
-    internal:dm("Info", "Import MasterMerchant Sales")
-    local LEQ = LibExecutionQueue:new()
-    LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
-    LEQ:Add(function() internal:ImportMasterMerchantSales() end, 'ImportMasterMerchantSales')
-    LEQ:Start()
+  if internal.isDatabaseBusy then
+    internal:dm("Info", "LibGuildStore is busy")
+    return
+  end
+  if internal:CheckMasterMerchantData() then
+    internal:dm("Info", "Old Master Merchant sales not detected.")
+    return
+  end
+  if CheckImportStatus() and not LibGuildStore_SavedVariables.overrideMMImport then
+    internal:dm("Info", "Your MM data contains values from both NA and EU servers.")
+    internal:dm("Info", "All versions prior to 3.6.x did not separate NA and EU sales data.")
+    internal:dm("Info", "You must override this in the LibGuildStore settings.")
+    return
+  end
+  if CheckServerImportType() and not LibGuildStore_SavedVariables.overrideMMImport then
+    internal:dm("Info", "You are attempting to import NA or EU MM data,")
+    internal:dm("Info", "however you logged into a different server type.")
+    internal:dm("Info", "You must override this in the LibGuildStore settings.")
+    return
+  end
+  internal:dm("Info", "Import MasterMerchant Sales")
+  local LEQ = LibExecutionQueue:new()
+  LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
+  LEQ:Add(function() internal:ImportMasterMerchantSales() end, 'ImportMasterMerchantSales')
+  LEQ:Start()
 end
 
 function internal:SlashImportATTSales()
-    if internal.isDatabaseBusy then
-      internal:dm("Info", "LibGuildStore is busy")
-      return
-    end
-    if internal:CheckArkadiusData() then
-      internal:dm("Info", "Arkadius Trade Tools Sales Data not detected.")
-      return
-    end
-    internal:dm("Info", "Import ATT Sales")
-    local LEQ = LibExecutionQueue:new()
-    LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
-    LEQ:Add(function() internal:ImportATTSales() end, 'ImportATTSales')
-    LEQ:Start()
+  if internal.isDatabaseBusy then
+    internal:dm("Info", "LibGuildStore is busy")
+    return
+  end
+  if internal:CheckArkadiusData() then
+    internal:dm("Info", "Arkadius Trade Tools Sales Data not detected.")
+    return
+  end
+  internal:dm("Info", "Import ATT Sales")
+  local LEQ = LibExecutionQueue:new()
+  LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
+  LEQ:Add(function() internal:ImportATTSales() end, 'ImportATTSales')
+  LEQ:Start()
 end
 
 function internal.Slash(allArgs)
-  local args        = ""
+  local args = ""
   local guildNumber = 0
-  local hoursBack   = 0
-  local argNum      = 0
+  local hoursBack = 0
+  local argNum = 0
   for w in zo_strgmatch(allArgs, "%w+") do
     argNum = argNum + 1
     if argNum == 1 then args = w end
