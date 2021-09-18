@@ -3027,7 +3027,7 @@ function MasterMerchant:FirstInitialize()
     offlineSales = true,
     showPricing = true,
     showBonanzaPricing = true,
-    showAltTtcTipline = false,
+    showAltTtcTipline = true,
     showCraftCost = true,
     showGraph = true,
     showCalc = true,
