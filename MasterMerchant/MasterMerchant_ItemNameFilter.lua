@@ -1,8 +1,8 @@
-local internal       = _G["LibGuildStore_Internal"]
-local LMP                               = LibMediaProvider
+local internal = _G["LibGuildStore_Internal"]
+local LMP = LibMediaProvider
 
-IFScrollList           = ZO_SortFilterList:Subclass()
-IFScrollList.defaults  = { }
+IFScrollList = ZO_SortFilterList:Subclass()
+IFScrollList.defaults = { }
 -- Sort keys for the scroll lists
 IFScrollList.SORT_KEYS = {
   ['itemName'] = { isNumeric = false, tiebreaker = "itemName" },
@@ -32,7 +32,7 @@ function IFScrollList:BuildMasterList()
   ZO_ScrollList_Clear(listControl)
   local scrollDataList = ZO_ScrollList_GetDataList(listControl)
   for i, itemData in ipairs(self.masterList) do
-      table.insert(scrollDataList, ZO_ScrollList_CreateDataEntry(ITEM_DATA, itemData))
+    table.insert(scrollDataList, ZO_ScrollList_CreateDataEntry(ITEM_DATA, itemData))
   end
 end
 
@@ -54,8 +54,8 @@ function MasterMerchant:my_RemoveFilterHandler_OnLinkMouseUp(itemName, button, c
 end
 
 function IFScrollList:SetupNameFiltersRow(control, data)
-  control.icon         = GetControl(control, GetString(MM_ITEM_ICON_COLUMN))
-  control.itemName     = GetControl(control, GetString(MM_ITEMNAME_COLUMN))
+  control.icon = GetControl(control, GetString(MM_ITEM_ICON_COLUMN))
+  control.itemName = GetControl(control, GetString(MM_ITEMNAME_COLUMN))
 
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
   control.itemName:SetFont(string.format(fontString, 15))
@@ -115,7 +115,7 @@ end
 
 function MasterMerchant:AddToFilterTable(itemLink)
   local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-  local linkHash   = internal:AddSalesTableData("itemLink", itemLink)
+  local linkHash = internal:AddSalesTableData("itemLink", itemLink)
 
   if not GS17DataSavedVariables[internal.nameFilterNamespace][itemName] then
     GS17DataSavedVariables[internal.nameFilterNamespace][itemName] = linkHash

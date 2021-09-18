@@ -57,8 +57,8 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     end
 
     local avePriceString = self.LocalizedNumber(tipStats['avgPrice'])
-    tipFormat            = string.gsub(tipFormat, '.2f', 's')
-    tipFormat            = string.gsub(tipFormat, 'M.M.', 'MM')
+    tipFormat = string.gsub(tipFormat, '.2f', 's')
+    tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
     -- chatText
     if not chatText then tipFormat = tipFormat .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
     local salesString = zo_strformat(GetString(SK_OLD_PRICETIP_SALES), tipStats['numSales'])
@@ -75,7 +75,7 @@ end
 
 function MasterMerchant:itemStats(itemLink, clickable)
   GenerateLogMessage("itemStats")
-  local itemID    = GetItemLinkItemId(itemLink)
+  local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
 end

@@ -13,17 +13,17 @@ function MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stac
     return MasterMerchant.CustomDealCalc[GetDisplayName()](setPrice, salesCount, purchasePrice, stackCount)
   end
 
-  local deal   = -1
+  local deal = -1
   local margin = 0
   local profit = -1
   if (setPrice) then
     local unitPrice = purchasePrice / stackCount
-    profit          = (setPrice - unitPrice) * stackCount
-    margin          = tonumber(string.format('%.2f', ((setPrice - unitPrice) / setPrice) * 100))
+    profit = (setPrice - unitPrice) * stackCount
+    margin = tonumber(string.format('%.2f', ((setPrice - unitPrice) / setPrice) * 100))
 
-    margin          = (margin or 0)
-    profit          = (profit or 0)
-    unitPrice       = (unitPrice or 0)
+    margin = (margin or 0)
+    profit = (profit or 0)
+    unitPrice = (unitPrice or 0)
 
     if (salesCount > 15) then
       -- high volume margins

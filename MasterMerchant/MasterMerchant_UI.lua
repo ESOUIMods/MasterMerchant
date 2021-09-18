@@ -187,7 +187,7 @@ function MasterMerchant:SortByName(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
   if not ordering then
     MasterMerchant.shellSort(listData, function(sortA, sortB)
-      return (sortA.data[2]  or 0) > (sortB.data[2]  or 0)
+      return (sortA.data[2] or 0) > (sortB.data[2] or 0)
     end)
   else
     MasterMerchant.shellSort(listData, function(sortA, sortB)
@@ -1947,8 +1947,14 @@ end
 function MasterMerchant:updateCalc()
   local stackSize = zo_strmatch(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
   local unitPrice = MasterMerchantPriceCalculatorUnitCostAmount:GetText()
-  if not stackSize or tonumber(stackSize) < 1 then MasterMerchant:dm("Info", string.format("%s is not a valid stack size", stackSize)) return end
-  if not unitPrice or tonumber(unitPrice) < 0.01 then MasterMerchant:dm("Info", string.format("%s is not a valid unit price", unitPrice)) return end
+  if not stackSize or tonumber(stackSize) < 1 then
+    MasterMerchant:dm("Info", string.format("%s is not a valid stack size", stackSize))
+    return
+  end
+  if not unitPrice or tonumber(unitPrice) < 0.01 then
+    MasterMerchant:dm("Info", string.format("%s is not a valid unit price", unitPrice))
+    return
+  end
   local totalPrice = math.floor(tonumber(unitPrice) * tonumber(stackSize))
   MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
@@ -2528,7 +2534,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
     -- MasterMerchant windows
   else
     local mocGP = skMoc:GetParent():GetParent()
-    if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or mocGP:GetName() == 'MasterMerchantGuildWindowListContents' or mocGP:GetName() == 'MasterMerchantPurchaseWindowListContents' or mocGP:GetName() == 'MasterMerchantListingWindowListContents' or mocGP:GetName() == 'MasterMerchantFilterByNameWindowListContents'  or mocGP:GetName() == 'MasterMerchantReportsWindowListContents') then
+    if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or mocGP:GetName() == 'MasterMerchantGuildWindowListContents' or mocGP:GetName() == 'MasterMerchantPurchaseWindowListContents' or mocGP:GetName() == 'MasterMerchantListingWindowListContents' or mocGP:GetName() == 'MasterMerchantFilterByNameWindowListContents' or mocGP:GetName() == 'MasterMerchantReportsWindowListContents') then
       local itemLabel = skMoc --:GetLabelControl()
       if itemLabel and itemLabel.GetText then
         itemLink = itemLabel:GetText()
@@ -2776,20 +2782,20 @@ function MasterMerchant:RefreshAlteredWindowData(forceRefresh, refreshMode)
   if MasterMerchant.listIsDirty[view] or forceRefresh then
     MasterMerchant.listIsDirty[view] = false
     if forceRefresh then
-    -- MasterMerchant:dm("Debug", "the refresh was forced")
+      -- MasterMerchant:dm("Debug", "the refresh was forced")
     else
-    -- MasterMerchant:dm("Debug", "the viewMode was dirty")
+      -- MasterMerchant:dm("Debug", "the viewMode was dirty")
     end
     if view == ITEMS then
-        MasterMerchant.scrollList:RefreshFilters()
+      MasterMerchant.scrollList:RefreshFilters()
     elseif view == GUILDS then
-        MasterMerchant.guildScrollList:RefreshFilters()
+      MasterMerchant.guildScrollList:RefreshFilters()
     elseif view == LISTINGS then
-        MasterMerchant.listingsScrollList:RefreshFilters()
+      MasterMerchant.listingsScrollList:RefreshFilters()
     elseif view == PURCHASES then
-        MasterMerchant.purchasesScrollList:RefreshFilters()
+      MasterMerchant.purchasesScrollList:RefreshFilters()
     elseif view == REPORTS then
-        MasterMerchant.reportsScrollList:RefreshFilters()
+      MasterMerchant.reportsScrollList:RefreshFilters()
     end
   else
     -- MasterMerchant:dm("Debug", "viewMode was not dirty")
@@ -3420,11 +3426,11 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantGuildResetButton:SetText(GetString(SK_RESET_LABEL))
   ]]--
   local confirmDialog = {
-    title = { text = GetString(GS_RESET_CONFIRM_TITLE) },
+    title    = { text = GetString(GS_RESET_CONFIRM_TITLE) },
     mainText = { text = GetString(GS_RESET_CONFIRM_MAIN) },
-    buttons = {
+    buttons  = {
       {
-        text = SI_DIALOG_ACCEPT,
+        text     = SI_DIALOG_ACCEPT,
         callback = function() internal:ResetSalesData() end
       },
       { text = SI_DIALOG_CANCEL }
@@ -3432,11 +3438,11 @@ function MasterMerchant:SetupMasterMerchantWindow()
   }
   ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetConfirmation', confirmDialog)
   local confirmDialog = {
-    title = { text = GetString(GS_RESET_LISTINGS_CONFIRM_TITLE) },
+    title    = { text = GetString(GS_RESET_LISTINGS_CONFIRM_TITLE) },
     mainText = { text = GetString(GS_RESET_LISTINGS_CONFIRM_MAIN) },
-    buttons = {
+    buttons  = {
       {
-        text = SI_DIALOG_ACCEPT,
+        text     = SI_DIALOG_ACCEPT,
         callback = function() internal:ResetListingsData() end
       },
       { text = SI_DIALOG_CANCEL }

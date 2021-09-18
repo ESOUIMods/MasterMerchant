@@ -80,10 +80,10 @@ function internal:addListingData(theEvent)
     searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
     searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     listings_data[theIID][itemIndex] = {
-      itemIcon = GetItemLinkInfo(theEvent.itemLink),
+      itemIcon      = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
-      itemDesc = searchItemDesc,
-      sales = { newEvent } }
+      itemDesc      = searchItemDesc,
+      sales         = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
   listings_data[theIID][itemIndex].wasAltered = true
@@ -95,13 +95,13 @@ function internal:addListingData(theEvent)
 
   -- this section adds the sales to the lists for the MM window
   local guild
-  local adderDescConcat                    = searchItemDesc .. ' ' .. searchItemAdderText
+  local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
 
-  guild                               = internal.listedItems[theEvent.guild] or MMGuild:new(theEvent.guild)
+  guild = internal.listedItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.listedItems[theEvent.guild] = guild
   guild:addPurchaseByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
 
-  guild                               = internal.listedSellers[theEvent.guild] or MMGuild:new(theEvent.guild)
+  guild = internal.listedSellers[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.listedSellers[theEvent.guild] = guild
   guild:addPurchaseByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
 
@@ -416,7 +416,7 @@ function internal:InitListingHistory()
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
     extraData.totalRecords = extraData.totalRecords + 1
-    local currentGuild  = internal:GetGuildNameByIndex(saledata['guild'])
+    local currentGuild = internal:GetGuildNameByIndex(saledata['guild'])
     if currentGuild then
       local currentSeller = internal:GetAccountNameByIndex(saledata['seller'])
       local currentBuyer = internal:GetAccountNameByIndex(saledata['buyer'])
