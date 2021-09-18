@@ -164,3 +164,8 @@ ZO_CreateStringId("GS_MM_EU_NA_IMPORT_WARN", "Your MM data contains values from 
 ZO_CreateStringId("GS_MM_EU_NA_DIFFERENT_SERVER_WARN", "You are attempting to import NA or EU MM data, however you logged into a different server type. You must override this in the LibGuildStore settings.")
 ZO_CreateStringId("GS_RESET_EU_INSTEAD", "Reset aborted because LibHistoire would refresh EU Data instead.")
 ZO_CreateStringId("GS_RESET_NA_INSTEAD", "Reset aborted because LibHistoire would refresh NA Data instead.")
+ZO_CreateStringId("GS_SHOPPINGLIST_MISSING", "ShoppingList Not Active")
+ZO_CreateStringId("GS_SHOPPINGLIST_IMPORTED", "ShoppingList data imported.")
+ZO_CreateStringId("GS_ELAPSED_TIME_FORMATTER", "%s seconds to process %s records")
+ZO_CreateStringId("GS_ATT_PURCHASE_DATA_MISSING", "Arkadius Trade Tools Purchases Data Not Found.")
+ZO_CreateStringId("GS_ATT_PURCHASE_DATA_IMPORTED", "Arkadius Trade Tools Purchases Data Not Found.")

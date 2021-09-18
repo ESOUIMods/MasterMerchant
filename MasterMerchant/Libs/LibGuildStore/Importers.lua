@@ -22,7 +22,7 @@ end
 
 function internal:ImportShoppingList()
   if not ShoppingList then
-    internal:dm("Info", "ShoppingList Not Active")
+    internal:dm("Info", GetString(GS_SHOPPINGLIST_MISSING))
     return
   end
   internal:dm("Debug", "ImportShoppingList")
@@ -56,7 +56,7 @@ function internal:ImportShoppingList()
     end
   end
   MasterMerchant.purchasesScrollList:RefreshFilters()
-  internal:dm("Info", "ShoppingList data imported.")
+  internal:dm("Info", GetString(GS_SHOPPINGLIST_IMPORTED))
 end
 
 ----------------------------------------
@@ -88,8 +88,7 @@ function internal:ImportMasterMerchantSales()
   end
 
   local postfunc = function(extraData)
-    internal:dm("Info",
-      string.format("%s seconds to process %s records", GetTimeStamp() - extraData.start, extraData.totalSales))
+    internal:dm("Info", string.format(GetString(GS_ELAPSED_TIME_FORMATTER), GetTimeStamp() - extraData.start, extraData.totalSales))
 
     local LEQ = LibExecutionQueue:new()
     if extraData.totalSales > 0 then
@@ -146,8 +145,7 @@ function internal:ImportATTSales()
   end
 
   local postfunc = function(extraData)
-    internal:dm("Info",
-      string.format("%s seconds to process %s records", GetTimeStamp() - extraData.start, extraData.totalSales))
+    internal:dm("Info", string.format(GetString(GS_ELAPSED_TIME_FORMATTER), GetTimeStamp() - extraData.start, extraData.totalSales))
 
     local LEQ = LibExecutionQueue:new()
     if extraData.totalSales > 0 then
@@ -572,7 +570,7 @@ function internal:ReferenceATTSales(otherData)
       idNumbers[saleId] = true
       table.insert(idData, { saleId })
     else
-      internal:dm("Info", "Id exists")
+      --internal:dm("Info", "Id exists")
     end
     table.insert(att_sales_data[theIID][itemIndex]["sales"], theEvent)
   end
@@ -601,7 +599,7 @@ end
 
 function internal:ImportATTPurchases()
   if not ArkadiusTradeToolsPurchasesData then
-    internal:dm("Info", "Arkadius Trade Tools Purchases Data Not Found.")
+    internal:dm("Info", GetString(GS_ATT_PURCHASE_DATA_MISSING))
     return
   end
   local attMegaserver = ""
@@ -648,5 +646,5 @@ function internal:ImportATTPurchases()
     end
   end
   MasterMerchant.purchasesScrollList:RefreshFilters()
-  internal:dm("Info", "ATT Purchase data imported.")
+  internal:dm("Info", GetString(GS_ATT_PURCHASE_DATA_IMPORTED))
 end

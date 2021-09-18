@@ -397,9 +397,7 @@ function internal:IndexPurchaseData()
   local postfunc = function(extraData)
     internal:DatabaseBusy(false)
     if LibGuildStore_SavedVariables["showIndexingSummary"] then
-      internal:dm("Info",
-        string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
-          extraData.wordsIndexCount))
+      internal:dm("Info", string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount, extraData.wordsIndexCount))
     end
   end
 
