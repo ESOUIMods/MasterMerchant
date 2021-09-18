@@ -1349,11 +1349,11 @@ end
 
 function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, control)
   if not guildZoneId or guildZoneId == 0 then
-    MasterMerchant:dm("Info", "ZoneId invalid or not assigned.")
+    MasterMerchant:dm("Info", GetString(MM_ZONE_INVALID))
     return
   end
   if not Teleporter then
-    MasterMerchant:dm("Info", "BeamMeUp is not active.")
+    MasterMerchant:dm("Info", GetString(MM_BEAM_ME_UP_MISSING))
     return
   end
   if (button == 2 and player ~= '') then
@@ -1400,9 +1400,7 @@ function MasterMerchant.PostPendingItem(self)
     end
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
-      MasterMerchant:dm("Info",
-        string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)),
-          zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice, guildName))
+      MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)), zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice, guildName))
     end
   end
 end
@@ -2459,16 +2457,13 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
       if MasterMerchant.isFirstScan and MasterMerchant.systemSavedVariables.offlineSales then
         local stringPrice = self.LocalizedNumber(dispPrice)
         local textTime = self.TextTimeSince(theEvent.timestamp, true)
-        if i == 1 then MasterMerchant:dm("Info",
-          MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT))) end
-        MasterMerchant:dm("Info", zo_strformat('<<t:1>>',
-          theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
+        if i == 1 then 
+          MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT))) end
+          MasterMerchant:dm("Info", zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
         if i == numAlerts then
           -- Total of offline sales
-          MasterMerchant:dm("Info",
-            string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
-          MasterMerchant:dm("Info",
-            MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT_END)))
+          MasterMerchant:dm("Info", string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
+          MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT_END)))
         end
       else
         -- Else ends of Offline sales report
@@ -2503,10 +2498,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
           -- Chat alert
           if MasterMerchant.systemSavedVariables.showChatAlerts then
-            MasterMerchant:dm("Info",
-              string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)),
-                zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild,
-                self.TextTimeSince(theEvent.timestamp, true)))
+            MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
           end -- End of show chat alert
         end -- End of multiple alerts or numAlerts == 1
 
@@ -2526,9 +2518,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
         -- Chat alert
         if MasterMerchant.systemSavedVariables.showChatAlerts then
-          MasterMerchant:dm("Info",
-            string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)),
-              numSold, stringPrice))
+          MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)), numSold, stringPrice))
         end
       end -- End of once with a summary
 
@@ -2969,9 +2959,7 @@ local function CompleteMasterMerchantSetup()
   MasterMerchant.listIsDirty[LISTINGS] = true
   MasterMerchant.listIsDirty[PURCHASES] = true
   MasterMerchant.listIsDirty[REPORTS] = true
-  MasterMerchant:dm("Info",
-    string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings,
-      internal.totalPosted, internal.totalCanceled))
+  MasterMerchant:dm("Info", string.format(GetString(MM_INITIALIZED), internal.totalSales, internal.totalPurchases, internal.totalListings, internal.totalPosted, internal.totalCanceled))
 end
 
 -- ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
@@ -3472,8 +3460,7 @@ function MasterMerchant:SecondInitialize()
     LEQ:Add(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
     LEQ:Add(function()
       if internal:MasterMerchantDataActive() then
-        MasterMerchant:dm("Info",
-          "The old MMxxData modules are only needed for importing MM data. Please disable all MMxxData modules to increase performance and reduce load times.")
+        MasterMerchant:dm("Info", GetString(MM_MMXXDATA_OBSOLETE))
       end
     end, 'MasterMerchantDataActive')
     LEQ:Add(function()
@@ -3485,8 +3472,7 @@ function MasterMerchant:SecondInitialize()
     end, 'ArkadiusDataActive')
     LEQ:Add(function()
       if ShoppingList then
-        MasterMerchant:dm("Info",
-          "ShoppingList is only needed for importing old data. Please disable ShoppingList after you import its data.")
+        MasterMerchant:dm("Info", GetString(MM_SHOPPINGLIST_OBSOLETE))
       end
     end, 'ArkadiusDataActive')
     LEQ:Start()

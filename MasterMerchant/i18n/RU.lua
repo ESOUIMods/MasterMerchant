@@ -412,3 +412,7 @@ ZO_CreateStringId("SK_ALL_CALC_TIP", "Если включено, указанн�
 ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] You can import ATT data into Master Merchat from the LibGuildStore settings menu. You can disable this notification from MasterMerchant settings under Debug Options.")
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "This will force a UI reload when complete.")
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "You will need to reload your UI after changing this value.")
+ZO_CreateStringId("MM_ZONE_INVALID", "You will need to reload your UI after changing this value.")
+ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "You will need to reload your UI after changing this value.")
+ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "The old MMxxData modules are only needed for importing MM data. Please disable all MMxxData modules to increase performance and reduce load times.")
+ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList is only needed for importing old data. Please disable ShoppingList after you import its data.")

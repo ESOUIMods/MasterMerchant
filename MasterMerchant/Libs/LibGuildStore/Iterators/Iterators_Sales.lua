@@ -493,9 +493,7 @@ function internal:IndexSalesData()
   local postfunc = function(extraData)
     internal:DatabaseBusy(false)
     if LibGuildStore_SavedVariables["showIndexingSummary"] then
-      internal:dm("Info",
-        string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount,
-          extraData.wordsIndexCount))
+      internal:dm("Info", string.format(GetString(GS_INDEXING_SUMMARY), GetTimeStamp() - extraData.start, extraData.indexCount, extraData.wordsIndexCount))
     end
   end
 
@@ -907,8 +905,7 @@ function internal:PurgeDups()
     --task:Then(function(task) internal:dm("Verbose", internal:NonContiguousNonNilCount(eventArray)) end)
     eventArray = {} -- clear array
     GS16DataSavedVariables["deletedSales"] = deletedSales
-    task:Then(function(task) internal:dm("Info",
-      string.format(GetString(GS_DUP_PURGE), GetTimeStamp() - start, count)) end)
+    task:Then(function(task) internal:dm("Info", string.format(GetString(GS_DUP_PURGE), GetTimeStamp() - start, count)) end)
     task:Then(function(task) internal:dm("Info", GetString(GS_REINDEXING_EVERYTHING)) end)
     task:Finally(function(task) FinalizePurge(count) end)
   end
@@ -942,9 +939,7 @@ function internal:SlideSales(goback)
 
   local postfunc = function(extraData)
 
-    internal:dm("Info",
-      string.format(GetString(GS_SLIDING_SUMMARY), GetTimeStamp() - extraData.start, extraData.moveCount,
-        extraData.newName))
+    internal:dm("Info", string.format(GetString(GS_SLIDING_SUMMARY), GetTimeStamp() - extraData.start, extraData.moveCount, extraData.newName))
     sr_index[internal.PlayerSpecialText] = {}
     internal:DatabaseBusy(false)
 
@@ -1019,11 +1014,11 @@ end
 -- and set the time of the last scan to nil, then force a scan.
 function internal:ResetSalesData()
   if GetWorldName() == 'NA Megaserver' and internal.dataToReset == internal.GS_EU_NAMESPACE then
-    internal:dm("Info", "Reset aborted because LibHistoire would refresh NA Data instead.")
+    internal:dm("Info", GetString(GS_RESET_NA_INSTEAD))
     return
   end
   if GetWorldName() == 'EU Megaserver' and internal.dataToReset == internal.GS_NA_NAMESPACE then
-    internal:dm("Info", "Reset aborted because LibHistoire would refresh EU Data instead.")
+    internal:dm("Info", GetString(GS_RESET_EU_INSTEAD))
     return
   end
 

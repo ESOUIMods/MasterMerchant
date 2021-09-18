@@ -156,7 +156,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Import MM Sales",
-    text  = [[Until MM 3.6.x Master Merchant data was not saved separately for NA and EU servers. It is not recomended to import data from a different server type as the prices can be different.]]
+    text  = GetString(GS_IMPORT_MM_DESC),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
@@ -203,7 +203,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Import ATT Purchases",
-    text  = [[Arkadius Trade Tools purchases data does not save the specific purchace ID. You may unintentionally import a duplicate purchace. Which could include a purchase made while both ATT and the ShoppingList (stand alone version) were active.]]
+    text  = GetString(GS_IMPORT_ATT_PURCHASE_DESC),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
@@ -222,7 +222,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Refresh LibHistoire Database",
-    text  = [[LibHistoire data is not account specific so you only need to do this once per server NA or EU, not once per account.]]
+    text  = GetString(GS_REFRESH_DESC),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
@@ -243,7 +243,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Import ShoppingList",
-    text  = [[Import ShoppingList data into LibGuildStore. Previous ShoppingList data did not save the unique ID for the purchase, you may have some duplicates until the purchase is older and becomes trimmed.]]
+    text  = GetString(GS_IMPORT_SL_DESC),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
@@ -262,7 +262,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Import MM Pricing Data",
-    text  = [[Import MM pricing data into LibGuildStore. Previous pricing data will only be avalable as central pricing data. It will not import the same pricing data into each seperate guild.]]
+    text  = GetString(GS_IMPORT_PD_DESC),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
@@ -281,7 +281,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Reset NA LibGuildStore",
-    text  = [[This will only reset NA LibGuildStore Data.]]
+    text  = GetString(GS_RESET_NA_DESC),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
@@ -301,7 +301,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Reset EU LibGuildStore",
-    text  = [[This will only reset EU LibGuildStore Data.]]
+    text  = GetString(GS_RESET_EU_DESC),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
@@ -321,7 +321,7 @@ function internal:LibAddonInit()
   optionsData[#optionsData + 1] = {
     type  = "description",
     title = "Reset Listings Data",
-    text  = [[This will only reset listings for the current server type NA or EU.]]
+    text  = GetString(GS_RESET_LISTINGS_BUTTON),
   }
   optionsData[#optionsData + 1] = {
     type    = "button",
