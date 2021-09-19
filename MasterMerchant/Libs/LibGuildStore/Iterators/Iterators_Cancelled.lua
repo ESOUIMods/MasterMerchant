@@ -97,7 +97,7 @@ function internal:addCancelledItem(theEvent)
   for i in searchByWords do
     if cr_index[i] == nil then cr_index[i] = {} end
     table.insert(cr_index[i], wordData)
-    cr_index.anIndexCount = cr_index.anIndexCount + 1
+    internal.cr_index_count = internal.cr_index_count + 1
   end
 
   return true
@@ -350,7 +350,7 @@ function internal:IndexCancelledItemData()
         cr_index[i] = {}
       end
       table.insert(cr_index[i], wordData)
-      cr_index.anIndexCount = cr_index.anIndexCount + 1
+      internal.cr_index_count = internal.cr_index_count + 1
     end
 
   end

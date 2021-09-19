@@ -578,7 +578,7 @@ function internal:ResetListingsData()
 
   local lr_index = {}
   _G["LibGuildStore_ListingsIndex"] = lr_index
-  lr_index.anIndexCount = 0
+  internal.lr_index_count = 0
   local listings_data = {}
   _G["LibGuildStore_ListingsData"] = listings_data
   internal.listedItems = {}

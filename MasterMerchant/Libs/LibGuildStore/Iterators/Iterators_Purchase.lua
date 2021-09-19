@@ -135,7 +135,7 @@ function internal:addPurchaseData(theEvent)
   for i in searchByWords do
     if pr_index[i] == nil then pr_index[i] = {} end
     table.insert(pr_index[i], wordData)
-    pr_index.anIndexCount = pr_index.anIndexCount + 1
+    internal.pr_index_count = internal.pr_index_count + 1
   end
 
   return true
@@ -389,7 +389,7 @@ function internal:IndexPurchaseData()
         pr_index[i] = {}
       end
       table.insert(pr_index[i], wordData)
-      pr_index.anIndexCount = pr_index.anIndexCount + 1
+      internal.pr_index_count = internal.pr_index_count + 1
     end
 
   end

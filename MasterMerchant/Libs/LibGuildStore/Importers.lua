@@ -96,7 +96,7 @@ function internal:ImportMasterMerchantSales()
       --rebuild everything
       local sr_index = {}
       _G["LibGuildStore_SalesIndex"] = sr_index
-      sr_index.anIndexCount = 0
+      internal.sr_index_count = 0
 
       internal.guildPurchases = {}
       internal.guildSales = {}
@@ -153,7 +153,7 @@ function internal:ImportATTSales()
       --rebuild everything
       local sr_index = {}
       _G["LibGuildStore_SalesIndex"] = sr_index
-      sr_index.anIndexCount = 0
+      internal.sr_index_count = 0
 
       internal.guildPurchases = {}
       internal.guildSales = {}
@@ -511,7 +511,7 @@ function internal:ReferenceATTSales(otherData)
   else
     attMegaserver = "EU Megaserver"
   end
-  local savedVars = otherData[attMegaserver]["sales"]
+  local savedVars = otherData[attMegaserver]['sales']
 
   local theEvent = {}
   local addedCount = 0
@@ -565,14 +565,14 @@ function internal:ReferenceATTSales(otherData)
       att_sales_data[theIID][itemIndex].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME,
         GetItemLinkName(theEvent.itemLink))
     end
-    if att_sales_data[theIID][itemIndex]["sales"] == nil then att_sales_data[theIID][itemIndex]["sales"] = {} end
+    if att_sales_data[theIID][itemIndex]['sales'] == nil then att_sales_data[theIID][itemIndex]['sales'] = {} end
     if not idNumbers[saleId] then
       idNumbers[saleId] = true
       table.insert(idData, { saleId })
     else
       --internal:dm("Info", "Id exists")
     end
-    table.insert(att_sales_data[theIID][itemIndex]["sales"], theEvent)
+    table.insert(att_sales_data[theIID][itemIndex]['sales'], theEvent)
   end
 end
 

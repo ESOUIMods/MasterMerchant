@@ -198,77 +198,83 @@ function internal:AddExtraSalesData(otherData)
   local oldestTime = nil
   local newestTime = nil
   local totalCount = 0
+  local firstEntry = nil
 
   for itemID, itemIndex in pairs(savedVars) do
     for field, itemIndexData in pairs(itemIndex) do
       oldestTime = nil
       newestTime = nil
       totalCount = 0
-      for sale, saleData in pairs(itemIndexData['sales']) do
-        if saleData and saleData["timestamp"] then
-          totalCount = totalCount + 1
-          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
-        else
-          if GS17DataSavedVariables["erroneous_records"] == nil then GS17DataSavedVariables["erroneous_records"] = {} end
-          if GS17DataSavedVariables["erroneous_records"][itemID] == nil then GS17DataSavedVariables["erroneous_records"][itemID] = {} end
-          if GS17DataSavedVariables["erroneous_records"][itemID][field] == nil then GS17DataSavedVariables["erroneous_records"][itemID][field] = {} end
-          if next(saleData) then
-            table.insert(GS17DataSavedVariables["erroneous_records"][itemID][field], saleData)
+      _, firstEntry = next(itemIndexData['sales'], nil)
+      if type(firstEntry) == 'table' then
+        for sale, saleData in pairs(itemIndexData['sales']) do
+          if saleData and saleData["timestamp"] then
+            totalCount = totalCount + 1
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+            if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
           end
         end
-      end
-      if savedVars[itemID][field] then
-        savedVars[itemID][field].totalCount = totalCount
-        savedVars[itemID][field].oldestTime = oldestTime
-        savedVars[itemID][field].newestTime = newestTime
-        savedVars[itemID][field].wasAltered = false
-      else
-        dataInfo = {
-          itemID        = itemID,
-          itemIndexData = field,
-          totalCount    = totalCount,
-        }
-        if GS17DataSavedVariables["warnings"] == nil then GS17DataSavedVariables["warnings"] = {} end
-        if GS17DataSavedVariables["warnings"][itemID] == nil then GS17DataSavedVariables["warnings"][itemID] = {} end
-        if GS17DataSavedVariables["warnings"][itemID][field] == nil then GS17DataSavedVariables["warnings"][itemID][field] = {} end
-        if next(dataInfo) then
-          table.insert(GS17DataSavedVariables["warnings"][itemID][field], dataInfo)
+
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].wasAltered = false
         end
-      end
-    end
-  end
+
+      else
+         local dataInfo = {
+          lang        = MasterMerchant.effective_lang,
+          itemIndexData = itemIndexData,
+          namespace    = internal.dataNamespace,
+        }
+        if GS17DataSavedVariables["erroneous_records"] == nil then GS17DataSavedVariables["erroneous_records"] = {} end
+        if GS17DataSavedVariables["erroneous_records"][itemID] == nil then GS17DataSavedVariables["erroneous_records"][itemID] = {} end
+        table.insert(GS17DataSavedVariables["erroneous_records"][itemID], dataInfo)
+        savedVars[itemID][field] = nil
+      end -- firstEntry
+    end -- itemIndex
+  end -- savedVars
 end
 
 function internal:AddExtraListingsData(otherData)
   local savedVars = otherData[internal.listingsNamespace]
+  local oldestTime = nil
+  local totalCount = 0
+  local firstEntry = nil
 
   for itemID, itemIndex in pairs(savedVars) do
     for field, itemIndexData in pairs(itemIndex) do
-      local oldestTime = nil
-      local totalCount = 0
-      for sale, saleData in pairs(itemIndexData['sales']) do
-        totalCount = totalCount + 1
-        if saleData.timestamp then
-          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
-        else
-          if internal:is_empty_or_nil(saleData) then
-            internal:dm("Warn", "Empty Table Detected!")
-            internal:dm("Warn", itemID)
-            internal:dm("Warn", sale)
-            itemIndexData['sales'][sale] = nil
+      oldestTime = nil
+      totalCount = 0
+      _, firstEntry = next(itemIndexData['sales'], nil)
+      if type(firstEntry) == 'table' then
+        for sale, saleData in pairs(itemIndexData['sales']) do
+          if saleData and saleData["timestamp"] then
+            totalCount = totalCount + 1
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
           end
         end
-      end
-      if savedVars[itemID][field] then
-        savedVars[itemID][field].totalCount = totalCount
-        savedVars[itemID][field].oldestTime = oldestTime
-        savedVars[itemID][field].wasAltered = false
+
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].wasAltered = false
+        end
+
       else
-        --internal:dm("Warn", "Empty or nil savedVars[internal.dataNamespace]")
-      end
-    end
-  end
+         local dataInfo = {
+          lang        = MasterMerchant.effective_lang,
+          itemIndexData = itemIndexData,
+          namespace    = internal.listingsNamespace,
+        }
+        if GS17DataSavedVariables["erroneous_listings"] == nil then GS17DataSavedVariables["erroneous_listings"] = {} end
+        if GS17DataSavedVariables["erroneous_listings"][itemID] == nil then GS17DataSavedVariables["erroneous_listings"][itemID] = {} end
+        table.insert(GS17DataSavedVariables["erroneous_listings"][itemID], dataInfo)
+        savedVars[itemID][field] = nil
+      end -- firstEntry
+    end -- itemIndex
+  end -- savedVars
 end
 
 -- Renew extra Sales data if list was altered
@@ -410,7 +416,7 @@ end
 --[[
   Reference for internal:AddSearchToItem
 
-  ["sales"] =
+  ['sales'] =
   {
       [1] =
       {
