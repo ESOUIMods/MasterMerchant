@@ -101,7 +101,7 @@ function internal:addPostedItem(theEvent)
   for i in searchByWords do
     if pir_index[i] == nil then pir_index[i] = {} end
     table.insert(pir_index[i], wordData)
-    pir_index.anIndexCount = pir_index.anIndexCount + 1
+    internal.pir_index_count = internal.pir_index_count + 1
   end
 
   return true
@@ -354,7 +354,7 @@ function internal:IndexPostedItemsData()
         pir_index[i] = {}
       end
       table.insert(pir_index[i], wordData)
-      pir_index.anIndexCount = pir_index.anIndexCount + 1
+      internal.pir_index_count = internal.pir_index_count + 1
     end
 
   end

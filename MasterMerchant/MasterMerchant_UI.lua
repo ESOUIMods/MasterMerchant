@@ -1123,7 +1123,7 @@ function MMScrollList:FilterScrollList()
           end
         end
       end
-    elseif sr_index.anIndexCount == 1 and (searchText ~= nil and searchText ~= '') then
+    elseif internal.sr_index_count == 1 and (searchText ~= nil and searchText ~= '') then
       -- We just have player indexed and we have something to filter with
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode then
         -- Search all data in the last 180 days
