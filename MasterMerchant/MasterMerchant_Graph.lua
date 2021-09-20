@@ -144,6 +144,9 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   -- local _, point, relTo, relPoint, offsX, offsY = self.x_averagePriceLabel:GetAnchor(0)
   -- MasterMerchant
   -- PopupTooltipGraph
+  if originalBonanzaPriceValue == originalAveragePriceValue then
+      self.x_averagePriceValue = self.x_averagePriceValue + 15
+  end
   if self.x_averagePriceValue < 15 then self.x_averagePriceValue = 15 end
   if self.x_averagePriceValue > 105 then self.x_averagePriceValue = 105 end
 
@@ -164,6 +167,8 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
       self.x_bonanzaPriceValue = self.x_averagePriceValue + 15
     elseif isOverlapping and originalBonanzaPriceValue < originalAveragePriceValue then
       self.x_bonanzaPriceValue = self.x_averagePriceValue - 15
+    elseif isOverlapping and originalBonanzaPriceValue == originalAveragePriceValue then
+      self.x_bonanzaPriceValue = self.x_averagePriceValue - 15
     end
     if self.x_bonanzaPriceValue < 0.01 then self.x_bonanzaPriceValue = 0.01 end
 
@@ -183,7 +188,7 @@ function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
   local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
   local lengthSellerName = string.len(sellerName) + 2
   if lengthBlacklist + lengthSellerName > 2000 then
-    MasterMerchant:v(1, "Can not append account name. The Blacklist would exceed 2000 characters.")
+     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"

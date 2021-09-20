@@ -308,10 +308,10 @@ function MasterMerchant:GetWritCount(itemLink)
   return writcount
 end
 -- MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
--- GetItemLinkItemId("|H1:item:180571:363:50:0:0:0:0:0:0:0:0:0:0:0:0:25:0:0:0:10000:0|h|h")
--- 180571  50:16:4:11:0
--- LibGuildStore_Internal.GetOrCreateIndexFromLink("|H1:item:180571:363:50:0:0:0:0:0:0:0:0:0:0:0:0:25:0:0:0:10000:0|h|h")
--- MasterMerchant:GetTooltipStats(180571, "50:16:4:11:0", false, true)
+-- GetItemLinkItemId("|H0:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+-- 54484  50:16:4:0:0
+-- LibGuildStore_Internal.GetOrCreateIndexFromLink("|H0:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+-- MasterMerchant:GetTooltipStats(54484, "50:16:4:0:0", false, true)
 -- Computes the weighted moving average across available data
 function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   -- 10000 for numDays is more or less like saying it is undefined
@@ -370,11 +370,13 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
     rather then actually click anything
     ]]--
     if clickable then
-      local timeframe = math.floor((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)
-      if timeframe < 2 then
-        timeframeString = MM_INDEX_3DAY
-      else
-        timeframeString = timeframe .. " days ago"
+      local quotient, remainder = math.modf((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)
+      if quotient == 0 then
+        timeframeString = GetString(MM_INDEX_TODAY)
+      elseif quotient == 1 then
+        timeframeString = GetString(MM_INDEX_YESTERDAY)
+      elseif quotient >= 2 then
+        timeframeString = quotient .. " days ago"
       end
       if item.quant == 1 then
         tooltip = timeframeString .. " " .. string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild,
@@ -517,7 +519,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       end
     end -- end for loop for non outliers
     if ignoreOutliers then
-      if #outliersList >= 3 then
+      if #outliersList >= 6 then
         local quartile1, quartile3, quartileRange = stats.interquartileRange(outliersList)
         oldestTime = nil
         for i, item in pairs(outliersList) do
@@ -545,7 +547,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
           end
         end -- end for loop for outliers
       else
-        -- end trim outliers if more then 3
+        -- end trim outliers if more then 6
         oldestTime = nil
         for i, item in pairs(outliersList) do
           currentGuild = internal:GetGuildNameByIndex(item.guild)
@@ -565,8 +567,8 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
               ProcessSalesInfo(item)
             end
           end
-        end -- end for loop for outliers less then 3
-      end -- end trim outliers if less then 3
+        end -- end for loop for outliers less then 6
+      end -- end trim outliers if less then 6
     end -- end trim outliers
     if legitSales and legitSales >= 1 then
       if timeInterval > ZO_ONE_DAY_IN_SECONDS then
@@ -608,7 +610,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
   if not avgOnly and MasterMerchant:itemIDHasListings(theIID, itemIndex) then
     bonanzaList = listings_data[theIID][itemIndex]['sales']
     bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
-    if #bonanzaList >= 3 then
+    if #bonanzaList >= 6 then
       local bonanzaQuartile1, bonanzaQuartile3, bonanzaQuartileRange = stats.interquartileRange(bonanzaList)
       for i, item in pairs(bonanzaList) do
         local individualSale = item.price / item.quant
@@ -2706,9 +2708,9 @@ function MasterMerchant:BuildRosterTimeDropdown()
   timeDropdown:AddItem(timeEntry)
   if MasterMerchant.systemSavedVariables.rankIndexRoster == 1 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_3DAY), function() self:UpdateRosterWindow(2) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_YESTERDAY), function() self:UpdateRosterWindow(2) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_3DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_YESTERDAY)) end
 
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateRosterWindow(3) end)
   timeDropdown:AddItem(timeEntry)

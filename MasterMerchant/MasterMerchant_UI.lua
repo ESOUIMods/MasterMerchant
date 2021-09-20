@@ -3111,9 +3111,9 @@ function MasterMerchant:BuildGuiTimeDropdown()
   timeDropdown:AddItem(timeEntry)
   if MasterMerchant.systemSavedVariables.rankIndex == 1 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_3DAY), function() self:UpdateGuildWindow(2) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_YESTERDAY), function() self:UpdateGuildWindow(2) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_3DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_YESTERDAY)) end
 
   timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateGuildWindow(3) end)
   timeDropdown:AddItem(timeEntry)
