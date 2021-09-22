@@ -132,6 +132,7 @@ function internal:RefreshLibGuildStore()
   internal:dm("Debug", "RefreshLibGuildStore")
   internal:dm("Info", GetString(GS_REFRESH_STARTING))
   internal:DatabaseBusy(true)
+  -- DEBUG
   LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)

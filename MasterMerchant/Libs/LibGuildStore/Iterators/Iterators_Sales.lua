@@ -111,7 +111,6 @@ function internal:addSalesData(theEvent)
     local nextLocation = #sales_data[theIID][itemIndex]['sales'] + 1
     searchItemDesc = sales_data[theIID][itemIndex].itemDesc
     searchItemAdderText = sales_data[theIID][itemIndex].itemAdderText
-    sales_data[theIID][itemIndex].newestTime = newEvent.timestamp
     if sales_data[theIID][itemIndex]['sales'][nextLocation] == nil then
       table.insert(sales_data[theIID][itemIndex]['sales'], nextLocation, newEvent)
       insertedIndex = nextLocation
@@ -129,8 +128,6 @@ function internal:addSalesData(theEvent)
       itemAdderText = searchItemAdderText,
       itemDesc      = searchItemDesc,
       sales         = { newEvent } }
-    sales_data[theIID][itemIndex].newestTime = newEvent.timestamp
-    sales_data[theIID][itemIndex].oldestTime = newEvent.timestamp
     --internal:dm("Debug", newEvent)
   end
   sales_data[theIID][itemIndex].wasAltered = true
@@ -139,6 +136,8 @@ function internal:addSalesData(theEvent)
   else
     sales_data[theIID][itemIndex].totalCount = 1
   end
+  if sales_data[theIID][itemIndex]["oldestTime"] == nil or sales_data[theIID][itemIndex]["oldestTime"] > newEvent["timestamp"] then sales_data[theIID][itemIndex]["oldestTime"] = newEvent["timestamp"] end
+  if sales_data[theIID][itemIndex]["newestTime"] == nil or sales_data[theIID][itemIndex]["newestTime"] < newEvent["timestamp"] then sales_data[theIID][itemIndex]["newestTime"] = newEvent["timestamp"] end
 
   -- this section adds the sales to the lists for the MM window
   local guild

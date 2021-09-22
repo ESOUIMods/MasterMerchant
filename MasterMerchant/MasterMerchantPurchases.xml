@@ -214,8 +214,9 @@
               <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="125" y="32"/>
             </Control>
+            <!-- TODO offsetX should be 10 after any sorted column to account for the triangle -->
             <Control name="$(parent)Price" inherits="MM_SortHeaderCenter">
-              <Anchor point="LEFT" relativeTo="$(parent)PurchaseTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Anchor point="LEFT" relativeTo="$(parent)PurchaseTime" relativePoint="RIGHT" offsetX="10" offsetY="0"/>
               <Dimensions x="80" y="32"/>
             </Control>
           </Controls>

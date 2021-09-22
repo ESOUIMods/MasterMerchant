@@ -2989,15 +2989,15 @@ function MasterMerchant:FirstInitialize()
     openWithMail                    = true,
     openWithStore                   = true,
     showFullPrice                   = true,
-    salesWinLeft                    = 30, -- winLeft
+    salesWinLeft                    = 10, -- winLeft
     salesWinTop                     = 85, -- winTop
-    guildWinLeft                    = 30,
+    guildWinLeft                    = 10,
     guildWinTop                     = 85,
-    listingWinLeft                  = 30,
+    listingWinLeft                  = 10,
     listingWinTop                   = 85,
-    purchaseWinLeft                 = 30,
+    purchaseWinLeft                 = 10,
     purchaseWinTop                  = 85,
-    reportsWinLeft                  = 30,
+    reportsWinLeft                  = 10,
     reportsWinTop                   = 85,
     statsWinLeft                    = 720,
     statsWinTop                     = 820,
@@ -3834,21 +3834,21 @@ function MasterMerchant.Slash(allArgs)
     return
   end
   if args == 'invisible' then
-    MasterMerchant.systemSavedVariables.salesWinLeft = 30
-    MasterMerchant.systemSavedVariables.salesWinTop = 85
-    MasterMerchant.systemSavedVariables.guildWinLeft = 30
-    MasterMerchant.systemSavedVariables.guildWinTop = 85
-    MasterMerchant.systemSavedVariables.listingWinLeft = 30
-    MasterMerchant.systemSavedVariables.listingWinTop = 85
-    MasterMerchant.systemSavedVariables.purchaseWinLeft = 30
-    MasterMerchant.systemSavedVariables.purchaseWinTop = 85
-    MasterMerchant.systemSavedVariables.reportsWinLeft = 30
-    MasterMerchant.systemSavedVariables.reportsWinTop = 85
+    MasterMerchant.systemSavedVariables.salesWinLeft = MasterMerchant.systemDefault.salesWinLeft
+    MasterMerchant.systemSavedVariables.salesWinTop = MasterMerchant.systemDefault.salesWinTop
+    MasterMerchant.systemSavedVariables.guildWinLeft = MasterMerchant.systemDefault.guildWinLeft
+    MasterMerchant.systemSavedVariables.guildWinTop = MasterMerchant.systemDefault.guildWinTop
+    MasterMerchant.systemSavedVariables.listingWinLeft = MasterMerchant.systemDefault.listingWinLeft
+    MasterMerchant.systemSavedVariables.listingWinTop = MasterMerchant.systemDefault.listingWinTop
+    MasterMerchant.systemSavedVariables.purchaseWinLeft = MasterMerchant.systemDefault.purchaseWinLeft
+    MasterMerchant.systemSavedVariables.purchaseWinTop = MasterMerchant.systemDefault.purchaseWinTop
+    MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchant.systemDefault.reportsWinLeft
+    MasterMerchant.systemSavedVariables.reportsWinTop = MasterMerchant.systemDefault.reportsWinTop
 
-    MasterMerchant.systemSavedVariables.statsWinLeft = 720
-    MasterMerchant.systemSavedVariables.statsWinTop = 820
-    MasterMerchant.systemSavedVariables.feedbackWinLeft = 720
-    MasterMerchant.systemSavedVariables.feedbackWinTop = 420
+    MasterMerchant.systemSavedVariables.statsWinLeft = MasterMerchant.systemDefault.statsWinLeft
+    MasterMerchant.systemSavedVariables.statsWinTop = MasterMerchant.systemDefault.statsWinTop
+    MasterMerchant.systemSavedVariables.feedbackWinLeft = MasterMerchant.systemDefault.feedbackWinLeft
+    MasterMerchant.systemSavedVariables.feedbackWinTop = MasterMerchant.systemDefault.feedbackWinTop
     MasterMerchant:RestoreWindowPosition()
     MasterMerchant:dm("Info", GetString(MM_RESET_POSITION))
     return
