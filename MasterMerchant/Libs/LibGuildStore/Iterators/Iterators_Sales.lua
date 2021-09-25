@@ -550,12 +550,10 @@ function internal:InitItemHistory()
           local guild = internal.guildItems[currentGuild]
           local _, firstsaledata = next(versiondata.sales, nil)
           local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
-          local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
-            GetItemLinkName(firstsaledataItemLink))
+          local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
           local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
           local searchData = searchDataDesc .. ' ' .. searchDataAdder
-          guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
-            searchData)
+          guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
         end
 
         if (extradata.doMyItems and string.lower(currentSeller) == extradata.playerName) then
@@ -565,12 +563,10 @@ function internal:InitItemHistory()
           local guild = internal.myItems[currentGuild]
           local _, firstsaledata = next(versiondata.sales, nil)
           local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
-          local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME,
-            GetItemLinkName(firstsaledataItemLink))
+          local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
           local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
           local searchData = searchDataDesc .. ' ' .. searchDataAdder
-          guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false,
-            searchData)
+          guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
         end
 
         if (extradata.doGuildSales) then

@@ -1956,7 +1956,7 @@ function MasterMerchant:LibAddonInit()
           setFunc = function(value)
 
             MasterMerchant.systemSavedVariables.diplayGuildInfo = value
-
+            --[[
             if self.UI_GuildTime then
               self.UI_GuildTime:SetHidden(not value)
             end
@@ -1964,9 +1964,13 @@ function MasterMerchant:LibAddonInit()
             for key, column in pairs(self.guild_columns) do
               column:IsDisabled(not value)
             end
+            ]]--
+
+            ReloadUI()
 
           end,
           default = MasterMerchant.systemDefault.diplayGuildInfo,
+          warning = GetString(MM_RELOADUI_WARN),
         },
         [2] = {
           type     = 'checkbox',
@@ -2744,7 +2748,12 @@ end
 
 --/script ZO_SharedRightBackground:SetWidth(1088)
 function MasterMerchant:InitRosterChanges()
-  MasterMerchant:dm("Debug", "InitRosterChanges")
+  if MasterMerchant.systemSavedVariables.diplayGuildInfo then
+    MasterMerchant:dm("Debug", "InitRosterChanges")
+  else
+    MasterMerchant:dm("Debug", "Roster Changes not enabled")
+    return
+  end
   -- LibGuildRoster adding the Sold Column
   MasterMerchant.guild_columns['sold'] = LibGuildRoster:AddColumn({
     key      = 'MM_Sold',
@@ -2882,8 +2891,7 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- Guild Time dropdown choice box
-  MasterMerchant.UI_GuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster,
-    'MasterMerchantStatsGuildDropdown')
+  MasterMerchant.UI_GuildTime = CreateControlFromVirtual('MasterMerchantRosterTimeChooser', ZO_GuildRoster, 'MasterMerchantStatsGuildDropdown')
 
   -- Placing Guild Time dropdown at the bottom of the Count Column when it has been generated
   LibGuildRoster:OnRosterReady(function()
@@ -2951,6 +2959,31 @@ EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER
 
 local function CompleteMasterMerchantSetup()
   MasterMerchant:dm("Debug", "CompleteMasterMerchantSetup")
+
+  -- Add the MasterMerchant window to the mail and trading house scenes if the
+  -- player's settings indicate they want that behavior
+  MasterMerchant.salesUiFragment = ZO_FadeSceneFragment:New(MasterMerchantWindow)
+  MasterMerchant.guildUiFragment = ZO_FadeSceneFragment:New(MasterMerchantGuildWindow)
+  MasterMerchant.listingUiFragment = ZO_FadeSceneFragment:New(MasterMerchantListingWindow)
+  MasterMerchant.purchaseUiFragment = ZO_FadeSceneFragment:New(MasterMerchantPurchaseWindow)
+  MasterMerchant.reportsUiFragment = ZO_FadeSceneFragment:New(MasterMerchantReportsWindow)
+
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then theFragment = MasterMerchant.salesUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == GUILDS then theFragment = MasterMerchant.guildUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then theFragment = MasterMerchant.listingUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then theFragment = MasterMerchant.purchaseUiFragment end
+  if MasterMerchant.systemSavedVariables.viewSize == REPORTS then theFragment = MasterMerchant.reportsUiFragment end
+  if not theFragment then theFragment = MasterMerchant.salesUiFragment end
+
+  if MasterMerchant.systemSavedVariables.openWithMail then
+    MAIL_INBOX_SCENE:AddFragment(theFragment)
+    MAIL_SEND_SCENE:AddFragment(theFragment)
+  end
+
+  if MasterMerchant.systemSavedVariables.openWithStore then
+    TRADING_HOUSE_SCENE:AddFragment(theFragment)
+  end
+
   MasterMerchant.isInitialized = true
   MasterMerchant.listIsDirty[ITEMS] = true
   MasterMerchant.listIsDirty[GUILDS] = true
@@ -3205,34 +3238,10 @@ function MasterMerchant:FirstInitialize()
   self:SetupMasterMerchantWindow()
   self:RestoreWindowPosition()
 
-  -- Add the MasterMerchant window to the mail and trading house scenes if the
-  -- player's settings indicate they want that behavior
-  self.salesUiFragment = ZO_FadeSceneFragment:New(MasterMerchantWindow)
-  self.guildUiFragment = ZO_FadeSceneFragment:New(MasterMerchantGuildWindow)
-  self.listingUiFragment = ZO_FadeSceneFragment:New(MasterMerchantListingWindow)
-  self.purchaseUiFragment = ZO_FadeSceneFragment:New(MasterMerchantPurchaseWindow)
-  self.reportsUiFragment = ZO_FadeSceneFragment:New(MasterMerchantReportsWindow)
-
   LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, self.LinkHandler_OnLinkMouseUp)
 
-  ZO_PreHook('ZO_InventorySlot_ShowContextMenu',
-    function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
+  ZO_PreHook('ZO_InventorySlot_ShowContextMenu', function(rowControl) self:myZO_InventorySlot_ShowContextMenu(rowControl) end)
 
-  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then theFragment = self.salesUiFragment end
-  if MasterMerchant.systemSavedVariables.viewSize == GUILDS then theFragment = self.guildUiFragment end
-  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then theFragment = self.listingUiFragment end
-  if MasterMerchant.systemSavedVariables.viewSize == PURCHASES then theFragment = self.purchaseUiFragment end
-  if MasterMerchant.systemSavedVariables.viewSize == REPORTS then theFragment = self.reportsUiFragment end
-  if not theFragment then theFragment = self.salesUiFragment end
-
-  if MasterMerchant.systemSavedVariables.openWithMail then
-    MAIL_INBOX_SCENE:AddFragment(theFragment)
-    MAIL_SEND_SCENE:AddFragment(theFragment)
-  end
-
-  if MasterMerchant.systemSavedVariables.openWithStore then
-    TRADING_HOUSE_SCENE:AddFragment(theFragment)
-  end
 
   EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_SELECTED_GUILD_CHANGED, function()
     if MasterMerchant.systemSavedVariables.priceCalcAll then

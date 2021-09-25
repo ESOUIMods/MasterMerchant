@@ -232,6 +232,7 @@ function internal:AddExtraSalesData(otherData)
           lang        = MasterMerchant.effective_lang,
           itemIndexData = itemIndexData,
           namespace    = internal.dataNamespace,
+          timestamp = GetTimeStamp(),
         }
         if GS17DataSavedVariables["erroneous_records"] == nil then GS17DataSavedVariables["erroneous_records"] = {} end
         if GS17DataSavedVariables["erroneous_records"][itemID] == nil then GS17DataSavedVariables["erroneous_records"][itemID] = {} end
@@ -279,6 +280,7 @@ function internal:AddExtraListingsData(otherData)
           lang        = MasterMerchant.effective_lang,
           itemIndexData = itemIndexData,
           namespace    = internal.listingsNamespace,
+          timestamp = GetTimeStamp(),
         }
         if GS17DataSavedVariables["erroneous_listings"] == nil then GS17DataSavedVariables["erroneous_listings"] = {} end
         if GS17DataSavedVariables["erroneous_listings"][itemID] == nil then GS17DataSavedVariables["erroneous_listings"][itemID] = {} end

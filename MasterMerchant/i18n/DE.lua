@@ -416,3 +416,4 @@ ZO_CreateStringId("MM_ZONE_INVALID", "You will need to reload your UI after chan
 ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "You will need to reload your UI after changing this value.")
 ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "The old MMxxData modules are only needed for importing MM data. Please disable all MMxxData modules to increase performance and reduce load times.")
 ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList is only needed for importing old data. Please disable ShoppingList after you import its data.")
+ZO_CreateStringId("MM_RELOADUI_WARN", "This will force a UI reload when changed.")
