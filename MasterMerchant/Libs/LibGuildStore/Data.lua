@@ -284,7 +284,7 @@ function internal:SetCancelledItmesData(theIID)
   return savedVars[theIID]
 end
 
-function internal:SetVisitedGuildsData()
+function internal:SetVisitedGuildsData(theIID)
   local dataTable = _G["GS16DataSavedVariables"]
   local savedVars = dataTable[internal.visitedNamespace]
   savedVars[theIID] = {}

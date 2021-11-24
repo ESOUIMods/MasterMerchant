@@ -3359,10 +3359,8 @@ function MasterMerchant:FirstInitialize()
   ZO_PreHookHandler(ItemTooltip, 'OnUpdate', function() self:GenerateStatsItemTooltip() end)
   ZO_PreHookHandler(ItemTooltip, 'OnHide', function() self:remStatsItemTooltip() end)
 
-  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnUpdate',
-    function() self:addStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
-  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnHide',
-    function() self:remStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
+  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnUpdate', function() self:addStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
+  ZO_PreHookHandler(ZO_ProvisionerTopLevelTooltip, 'OnHide', function() self:remStatsPopupTooltip(ZO_ProvisionerTopLevelTooltip) end)
 
   --[[ This is to save the sale price however AGS has its own routines and uses
   its value first so this is usually not seen, although it does save NA and EU

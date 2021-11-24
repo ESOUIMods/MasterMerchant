@@ -451,20 +451,19 @@ function internal:ReferencePostedItemsDataContainer()
     if posted_items_data[itemid] then
       for versionid, versiondata in pairs(versionlist) do
         if posted_items_data[itemid][versionid] then
-          if versiondata.sales then
-            posted_items_data[itemid][versionid].sales = posted_items_data[itemid][versionid].sales or {}
+          if versiondata['sales'] then
+            posted_items_data[itemid][versionid]['sales'] = posted_items_data[itemid][versionid]['sales'] or {}
             -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
+            for saleid, saledata in pairs(versiondata['sales']) do
               if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(posted_items_data[itemid][versionid].sales, saledata)
+                table.insert(posted_items_data[itemid][versionid]['sales'], saledata)
               end
             end
-            local _, first = next(versiondata.sales, nil)
+            local _, first = next(versiondata['sales'], nil)
             if first then
               posted_items_data[itemid][versionid].itemIcon = GetItemLinkInfo(first.itemLink)
               posted_items_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
-              posted_items_data[itemid][versionid].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME,
-                GetItemLinkName(first.itemLink))
+              posted_items_data[itemid][versionid].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(first.itemLink))
             end
           end
         else

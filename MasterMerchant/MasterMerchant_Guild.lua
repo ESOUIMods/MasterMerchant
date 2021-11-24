@@ -39,7 +39,7 @@ function MMSeller:new(_guild, _name, _outsideBuyer, _searchText)
 end
 
 function MMSeller:addSale(rankIndex, amount, stack, sort, tax)
-  if sort == nil then sort = true end
+  if sort == nil then sort = not internal.isDatabaseBusy end
 
   if not self.sales[rankIndex] then
     self.sales[rankIndex] = 0
@@ -195,6 +195,7 @@ function MMGuild:new(_name)
 end
 
 function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, searchText)
+  if sort == nil then sort = not internal.isDatabaseBusy end
   amount = tonumber(amount)
   if type(stack) ~= 'number' then stack = 1 end
 

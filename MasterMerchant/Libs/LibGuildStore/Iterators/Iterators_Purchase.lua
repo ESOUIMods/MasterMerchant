@@ -443,7 +443,7 @@ function internal:InitPurchaseHistory()
         GetItemLinkName(firstsaledataItemLink))
       local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
       local searchData = searchDataDesc .. ' ' .. searchDataAdder
-      guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
+      guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
 
       if not internal.purchasedBuyer[currentGuild] then
         internal.purchasedBuyer[currentGuild] = MMGuild:new(currentGuild)
@@ -491,20 +491,19 @@ function internal:ReferencePurchaseDataContainer()
     if purchases_data[itemid] then
       for versionid, versiondata in pairs(versionlist) do
         if purchases_data[itemid][versionid] then
-          if versiondata.sales then
-            purchases_data[itemid][versionid].sales = purchases_data[itemid][versionid].sales or {}
+          if versiondata['sales'] then
+            purchases_data[itemid][versionid]['sales'] = purchases_data[itemid][versionid]['sales'] or {}
             -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
+            for saleid, saledata in pairs(versiondata['sales']) do
               if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(purchases_data[itemid][versionid].sales, saledata)
+                table.insert(purchases_data[itemid][versionid]['sales'], saledata)
               end
             end
-            local _, first = next(versiondata.sales, nil)
+            local _, first = next(versiondata['sales'], nil)
             if first then
               purchases_data[itemid][versionid].itemIcon = GetItemLinkInfo(first.itemLink)
               purchases_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
-              purchases_data[itemid][versionid].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME,
-                GetItemLinkName(first.itemLink))
+              purchases_data[itemid][versionid].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(first.itemLink))
             end
           end
         else

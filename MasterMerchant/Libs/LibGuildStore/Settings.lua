@@ -229,6 +229,7 @@ function internal:LibAddonInit()
     name    = GetString(GS_REFRESH_LIBHISTOIRE_NAME),
     tooltip = GetString(GS_REFRESH_LIBHISTOIRE_TIP),
     func    = function()
+      LibGuildStore_SavedVariables[internal.firstrunNamespace]  = false
       internal:RefreshLibGuildStore()
       internal:SetupListenerLibHistoire()
       internal:StartQueue()

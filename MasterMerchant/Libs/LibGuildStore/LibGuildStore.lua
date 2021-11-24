@@ -13,6 +13,7 @@ local REPORTS = 'reports_vs'
 --/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal.LibHistoireListener[622389]:GetPendingEventMetrics())
 function internal:CheckStatus()
   --internal:dm("Debug", "CheckStatus")
+  local maxTime = 0
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     local guildName = GetGuildName(guildId)
@@ -32,30 +33,29 @@ function internal:CheckStatus()
 
     if timeLeft == 0 and internal.timeEstimated[guildId] then internal.eventsNeedProcessing[guildId] = false end
 
-    --[[
-    if internal.eventsNeedProcessing[guildId] then
+    maxTime = math.max(maxTime, timeLeft)
+    if internal.eventsNeedProcessing[guildId] and MasterMerchant.systemSavedVariables.useLibDebugLogger then
       internal:dm("Debug", string.format("%s: numEvents: %s eventCount: %s processingSpeed: %s timeLeft: %s", guildName, numEvents, eventCount, processingSpeed, timeLeft))
     end
-    ]]--
 
   end
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
-    if internal.eventsNeedProcessing[guildId] then return true end
+    if internal.eventsNeedProcessing[guildId] then return true, maxTime end
   end
-  return false
+  return false, maxTime
 end
 
 function internal:StartQueue()
   internal:dm("Debug", "StartQueue")
-  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS) -- 60000 1 minute
+  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
 end
 
 function internal:QueueCheckStatus()
-  local eventsRemaining = internal:CheckStatus()
+  local eventsRemaining, timeRemaining = internal:CheckStatus()
   if eventsRemaining then
-    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS) -- 60000 1 minute
-    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED))
+    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
+    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. ": estimated time remaining " .. (math.floor(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)) .. " minutes.")
   else
     --[[
     MasterMerchant.CenterScreenAnnounce_AddMessage(
@@ -120,6 +120,7 @@ local function SetupLibGuildStore()
   end
   internal:dm("Debug", "SetupLibGuildStore For First Run")
   LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
+  internal.isDatabaseBusy = true
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"

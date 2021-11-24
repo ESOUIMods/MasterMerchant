@@ -142,6 +142,7 @@ function internal:addSalesData(theEvent)
   -- this section adds the sales to the lists for the MM window
   local guild
   local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
+  local sortSales = not internal.isDatabaseBusy
 
   guild = internal.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildSales[theEvent.guild] = guild
@@ -153,8 +154,7 @@ function internal:addSalesData(theEvent)
 
   guild = internal.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildItems[theEvent.guild] = guild
-  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil,
-    adderDescConcat)
+  guild:addSaleByDate(theEvent.itemLink, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
 
   local playerName = string.lower(GetDisplayName())
   local isSelfSale = playerName == string.lower(theEvent.seller)
@@ -704,6 +704,16 @@ function internal:CleanOutBad()
     if not internal:IsValidItemLink(currentItemLink) then
       -- Remove it
       -- saledata['itemLink']
+      local dataInfo = {
+        lang        = MasterMerchant.effective_lang,
+        individualSale = versiondata['sales'][saleid],
+        namespace    = internal.dataNamespace,
+        timestamp = GetTimeStamp(),
+        itemLink = currentItemLink
+      }
+      if GS17DataSavedVariables["erroneous_links"] == nil then GS17DataSavedVariables["erroneous_links"] = {} end
+      if GS17DataSavedVariables["erroneous_links"][itemID] == nil then GS17DataSavedVariables["erroneous_links"][itemID] = {} end
+      table.insert(GS17DataSavedVariables["erroneous_links"][itemID], dataInfo)
       versiondata['sales'][saleid] = nil
       extraData.wasAltered = true
       extraData.badItemLinkCount = extraData.badItemLinkCount + 1
@@ -952,20 +962,19 @@ function internal:ReferenceSales(otherData)
     if sales_data[itemid] then
       for versionid, versiondata in pairs(versionlist) do
         if sales_data[itemid][versionid] then
-          if versiondata.sales then
-            sales_data[itemid][versionid].sales = sales_data[itemid][versionid].sales or {}
+          if versiondata['sales'] then
+            sales_data[itemid][versionid]['sales'] = sales_data[itemid][versionid]['sales'] or {}
             -- IPAIRS
-            for saleid, saledata in pairs(versiondata.sales) do
-              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata.timestamp) == 'number') then
-                table.insert(sales_data[itemid][versionid].sales, saledata)
+            for saleid, saledata in pairs(versiondata['sales']) do
+              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata["timestamp"]) == 'number') then
+                table.insert(sales_data[itemid][versionid]['sales'], saledata)
               end
             end
-            local _, first = next(versiondata.sales, nil)
+            local _, first = next(versiondata['sales'], nil)
             if first then
               sales_data[itemid][versionid].itemIcon = GetItemLinkInfo(first.itemLink)
               sales_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
-              sales_data[itemid][versionid].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME,
-                GetItemLinkName(first.itemLink))
+              sales_data[itemid][versionid].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(first.itemLink))
             end
           end
         else

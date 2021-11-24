@@ -2761,7 +2761,7 @@ end
 
 -- Set the visibility status of the main window to the opposite of its current status
 function MasterMerchant:ToggleMasterMerchantWindow()
-  MasterMerchant:dm("Debug", "ToggleMasterMerchantWindow")
+  --MasterMerchant:dm("Debug", "ToggleMasterMerchantWindow")
   if not MasterMerchant.isInitialized then
     MasterMerchant:dm("Debug", "And Gretzky is denied!")
     return
