@@ -1196,7 +1196,7 @@ function MasterMerchant:OnItemLinkAction(itemLink)
     if statsInfo.numDays == 10000 then
       tipLine = GetString(MM_TIP_FORMAT_NONE)
     else
-      tipLine = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), numDays)
+      tipLine = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), statsInfo.numDays)
     end
   end
   if bonanzaTipline then
