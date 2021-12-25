@@ -1259,14 +1259,12 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
 
     local link = linkFunction()
 
-    if (link ~= "" and zo_strmatch(link, '|H.-:item:(.-):')) then
+    if (link ~= "" and string.match(link, '|H.-:item:(.-):')) then
       ClearMenu()
 
       AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:OnItemLinkAction(link) end)
-      AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT),
-        function() ZO_LinkHandler_InsertLink(string.format(SI_TOOLTIP_ITEM_NAME, link)) end)
-
+      AddMenuItem(GetString(SI_ITEM_ACTION_LINK_TO_CHAT), function() ZO_LinkHandler_InsertLink(zo_strformat(SI_TOOLTIP_ITEM_NAME, link)) end)
       ShowMenu(scene)
     end
   end
@@ -1307,8 +1305,7 @@ function MasterMerchant.mySmithingOnTooltipMouseUp(control, button, upInside)
   )
 end
 SMITHING.creationPanel.resultTooltip:SetHandler("OnMouseUp", MasterMerchant.mySmithingOnTooltipMouseUp)
-SMITHING.creationPanel.resultTooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp",
-  MasterMerchant.mySmithingOnTooltipMouseUp)
+SMITHING.creationPanel.resultTooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp", MasterMerchant.mySmithingOnTooltipMouseUp)
 
 function MasterMerchant.myEnchantingOnTooltipMouseUp(control, button, upInside)
   MasterMerchant.myOnTooltipMouseUp(control, button, upInside,
