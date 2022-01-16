@@ -181,7 +181,7 @@
               <Textures normal="/esoui/art/campaign/campaign_tabicon_leaderboard_up.dds"
                         mouseOver="/esoui/art/campaign/campaign_tabicon_leaderboard_over.dds"/>
               <OnMouseEnter>
-                ZO_Tooltips_ShowTextTooltip(self, TOP, "No Listing Rank View")
+                ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(MM_NO_LISTINGS_RANK))
               </OnMouseEnter>
               <OnMouseExit>
                 ZO_Tooltips_HideTextTooltip()

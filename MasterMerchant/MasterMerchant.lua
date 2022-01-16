@@ -1608,10 +1608,10 @@ MasterMerchant.UI_GuildTime = nil
 
 if TamrielTradeCentre then
   MasterMerchant.dealCalcChoices = {
-    "TTC Suggested",
-    "TTC Average",
-    "MM Average",
-    "Bonanza Price",
+  GetString(GS_DEAL_CALC_TTC_SUGGESTED),
+  GetString(GS_DEAL_CALC_TTC_AVERAGE),
+  GetString(GS_DEAL_CALC_MM_AVERAGE),
+  GetString(GS_DEAL_CALC_BONANZA_PRICE),
   }
   MasterMerchant.dealCalcValues = {
     MasterMerchant.USE_TTC_SUGGESTED,
@@ -1621,8 +1621,8 @@ if TamrielTradeCentre then
   }
 else
   MasterMerchant.dealCalcChoices = {
-    "MM Average",
-    "Bonanza Price",
+  GetString(GS_DEAL_CALC_MM_AVERAGE),
+  GetString(GS_DEAL_CALC_BONANZA_PRICE),
   }
   MasterMerchant.dealCalcValues = {
     MasterMerchant.USE_MM_AVERAGE,

@@ -5,14 +5,14 @@
 ; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
 
 
-## Title: Master Merchant 3.6.82 by Sharlikran
+## Title: Master Merchant 3.6.83 by Sharlikran
 ## APIVersion: 101031 101032
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Philgo68, Khaibit, dOpiate, Garkin, Sharlikran
-## Version: 3.6.82
-## AddOnVersion: 3682
+## Version: 3.6.83
+## AddOnVersion: 3683
 ## License: See license - distribution without license is prohibited!
-## LastUpdated: Nov 2021
+## LastUpdated: Jan 2022
 ## SavedVariables: ShopkeeperSavedVars
 ## DependsOn: LibExecutionQueue>=200 LibAddonMenu-2.0>=32 LibMediaProvider-1.0>=18 LibGuildRoster>=10
 ## DependsOn: LibGuildStore>=102 LibDebugLogger>=217
