@@ -47,7 +47,7 @@ ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_NAME", "Importiere ATT Käufe")
 ZO_CreateStringId("GS_IMPORT_ATT_PURCHASE_TIP", "Importiert ATT Käufe Daten nach LibGuildStore.")
 
 ZO_CreateStringId("GS_IMPORT_SL_BUTTON", "Importiere Shoppinglist Daten")
-ZO_CreateStringId("GS_IMPORT_SL_DESC", "Importiere ShoppingList data into LibGuildStore. Previous ShoppingList data did not save the unique ID for the purchase, you may have some duplicates until the purchase is older and becomes trimmed.")
+ZO_CreateStringId("GS_IMPORT_SL_DESC", "Importiere ShoppingList Daten nach LibGuildStore. Vorherige ShoppingList Daten haben keine eindeutige ID für die Käufe gespeichert, daher kann es zu doppelten Einträgen kommen, bis der Kauf älter und getrimmt wird.")
 ZO_CreateStringId("GS_IMPORT_SL_NAME", "Importiere Shoppinglist")
 ZO_CreateStringId("GS_IMPORT_SL_TIP", "Importiert Shoppinglist Daten nach LibGuildStore.")
 
