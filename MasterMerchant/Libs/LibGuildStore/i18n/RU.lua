@@ -156,9 +156,9 @@ ZO_CreateStringId("GS_LIBGUILDSTORE_HISTORY_INIT", "LibGuildStore History Initia
 ZO_CreateStringId("GS_LIBGUILDSTORE_INDEX_DATA", "LibGuildStore Index Data Finished...")
 ZO_CreateStringId("GS_LIBGUILDSTORE_BUSY", "LibGuildStore is busy")
 
-ZO_CreateStringId("GS_IMPORT_ATT_SALES", "Import ATT Sales")
+ZO_CreateStringId("GS_IMPORTING_ATT_SALES", "Import ATT Sales")
 ZO_CreateStringId("GS_ATT_MISSING", "Arkadius Trade Tools Sales Data not detected.")
-ZO_CreateStringId("GS_IMPORT_MM_SALES", "Import MasterMerchant Sales")
+ZO_CreateStringId("GS_IMPORTING_MM_SALES", "Import MasterMerchant Sales")
 ZO_CreateStringId("GS_MM_MISSING", "Old Master Merchant sales not detected.")
 ZO_CreateStringId("GS_MM_EU_NA_IMPORT_WARN", "Your MM data contains values from both NA and EU servers. All versions prior to 3.6.x did not separate NA and EU sales data. You must override this in the LibGuildStore settings.")
 ZO_CreateStringId("GS_MM_EU_NA_DIFFERENT_SERVER_WARN", "You are attempting to import NA or EU MM data, however you logged into a different server type. You must override this in the LibGuildStore settings.")
@@ -169,3 +169,20 @@ ZO_CreateStringId("GS_SHOPPINGLIST_IMPORTED", "ShoppingList data imported.")
 ZO_CreateStringId("GS_ELAPSED_TIME_FORMATTER", "%s seconds to process %s records")
 ZO_CreateStringId("GS_ATT_PURCHASE_DATA_MISSING", "Arkadius Trade Tools Purchases Data Not Found.")
 ZO_CreateStringId("GS_ATT_PURCHASE_DATA_IMPORTED", "Arkadius Trade Tools Purchases Data Not Found.")
+
+-- dropdown choices
+ZO_CreateStringId("GS_DEAL_CALC_TTC_SUGGESTED", "TTC Suggested")
+ZO_CreateStringId("GS_DEAL_CALC_TTC_AVERAGE", "TTC Average")
+ZO_CreateStringId("GS_DEAL_CALC_MM_AVERAGE", "MM Average")
+ZO_CreateStringId("GS_DEAL_CALC_BONANZA_PRICE", "Bonanza Price")
+
+-- description menu text
+ZO_CreateStringId("GS_IMPORT_MM_SALES", "Import MM Sales")
+ZO_CreateStringId("GS_IMPORT_ATT_SALES", "Import ATT Sales")
+ZO_CreateStringId("GS_IMPORT_ATT_PURCHASES", "Import ATT Purchases")
+ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE_DATA", "Refresh LibHistoire Database")
+ZO_CreateStringId("GS_IMPORT_SHOPPINGLIST", "Import ShoppingList")
+ZO_CreateStringId("GS_IMPORT_MM_PRICING", "Import MM Pricing Data")
+ZO_CreateStringId("GS_RESET_NA_LIBGUILDSTORE", "Reset NA LibGuildStore")
+ZO_CreateStringId("GS_RESET_EU_LIBGUILDSTORE", "Reset EU LibGuildStore")
+ZO_CreateStringId("GS_RESET_LISTINGS_DATA", "Reset Listings Data")

@@ -155,7 +155,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Import MM Sales",
+    title = GetString(GS_IMPORT_MM_SALES),
     text  = GetString(GS_IMPORT_MM_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -183,7 +183,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Import ATT Sales",
+    title = GetString(GS_IMPORT_ATT_SALES),
     text  = GetString(GS_IMPORT_ATT_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -202,7 +202,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Import ATT Purchases",
+    title = GetString(GS_IMPORT_ATT_PURCHASES),
     text  = GetString(GS_IMPORT_ATT_PURCHASE_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -221,7 +221,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Refresh LibHistoire Database",
+    title = GetString(GS_REFRESH_LIBHISTOIRE_DATA),
     text  = GetString(GS_REFRESH_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -243,7 +243,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Import ShoppingList",
+    title = GetString(GS_IMPORT_SHOPPINGLIST),
     text  = GetString(GS_IMPORT_SL_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -262,7 +262,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Import MM Pricing Data",
+    title = GetString(GS_IMPORT_MM_PRICING),
     text  = GetString(GS_IMPORT_PD_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -281,7 +281,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Reset NA LibGuildStore",
+    title = GetString(GS_RESET_NA_LIBGUILDSTORE),
     text  = GetString(GS_RESET_NA_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -301,7 +301,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Reset EU LibGuildStore",
+    title = GetString(GS_RESET_EU_LIBGUILDSTORE),
     text  = GetString(GS_RESET_EU_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -321,7 +321,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type  = "description",
-    title = "Reset Listings Data",
+    title = GetString(GS_RESET_LISTINGS_DATA),
     text  = GetString(GS_RESET_LISTINGS_BUTTON),
   }
   optionsData[#optionsData + 1] = {

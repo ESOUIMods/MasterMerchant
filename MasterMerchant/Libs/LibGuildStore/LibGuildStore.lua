@@ -506,7 +506,7 @@ function internal:SlashImportMMSales()
     internal:dm("Info", GetString(GS_MM_EU_NA_DIFFERENT_SERVER_WARN))
     return
   end
-  internal:dm("Info", GetString(GS_IMPORT_MM_SALES))
+  internal:dm("Info", GetString(GS_IMPORTING_MM_SALES))
   local LEQ = LibExecutionQueue:new()
   LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
   LEQ:Add(function() internal:ImportMasterMerchantSales() end, 'ImportMasterMerchantSales')
@@ -522,7 +522,7 @@ function internal:SlashImportATTSales()
     internal:dm("Info", GetString(GS_ATT_MISSING))
     return
   end
-  internal:dm("Info", GetString(GS_IMPORT_ATT_SALES))
+  internal:dm("Info", GetString(GS_IMPORTING_ATT_SALES))
   local LEQ = LibExecutionQueue:new()
   LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
   LEQ:Add(function() internal:ImportATTSales() end, 'ImportATTSales')
