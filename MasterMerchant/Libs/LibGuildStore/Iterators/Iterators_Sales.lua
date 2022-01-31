@@ -712,8 +712,8 @@ function internal:CleanOutBad()
         itemLink = currentItemLink
       }
       if GS17DataSavedVariables["erroneous_links"] == nil then GS17DataSavedVariables["erroneous_links"] = {} end
-      if GS17DataSavedVariables["erroneous_links"][itemID] == nil then GS17DataSavedVariables["erroneous_links"][itemID] = {} end
-      table.insert(GS17DataSavedVariables["erroneous_links"][itemID], dataInfo)
+      if GS17DataSavedVariables["erroneous_links"][itemid] == nil then GS17DataSavedVariables["erroneous_links"][itemid] = {} end
+      table.insert(GS17DataSavedVariables["erroneous_links"][itemid], dataInfo)
       versiondata['sales'][saleid] = nil
       extraData.wasAltered = true
       extraData.badItemLinkCount = extraData.badItemLinkCount + 1
