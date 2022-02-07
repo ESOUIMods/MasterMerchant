@@ -1,5 +1,5 @@
 -- MasterMerchant Russian Localization File
--- Last Updated September 14, 2021
+-- Last Updated February 7, 2022
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
@@ -108,9 +108,9 @@ ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Щелкните для сортир�
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Щелкните для сортировки по цене.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Открыть окно статистики.")
 ZO_CreateStringId("SK_SALES_TOOLTIP", "Экран продаж")
-ZO_CreateStringId("MM_NO_REPORTS_RANK", "No Reports Rank View")
-ZO_CreateStringId("MM_NO_LISTINGS_RANK", "No Listing Rank View")
-ZO_CreateStringId("MM_NO_PURCHASES_RANK", "No Purchase Rank View")
+ZO_CreateStringId("MM_NO_REPORTS_RANK", "Нет экрана со списком лидеров для отчётов")
+ZO_CreateStringId("MM_NO_LISTINGS_RANK", "Нет экрана со списком лидеров для выставлений")
+ZO_CreateStringId("MM_NO_PURCHASES_RANK", "Нет экрана со списком лидеров для покупок")
 ZO_CreateStringId("SK_PURCHASE_TOOLTIP", "Экран покупок")
 ZO_CreateStringId("SK_BONANZA_TOOLTIP", "Экран Bonanza")
 ZO_CreateStringId("SK_MANAGEMENT_TOOLTIP", "Экран прилавка")
@@ -164,10 +164,10 @@ ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_STATS_TOGGLE", "Показат
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_GRAPH_TOGGLE", "Показать/скрыть график цен")
 
 -- Old string for compatibility
-ZO_CreateStringId("MM_OLD_TIP_FORMAT_SINGLE", "Цена от M.M. (%s, %d д.): %.2f")
-ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "Цена от M.M. (%s, %d д.): %.2f")
-ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d продажа/%d продажи/%d продаж]>>")
-ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d предмет/%d предмета/%d предметов]>>")
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_SINGLE", "M.M. price (%s, %d day): %.2f")
+ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
+ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
 -- New values
 ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Цена от MM (%s прод./%s шт., %s д.): %s")
@@ -239,7 +239,7 @@ ZO_CreateStringId("MM_RANGE_NONE", "Нет")
 ZO_CreateStringId("MM_BLACKLIST_NAME", "Фильтр гильдий и учётных записей")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "Укажите имена игроков и названия гильдий, которые нужно исключить из расчёта цен MM.")
 ZO_CreateStringId("MM_BLACKLIST_MENU", "Поместить продавца в фильтр")
-ZO_CreateStringId("MM_BLACKLIST_EXCEEDS", "Can not append account name. The Guild & Account Filter would exceed 2000 characters.")
+ZO_CreateStringId("MM_BLACKLIST_EXCEEDS", "Добавление невозможно. Фильтр гильдий и учётных записей достиг лимита в 2000 символов.")
 
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Свой интервал")
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_TIP", "Дополнительный интервал времени, который можно выбрать в экранах сводки.")
@@ -264,8 +264,8 @@ ZO_CreateStringId("MM_MAX_ITEM_COUNT_TIP", "Максимальное колич�
 
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Заменить цену в инвентаре")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Показывать цену от MM вместо обычной на экране инвентаря.")
-ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Replacement Value Type")
-ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Choose from the MM Average, TTC Average, TTC Suggested, and Bonanza Average prices on the inventory grid.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Тип цены-заменителя")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Для замены цен в инвентаре доступны: средняя по MM, средняя по TTC, рекомендуемая TTC и средняя по Bonanza.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Сообщать о выставлении на продажу")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Отправлять сообщение в чат при каждом выставлении предмета на продажу.")
@@ -414,10 +414,10 @@ ZO_CreateStringId("SK_ALL_CALC_TIP", "Если включено, указанн�
 
 -- notifications
 ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] Вы можете импортировать данные из ATT в Master Merchant в меню настроек LibGuildStore. Это уведомление отключается в настройках Master Merchant в разделе параметров отладки.")
-ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "This will force a UI reload when complete.")
-ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "You will need to reload your UI after changing this value.")
-ZO_CreateStringId("MM_ZONE_INVALID", "You will need to reload your UI after changing this value.")
-ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "You will need to reload your UI after changing this value.")
-ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "The old MMxxData modules are only needed for importing MM data. Please disable all MMxxData modules to increase performance and reduce load times.")
-ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList is only needed for importing old data. Please disable ShoppingList after you import its data.")
-ZO_CreateStringId("MM_RELOADUI_WARN", "This will force a UI reload when changed.")
+ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "Принудительно перезагрузит интерфейс по окончании.")
+ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "Вам будет необходимо перезагрузить интерфейс после изменения этого параметра.")
+ZO_CreateStringId("MM_ZONE_INVALID", "Вам будет необходимо перезагрузить интерфейс после изменения этого параметра.")
+ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "Вам будет необходимо перезагрузить интерфейс после изменения этого параметра.")
+ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "Старые модули MMxxData нужны только для первичного импорта данных MM. Отключите все модули MMxxData для ускорения работы и сокращения времени загрузки.")
+ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList нужен только для импорта старых данных. Отключите ShoppingList после проведения импорта.")
+ZO_CreateStringId("MM_RELOADUI_WARN", "Потребует перезагрузку интерфейса для изменения.")
