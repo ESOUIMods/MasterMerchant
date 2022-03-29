@@ -398,8 +398,6 @@ ZO_CreateStringId("MM_INDEXING_TIP", "Mostra il totale dell'indicizzazione al te
 -- Bonanza filter windows
 ZO_CreateStringId("MM_FILTERBY_LINK_TITLE", "Filtra per nome dell'Oggetto")
 ZO_CreateStringId("MM_FILTERBY_TYPE_TITLE", "Filtra per tipo dell'Oggetto")
-ZO_CreateStringId("MM_ITEMNAME_COLUMN", "Nome dell'Oggetto")
-ZO_CreateStringId("MM_ITEM_ICON_COLUMN", "Icona dell'Oggetto")
 ZO_CreateStringId("MM_ITEMNAME_TEXT", "Nome dell'Oggetto")
 ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Aggiungi il nome al filtro")
 ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Costo dell'artigianato in chat")

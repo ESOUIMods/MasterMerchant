@@ -54,8 +54,8 @@ function MasterMerchant:my_RemoveFilterHandler_OnLinkMouseUp(itemName, button, c
 end
 
 function IFScrollList:SetupNameFiltersRow(control, data)
-  control.icon = GetControl(control, GetString(MM_ITEM_ICON_COLUMN))
-  control.itemName = GetControl(control, GetString(MM_ITEMNAME_COLUMN))
+  control.icon = GetControl(control, "ItemIcon")
+  control.itemName = GetControl(control, "ItemName")
 
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
   control.itemName:SetFont(string.format(fontString, 15))

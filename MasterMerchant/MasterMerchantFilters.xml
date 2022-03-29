@@ -36,8 +36,7 @@
               <Anchor point="LEFT" relativeTo="$(parent)Headers" relativePoint="LEFT" offsetX="32" offsetY="0"/>
               <Dimensions x="210" y="32"/>
               <OnInitialized>
-                ZO_SortHeader_Initialize(MasterMerchantFilterByNameWindowHeadersItemName, GetString(MM_ITEMNAME_COLUMN),
-                'itemName', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "MM_FontGameLargeBold")
+                ZO_SortHeader_Initialize(MasterMerchantFilterByNameWindowHeadersItemName, "ItemName", "itemName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "MM_FontGameLargeBold")
               </OnInitialized>
             </Control>
           </Controls>

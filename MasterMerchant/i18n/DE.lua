@@ -397,8 +397,6 @@ ZO_CreateStringId("MM_INDEXING_TIP", "Zeige die Inidzierungs-Zusammenfassung nac
 -- Bonanza filter windows
 ZO_CreateStringId("MM_FILTERBY_LINK_TITLE", "Filter: Gegenstandsname")
 ZO_CreateStringId("MM_FILTERBY_TYPE_TITLE", "Filter: Gegenstandstyp")
-ZO_CreateStringId("MM_ITEMNAME_COLUMN", "Gegenst.Name")
-ZO_CreateStringId("MM_ITEM_ICON_COLUMN", "Gegenst.Symbol")
 ZO_CreateStringId("MM_ITEMNAME_TEXT", "Gegenstandsname")
 ZO_CreateStringId("MM_FILTER_MENU_ADD_ITEM", "Füge Name zu Filter hinzu")
 ZO_CreateStringId("MM_CRAFT_COST_TO_CHAT", "Herstellungskosten -> Chat")
