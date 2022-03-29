@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.6.89'
+MasterMerchant.version = '3.6.91'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -209,6 +209,12 @@ MasterMerchant.USE_TTC_SUGGESTED = 1
 MasterMerchant.USE_TTC_AVERAGE = 2
 MasterMerchant.USE_MM_AVERAGE = 3
 MasterMerchant.USE_BONANZA = 4
+
+MasterMerchant.USE_DEFAULT_FORMAT = 1
+MasterMerchant.USE_CONDENSED_FORMAT = 2
+MasterMerchant.USE_MM_TTC_FORMAT = 3
+
+MasterMerchant.coinIcon = "|t16:16:EsoUI/Art/currency/currency_gold.dds|t"
 
 ----------------------------------------
 ----- Gamepad                      -----

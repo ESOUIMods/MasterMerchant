@@ -37,6 +37,8 @@ ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Preisinformationen anzeigen")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "Zeigt Preisinformationen basierend auf vergangenen Verkäufen im Tooltip an.")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Zeige Bonanza Preis")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Zeige Bonanza Preise basierend auf den gelisteten Daten, welche du bei Gildenhändlern in den letzten 24 Stunden gesehen hast. Deaktivieren dieser Einstellung entfernt nicht den Bonanza Preis aus dem Diagramm.")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Omit Bonanza Price from Graph when there are less than 6 listings from Bonanza data.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Zeige alternativen TTC Preis")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Zeige den alternativen Tamriel Trade Center Preis im Tooltip an")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Zeige Info über Herstellungskosten")
@@ -106,6 +108,8 @@ ZO_CreateStringId("SK_BUYER_TOOLTIP", "Rechtsklick auf einen K\195\164ufer, um d
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Anklicken um nach Verkaufszeit zu sortieren.")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Anklicken um nach Verkaufspreis zu sortieren.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Statistik Fenster öffnen.")
+ZO_CreateStringId("MM_LOCK_TOOLTIP", "Lock Window.")
+ZO_CreateStringId("MM_UNLOCK_TOOLTIP", "Unlock Window.")
 ZO_CreateStringId("SK_SALES_TOOLTIP", "Verkaufs-Ansicht")
 ZO_CreateStringId("MM_NO_REPORTS_RANK", "Keine Berichte Rang-Ansicht")
 ZO_CreateStringId("MM_NO_LISTINGS_RANK", "Keine gelisteten Rang-Ansicht")
@@ -168,10 +172,27 @@ ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. Preis (%s, %d Tage): %.2f")
 ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d Verkauf/%d Verkäufe]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d Gegenstand/%d Gegenstände]>>")
 
+-- New Price To Chat Strings
+ZO_CreateStringId("MM_TIP_DAYS_STRING", "<<1[%d day/%d days]>>")
+ZO_CreateStringId("MM_TIP_SALES_STRING", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_TIP_LISTINGS_STRING", "<<1[%d listing/%d listings]>>")
+ZO_CreateStringId("MM_TIP_ITEMS_STRING", "<<1[%d item/%d items]>>")
+
+ZO_CreateStringId("MM_MMPTC_DEFAULT_FORMAT", "MM Preis (%s/%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_CONDENSED_FORMAT", "MM Preis (%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_MM_TTC_FORMAT", "MM Preis: %s")
+
+ZO_CreateStringId("MM_BONANZAPTC_DEFAULT_FORMAT", "Bonanza Preis (%s/%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza Preis (%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_MM_TTC_FORMAT", "Bonanza Preis: %s")
+
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Preis: Vorg.: %s/Durch.: %s")
+
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "MM Preis (%s Verkäufe/%s Gegenstände, %s Tag): %s")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "MM Preis (%s Verkäufe/%s Gegenstände, %s Tage): %s")
-ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza Preis (%s Gelistete/%s Gegenstände): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "MM Preis (%s Verkäufe/%s Gegenstände, %s Tag): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "MM Preis (%s Verkäufe/%s Gegenstände, %s Tage): %s")
+ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza Preis (%s Gelistete/%s Gegenstände): %s")
+
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s Gelistete] Vorg.: %s, Durch.: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[Kein TTC Preis]")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM keine Daten")
@@ -254,8 +275,6 @@ ZO_CreateStringId("MM_SAUCY_TIP", "Zeigt im Gildenladen den potenziellen Gewinn 
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "Gewinnfilter anzeigen (AGS)")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Fügt einen zusätzlichen Awesome Guild Store (AGS) Filter, basierend auf dem Gewinn, an.")
 
-ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d Gegenstand/%d Gegenst\195\164nde]>>")
-
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_NAME", "Min Elementanzahl")
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_TIP", "Minimale Anzahl der Verkäufe für ein Element, um in der Geschichte zu halten.")
 ZO_CreateStringId("MM_MAX_ITEM_COUNT_NAME", "Max Elementanzahl")
@@ -321,6 +340,16 @@ ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventar Optionen")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Einkaufsliste")
 ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
+
+-- New Price To Chat Options
+ZO_CreateStringId("MASTER_MERCHANT_PRICETOCHAT_OPTIONS", "Price To Chat Options")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_TIP", "Omit Bonanza Price from Price To Chat when there are less than 6 listings from Bonanza data.")
+ZO_CreateStringId("MM_CHATFORMATS_DEFAULT", "Default")
+ZO_CreateStringId("MM_CHATFORMATS_CONDENSED", "Without Item Count")
+ZO_CreateStringId("MM_CHATFORMATS_MM_TTC", "MM plus TTC")
+ZO_CreateStringId("MM_CHATFORMAT_NAME", "Price To Chat Format")
+ZO_CreateStringId("MM_CHATFORMAT_TIP", "Sellect the Price To Chat Format. The Bonanza Price will be included depending on the toggle setting for less then 6 listings in the Bonanza data.")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initialisierung...")
@@ -414,7 +443,7 @@ ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] Du kannst ATT Daten n
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "Dies wird die Benutzeroberfläche neuladen, wenn der Vorgang abgeschlossen ist.")
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "Du musst die Benutzeroberfläche neuladen, wenn du diese Option veränderst!")
 ZO_CreateStringId("MM_ZONE_INVALID", "Du musst die Benutzeroberfläche neuladen, wenn du diese Option veränderst!")
-ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "Du musst die Benutzeroberfläche neuladen, wenn du diese Option veränderst!")
+ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "BeamMeUp is not active.")
 ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "Die alten MMxxData Verzeichnisse/AddOns werden nur für das Importieren alter MM Daten benötigt. Bitte deaktiviere alle MMxxData AddOns im AddOnManager, um die Performance zu verbessern, und die Ladezeiten zu verringern!")
 ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList wird nur zum Importierne von alten Daten benötigt. Bitte deaktiviere das ShoppingList AddOn im AddOnManager, nachdem du die Daten importiert hast, um die Performance zu verbessern, und die Ladezeiten zu verringern!")
 ZO_CreateStringId("MM_RELOADUI_WARN", "Achtung: Dies wird, wenn verändert, die Benutzeroberfläche direkt neuladen!")

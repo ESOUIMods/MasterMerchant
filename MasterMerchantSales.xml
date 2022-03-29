@@ -43,8 +43,8 @@
               </Controls>
             </Backdrop>
             <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-              <Anchor point="TOP" relativeTo="$(parent)MenuHeader" relativePoint="TOP" offsetX="0" offsetY="5"/>
-              <Dimensions x="365" y="40"/>
+              <Anchor point="TOP" relativeTo="$(parent)MenuHeader" relativePoint="TOP" offsetX="-30" offsetY="5"/>
+              <Dimensions x="350" y="42"/>
             </Label>
             <!-- Buttons in reverse order and anchored to upper right corner relative to each other -->
             <Button name="$(parent)CloseButton" inheritAlpha="true">
@@ -156,8 +156,7 @@
                 ZO_Tooltips_HideTextTooltip()
               </OnMouseExit>
             </Button>
-            <Button name="$(parent)StatsButton" inheritAlpha="true" verticalAlignment="CENTER"
-                    horizontalAlignment="CENTER">
+            <Button name="$(parent)StatsButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
               <Anchor point="RIGHT" relativeTo="$(parent)ViewSizeButton" relativePoint="LEFT" offsetX="5" offsetY="0"/>
               <Dimensions x="42" y="42"/>
               <Textures normal="/esoui/art/journal/journal_tabicon_lorelibrary_up.dds"
@@ -167,6 +166,26 @@
               </OnClicked>
               <OnMouseEnter>
                 ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(SK_STATS_TOOLTIP))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Tooltips_HideTextTooltip()
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)LockButton" hidden="false" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+              <Anchor point="RIGHT" relativeTo="$(parent)StatsButton" relativePoint="LEFT" offsetX="5" offsetY="2"/>
+              <Dimensions x="32" y="32"/>
+              <!-- <Textures normal="/esoui/art/miscellaneous/locked_up.dds"
+                        mouseOver="/esoui/art/miscellaneous/locked_over.dds"/> 
+                        <Textures normal="/esoui/art/miscellaneous/unlocked_up.dds"
+                        mouseOver="/esoui/art/miscellaneous/unlocked_over.dds"/>
+                        MM_UNLOCK_TOOLTIP / MM_UNLOCK_TOOLTIP -->
+              <Textures normal="/esoui/art/miscellaneous/locked_up.dds"
+                        mouseOver="/esoui/art/miscellaneous/locked_over.dds"/>
+              <OnClicked>
+                MasterMerchant:ToggleWindowLock()
+              </OnClicked>
+              <OnMouseEnter>
+                ZO_Tooltips_ShowTextTooltip(self, TOP, MasterMerchant:GetLockButtonTooltipText())
               </OnMouseEnter>
               <OnMouseExit>
                 ZO_Tooltips_HideTextTooltip()

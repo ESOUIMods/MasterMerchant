@@ -197,6 +197,19 @@ function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
   end
 end
 
+function MM_Graph:OnSellerNameClicked(self, mouseButton, sellerName, itemLink)
+  local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
+  local lengthSellerName = string.len(sellerName) + 2
+  if lengthBlacklist + lengthSellerName > 2000 then
+     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
+  else
+    if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
+      MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
+      MasterMerchant:ClearItemCacheByItemLink(itemLink)
+    end
+  end
+end
+
 function MM_Graph:MyGraphPointClickHandler(self, button, upInside, sellerName)
   if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
     ClearMenu()

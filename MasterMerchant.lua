@@ -125,6 +125,8 @@ function RemoveListingsPerBlacklist(list)
 
   blacklistTable = BuildBlacklistTable(MasterMerchant.systemSavedVariables.blacklist)
   for i, item in pairs(list) do
+    currentGuild = internal:GetGuildNameByIndex(item.guild)
+    currentSeller = internal:GetAccountNameByIndex(item.seller)
     nameInBlacklist = IsNameInBlacklist()
     if not nameInBlacklist then
       table.insert(dataList, item)
@@ -387,7 +389,7 @@ function MasterMerchant:GetTooltipStats(theIID, itemIndex, avgOnly, priceEval)
       end
     else
       -- not clickable or detailed
-      tooltip = stringPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+      tooltip = stringPrice .. MasterMerchant.coinIcon
     end
     table.insert(salesPoints,
       { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller })
@@ -764,15 +766,15 @@ graphInfo
 function MasterMerchant:AvgPricePriceTip(avgPrice, numSales, numItems, numDays, chatText)
   -- TODO add Bonanza price
   local formatedPriceString = nil
-  tipFormat = GetString(MM_TIP_FORMAT_MULTI)
+  tipFormat = GetString(MM_GRAPHTIP_FORMAT_MULTI)
   -- change only when needed
   if numDays < 2 then
-    tipFormat = GetString(MM_TIP_FORMAT_SINGLE)
+    tipFormat = GetString(MM_GRAPHTIP_FORMAT_SINGLE)
   end
 
   local avePriceString = self.LocalizedNumber(avgPrice)
   -- chatText
-  if not chatText then avePriceString = avePriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+  if not chatText then avePriceString = avePriceString .. MasterMerchant.coinIcon end
   formatedPriceString = string.format(tipFormat, numSales, numItems, numDays, avePriceString)
 
   return formatedPriceString
@@ -795,8 +797,8 @@ function MasterMerchant:BonanzaPriceTip(bonanzaPrice, bonanzaSales, bonanzaCount
   local formatedBonanzaString = nil
   local bonanzaPriceString = self.LocalizedNumber(bonanzaPrice)
   -- chatText
-  if not chatText then bonanzaPriceString = bonanzaPriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
-  formatedBonanzaString = string.format(GetString(MM_BONANZA_TIP), bonanzaSales, bonanzaCount, bonanzaPriceString)
+  if not chatText then bonanzaPriceString = bonanzaPriceString .. MasterMerchant.coinIcon end
+  formatedBonanzaString = string.format(GetString(MM_BONANZA_GRAPHTIP), bonanzaSales, bonanzaCount, bonanzaPriceString)
 
   return formatedBonanzaString
 end
@@ -807,8 +809,8 @@ function MasterMerchant:TTCPriceTip(itemLink)
   if priceStats then
     local suggestedPriceString = self.LocalizedNumber(priceStats.SuggestedPrice)
     local avgPriceString = self.LocalizedNumber(priceStats.Avg)
-    suggestedPriceString = suggestedPriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-    avgPriceString = avgPriceString .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+    suggestedPriceString = suggestedPriceString .. MasterMerchant.coinIcon
+    avgPriceString = avgPriceString .. MasterMerchant.coinIcon
     formatedTTCString = string.format(GetString(MM_TTC_ALT_TIP), priceStats.EntryCount, suggestedPriceString, avgPriceString)
   else
     formatedTTCString = GetString(MM_NO_TTC_PRICE)
@@ -971,7 +973,7 @@ function MasterMerchant:CraftCostPriceTip(itemLink, chatText)
     craftTip = GetString(MM_CRAFTCOST_PRICE_TIP)
     local craftTipString = self.LocalizedNumber(cost)
     -- chatText
-    if not chatText then craftTip = craftTip .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+    if not chatText then craftTip = craftTip .. MasterMerchant.coinIcon end
 
     return string.format(craftTip, craftTipString)
   else
@@ -1176,36 +1178,140 @@ end
 -- |H0:item:90919:359:50:0:0:0:0:0:0:0:0:0:0:0:0:23:0:0:0:10000:0|h|h
 -- |H1:item:95396:363:50:0:0:0:0:0:0:0:0:0:0:0:0:35:0:0:0:400:0|h|h
 -- |H1:item:151661:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
+function MasterMerchant:GetTiplineInfo(itemLink)
+  local avgPriceString = nil
+  local avgPriceDays = nil
+  local avgPriceNumItems = 0
+  local avgPriceNumSales = 0
+  local avgPriceNone = nil
+
+  local bonanzaPriceString = nil
+  local bonanzaPriceNumListingsString = 0 -- statsInfo.bonanzaSales
+  local bonanzaPriceNumItems = 0 -- statsInfo.bonanzaCount
+
+  local ttcSuggestedPriceString = nil
+  local ttcAvgPriceString = nil
+
+  local itemText = string.gsub(itemLink, '|H0', '|H1')
+
+  local itemID = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
+  local statsInfo = self:GetTooltipStats(itemID, itemIndex, false, true)
+  if statsInfo.avgPrice then
+    avgPriceString = self.LocalizedNumber(statsInfo.avgPrice)
+    avgPriceDays = zo_strformat(GetString(MM_TIP_DAYS_STRING), statsInfo.numDays)
+    avgPriceNumItems = zo_strformat(GetString(MM_TIP_ITEMS_STRING), statsInfo.numItems)
+    avgPriceNumSales = zo_strformat(GetString(MM_TIP_SALES_STRING), statsInfo.numSales)
+  end
+  if not statsInfo.avgPrice then
+    -- 10000 for numDays is more or less like saying it is undefined
+    if statsInfo.numDays == 10000 then
+      avgPriceNone = GetString(MM_TIP_FORMAT_NONE)
+    else
+      avgPriceNone = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), statsInfo.numDays)
+    end
+  end
+  --MasterMerchant:dm("Debug", avgPriceString)
+  --MasterMerchant:dm("Debug", avgPriceDays)
+  --MasterMerchant:dm("Debug", avgPriceNumItems)
+  --MasterMerchant:dm("Debug", avgPriceNumSales)
+  --MasterMerchant:dm("Debug", avgPriceNone)
+
+  if statsInfo.bonanzaPrice then
+    bonanzaPriceString = self.LocalizedNumber(statsInfo.bonanzaPrice)
+    bonanzaPriceNumListingsString = zo_strformat(GetString(MM_TIP_LISTINGS_STRING), statsInfo.bonanzaSales)
+    bonanzaPriceNumItems = zo_strformat(GetString(MM_TIP_ITEMS_STRING), statsInfo.bonanzaCount)
+  end
+  --MasterMerchant:dm("Debug", bonanzaPriceString)
+  --MasterMerchant:dm("Debug", bonanzaPriceNumListingsString)
+  --MasterMerchant:dm("Debug", bonanzaPriceNumItems)
+
+  local ttcPriceInfo = nil
+  if TamrielTradeCentre then
+    ttcPriceInfo = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
+  end
+  if ttcPriceInfo then
+    ttcSuggestedPriceString = self.LocalizedNumber(ttcPriceInfo.SuggestedPrice)
+    ttcAvgPriceString = self.LocalizedNumber(ttcPriceInfo.Avg)
+  end
+  --MasterMerchant:dm("Debug", ttcSuggestedPriceString)
+  --MasterMerchant:dm("Debug", ttcAvgPriceString)
+
+  local returnData = {
+    ['avgPriceString'] = avgPriceString, ['avgPriceDays'] = avgPriceDays, ['avgPriceNumItems'] = avgPriceNumItems, ['avgPriceNumSales'] = avgPriceNumSales, ['avgPriceNone'] = avgPriceNone,
+    ['bonanzaPriceString'] = bonanzaPriceString, ['bonanzaPriceNumListingsString'] = bonanzaPriceNumListingsString, ['bonanzaPriceNumListings'] = statsInfo.bonanzaSales, ['bonanzaPriceNumItems'] = bonanzaPriceNumItems,
+    ['ttcSuggestedPriceString'] = ttcSuggestedPriceString, ['ttcAvgPriceString'] = ttcAvgPriceString,
+    ['itemText'] = itemText,
+  }
+  --MasterMerchant:dm("Debug", returnData)
+  return returnData
+end
+
+function MasterMerchant:GetAvgPriceString(avgPriceString, avgPriceDays, avgPriceNumItems, avgPriceNumSales)
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_DEFAULT_FORMAT then
+    return string.format(GetString(MM_MMPTC_DEFAULT_FORMAT), avgPriceNumSales, avgPriceNumItems, avgPriceDays, avgPriceString)
+  end
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_CONDENSED_FORMAT then
+    return string.format(GetString(MM_MMPTC_CONDENSED_FORMAT), avgPriceNumSales, avgPriceDays, avgPriceString)
+  end
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_MM_TTC_FORMAT then
+    return string.format(GetString(MM_MMPTC_MM_TTC_FORMAT), avgPriceString)
+  end
+end
+
+function MasterMerchant:GetBonanzaPriceString(bonanzaPriceString, bonanzaPriceNumListingsString, bonanzaPriceNumItems)
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_DEFAULT_FORMAT then
+    return string.format(GetString(MM_BONANZAPTC_DEFAULT_FORMAT), bonanzaPriceNumListingsString, bonanzaPriceNumItems, bonanzaPriceString)
+  end
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_CONDENSED_FORMAT then
+    return string.format(GetString(MM_BONANZAPTC_CONDENSED_FORMAT), bonanzaPriceNumListingsString, bonanzaPriceString)
+  end
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_MM_TTC_FORMAT then
+    return string.format(GetString(MM_BONANZAPTC_MM_TTC_FORMAT), bonanzaPriceString)
+  end
+end
+
+function MasterMerchant:GetTtcPriceString(ttcSuggestedPriceString, ttcAvgPriceString)
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_MM_TTC_FORMAT then
+    return string.format(GetString(MM_TTCPTC_MM_TTC_FORMAT), ttcSuggestedPriceString, ttcAvgPriceString)
+  end
+end
+
 function MasterMerchant:OnItemLinkAction(itemLink)
+  local tiplineInfo = MasterMerchant:GetTiplineInfo(itemLink)
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   local tipLine = nil
   local bonanzaTipline = nil
-  -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
-  local statsInfo = self:GetTooltipStats(itemID, itemIndex, false, true)
-  if statsInfo.avgPrice then
-    tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems,
-      statsInfo.numDays, true)
+  local ttcTipline = nil
+  if tiplineInfo.avgPriceString then
+    tipLine = MasterMerchant:GetAvgPriceString(tiplineInfo.avgPriceString, tiplineInfo.avgPriceDays, tiplineInfo.avgPriceNumItems, tiplineInfo.avgPriceNumSales)
   end
-  if statsInfo.bonanzaPrice then
-    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, true)
+  if tiplineInfo.avgPriceNone then
+    tipLine = tiplineInfo.avgPriceNone
   end
-
-  if not tipLine then
-    -- 10000 for numDays is more or less like saying it is undefined
-    if statsInfo.numDays == 10000 then
-      tipLine = GetString(MM_TIP_FORMAT_NONE)
-    else
-      tipLine = string.format(GetString(MM_TIP_FORMAT_NONE_RANGE), statsInfo.numDays)
+  if tiplineInfo.bonanzaPriceString then
+    bonanzaTipline = MasterMerchant:GetBonanzaPriceString(tiplineInfo.bonanzaPriceString, tiplineInfo.bonanzaPriceNumListingsString, tiplineInfo.bonanzaPriceNumItems)
+  end
+  if tiplineInfo and tiplineInfo.bonanzaPriceNumListings then
+    if (tiplineInfo.bonanzaPriceNumListings < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingChatLessThanSix then
+      bonanzaTipline = nil
     end
   end
   if bonanzaTipline then
-    bonanzaTipline = MasterMerchant.concat(":", bonanzaTipline)
+    tipLine = tipLine .. " : " .. bonanzaTipline
   end
+  if tiplineInfo and tiplineInfo.ttcSuggestedPriceString then
+    ttcTipline = MasterMerchant:GetTtcPriceString(tiplineInfo.ttcSuggestedPriceString, tiplineInfo.ttcAvgPriceString)
+  end
+  if ttcTipline then
+    tipLine = tipLine .. " : " .. ttcTipline
+  end
+
   local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
   if (not ChatEditControl:HasFocus()) then StartChatInput() end
-  local itemText = string.gsub(itemLink, '|H0', '|H1')
-  ChatEditControl:InsertText(MasterMerchant.concat(tipLine, bonanzaTipline, GetString(MM_TIP_FOR), itemText))
+  ChatEditControl:InsertText(MasterMerchant.concat(tipLine, GetString(MM_TIP_FOR), tiplineInfo.itemText))
 end
 
 function MasterMerchant:onItemActionLinkCCLink(itemLink)
@@ -1326,6 +1432,16 @@ function MasterMerchant:my_NameHandler_OnLinkMouseUp(player, button, control)
         function() StartChatInput(nil, CHAT_CHANNEL_WHISPER, player) end)
       AddMenuItem(GetString(SI_SOCIAL_MENU_SEND_MAIL), function() MAIL_SEND:ComposeMailTo(player) end)
       ShowMenu(control)
+    end
+  end
+end
+
+function MasterMerchant:my_SellerColumn_OnLinkMouseUp(player, itemLink, button, control)
+  if type(player) == 'string' then
+    if (button == 2 and player ~= '') then
+    ClearMenu()
+    AddMenuItem(GetString(MM_BLACKLIST_MENU), function() MM_Graph:OnSellerNameClicked(self, button, player, itemLink) end)
+    ShowMenu()
     end
   end
 end
@@ -1629,6 +1745,17 @@ else
     MasterMerchant.USE_BONANZA,
   }
 end
+
+MasterMerchant.priceToChatFormats = {
+  GetString(MM_CHATFORMATS_DEFAULT),
+  GetString(MM_CHATFORMATS_CONDENSED),
+  GetString(MM_CHATFORMATS_MM_TTC),
+}
+MasterMerchant.priceToChatValues = {
+  MasterMerchant.USE_DEFAULT_FORMAT,
+  MasterMerchant.USE_CONDENSED_FORMAT,
+  MasterMerchant.USE_MM_TTC_FORMAT,
+}
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
   -- configure font choices
@@ -1648,15 +1775,15 @@ function MasterMerchant:LibAddonInit()
   }
   LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
 
-  local optionsData = {
-    [1]  = {
+  local optionsData = {}
+  optionsData[#optionsData + 1] = {
       type    = "header",
       name    = GetString(MASTER_MERCHANT_WINDOW_NAME),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MasterMerchantWindowOptions",
-    },
+    }
     -- Open main window with mailbox scenes
-    [2]  = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_OPEN_MAIL_NAME),
       tooltip = GetString(SK_OPEN_MAIL_TIP),
@@ -1675,9 +1802,9 @@ function MasterMerchant:LibAddonInit()
         end
       end,
       default = MasterMerchant.systemDefault.openWithMail,
-    },
+    }
     -- Open main window with trading house scene
-    [3]  = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_OPEN_STORE_NAME),
       tooltip = GetString(SK_OPEN_STORE_TIP),
@@ -1694,9 +1821,9 @@ function MasterMerchant:LibAddonInit()
         end
       end,
       default = MasterMerchant.systemDefault.openWithStore,
-    },
+    }
     -- Show full sale price or post-tax price
-    [4]  = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_FULL_SALE_NAME),
       tooltip = GetString(SK_FULL_SALE_TIP),
@@ -1709,9 +1836,9 @@ function MasterMerchant:LibAddonInit()
         MasterMerchant.listIsDirty[PURCHASES] = true
       end,
       default = MasterMerchant.systemDefault.showFullPrice,
-    },
+    }
     -- Font to use
-    [5]  = {
+    optionsData[#optionsData + 1] = {
       type    = 'dropdown',
       name    = GetString(SK_WINDOW_FONT_NAME),
       tooltip = GetString(SK_WINDOW_FONT_TIP),
@@ -1725,9 +1852,9 @@ function MasterMerchant:LibAddonInit()
         else self.listingScrollList:RefreshVisible() end
       end,
       default = MasterMerchant.systemDefault.windowFont,
-    },
+    }
     -- 6 Sound and Alert options
-    [6]  = {
+    optionsData[#optionsData + 1] = {
       type     = 'submenu',
       name     = GetString(SK_ALERT_OPTIONS_NAME),
       tooltip  = GetString(SK_ALERT_OPTIONS_TIP),
@@ -1801,9 +1928,9 @@ function MasterMerchant:LibAddonInit()
           disabled = function() return MasterMerchant.AwesomeGuildStoreDetected end,
         },
       },
-    },
+    }
     -- 7 Tip display and calculation options
-    [7]  = {
+    optionsData[#optionsData + 1] = {
       type     = 'submenu',
       name     = GetString(MM_CALC_OPTIONS_NAME),
       tooltip  = GetString(MM_CALC_OPTIONS_TIP),
@@ -1937,9 +2064,9 @@ function MasterMerchant:LibAddonInit()
           default = MasterMerchant.systemDefault.customTimeframeType,
         },
       },
-    },
+    }
     -- 8 guild roster menu
-    [8]  = {
+    optionsData[#optionsData + 1] = {
       type     = 'submenu',
       name     = GetString(MM_GUILD_ROSTER_OPTIONS_NAME),
       tooltip  = GetString(MM_GUILD_ROSTER_OPTIONS_TIP),
@@ -2019,52 +2146,61 @@ function MasterMerchant:LibAddonInit()
           default  = MasterMerchant.systemDefault.diplayCountInfo,
         },
       },
-    },
+    }
     -- 9 Other Tooltips -----------------------------------
-    [9]  = {
+    optionsData[#optionsData + 1] = {
       type    = "header",
       name    = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#OtherTooltipOptions",
-    },
+    }
     -- Whether or not to show the pricing graph in tooltips
-    [10] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_SHOW_GRAPH_NAME),
       tooltip = GetString(SK_SHOW_GRAPH_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showGraph end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showGraph = value end,
       default = MasterMerchant.systemDefault.showGraph,
-    },
+    }
     -- Whether or not to show the pricing data in tooltips
-    [11] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_SHOW_PRICING_NAME),
       tooltip = GetString(SK_SHOW_PRICING_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showPricing end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showPricing = value end,
       default = MasterMerchant.systemDefault.showPricing,
-    },
+    }
     -- Whether or not to show the bonanza price in tooltips
-    [12] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_SHOW_BONANZA_PRICE_NAME),
       tooltip = GetString(SK_SHOW_BONANZA_PRICE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showBonanzaPricing end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showBonanzaPricing = value end,
       default = MasterMerchant.systemDefault.showBonanzaPricing,
-    },
+    }
+    -- Whether or not to show the bonanza price if less then 6 listings
+    optionsData[#optionsData + 1] = {
+      type    = 'checkbox',
+      name    = GetString(MM_BONANZA_PRICEONGRAPH_NAME),
+      tooltip = GetString(MM_BONANZA_PRICEONGRAPH_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix = value end,
+      default = MasterMerchant.systemDefault.omitBonanzaPricingGraphLessThanSix,
+    }
     -- Whether or not to show the alternate TTC price in tooltips
-    [13] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_SHOW_TTC_PRICE_NAME),
       tooltip = GetString(SK_SHOW_TTC_PRICE_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showAltTtcTipline end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAltTtcTipline = value end,
       default = MasterMerchant.systemDefault.showAltTtcTipline,
-    },
+    }
     -- Whether or not to show tooltips on the graph points
-    [14] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_GRAPH_INFO_NAME),
       tooltip = GetString(MM_GRAPH_INFO_TIP),
@@ -2074,27 +2210,27 @@ function MasterMerchant:LibAddonInit()
         MasterMerchant.itemInformationCache = { }
       end,
       default = MasterMerchant.systemDefault.displaySalesDetails,
-    },
+    }
     -- Whether or not to show the crafting costs data in tooltips
-    [15] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_SHOW_CRAFT_COST_NAME),
       tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showCraftCost end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showCraftCost = value end,
       default = MasterMerchant.systemDefault.showCraftCost,
-    },
+    }
     -- Whether or not to show the quality/level adjustment buttons
-    [16] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_LEVEL_QUALITY_NAME),
       tooltip = GetString(MM_LEVEL_QUALITY_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.displayItemAnalysisButtons end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.displayItemAnalysisButtons = value end,
       default = MasterMerchant.systemDefault.displayItemAnalysisButtons,
-    },
+    }
     -- should we trim outliers prices?
-    [17] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_TRIM_OUTLIERS_NAME),
       tooltip = GetString(SK_TRIM_OUTLIERS_TIP),
@@ -2104,24 +2240,52 @@ function MasterMerchant:LibAddonInit()
         MasterMerchant.itemInformationCache = { }
       end,
       default = MasterMerchant.systemDefault.trimOutliers,
-    },
+    }
     -- should we trim off decimals?
-    [18] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_TRIM_DECIMALS_NAME),
       tooltip = GetString(SK_TRIM_DECIMALS_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.trimDecimals end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.trimDecimals = value end,
       default = MasterMerchant.systemDefault.trimDecimals,
-    },
-    [19] = {
+    }
+    -- Section: Price To Chat Options
+    optionsData[#optionsData + 1] = {
+      type    = "header",
+      name    = GetString(MASTER_MERCHANT_PRICETOCHAT_OPTIONS),
+      width   = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
+    }
+    -- Whether or not to show the bonanza price if less then 6 listings
+    optionsData[#optionsData + 1] = {
+      type    = 'checkbox',
+      name    = GetString(MM_BONANZA_PRICETOCHAT_NAME),
+      tooltip = GetString(MM_BONANZA_PRICETOCHAT_TIP),
+      getFunc = function() return MasterMerchant.systemSavedVariables.omitBonanzaPricingChatLessThanSix end,
+      setFunc = function(value) MasterMerchant.systemSavedVariables.omitBonanzaPricingChatLessThanSix = value end,
+      default = MasterMerchant.systemDefault.omitBonanzaPricingChatLessThanSix,
+    }
+    -- Price To Chat format
+    optionsData[#optionsData + 1] = {
+      type          = 'dropdown',
+      name          = GetString(MM_CHATFORMAT_NAME),
+      tooltip       = GetString(MM_CHATFORMAT_TIP),
+      choices       = MasterMerchant.priceToChatFormats,
+      choicesValues = MasterMerchant.priceToChatValues,
+      getFunc       = function() return MasterMerchant.systemSavedVariables.priceToChatTypeToUse end,
+      setFunc       = function(value) MasterMerchant.systemSavedVariables.priceToChatTypeToUse = value end,
+      default       = MasterMerchant.systemDefault.priceToChatTypeToUse,
+    }
+    -- Section: Inventory Options
+    optionsData[#optionsData + 1] = {
       type    = "header",
       name    = GetString(MASTER_MERCHANT_INVENTORY_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
-    },
+    }
     -- should we replace inventory values?
-    [20] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_REPLACE_INVENTORY_VALUES_NAME),
       tooltip = GetString(MM_REPLACE_INVENTORY_VALUES_TIP),
@@ -2129,9 +2293,9 @@ function MasterMerchant:LibAddonInit()
       setFunc = function(value) MasterMerchant.systemSavedVariables.replaceInventoryValues = value end,
       default = MasterMerchant.systemDefault.replaceInventoryValues,
       warning = GetString(MM_RESET_LISTINGS_WARN),
-    },
+    }
     -- replace inventory value type
-    [21] = {
+    optionsData[#optionsData + 1] = {
       type          = 'dropdown',
       name          = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_NAME),
       tooltip       = GetString(MM_REPLACE_INVENTORY_VALUE_TYPE_TIP),
@@ -2142,51 +2306,51 @@ function MasterMerchant:LibAddonInit()
       default       = MasterMerchant.systemDefault.replacementTypeToUse,
       disabled      = function() return not MasterMerchant.systemSavedVariables.replaceInventoryValues end,
       warning       = GetString(MM_RESET_LISTINGS_WARN),
-    },
-    [22] = {
+    }
+    optionsData[#optionsData + 1] = {
       type    = "header",
       name    = GetString(GUILD_STORE_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildStoreOptions",
-    },
+    }
     -- Should we show the stack price calculator in the Vanilla UI?
-    [23] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_CALC_NAME),
       tooltip = GetString(SK_CALC_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showCalc end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showCalc = value end,
       default = MasterMerchant.systemDefault.showCalc,
-    },
+    }
     -- Should we use one price for all or save by guild?
-    [24] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(SK_ALL_CALC_NAME),
       tooltip = GetString(SK_ALL_CALC_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.priceCalcAll end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.priceCalcAll = value end,
       default = MasterMerchant.systemDefault.priceCalcAll,
-    },
+    }
     -- should we display a Min Profit Filter in AGS?
-    [25] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_MIN_PROFIT_FILTER_NAME),
       tooltip = GetString(MM_MIN_PROFIT_FILTER_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.minProfitFilter end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.minProfitFilter = value end,
       default = MasterMerchant.systemDefault.minProfitFilter,
-    },
+    }
     -- should we display profit instead of margin?
-    [26] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_SAUCY_NAME),
       tooltip = GetString(MM_SAUCY_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.saucy end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
       default = MasterMerchant.systemDefault.saucy,
-    },
+    }
     -- Deal Filter Price
-    [27] = {
+    optionsData[#optionsData + 1] = {
       type          = 'dropdown',
       name          = GetString(SK_DEAL_CALC_TYPE_NAME),
       tooltip       = GetString(SK_DEAL_CALC_TYPE_TIP),
@@ -2195,45 +2359,44 @@ function MasterMerchant:LibAddonInit()
       getFunc       = function() return MasterMerchant.systemSavedVariables.dealCalcToUse end,
       setFunc       = function(value) MasterMerchant.systemSavedVariables.dealCalcToUse = value end,
       default       = MasterMerchant.systemDefault.dealCalcToUse,
-    },
-    [28] = {
+    }
+    optionsData[#optionsData + 1] = {
       type    = "header",
       name    = GetString(GUILD_MASTER_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#GuildMasterOptions",
-    },
+    }
     -- should we add taxes to the export?
-    [29] = {
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_SHOW_AMOUNT_TAXES_NAME),
       tooltip = GetString(MM_SHOW_AMOUNT_TAXES_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.showAmountTaxes end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.showAmountTaxes = value end,
       default = MasterMerchant.systemDefault.showAmountTaxes,
-    },
-    [30] = {
+    }
+    optionsData[#optionsData + 1] = {
       type    = "header",
       name    = GetString(MASTER_MERCHANT_DEBUG_OPTIONS),
       width   = "full",
       helpUrl = "https://esouimods.github.io/3-master_merchant.html#MMDebugOptions",
-    },
-    [31] = {
+    }
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_DEBUG_LOGGER_NAME),
       tooltip = GetString(MM_DEBUG_LOGGER_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.useLibDebugLogger end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.useLibDebugLogger = value end,
       default = MasterMerchant.systemDefault.useLibDebugLogger,
-    },
-    [32] = {
+    }
+    optionsData[#optionsData + 1] = {
       type    = 'checkbox',
       name    = GetString(MM_DISABLE_ATT_WARN_NAME),
       tooltip = GetString(MM_DISABLE_ATT_WARN_TIP),
       getFunc = function() return MasterMerchant.systemSavedVariables.disableAttWarn end,
       setFunc = function(value) MasterMerchant.systemSavedVariables.disableAttWarn = value end,
       default = MasterMerchant.systemDefault.disableAttWarn,
-    },
-  }
+    }
 
   -- And make the options panel
   LAM:RegisterOptionControls('MasterMerchantOptions', optionsData)
@@ -3042,6 +3205,9 @@ function MasterMerchant:FirstInitialize()
     offlineSales                    = true,
     showPricing                     = true,
     showBonanzaPricing              = true,
+    omitBonanzaPricingGraphLessThanSix = false,
+    omitBonanzaPricingChatLessThanSix = false,
+    isWindowMovable = false,
     showAltTtcTipline               = true,
     showCraftCost                   = true,
     showGraph                       = true,
@@ -3056,6 +3222,7 @@ function MasterMerchant:FirstInitialize()
     trimDecimals                    = false,
     replaceInventoryValues          = false,
     replacementTypeToUse            = MasterMerchant.USE_MM_AVERAGE,
+    priceToChatTypeToUse            = MasterMerchant.USE_DEFAULT_FORMAT,
     displaySalesDetails             = false,
     displayItemAnalysisButtons      = false,
     noSalesInfoDeal                 = 2,
@@ -3234,6 +3401,8 @@ function MasterMerchant:FirstInitialize()
   self:LibAddonInit()
   self:SetupMasterMerchantWindow()
   self:RestoreWindowPosition()
+  self:SetWindowLockIcon()
+  self:SetWindowLock()
 
   LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, self.LinkHandler_OnLinkMouseUp)
 
@@ -3405,17 +3574,18 @@ function MasterMerchant:FirstInitialize()
 
       listView.dataTypes[1].setupCallback = function(control, slot)
         originalCall(control, slot)
-        self:SwitchUnitPrice(control, slot)
+        self:ReplaceInventoryPrice(control, slot)
       end
     end
   end
 
   -- Watch Decon list
   local originalCall = ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback
-  ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback = function(control, slot)
+	SecurePostHook(ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1], "setupCallback", function(control, slot)
     originalCall(control, slot)
-    self:SwitchUnitPrice(control, slot)
-  end
+    self:ReplaceInventoryPrice(control, slot)
+	end)
+
 end
 
 function MasterMerchant:SecondInitialize()
@@ -3476,13 +3646,14 @@ function MasterMerchant:SecondInitialize()
       if ShoppingList then
         MasterMerchant:dm("Info", GetString(MM_SHOPPINGLIST_OBSOLETE))
       end
-    end, 'ArkadiusDataActive')
+    end, 'ShoppingListActive')
     LEQ:Start()
   end, 10)
 end
 
-function MasterMerchant:SwitchUnitPrice(control, slot)
+function MasterMerchant:ReplaceInventoryPrice(control, slot)
   local averagePrice = 0
+  local sellPriceControl = control:GetNamedChild("SellPrice")
   if MasterMerchant.systemSavedVariables.replaceInventoryValues then
     local bagId = control.dataEntry.data.bagId
     local slotIndex = control.dataEntry.data.slotIndex
@@ -3527,7 +3698,6 @@ function MasterMerchant:SwitchUnitPrice(control, slot)
         control.dataEntry.data.stackSellPrice = tonumber(string.format('%.0f', averagePrice * control.dataEntry.data.stackCount))
         control.dataEntry.data.sellPrice = control.dataEntry.data.mmPrice
 
-        local sellPriceControl = control:GetNamedChild("SellPrice")
         if (sellPriceControl) then
           sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
           sellPrice = '|cEEEE33' .. sellPrice .. '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
@@ -3538,10 +3708,9 @@ function MasterMerchant:SwitchUnitPrice(control, slot)
           control.dataEntry.data.sellPrice = control.dataEntry.data.mmOriginalPrice
           control.dataEntry.data.stackSellPrice = control.dataEntry.data.mmOriginalStackPrice
         end
-        local sellPriceControl = control:GetNamedChild("SellPrice")
         if (sellPriceControl) then
           sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-          sellPrice = sellPrice .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+          sellPrice = sellPrice .. MasterMerchant.coinIcon
           sellPriceControl:SetText(sellPrice)
         end
       end

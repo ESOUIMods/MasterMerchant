@@ -38,6 +38,8 @@ ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Afficher/Masquer Le Prix Moyen")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "Inclure les données de prix basées sur les ventes passées dans les info-bulles des articles.")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Afficher le prix Bonanza")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Incluez les données de prix Bonanza basées sur les listes de commerçants que vous avez vues au cours des dernières 24 heures. Cela ne supprime pas le prix Bonanza du graphique.")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Omit Bonanza Price from Graph when there are less than 6 listings from Bonanza data.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Afficher le prix TTC alternatif")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Inclure l'info-bulle de prix condensé TTC alternatif.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Afficher les informations sur le coût de fabrication")
@@ -107,6 +109,8 @@ ZO_CreateStringId("SK_BUYER_TOOLTIP", "Double-cliquez sur un nom pour communique
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Cliquer pour trier par heure de vente.")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Cliquer pour trier par prix de vente.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Ouvrir la fenêtre des statistiques.")
+ZO_CreateStringId("MM_LOCK_TOOLTIP", "Lock Window.")
+ZO_CreateStringId("MM_UNLOCK_TOOLTIP", "Unlock Window.")
 ZO_CreateStringId("SK_SALES_TOOLTIP", "Vue ventes")
 ZO_CreateStringId("MM_NO_REPORTS_RANK", "Aucune vue de classement des rapports")
 ZO_CreateStringId("MM_NO_LISTINGS_RANK", "Aucune vue de classement de rang")
@@ -169,10 +173,27 @@ ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. prix (%s, %d jours): %.2f")
 ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d vendre/%d Ventes]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d article/%d articles]>>")
 
+-- New Price To Chat Strings
+ZO_CreateStringId("MM_TIP_DAYS_STRING", "<<1[%d jour/%d jours]>>")
+ZO_CreateStringId("MM_TIP_SALES_STRING", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_TIP_LISTINGS_STRING", "<<1[%d listing/%d listings]>>")
+ZO_CreateStringId("MM_TIP_ITEMS_STRING", "<<1[%d item/%d items]>>")
+
+ZO_CreateStringId("MM_MMPTC_DEFAULT_FORMAT", "MM prix (%s/%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_CONDENSED_FORMAT", "MM prix (%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_MM_TTC_FORMAT", "MM prix: %s")
+
+ZO_CreateStringId("MM_BONANZAPTC_DEFAULT_FORMAT", "Bonanza prix (%s/%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza prix (%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_MM_TTC_FORMAT", "Bonanza prix: %s")
+
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/moy: %s")
+
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Le prix de MM (%s ventes/%s biens, %s jour): %s")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Le prix de MM (%s ventes/%s biens, %s jours): %s")
-ZO_CreateStringId("MM_BONANZA_TIP", "Prix Bonanza (%s ventes/%s biens): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "Le prix de MM (%s ventes/%s biens, %s jour): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "Le prix de MM (%s ventes/%s biens, %s jours): %s")
+ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Prix Bonanza (%s ventes/%s biens): %s")
+
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s Annonces] Sug: %s, moy: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[Pas de tarification TTC]")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM n'a pas de données")
@@ -255,8 +276,6 @@ ZO_CreateStringId("MM_SAUCY_TIP", "Dans la boutique de guilde, affichez le profi
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "Afficher le filtre de profit")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Ajoute un filtre supplémentaire à AGS basé sur le profit.")
 
-ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d article/%d articles]>>")
-
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_NAME", "Nombre minimal d'articles")
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_TIP", "Nombre minimum de ventes d'un article à conserver dans l'historique.")
 ZO_CreateStringId("MM_MAX_ITEM_COUNT_NAME", "Nombre maximal d'articles")
@@ -322,6 +341,16 @@ ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Options d'inventaire")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "ShoppingList")
 ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
+
+-- New Price To Chat Options
+ZO_CreateStringId("MASTER_MERCHANT_PRICETOCHAT_OPTIONS", "Price To Chat Options")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_TIP", "Omit Bonanza Price from Price To Chat when there are less than 6 listings from Bonanza data.")
+ZO_CreateStringId("MM_CHATFORMATS_DEFAULT", "Default")
+ZO_CreateStringId("MM_CHATFORMATS_CONDENSED", "Without Item Count")
+ZO_CreateStringId("MM_CHATFORMATS_MM_TTC", "MM plus TTC")
+ZO_CreateStringId("MM_CHATFORMAT_NAME", "Price To Chat Format")
+ZO_CreateStringId("MM_CHATFORMAT_TIP", "Sellect the Price To Chat Format. The Bonanza Price will be included depending on the toggle setting for less then 6 listings in the Bonanza data.")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Initialisation de Master Merchant...")
@@ -415,7 +444,7 @@ ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] Vous pouvez importer 
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "Cela forcera un rechargement de l'interface utilisateur une fois terminé.")
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "Vous devrez recharger votre interface utilisateur après avoir modifié cette valeur.")
 ZO_CreateStringId("MM_ZONE_INVALID", "Vous devrez recharger votre interface utilisateur après avoir modifié cette valeur.")
-ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "Vous devrez recharger votre interface utilisateur après avoir modifié cette valeur.")
+ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "BeamMeUp is not active.")
 ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "Les anciens modules MMxxData ne sont nécessaires que pour importer des données MM. Veuillez désactiver tous les modules MMxxData pour augmenter les performances et réduire les temps de chargement.")
 ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList n'est nécessaire que pour importer d'anciennes données. Veuillez désactiver ShoppingList après avoir importé ses données.")
 ZO_CreateStringId("MM_RELOADUI_WARN", "Cela forcera un rechargement de l'interface utilisateur en cas de modification.")

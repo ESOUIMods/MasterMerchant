@@ -60,6 +60,7 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
   return inputTable
 end
 
+-- MM has no data   for |H1:item:86987:363:50:0:0:0:0:0:0:0:0:0:0:0:1:3:0:1:0:400:0|h|h
 function MasterMerchant.concat(a, ...)
   if a == nil and ... == nil then
     return ''

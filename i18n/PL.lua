@@ -37,6 +37,8 @@ ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Pokaż informacje o cenach")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "Załącz dane o cenach w oknie przedmiotu bazując na sprzedaży w przeszłości.")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Pokaż cenę Bonanza")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Załącz dane o cenach Bonanza bazując na ofertach kupców widzianych w ostatnich 24 godzinach. Nie usunie to ceny Bonanzy z wykresu.")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Omit Bonanza Price from Graph when there are less than 6 listings from Bonanza data.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Pokaż alternatywną cenę z TTC")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Załącz alternatywną cenę z TTC w podpowiedziach ceny.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Pokaż informację o koszcie wytworzenia")
@@ -106,6 +108,8 @@ ZO_CreateStringId("SK_BUYER_TOOLTIP", "Kliknij prawym przyciskiem na imieniu aby
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Kliknij aby sortować po czasie sprzedaży.")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Kliknij aby sortować po cenie sprzedaży.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Otwórz statystyki.")
+ZO_CreateStringId("MM_LOCK_TOOLTIP", "Lock Window.")
+ZO_CreateStringId("MM_UNLOCK_TOOLTIP", "Unlock Window.")
 ZO_CreateStringId("SK_SALES_TOOLTIP", "Widok sprzedaży")
 ZO_CreateStringId("MM_NO_REPORTS_RANK", "No Reports Rank View")
 ZO_CreateStringId("MM_NO_LISTINGS_RANK", "No Listing Rank View")
@@ -168,10 +172,27 @@ ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "Cena M.M. (%s, %d dni): %.2f")
 ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sprzedaż/%d sprzedaży]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d przedmiot/%d przedmiotów]>>")
 
+-- New Price To Chat Strings
+ZO_CreateStringId("MM_TIP_DAYS_STRING", "<<1[%d day/%d days]>>")
+ZO_CreateStringId("MM_TIP_SALES_STRING", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_TIP_LISTINGS_STRING", "<<1[%d listing/%d listings]>>")
+ZO_CreateStringId("MM_TIP_ITEMS_STRING", "<<1[%d item/%d items]>>")
+
+ZO_CreateStringId("MM_MMPTC_DEFAULT_FORMAT", "MM price (%s/%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_CONDENSED_FORMAT", "MM price (%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_MM_TTC_FORMAT", "MM price: %s")
+
+ZO_CreateStringId("MM_BONANZAPTC_DEFAULT_FORMAT", "Bonanza price (%s/%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza price (%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_MM_TTC_FORMAT", "Bonanza price: %s")
+
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
+
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Cena MM (%s sprzedaży/%s przedmiotów, %d dzień): %s")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Cena MM (%s sprzedaży/%s przedmiotów, %d dni): %s")
-ZO_CreateStringId("MM_BONANZA_TIP", "Cena Bonanza (%s ofert/%s przedmiotów): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "Cena MM (%s sprzedaży/%s przedmiotów, %d dzień): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "Cena MM (%s sprzedaży/%s przedmiotów, %d dni): %s")
+ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Cena Bonanza (%s ofert/%s przedmiotów): %s")
+
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s ofert] sug: %s, śr.: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[Brak cen TTC]")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM nie ma danych")
@@ -254,8 +275,6 @@ ZO_CreateStringId("MM_SAUCY_TIP", "W sklepie gildii, wyświetl potencjalny zysk 
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "Wyświetl filtr zysku")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Dodaj dodatkowy filtr w AGS bazujący na zysku.")
 
-ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d przedmiot/%d przedmiotów]>>")
-
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_NAME", "Min ilość przedmiotów")
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_TIP", "Minimalna liczba sprzedaży przedmiotu przetrzymywana w historii.")
 ZO_CreateStringId("MM_MAX_ITEM_COUNT_NAME", "Maks ilość przedmiotów")
@@ -321,6 +340,16 @@ ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Opcje ekwipunku")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Lista Zakupów")
 ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
+
+-- New Price To Chat Options
+ZO_CreateStringId("MASTER_MERCHANT_PRICETOCHAT_OPTIONS", "Price To Chat Options")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_TIP", "Omit Bonanza Price from Price To Chat when there are less than 6 listings from Bonanza data.")
+ZO_CreateStringId("MM_CHATFORMATS_DEFAULT", "Default")
+ZO_CreateStringId("MM_CHATFORMATS_CONDENSED", "Without Item Count")
+ZO_CreateStringId("MM_CHATFORMATS_MM_TTC", "MM plus TTC")
+ZO_CreateStringId("MM_CHATFORMAT_NAME", "Price To Chat Format")
+ZO_CreateStringId("MM_CHATFORMAT_TIP", "Sellect the Price To Chat Format. The Bonanza Price will be included depending on the toggle setting for less then 6 listings in the Bonanza data.")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Inicjalizacja Master Merchant...")
@@ -414,7 +443,7 @@ ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] Możesz zaimportować
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "Wymusi to przeładowanie UI po zakończeniu.")
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "Musisz przeładować UI po zmianie tej wartości.")
 ZO_CreateStringId("MM_ZONE_INVALID", "Musisz przeładować UI po zmianie tej wartości.")
-ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "Musisz przeładować UI po zmianie tej wartości.")
+ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "BeamMeUp is not active.")
 ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "Stare moduły MMxxData są potrzebne tylko do importu danych MM. Proszę wyłączyć wszystkie moduły MMxxData aby zwiększyć wydajność i zmniejszyć czas ładowania.")
 ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList jest potrzebny tylko do importu starych danych. Proszę wyłączyć ShoppingList po imporcie danych.")
 ZO_CreateStringId("MM_RELOADUI_WARN", "This will force a UI reload when changed.")

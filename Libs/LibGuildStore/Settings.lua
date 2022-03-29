@@ -147,34 +147,36 @@ function internal:LibAddonInit()
     setFunc = function(value) LibGuildStore_SavedVariables.showIndexingSummary = value end,
     default = internal.defaults.showIndexingSummary,
   }
-  optionsData[#optionsData + 1] = {
-    type    = "header",
-    name    = GetString(GS_IMPORT_MM_BUTTON),
-    width   = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportMMData",
-  }
-  optionsData[#optionsData + 1] = {
-    type  = "description",
-    title = GetString(GS_IMPORT_MM_SALES),
-    text  = GetString(GS_IMPORT_MM_DESC),
-  }
-  optionsData[#optionsData + 1] = {
-    type    = "button",
-    name    = GetString(GS_IMPORT_MM_NAME),
-    tooltip = GetString(GS_IMPORT_MM_TIP),
-    func    = function()
-      internal:SlashImportMMSales()
-    end,
-  }
-  -- Skip Indexing?
-  optionsData[#optionsData + 1] = {
-    type    = 'checkbox',
-    name    = GetString(GS_IMPORT_MM_OVERRIDE_NAME),
-    tooltip = GetString(GS_IMPORT_MM_OVERRIDE_TIP),
-    getFunc = function() return LibGuildStore_SavedVariables.overrideMMImport end,
-    setFunc = function(value) LibGuildStore_SavedVariables.overrideMMImport = value end,
-    default = internal.defaults.overrideMMImport,
-  }
+  -- Import MM Data
+  if internal:MasterMerchantDataActive() then
+    optionsData[#optionsData + 1] = {
+      type    = "header",
+      name    = GetString(GS_IMPORT_MM_BUTTON),
+      width   = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportMMData",
+    }
+    optionsData[#optionsData + 1] = {
+      type  = "description",
+      title = GetString(GS_IMPORT_MM_SALES),
+      text  = GetString(GS_IMPORT_MM_DESC),
+    }
+    optionsData[#optionsData + 1] = {
+      type    = "button",
+      name    = GetString(GS_IMPORT_MM_NAME),
+      tooltip = GetString(GS_IMPORT_MM_TIP),
+      func    = function()
+        internal:SlashImportMMSales()
+      end,
+    }
+    optionsData[#optionsData + 1] = {
+      type    = 'checkbox',
+      name    = GetString(GS_IMPORT_MM_OVERRIDE_NAME),
+      tooltip = GetString(GS_IMPORT_MM_OVERRIDE_TIP),
+      getFunc = function() return LibGuildStore_SavedVariables.overrideMMImport end,
+      setFunc = function(value) LibGuildStore_SavedVariables.overrideMMImport = value end,
+      default = internal.defaults.overrideMMImport,
+    }
+  end
   optionsData[#optionsData + 1] = {
     type    = "header",
     name    = GetString(GS_IMPORT_ATT_BUTTON),
@@ -235,30 +237,33 @@ function internal:LibAddonInit()
       internal:StartQueue()
     end,
   }
-  optionsData[#optionsData + 1] = {
-    type    = "header",
-    name    = GetString(GS_IMPORT_SL_BUTTON),
-    width   = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportShoppingListData",
-  }
-  optionsData[#optionsData + 1] = {
-    type  = "description",
-    title = GetString(GS_IMPORT_SHOPPINGLIST),
-    text  = GetString(GS_IMPORT_SL_DESC),
-  }
-  optionsData[#optionsData + 1] = {
-    type    = "button",
-    name    = GetString(GS_IMPORT_SL_NAME),
-    tooltip = GetString(GS_IMPORT_SL_TIP),
-    func    = function()
-      internal:ImportShoppingList()
-    end,
-  }
+  -- Import ShoppingList
+   if ShoppingList then
+    optionsData[#optionsData + 1] = {
+      type    = "header",
+      name    = GetString(GS_IMPORT_SL_BUTTON),
+      width   = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportShoppingListData",
+    }
+    optionsData[#optionsData + 1] = {
+      type  = "description",
+      title = GetString(GS_IMPORT_SHOPPINGLIST),
+      text  = GetString(GS_IMPORT_SL_DESC),
+    }
+    optionsData[#optionsData + 1] = {
+      type    = "button",
+      name    = GetString(GS_IMPORT_SL_NAME),
+      tooltip = GetString(GS_IMPORT_SL_TIP),
+      func    = function()
+        internal:ImportShoppingList()
+      end,
+    }
+  end
   optionsData[#optionsData + 1] = {
     type    = "header",
     name    = GetString(GS_IMPORT_PD_BUTTON),
     width   = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportShoppingListData",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportPricingData",
   }
   optionsData[#optionsData + 1] = {
     type  = "description",

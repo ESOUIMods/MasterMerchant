@@ -38,6 +38,8 @@ ZO_CreateStringId("SK_SHOW_PRICING_NAME", "Инфоблок с ценами")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "Добавлять в подсказки предметов информацию о ценах на основе записанных продаж.")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Цена на прилавках от Bonanza")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Добавлять цену от Bonanza, рассчитанную на основе посещённых за последние 24 часа магазинов. Отключение этого параметра не убирает Bonanza-линию с графика.")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Omit Bonanza Price from Graph when there are less than 6 listings from Bonanza data.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Альтернативная цена от TTC")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Добавлять данные от TTC в сокращённом виде.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Расчётная цена изготовления")
@@ -107,6 +109,8 @@ ZO_CreateStringId("SK_BUYER_TOOLTIP", "Щелкните правой кнопк�
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "Щелкните для сортировки по времени.")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "Щелкните для сортировки по цене.")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "Открыть окно статистики.")
+ZO_CreateStringId("MM_LOCK_TOOLTIP", "Lock Window.")
+ZO_CreateStringId("MM_UNLOCK_TOOLTIP", "Unlock Window.")
 ZO_CreateStringId("SK_SALES_TOOLTIP", "Экран продаж")
 ZO_CreateStringId("MM_NO_REPORTS_RANK", "Нет экрана со списком лидеров для отчётов")
 ZO_CreateStringId("MM_NO_LISTINGS_RANK", "Нет экрана со списком лидеров для выставлений")
@@ -169,10 +173,27 @@ ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
 ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
+-- New Price To Chat Strings
+ZO_CreateStringId("MM_TIP_DAYS_STRING", "<<1[%d day/%d days]>>")
+ZO_CreateStringId("MM_TIP_SALES_STRING", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_TIP_LISTINGS_STRING", "<<1[%d listing/%d listings]>>")
+ZO_CreateStringId("MM_TIP_ITEMS_STRING", "<<1[%d item/%d items]>>")
+
+ZO_CreateStringId("MM_MMPTC_DEFAULT_FORMAT", "Цена от MM (%s/%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_CONDENSED_FORMAT", "Цена от MM (%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_MM_TTC_FORMAT", "Цена от MM: %s")
+
+ZO_CreateStringId("MM_BONANZAPTC_DEFAULT_FORMAT", "Bonanza-цена (%s/%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza-цена (%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_MM_TTC_FORMAT", "Bonanza-цена: %s")
+
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
+
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "Цена от MM (%s прод./%s шт., %s д.): %s")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "Цена от MM (%s прод./%s шт., %s д.): %s")
-ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza-цена (%s разм./%s шт.): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "Цена от MM (%s прод./%s шт., %s д.): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "Цена от MM (%s прод./%s шт., %s д.): %s")
+ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza-цена (%s разм./%s шт.): %s")
+
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s разм.] рек.: %s, ср.: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[У TTC нет данных]")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "У MM нет данных")
@@ -255,8 +276,6 @@ ZO_CreateStringId("MM_SAUCY_TIP", "Показывать потенциальну
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "Фильтр по прибыли")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Встроить дополнительный фильтр в AGS на основе прибыльности.")
 
-ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d предмет/%d предмета/%d предметов]>>")
-
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_NAME", "Мин. количество продаж")
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_TIP", "Минимальное количество продаж для каждого предмета, хранимое в журнале.")
 ZO_CreateStringId("MM_MAX_ITEM_COUNT_NAME", "Макс. количество продаж")
@@ -322,6 +341,16 @@ ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Настройки ин�
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
 ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
+
+-- New Price To Chat Options
+ZO_CreateStringId("MASTER_MERCHANT_PRICETOCHAT_OPTIONS", "Price To Chat Options")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_TIP", "Omit Bonanza Price from Price To Chat when there are less than 6 listings from Bonanza data.")
+ZO_CreateStringId("MM_CHATFORMATS_DEFAULT", "Default")
+ZO_CreateStringId("MM_CHATFORMATS_CONDENSED", "Without Item Count")
+ZO_CreateStringId("MM_CHATFORMATS_MM_TTC", "MM plus TTC")
+ZO_CreateStringId("MM_CHATFORMAT_NAME", "Price To Chat Format")
+ZO_CreateStringId("MM_CHATFORMAT_TIP", "Sellect the Price To Chat Format. The Bonanza Price will be included depending on the toggle setting for less then 6 listings in the Bonanza data.")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant запускается...")
@@ -415,7 +444,7 @@ ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] Вы можете и�
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "Принудительно перезагрузит интерфейс по окончании.")
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "Вам будет необходимо перезагрузить интерфейс после изменения этого параметра.")
 ZO_CreateStringId("MM_ZONE_INVALID", "Вам будет необходимо перезагрузить интерфейс после изменения этого параметра.")
-ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "Вам будет необходимо перезагрузить интерфейс после изменения этого параметра.")
+ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "BeamMeUp is not active.")
 ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "Старые модули MMxxData нужны только для первичного импорта данных MM. Отключите все модули MMxxData для ускорения работы и сокращения времени загрузки.")
 ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList нужен только для импорта старых данных. Отключите ShoppingList после проведения импорта.")
 ZO_CreateStringId("MM_RELOADUI_WARN", "Потребует перезагрузку интерфейса для изменения.")

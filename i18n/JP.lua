@@ -37,6 +37,8 @@ ZO_CreateStringId("SK_SHOW_PRICING_NAME", "価格情報を表示")
 ZO_CreateStringId("SK_SHOW_PRICING_TIP", "過去のセールスに基づいた価格データをツールチップに含めます。")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_NAME", "Show Bonanza Price")
 ZO_CreateStringId("SK_SHOW_BONANZA_PRICE_TIP", "Include Bonanza pricing data based on trader listings you have seen in the last 24 hours. This does not remove the Bonanza price from the Graph.")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Omit Bonanza Price from Graph when there are less than 6 listings from Bonanza data.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Show Alternate TTC Price")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Include Alternate TTC condensed price tooltip.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Show Crafting Cost Info")
@@ -106,6 +108,8 @@ ZO_CreateStringId("SK_BUYER_TOOLTIP", "名前をダブルクリックするこ�
 ZO_CreateStringId("SK_SORT_TIME_TOOLTIP", "クリックして販売時間でソートします")
 ZO_CreateStringId("SK_SORT_PRICE_TOOLTIP", "クリックして販売価格でソートします。")
 ZO_CreateStringId("SK_STATS_TOOLTIP", "統計ウィンドウを開きます。")
+ZO_CreateStringId("MM_LOCK_TOOLTIP", "Lock Window.")
+ZO_CreateStringId("MM_UNLOCK_TOOLTIP", "Unlock Window.")
 ZO_CreateStringId("SK_SALES_TOOLTIP", "Sales View")
 ZO_CreateStringId("MM_NO_REPORTS_RANK", "No Reports Rank View")
 ZO_CreateStringId("MM_NO_LISTINGS_RANK", "No Listing Rank View")
@@ -168,10 +172,27 @@ ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
 ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
+-- New Price To Chat Strings
+ZO_CreateStringId("MM_TIP_DAYS_STRING", "<<1[%d day/%d days]>>")
+ZO_CreateStringId("MM_TIP_SALES_STRING", "<<1[%d sale/%d sales]>>")
+ZO_CreateStringId("MM_TIP_LISTINGS_STRING", "<<1[%d listing/%d listings]>>")
+ZO_CreateStringId("MM_TIP_ITEMS_STRING", "<<1[%d item/%d items]>>")
+
+ZO_CreateStringId("MM_MMPTC_DEFAULT_FORMAT", "MM price (%s/%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_CONDENSED_FORMAT", "MM price (%s, %s): %s")
+ZO_CreateStringId("MM_MMPTC_MM_TTC_FORMAT", "MM price: %s")
+
+ZO_CreateStringId("MM_BONANZAPTC_DEFAULT_FORMAT", "Bonanza price (%s/%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza price (%s): %s")
+ZO_CreateStringId("MM_BONANZAPTC_MM_TTC_FORMAT", "Bonanza price: %s")
+
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
+
 -- New values
-ZO_CreateStringId("MM_TIP_FORMAT_SINGLE", "MM 価格 (%s 売上高/%s 販売商品, %s 日): %s")
-ZO_CreateStringId("MM_TIP_FORMAT_MULTI", "MM 価格 (%s 売上高/%s 販売商品, %s 日々): %s")
-ZO_CreateStringId("MM_BONANZA_TIP", "Bonanza price (%s リスト/%s 販売商品): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "MM 価格 (%s 売上高/%s 販売商品, %s 日): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI, "MM 価格 (%s 売上高/%s 販売商品, %s 日々): %s")
+ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza price (%s リスト/%s 販売商品): %s")
+
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s listings] Sug: %s, Avg: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")
 ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM はデータがありません")
@@ -254,8 +275,6 @@ ZO_CreateStringId("MM_SAUCY_TIP", "ギルドストア内で、マージンパー
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "利益フィルタを表示")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "利益にAGAベースの追加のフィルタを追加します。")
 
-ZO_CreateStringId("MM_PRICETIP_ITEMS", "/<<1[%d アイテム]>>")
-
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_NAME", "最小アイテムカウント")
 ZO_CreateStringId("MM_MIN_ITEM_COUNT_TIP", "履歴に残されるセールアイテムの最小数を設定します。")
 ZO_CreateStringId("MM_MAX_ITEM_COUNT_NAME", "最大アイテムカウント")
@@ -321,6 +340,16 @@ ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Inventory Options")
 
 ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
 ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
+
+-- New Price To Chat Options
+ZO_CreateStringId("MASTER_MERCHANT_PRICETOCHAT_OPTIONS", "Price To Chat Options")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_TIP", "Omit Bonanza Price from Price To Chat when there are less than 6 listings from Bonanza data.")
+ZO_CreateStringId("MM_CHATFORMATS_DEFAULT", "Default")
+ZO_CreateStringId("MM_CHATFORMATS_CONDENSED", "Without Item Count")
+ZO_CreateStringId("MM_CHATFORMATS_MM_TTC", "MM plus TTC")
+ZO_CreateStringId("MM_CHATFORMAT_NAME", "Price To Chat Format")
+ZO_CreateStringId("MM_CHATFORMAT_TIP", "Sellect the Price To Chat Format. The Bonanza Price will be included depending on the toggle setting for less then 6 listings in the Bonanza data.")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
@@ -414,7 +443,7 @@ ZO_CreateStringId("MM_ATT_DATA_ENABLED", "[MasterMerchant] You can import ATT da
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN_FORCE", "This will force a UI reload when complete.")
 ZO_CreateStringId("MM_RESET_LISTINGS_WARN", "You will need to reload your UI after changing this value.")
 ZO_CreateStringId("MM_ZONE_INVALID", "You will need to reload your UI after changing this value.")
-ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "You will need to reload your UI after changing this value.")
+ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "BeamMeUp is not active.")
 ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "The old MMxxData modules are only needed for importing MM data. Please disable all MMxxData modules to increase performance and reduce load times.")
 ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList is only needed for importing old data. Please disable ShoppingList after you import its data.")
 ZO_CreateStringId("MM_RELOADUI_WARN", "This will force a UI reload when changed.")

@@ -60,7 +60,7 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     tipFormat = string.gsub(tipFormat, '.2f', 's')
     tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
     -- chatText
-    if not chatText then tipFormat = tipFormat .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t' end
+    if not chatText then tipFormat = tipFormat .. MasterMerchant.coinIcon end
     local salesString = zo_strformat(GetString(SK_OLD_PRICETIP_SALES), tipStats['numSales'])
     if tipStats['numSales'] ~= tipStats['numItems'] then
       salesString = salesString .. zo_strformat(GetString(MM_OLD_PRICETIP_ITEMS), tipStats['numItems'])
@@ -102,5 +102,5 @@ end
 
 function MasterMerchant:SwitchPrice(control, slot)
   GenerateLogMessage("SwitchPrice")
-  MasterMerchant:SwitchUnitPrice(control, slot)
+  MasterMerchant:ReplaceInventoryPrice(control, slot)
 end

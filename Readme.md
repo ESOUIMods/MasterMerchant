@@ -7,6 +7,316 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.6.90
+
+-- Removed dummy importers. Download Importers for Master Merchant 3.0 to import older data.
+
+## ChangeLog for 3.6.89
+
+-- Removed localization strings from GetControl()
+
+## ChangeLog for 3.6.88
+
+-- Added Italian translation (Dusty82)
+-- Update Russian translation (mychaelo)
+
+## ChangeLog for 3.6.87
+
+-- Pre PTS Version
+
+## ChangeLog for 3.6.86
+
+-- Update LibGuildStore French translation (Jakez31)
+-- Update German translation (Baertram)
+
+## ChangeLog for 3.6.85
+
+-- Update German translation (Baertram)
+
+## ChangeLog for 3.6.84
+
+-- Update LibGuildStore French translation (Jakez31)
+
+## ChangeLog for 3.6.83
+
+-- Update French translation (Jakez31)
+-- Added some additional localization strings
+
+## ChangeLog for 3.6.82
+
+-- Fix for linking from crafting stations
+-- Update Polish translation
+
+## ChangeLog for 3.6.81
+
+-- Added new recipes for craft cost
+
+## ChangeLog for 3.6.80
+
+-- Fix for linking item prices when there is no MM price for the day range being used
+
+## ChangeLog for 3.6.79
+
+-- Adjustment to Refresh: Won't sort ranks information during refresh as thousands of records are added one at a time. If you notice issues after a Refresh with the Ranks view, reload the UI for now until 3.8.x.
+
+## ChangeLog for 3.6.78
+
+-- Fix: Additional bypass for AddExtraListingsData() when encountering an erroneous record where the ["sales"] table is empty or doesn't exist.
+
+## ChangeLog for 3.6.76
+
+-- Fix: Additional bypass for AddExtraSalesData() when encountering an erroneous record where the ["sales"] table is empty or doesn't exist.
+
+## ChangeLog for 3.6.74
+
+-- Updated detailed graph points to say Today, Yesterday, or X days ago.
+
+NOTE: You are lucky I had a brainstorm because I did not want to revert to use zo_strformat() because it is the most costly way to format the strings
+
+## ChangeLog for 3.6.73
+
+-- Fix: Bypass for AddExtraSalesData() when encountering erroneous records. All erroneous records will first be logged then removed from the data pool / LazyPyro
+-- Fix: MasterMerchant_UI.lua:1229 when searching for Necklace of a Mother's Sorrow / Thrasher
+
+## ChangeLog for 3.6.72
+
+-- Update Russian translation
+
+## ChangeLog for 3.6.71
+
+-- Address Issue: Iterators_General.lua:202: attempt to index a number value
+
+## ChangeLog for 3.6.70
+
+-- Removed some old saved variable retention routines when loading the old MM files for importing
+
+## ChangeLog for 3.6.69
+
+-- Use SetAfterEventTime() for first scan and refresh instead of SetAfterEventId
+
+## ChangeLog for 3.6.68
+
+-- Added TTC and Bonanza options when replacing inventory price values
+
+## ChangeLog for 3.6.65, 3.6.66, 3.6.67
+
+-- Updated Manifest files with new version numbers for dependencies
+-- Fix: MasterMerchant.lua:3664: attempt to index a nil value when using TamrielTradeCentre and changing the Deal Calculator settings
+-- Fix: When adding buying advice and for some reason the itemLink is an empty string
+-- Fix: When adding buying advice and for some reason the TTC Suggested Price is nil
+
+-- Thanks to Talisman for sticking with it until the issue was resolved.
+
+## ChangeLog for 3.6.64
+
+-- Update to prevent LWC from causing an error by accessing MM to early before it initializes
+
+NOTE: For future reference. Future releases will not contain patches and hot-fixes for other authors mods. It is their job to ask which functions to use for the information they want. If there is no API then they should not alter MM functionality. Other authors like sirinsidiator would not alter their mod if authors were altering the mod's internal functionality or using the incorrect function. For example if an author changed AGS functionality no patches would be made. It would be discussed and if the sirinsidiator objected to the feature request then that would be the end of it.
+
+## ChangeLog for 3.6.63
+
+-- Enhancement to trimming outliers
+
+## ChangeLog for 3.6.62
+
+-- Added silent logging of mods using MM pricing functions for debug purposes
+-- Fix: Price Calculator Russian client
+
+## ChangeLog for 3.6.61
+
+-- Hotfix: Disable all notifications for mod authors using the wrong MM functions for information. I will have to find a different approach. I apologize however, I don't know which programs use MM for data.
+
+I intend to make improvements and when I do I can't preemptively inform authors ahead of time that there will be changes. MM is not a library like LibGPS where you might want to create an alias routine for backwards compatibility.
+
+## ChangeLog for 3.6.60
+
+-- Behavior Change: Due to so many other mods accessing MM for pricing data I can not control how they do it or what they break. There are now notifications for popular functions if authors use them. Tell the author to contact me for how they should access MM data.
+-- Debug Log: There is a revised attempt to catch errors with the Bonanza price when the information is incomplete.
+-- While testing the Reset function for resetting Bonanza information I realized it didn't clear the scroll list. A temporary fix is in place to reload the UI when the reset is complete.
+
+## ChangeLog for 3.6.59
+
+-- Fix: bad argument #2 to 'string.sub' (integer expected, got nil) MasterMerchant.lua:776: in function 'MasterMerchant:BonanzaPriceTip'
+
+## ChangeLog for 3.6.58
+
+-- Hotfix: Bonanza pricing was not ignoring account names or guilds added to the Guild & Account filter
+
+## ChangeLog for 3.6.57
+
+-- Added TTC and Bonanza to Deal Calculator. Choose from MM Avg, TTC Avg, TTC sug, Bonanza prices.
+-- Added new condensed TTC tooltip. Toggle on in Master Merchant settings.
+
+## ChangeLog for 3.6.56
+
+-- Fix for tooltip stats generation when not trimming outliers
+
+## ChangeLog for 3.6.55
+
+-- Fix for: MasterMerchant.lua:486: operator - is not supported for number - nil
+
+## ChangeLog for 3.6.54
+
+-- Fix for: MasterMerchant.lua:555: operator / is not supported for nil / number
+
+## ChangeLog for 3.6.53
+
+-- Added tooltip cache back as it was still a bit jerky for my taste
+
+## ChangeLog for 3.6.52
+
+- Updated startup routine in an attempt to prevent time out during login
+- Updated tooltip generation. The tooltip is no longer cached however, I only tested with about 5100 sales on gold mats. I left some of the old code in place in case some people have insane amounts of data and it needs to be added again.
+
+## ChangeLog for 3.6.51
+
+- Attempt to ensure the price calculator auto fills
+- Address possible issue when entering a price into the price calculator and output a message
+
+NOTE: Tooltip calculation still needs to be looked at and why it pauses so much. Enhancements and suggestions by Shinni and others may not actually improve the graph overall, when it should.
+
+## ChangeLog for 3.6.50
+
+- Fix for: Error in LibGuildStore/Settings.lua:19
+- ATT import notification makes it more clear that it is an MM message, and tells you where to go to import the data, and where to disable the notification
+
+## ChangeLog for 3.6.49
+
+- New Toggle: Save Central Pricing Data. Pricing data is the same for all guilds. When disabled, pricing is separate for each guild.
+- New LibGuildStore Import: Import Pricing Data, it's more of an override or replace then an import.
+- Fix issue where the blue Bonanza price would be superimposed over the yellow MM price
+
+## ChangeLog for 3.6.48
+
+- Update Russian translation, mychaelo
+- Fix bug for Bonanza pricing when the only price is someone in the Guild & Account Filter
+- When importing MM data, import data regardless of the timestamp. Allow the trimming routine to remove the sale based on user settings.
+
+## ChangeLog for 3.6.47
+
+- Update pricing tooltips for non English clients
+
+## ChangeLog for 3.6.46
+
+- Import ATT Sales and Purchases
+- Import MM Sales and Purchases (ShoppingList)
+- NA and EU data is stored separately
+- Bonanza, tracks items listed on traders you visit
+-- The Bonanza data is used to calculate an average price of the items seen at other kiosks
+-- Bonanza items can be filtered by name, type, and known or unknown. For subtype such as Divines, Praxis, One-Handed use the search box
+- BeamMeUp can be used to travel to the zone the trader is located in. With the usual restrictions of course.
+- Purchases are now part of the MM window and the standalone ShoppingList is no longer needed (Purchases can be imported)
+- The MM window will now show posted and canceled items you list on your guilds traders
+- Some Master Merchant settings moved to LibGuildStore settings menu
+- Various performance improvements
+
+## ChangeLog for 3.5.30
+
+- Hotfix for MM iterator routine so it doesn't take so long to initialize
+
+## ChangeLog for 3.5.29
+
+- Imported changes for adjusting description text from the 3.6.x Beta used during /mm clean to change text for other unofficial translations, or official translations
+
+## ChangeLog for 3.5.28
+
+- Added routine to store last sale price when AGS is active. However I believe AGS does this internally.
+- Added alias functions for a few depreciated functions
+
+NOTE: The last sale price was updated because AGS is trying to access it regardless of whether or not it is there. I have been wondering why the data was not saved when AGS was active. A special callback is required. The callback is not needed for users that do not use AGS
+
+## ChangeLog for 3.5.27
+
+- Removed toggle for log file that was unused but prevented certain messages from being displayed with DebugLogViewer installed
+
+## ChangeLog for 3.5.26
+
+- Increased API requirement for LibHistoire
+
+NOTE: LibHistoire 1.2.0 had an issue that prevented data from being stored when you joined a new guild or were a new user. This has been addressed in 1.2.1.
+
+## ChangeLog for 3.5.25
+
+- API Bump for MM and Blackwood
+- Increased API requirement for LibHistoire
+
+## ChangeLog for 3.5.24
+
+- Added toggle to hide two initialization summaries. Default is set to hide.
+
+NOTE: Because MM will not show sales in the MM window, add pricing to the inventory, allow exporting, or record any sales data from LibHistoire until it is fully initialized, there should be some kind progress indicator. The FPS drop isn't a reasonable progress indicator even though it has been that way for years.
+
+## ChangeLog for 3.5.23
+
+- Added additional localization strings to cover all notifications and the help menu
+- Removed verbose mode since messages no longer exist from 2.x that required that
+
+## ChangeLog for 3.5.21
+
+- Refresh will only restore data according to the amount of days retained in settings
+- Added a fix when, on rare occasions, an empty table is found that resolves an error when adding category information
+
+## ChangeLog for 3.5.20
+
+- Oops, API Bump for the rest of the modules for MM
+
+## ChangeLog for 3.5.19
+
+- API Bump only
+
+## ChangeLog for 3.5.18
+
+- Added new slash command "/mm redesc" which will toggle whether or not the descriptive search text is rebuilt during "/mm clean". This is to address a crash that can occur sometimes when logging in and updating multiple fields within sales records during setup. The crash is mainly due to the sometimes tremendous amount of sales stored in the data files.
+
+## ChangeLog for 3.5.17
+
+- Tweak to InitItemHistory when search text is not available
+
+## ChangeLog for 3.5.16
+
+- Reverted changes for automatically fixing improperly formatted records during initialization
+
+NOTE: When testing with one improperly formatted record manually added to my own from another user reporting an error I had no issues. The fix properly removed the improperly formatted record and I retained all sales. When running the game in Russian with some manual changes the data loaded and mm clean properly updated the data. Reverted changes anyway in favor of making new routines.
+
+## ChangeLog for 3.5.15
+
+- Resolved issue with MM trying to index improperly formatted records during initialization
+- Implemented routine to auto initiate "mm clean" and "mm dups" when improperly formatted records are detected. The UI will reload automatically if this occurs.
+
+## ChangeLog for 3.5.14
+
+- Minor update to outliers routine.
+
+## ChangeLog for 3.5.13
+
+- Updated outliers routine, again. Third times a charm, I hope.
+
+NOTE: You might want to copy paste the people from your blacklist into a text document and exclude that while you look at the scatter plot or graph while trimming the outliers.
+
+## ChangeLog for 3.5.12
+
+- Reverted to previous method for trimming outliers.
+
+## ChangeLog for 3.5.11
+
+- Saved pricing data was not set up as a default variable during initialization in previous versions going back to 2.x. This has been corrected.
+
+## ChangeLog for 3.5.10
+
+- Minor bug fix where during initialization an error may have occurred on occasion if a personal sale was reported before MM could initialize a few of its variables.
+
+## ChangeLog for 3.5.09
+
+- Fixed bug where AGS profit filter setting was not kept after log in or reload UI.
+
+## ChangeLog for 3.5.08
+
+- Updated Initialize routine
+
+## ChangeLog for 3.5.07
+
+- Latest version of LibHistoire reports better values with its GetPendingEventMetrics routine. Updated Refresh routine to stop more easily.
+
 ## ChangeLog for 3.5.06
 
 - Updated Refresh routine. Reverted some aspects of it now that LibHistoire has been updated. It was taking too long again.

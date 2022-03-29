@@ -40,16 +40,19 @@ local SALES_WINDOW_DATAROW = "MasterMerchantDataRow"
 local GUILD_WINDOW_DATAROW = "MasterMerchantGuildDataRow"
 local LISTING_WINDOW_DATAROW = "MasterMerchantListingDataRow"
 local PURCHASE_WINDOW_DATAROW = "MasterMerchantPurchaseDataRow"
+local REPORTS_WINDOW_DATAROW = "MasterMerchantReportsDataRow"
 
 local SALES_WINDOW_CONTROL_NAME = "MasterMerchantWindow"
 local GUILD_WINDOW_CONTROL_NAME = "MasterMerchantGuildWindow"
 local LISTING_WINDOW_CONTROL_NAME = "MasterMerchantListingWindow"
 local PURCHASE_WINDOW_CONTROL_NAME = "MasterMerchantPurchaseWindow"
+local REPORTS_WINDOW_CONTROL_NAME = "MasterMerchantReportsWindow"
 
 local SALES_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantWindow"
 local GUILD_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantGuildWindow"
 local LISTING_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantListingWindow"
 local PURCHASE_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantPurchaseWindow"
+local REPORTS_WINDOW_CONTROL_NAME_REGEX = "^MasterMerchantReportsWindow"
 
 function MasterMerchant:ActiveWindow()
   return ((MasterMerchant.systemSavedVariables.viewSize == ITEMS and MasterMerchantWindow) or
@@ -65,6 +68,61 @@ function MasterMerchant:ActiveFragment()
     (MasterMerchant.systemSavedVariables.viewSize == LISTINGS and self.listingUiFragment) or
     (MasterMerchant.systemSavedVariables.viewSize == PURCHASES and self.purchaseUiFragment) or
     (MasterMerchant.systemSavedVariables.viewSize == REPORTS and self.reportsUiFragment))
+end
+
+function MasterMerchant:GetLockButtonTooltipText()
+  if MasterMerchant.systemSavedVariables.isWindowMovable then
+    return GetString(MM_LOCK_TOOLTIP)
+  else
+    return GetString(MM_UNLOCK_TOOLTIP)
+  end
+end
+
+function MasterMerchant:SetWindowLockIcon()
+  local unlocked_up = "/esoui/art/miscellaneous/unlocked_up.dds"
+  local unlocked_over = "/esoui/art/miscellaneous/unlocked_over.dds"
+  local locked_up ="/esoui/art/miscellaneous/locked_up.dds"
+  local locked_over = "/esoui/art/miscellaneous/locked_over.dds"
+  if MasterMerchant.systemSavedVariables.isWindowMovable then
+    MasterMerchantWindowMenuHeaderLockButton:SetNormalTexture(unlocked_up)
+    MasterMerchantGuildWindowMenuHeaderLockButton:SetNormalTexture(unlocked_up)
+    MasterMerchantListingWindowMenuHeaderLockButton:SetNormalTexture(unlocked_up)
+    MasterMerchantPurchaseWindowMenuHeaderLockButton:SetNormalTexture(unlocked_up)
+    MasterMerchantReportsWindowMenuHeaderLockButton:SetNormalTexture(unlocked_up)
+
+    MasterMerchantWindowMenuHeaderLockButton:SetMouseOverTexture(unlocked_over)
+    MasterMerchantGuildWindowMenuHeaderLockButton:SetMouseOverTexture(unlocked_over)
+    MasterMerchantListingWindowMenuHeaderLockButton:SetMouseOverTexture(unlocked_over)
+    MasterMerchantPurchaseWindowMenuHeaderLockButton:SetMouseOverTexture(unlocked_over)
+    MasterMerchantReportsWindowMenuHeaderLockButton:SetMouseOverTexture(unlocked_over)
+  else
+    MasterMerchantWindowMenuHeaderLockButton:SetNormalTexture(locked_up)
+    MasterMerchantGuildWindowMenuHeaderLockButton:SetNormalTexture(locked_up)
+    MasterMerchantListingWindowMenuHeaderLockButton:SetNormalTexture(locked_up)
+    MasterMerchantPurchaseWindowMenuHeaderLockButton:SetNormalTexture(locked_up)
+    MasterMerchantReportsWindowMenuHeaderLockButton:SetNormalTexture(locked_up)
+
+    MasterMerchantWindowMenuHeaderLockButton:SetMouseOverTexture(locked_over)
+    MasterMerchantGuildWindowMenuHeaderLockButton:SetMouseOverTexture(locked_over)
+    MasterMerchantListingWindowMenuHeaderLockButton:SetMouseOverTexture(locked_over)
+    MasterMerchantPurchaseWindowMenuHeaderLockButton:SetMouseOverTexture(locked_over)
+    MasterMerchantReportsWindowMenuHeaderLockButton:SetMouseOverTexture(locked_over)
+  end
+end
+
+function MasterMerchant:SetWindowLock()
+  MasterMerchantWindow:SetMovable(MasterMerchant.systemSavedVariables.isWindowMovable)
+  MasterMerchantGuildWindow:SetMovable(MasterMerchant.systemSavedVariables.isWindowMovable)
+  MasterMerchantListingWindow:SetMovable(MasterMerchant.systemSavedVariables.isWindowMovable)
+  MasterMerchantPurchaseWindow:SetMovable(MasterMerchant.systemSavedVariables.isWindowMovable)
+  MasterMerchantReportsWindow:SetMovable(MasterMerchant.systemSavedVariables.isWindowMovable)
+end
+
+function MasterMerchant:ToggleWindowLock()
+  MasterMerchant.systemSavedVariables.isWindowMovable = not MasterMerchant.systemSavedVariables.isWindowMovable
+
+  MasterMerchant:SetWindowLock()
+  MasterMerchant:SetWindowLockIcon()
 end
 
 function MasterMerchant:SortByPrice(ordering, scrollList)
@@ -619,15 +677,6 @@ function MMScrollList:SetupListingsRow(control, data)
     guildZoneId = guildLocationInfo.zoneId
   end
 
-  --[[
-  local controlName = control:GetName()
-  if not string.find(controlName, GUILD_WINDOW_CONTROL_NAME_REGEX) then
-    MasterMerchant:dm("Warn", controlName)
-    return
-  else
-    MasterMerchant:dm("Debug", controlName)
-  end
-  ]]--
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
 
   control.rowId:SetFont(string.format(fontString, 12))
@@ -642,10 +691,7 @@ function MMScrollList:SetupListingsRow(control, data)
   control.rowId:SetText(data.sortIndex)
 
   control.seller:SetText(currentSeller)
-
-  control.seller:SetHandler('OnMouseUp', function(self, upInside)
-    MasterMerchant:my_NameHandler_OnLinkMouseUp(currentSeller, upInside, self)
-  end)
+  control.seller:SetHandler('OnMouseUp', function(self, upInside) MasterMerchant:my_SellerColumn_OnLinkMouseUp(currentSeller, currentItemLink, upInside, self) end)
 
   -- Guild cell
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
@@ -756,15 +802,6 @@ function MMScrollList:SetupPurchasesRow(control, data)
   local currentSeller = internal:GetAccountNameByIndex(actualItem['seller'])
   local actualItemIcon = purchases_data[data[1]][data[2]]['itemIcon']
 
-  --[[
-  local controlName = control:GetName()
-  if not string.find(controlName, GUILD_WINDOW_CONTROL_NAME_REGEX) then
-    MasterMerchant:dm("Warn", controlName)
-    return
-  else
-    MasterMerchant:dm("Debug", controlName)
-  end
-  ]]--
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
 
   control.rowId:SetFont(string.format(fontString, 12))
@@ -912,22 +949,12 @@ function MMScrollList:SetupReportsRow(control, data)
     return
   end
 
-  --[[
-  local controlName = control:GetName()
-  if not string.find(controlName, SALES_WINDOW_CONTROL_NAME_REGEX) then
-    MasterMerchant:dm("Warn", controlName)
-    return
-  else
-    MasterMerchant:dm("Debug", controlName)
-  end
-  ]]--
   local actualItem = dataTable[data[1]][data[2]]['sales'][data[3]]
   local currentItemLink = internal:GetItemLinkByIndex(actualItem['itemLink'])
   local currentGuild = internal:GetGuildNameByIndex(actualItem['guild'])
   local currentBuyer = internal:GetAccountNameByIndex(actualItem['buyer'])
   local currentSeller = internal:GetAccountNameByIndex(actualItem['seller'])
   local actualItemIcon = dataTable[data[1]][data[2]]['itemIcon']
-  local isFullSize = string.find(control:GetName(), SALES_WINDOW_CONTROL_NAME_REGEX)
 
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
 
@@ -2008,6 +2035,11 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
   if TamrielTradeCentre then
     tipLineTTC = MasterMerchant:TTCPriceTip(itemLink)
   end
+  if statsInfo.bonanzaSales and (statsInfo.bonanzaSales < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
+    statsInfo.bonanzaPrice = nil
+    statsInfo.bonanzaSales = nil
+    statsInfo.bonanzaCount = nil
+  end
 
   if not tooltip.textPool then
     tooltip.textPool = ZO_ControlPool:New('MMGraphLabel', tooltip, 'Text')
@@ -2261,15 +2293,15 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
           if graphInfo.high < highRange then
             graphInfo.high = highRange * 1.05
           end
-          xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+          xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. MasterMerchant.coinIcon
         else
           xBonanza = nil
           statsInfo.bonanzaPrice = nil
         end
 
-        local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-        local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. '|t16:16:EsoUI/Art/currency/currency_gold.dds|t'
+        local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. MasterMerchant.coinIcon
+        local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. MasterMerchant.coinIcon
+        local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. MasterMerchant.coinIcon
         local endTimeFrameText = GetString(MM_ENDTIMEFRAME_TEXT)
         -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
         -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, x_bonanzaPriceText, x_bonanzaPriceValue)
@@ -3538,3 +3570,15 @@ function MasterMerchant:SetupScrollLists()
   -- setup filter window
   self.nameFilterScrollList = IFScrollList:New(MasterMerchantFilterByNameWindow)
 end
+
+local function OnPlayerJoinedGuild(eventCode, guildServerId, characterName, guildId)
+  --EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
+  MasterMerchant:dm("Debug", "OnPlayerJoinedGuild")
+end
+local function OnPlayerLeaveGuild(eventCode, guildServerId, characterName, guildId)
+  --EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
+  MasterMerchant:dm("Debug", "OnPlayerLeaveGuild")
+end
+
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_JoinedGuild", EVENT_GUILD_SELF_JOINED_GUILD, OnPlayerJoinedGuild)
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_LeaveGuild", EVENT_GUILD_SELF_LEFT_GUILD, OnPlayerLeaveGuild)
