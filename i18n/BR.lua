@@ -191,7 +191,7 @@ ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
 -- New values
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "Preço MM (%s vendas/%s itens, %d dia): %s")
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "Preço MM (%s vendas/%s itens, %d dias): %s")
-ZO_CreateStringId("MM_BONANZA_GRAPHTIP, "Bonanza price (%s listagens/%s itens): %s")
+ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza price (%s listagens/%s itens): %s")
 
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s listings] Sug: %s, Avg: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")

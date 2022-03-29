@@ -190,7 +190,7 @@ ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
 
 -- New values
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "MM 価格 (%s 売上高/%s 販売商品, %s 日): %s")
-ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI, "MM 価格 (%s 売上高/%s 販売商品, %s 日々): %s")
+ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "MM 価格 (%s 売上高/%s 販売商品, %s 日々): %s")
 ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza price (%s リスト/%s 販売商品): %s")
 
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s listings] Sug: %s, Avg: %s")
