@@ -1,4 +1,3 @@
-local lib = _G["LibGuildStore"]
 local internal = _G["LibGuildStore_Internal"]
 
 local ASYNC = LibAsync
@@ -12,9 +11,9 @@ function internal:CompareItemIds(dataset)
   internal:dm("Debug", "CompareItemIds")
   local saveData = dataset[internal.dataNamespace]
   local itemIds = {}
-  for itemID, itemData in pairs(saveData) do
-    for itemIndex, itemIndexData in pairs(itemData) do
-      for key, sale in pairs(itemIndexData['sales']) do
+  for _, itemData in pairs(saveData) do
+    for _, itemIndexData in pairs(itemData) do
+      for _, sale in pairs(itemIndexData['sales']) do
         if not itemIds[sale.id] then
           itemIds[sale.id] = true
         else
@@ -109,7 +108,7 @@ function internal:RenewExtraSalesData(otherData)
         newestTime = nil
         oldestTime = nil
         totalCount = 0
-        for sale, saleData in pairs(itemIndexData['sales']) do
+        for _, saleData in pairs(itemIndexData['sales']) do
           totalCount = totalCount + 1
           if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
           if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
@@ -134,7 +133,7 @@ function internal:UpdateExtraSalesData(savedVars)
   local oldestTime = nil
   local totalCount = 0
   if savedVars['sales'] then
-    for sale, saleData in pairs(savedVars['sales']) do
+    for _, saleData in pairs(savedVars['sales']) do
       totalCount = totalCount + 1
       if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
       if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
@@ -156,7 +155,7 @@ function internal:RenewExtraListingsData(otherData)
       if itemIndexData.wasAltered then
         local oldestTime = nil
         local totalCount = 0
-        for sale, saleData in pairs(itemIndexData['sales']) do
+        for _, saleData in pairs(itemIndexData['sales']) do
           totalCount = totalCount + 1
           if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
         end
@@ -180,9 +179,9 @@ function internal:VerifyItemLinks(hash, task)
   task:Then(function(task) internal:dm("Debug", hash) end)
   local savedVars = saveFile[internal.dataNamespace]
 
-  task:For(pairs(savedVars)):Do(function(itemID, itemIndex)
-    task:For(pairs(itemIndex)):Do(function(field, itemIndexData)
-      task:For(pairs(itemIndexData['sales'])):Do(function(sale, saleData)
+  task:For(pairs(savedVars)):Do(function(_, itemIndex)
+    task:For(pairs(itemIndex)):Do(function(_, itemIndexData)
+      task:For(pairs(itemIndexData['sales'])):Do(function(_, saleData)
         local currentLink = internal:GetItemLinkByIndex(saleData.itemLink)
         local currentHash = internal:MakeHashString(currentLink)
         if currentHash ~= hash then
@@ -213,25 +212,25 @@ function internal:AddExtraSalesData(otherData)
         if firstEntry and type(firstEntry) == 'table' then salesHasEntry = true end
       end -- if ['sales'] has a table in it
       if salesHasEntry then
-          for sale, saleData in pairs(itemIndexData['sales']) do
-            if saleData and saleData["timestamp"] then
-              totalCount = totalCount + 1
-              if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-              if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
-            end
+        for _, saleData in pairs(itemIndexData['sales']) do
+          if saleData and saleData["timestamp"] then
+            totalCount = totalCount + 1
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+            if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
           end
+        end
 
-          if savedVars[itemID][field] then
-            savedVars[itemID][field].totalCount = totalCount
-            savedVars[itemID][field].oldestTime = oldestTime
-            savedVars[itemID][field].newestTime = newestTime
-            savedVars[itemID][field].wasAltered = false
-          end
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].wasAltered = false
+        end
       else
         local dataInfo = {
-          lang        = MasterMerchant.effective_lang,
+          lang = MasterMerchant.effective_lang,
           itemIndexData = itemIndexData,
-          namespace    = internal.dataNamespace,
+          namespace = internal.dataNamespace,
           timestamp = GetTimeStamp(),
         }
         if GS17DataSavedVariables["erroneous_records"] == nil then GS17DataSavedVariables["erroneous_records"] = {} end
@@ -247,7 +246,6 @@ end
 function internal:AddExtraListingsData(otherData)
   local savedVars = otherData[internal.listingsNamespace]
   local oldestTime = nil
-  local newestTime = nil
   local totalCount = 0
   local firstEntry = nil
   local salesHasEntry = false
@@ -263,23 +261,23 @@ function internal:AddExtraListingsData(otherData)
         if firstEntry and type(firstEntry) == 'table' then salesHasEntry = true end
       end -- if ['sales'] has a table in it
       if salesHasEntry then
-          for sale, saleData in pairs(itemIndexData['sales']) do
-            if saleData and saleData["timestamp"] then
-              totalCount = totalCount + 1
-              if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-            end
+        for _, saleData in pairs(itemIndexData['sales']) do
+          if saleData and saleData["timestamp"] then
+            totalCount = totalCount + 1
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
           end
+        end
 
-          if savedVars[itemID][field] then
-            savedVars[itemID][field].totalCount = totalCount
-            savedVars[itemID][field].oldestTime = oldestTime
-            savedVars[itemID][field].wasAltered = false
-          end
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].wasAltered = false
+        end
       else
         local dataInfo = {
-          lang        = MasterMerchant.effective_lang,
+          lang = MasterMerchant.effective_lang,
           itemIndexData = itemIndexData,
-          namespace    = internal.listingsNamespace,
+          namespace = internal.listingsNamespace,
           timestamp = GetTimeStamp(),
         }
         if GS17DataSavedVariables["erroneous_listings"] == nil then GS17DataSavedVariables["erroneous_listings"] = {} end

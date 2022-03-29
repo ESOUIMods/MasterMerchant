@@ -27,7 +27,7 @@ when viewSize is 'full': then you are viewing the seller information
 when viewSize if 'half': you are viewing the item information
 ]]--
 
---[[ can nout use MasterMerchant.itemsViewSize for example
+--[[ can not use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
 ]]--
 local ITEMS = 'items_vs'
@@ -81,7 +81,7 @@ end
 function MasterMerchant:SetWindowLockIcon()
   local unlocked_up = "/esoui/art/miscellaneous/unlocked_up.dds"
   local unlocked_over = "/esoui/art/miscellaneous/unlocked_over.dds"
-  local locked_up ="/esoui/art/miscellaneous/locked_up.dds"
+  local locked_up = "/esoui/art/miscellaneous/locked_up.dds"
   local locked_over = "/esoui/art/miscellaneous/locked_over.dds"
   if MasterMerchant.systemSavedVariables.isWindowMovable then
     MasterMerchantWindowMenuHeaderLockButton:SetNormalTexture(unlocked_up)
@@ -3463,11 +3463,11 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantGuildResetButton:SetText(GetString(SK_RESET_LABEL))
   ]]--
   local confirmDialog = {
-    title    = { text = GetString(GS_RESET_CONFIRM_TITLE) },
+    title = { text = GetString(GS_RESET_CONFIRM_TITLE) },
     mainText = { text = GetString(GS_RESET_CONFIRM_MAIN) },
-    buttons  = {
+    buttons = {
       {
-        text     = SI_DIALOG_ACCEPT,
+        text = SI_DIALOG_ACCEPT,
         callback = function() internal:ResetSalesData() end
       },
       { text = SI_DIALOG_CANCEL }
@@ -3475,11 +3475,11 @@ function MasterMerchant:SetupMasterMerchantWindow()
   }
   ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetConfirmation', confirmDialog)
   local confirmDialog = {
-    title    = { text = GetString(GS_RESET_LISTINGS_CONFIRM_TITLE) },
+    title = { text = GetString(GS_RESET_LISTINGS_CONFIRM_TITLE) },
     mainText = { text = GetString(GS_RESET_LISTINGS_CONFIRM_MAIN) },
-    buttons  = {
+    buttons = {
       {
-        text     = SI_DIALOG_ACCEPT,
+        text = SI_DIALOG_ACCEPT,
         callback = function() internal:ResetListingsData() end
       },
       { text = SI_DIALOG_CANCEL }
@@ -3580,5 +3580,5 @@ local function OnPlayerLeaveGuild(eventCode, guildServerId, characterName, guild
   MasterMerchant:dm("Debug", "OnPlayerLeaveGuild")
 end
 
-EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_JoinedGuild", EVENT_GUILD_SELF_JOINED_GUILD, OnPlayerJoinedGuild)
-EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_LeaveGuild", EVENT_GUILD_SELF_LEFT_GUILD, OnPlayerLeaveGuild)
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_JoinedGuild", EVENT_GUILD_SELF_JOINED_GUILD, OnPlayerJoinedGuild)
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_LeaveGuild", EVENT_GUILD_SELF_LEFT_GUILD, OnPlayerLeaveGuild)

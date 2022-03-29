@@ -10,15 +10,15 @@ local mfloor = math.floor
 local taxFactor = GetTradingHouseCutPercentage() / 200
 
 MMSeller = {
-  guild        = {},
-  sellerName   = '',
-  sales        = {},
-  tax          = {},
-  count        = {},
-  stack        = {},
-  rank         = {},
+  guild = {},
+  sellerName = '',
+  sales = {},
+  tax = {},
+  count = {},
+  stack = {},
+  rank = {},
   outsideBuyer = false,
-  searchText   = nil
+  searchText = nil
 }
 
 function MMSeller:new(_guild, _name, _outsideBuyer, _searchText)
@@ -96,13 +96,13 @@ function MMSeller:removeRankIndex(rankIndex)
 end
 
 MMGuild = {
-  guildName    = '',
-  sellers      = {},
-  ranks        = {},
-  sales        = {},
-  tax          = {},
-  count        = {},
-  stack        = {},
+  guildName = '',
+  sellers = {},
+  ranks = {},
+  sales = {},
+  tax = {},
+  count = {},
+  stack = {},
   initDateTime = GetTimeStamp()
 }
 

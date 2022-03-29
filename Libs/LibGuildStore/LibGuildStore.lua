@@ -6,7 +6,6 @@ because that will not be available this early.
 ]]--
 local ITEMS = 'items_vs'
 local GUILDS = 'guild_vs'
-local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
 local REPORTS = 'reports_vs'
 
@@ -148,7 +147,6 @@ local function SetupLibHistoireContainers()
   internal:dm("Debug", "SetupLibHistoireContainers")
   for i = 1, GetNumGuilds() do
     local guildId = GetGuildId(i)
-    local guildName = GetGuildName(guildId)
     internal.LibHistoireListener[guildId] = {}
   end
 end
@@ -182,28 +180,28 @@ local function SetupDefaults()
   internal:dm("Debug", "SetupDefaults")
   SetNamespace()
   local systemDefault = {
-    version                              = 2,
+    version = 2,
     [internal.GS_NA_FIRST_RUN_NAMESPACE] = true,
     [internal.GS_EU_FIRST_RUN_NAMESPACE] = true,
-    lastReceivedEventID                  = {},
-    historyDepthSL                       = 180,
-    historyDepthPI                       = 180,
-    historyDepthCI                       = 180,
-    minimalIndexing                      = false,
-    historyDepth                         = 90,
-    minItemCount                         = 20,
-    maxItemCount                         = 5000,
-    showIndexingSummary                  = false,
-    showTruncateSummary                  = false,
-    showGuildInitSummary                 = false,
-    useSalesHistory                      = true,
-    overrideMMImport                     = false,
-    updateAdditionalText                 = false,
-    libHistoireScanByTimestamp           = false,
+    lastReceivedEventID = {},
+    historyDepthSL = 180,
+    historyDepthPI = 180,
+    historyDepthCI = 180,
+    minimalIndexing = false,
+    historyDepth = 90,
+    minItemCount = 20,
+    maxItemCount = 5000,
+    showIndexingSummary = false,
+    showTruncateSummary = false,
+    showGuildInitSummary = false,
+    useSalesHistory = true,
+    overrideMMImport = false,
+    updateAdditionalText = false,
+    libHistoireScanByTimestamp = false,
   }
   internal.systemDefault = systemDefault
   local sv = LibGuildStore_SavedVariables
-  for key, val in pairs(sv) do
+  for key, _ in pairs(sv) do
     -- Delete key-value pair if the key can't also be found in the default settings (except for version)
     if (key ~= "lastReceivedEventID" and key ~= "version") and systemDefault[key] == nil then
       sv[key] = nil
@@ -329,14 +327,14 @@ local function Initilizze()
     -- register for purchace
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_PURCHASED, function(itemData)
       local theEvent = {
-        guild     = itemData.guildName,
-        itemLink  = itemData.itemLink,
-        quant     = itemData.stackCount,
+        guild = itemData.guildName,
+        itemLink = itemData.itemLink,
+        quant = itemData.stackCount,
         timestamp = GetTimeStamp(),
-        price     = itemData.purchasePrice,
-        seller    = itemData.sellerName,
-        id        = Id64ToString(itemData.itemUniqueId),
-        buyer     = GetDisplayName()
+        price = itemData.purchasePrice,
+        seller = itemData.sellerName,
+        id = Id64ToString(itemData.itemUniqueId),
+        buyer = GetDisplayName()
       }
       internal:addPurchaseData(theEvent)
       MasterMerchant.listIsDirty[PURCHASES] = true
@@ -352,12 +350,12 @@ local function Initilizze()
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
         local theEvent = {
-          guild     = GetGuildName(guildId),
-          itemLink  = itemLink,
-          quant     = stackCount,
+          guild = GetGuildName(guildId),
+          itemLink = itemLink,
+          quant = stackCount,
           timestamp = GetTimeStamp(),
-          price     = price,
-          seller    = GetDisplayName(),
+          price = price,
+          seller = GetDisplayName(),
         }
         internal:addPostedItem(theEvent)
         MasterMerchant.listIsDirty[REPORTS] = true
@@ -367,12 +365,12 @@ local function Initilizze()
       function(guildId, itemLink, price, stackCount)
         -- opps needs the names since addCanceledItem handles the hasing
         local theEvent = {
-          guild     = GetGuildName(guildId),
-          itemLink  = itemLink,
-          quant     = stackCount,
+          guild = GetGuildName(guildId),
+          itemLink = itemLink,
+          quant = stackCount,
           timestamp = GetTimeStamp(),
-          price     = price,
-          seller    = GetDisplayName(),
+          price = price,
+          seller = GetDisplayName(),
         }
         internal:addCancelledItem(theEvent)
         MasterMerchant.listIsDirty[REPORTS] = true

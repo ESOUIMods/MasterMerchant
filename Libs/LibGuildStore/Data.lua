@@ -1,4 +1,3 @@
-local lib = _G["LibGuildStore"]
 local internal = _G["LibGuildStore_Internal"]
 
 local LGH = LibHistoire
@@ -6,11 +5,8 @@ local LGH = LibHistoire
 --[[ can nout use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
 ]]--
-local ITEMS = 'items_vs'
-local GUILDS = 'guild_vs'
 local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
-local REPORTS = 'reports_vs'
 
 function internal:concat(a, ...)
   if a == nil and ... == nil then
@@ -101,9 +97,7 @@ end
 
 local function CreateIndexFromLink(itemLink)
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  return GetRequiredLevel(itemLink,
-    itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkQuality(itemLink) .. ":" .. GetItemsTrait(itemLink,
-    itemType) .. ":" .. GetItemLinkParseData(itemLink, itemType)
+  return GetRequiredLevel(itemLink, itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkQuality(itemLink) .. ":" .. GetItemsTrait(itemLink, itemType) .. ":" .. GetItemLinkParseData(itemLink, itemType)
 end
 
 function internal.GetOrCreateIndexFromLink(itemLink)
@@ -391,15 +385,15 @@ function internal:SetupListener(guildId)
       },
       ]]--
       local theEvent = {
-        buyer     = p2,
-        guild     = guildName,
-        itemLink  = p4,
-        quant     = p3,
+        buyer = p2,
+        guild = guildName,
+        itemLink = p4,
+        quant = p3,
         timestamp = eventTime,
-        price     = p5,
-        seller    = p1,
-        wasKiosk  = false,
-        id        = Id64ToString(eventId)
+        price = p5,
+        seller = p1,
+        wasKiosk = false,
+        id = Id64ToString(eventId)
       }
       theEvent.wasKiosk = (internal.guildMemberInfo[guildId][string.lower(theEvent.buyer)] == nil)
 
@@ -459,16 +453,16 @@ function internal:onTradingHouseEvent(eventCode, slotId, isPending)
     local guildId, guild, guildAlliance = GetCurrentTradingHouseGuildDetails()
     local listedTime = GetTimeStamp() - (2592000 - timeRemaining)
     local theEvent = {
-      guild       = guild,
-      guildId     = guildId,
-      itemLink    = GetTradingHouseSearchResultItemLink(slotId),
-      quant       = quantity,
-      timestamp   = GetTimeStamp(),
+      guild = guild,
+      guildId = guildId,
+      itemLink = GetTradingHouseSearchResultItemLink(slotId),
+      quant = quantity,
+      timestamp = GetTimeStamp(),
       listingTime = listedTime,
-      price       = price,
-      seller      = seller,
-      id          = Id64ToString(itemUniqueId),
-      buyer       = GetDisplayName()
+      price = price,
+      seller = seller,
+      id = Id64ToString(itemUniqueId),
+      buyer = GetDisplayName()
     }
     --internal:dm("Debug", theEvent)
     internal:addPurchaseData(theEvent)
@@ -480,15 +474,15 @@ function internal:AddAwesomeGuildStoreListing(listing)
   --internal:dm("Debug", "AddAwesomeGuildStoreListing")
   local listedTime = GetTimeStamp() - (2592000 - listing.timeRemaining)
   local theEvent = {
-    guild       = listing.guildName,
-    guildId     = listing.guildId,
-    itemLink    = listing.itemLink,
-    quant       = listing.stackCount,
-    timestamp   = GetTimeStamp(),
+    guild = listing.guildName,
+    guildId = listing.guildId,
+    itemLink = listing.itemLink,
+    quant = listing.stackCount,
+    timestamp = GetTimeStamp(),
     listingTime = listedTime,
-    price       = listing.purchasePrice,
-    seller      = listing.sellerName,
-    id          = Id64ToString(listing.itemUniqueId),
+    price = listing.purchasePrice,
+    seller = listing.sellerName,
+    id = Id64ToString(listing.itemUniqueId),
   }
   internal:addTraderInfo(listing.guildId, listing.guildName)
   local added = false
@@ -512,15 +506,15 @@ function internal:processGuildStore()
     itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo(i)
     local listedTime = GetTimeStamp() - (2592000 - timeRemaining)
     local theEvent = {
-      guild       = guildName,
-      guildId     = lguildId,
-      itemLink    = itemLink,
-      quant       = stackCount,
-      timestamp   = GetTimeStamp(),
+      guild = guildName,
+      guildId = lguildId,
+      itemLink = itemLink,
+      quant = stackCount,
+      timestamp = GetTimeStamp(),
       listingTime = listedTime,
-      price       = purchasePrice,
-      seller      = sellerName,
-      id          = Id64ToString(itemUniqueId),
+      price = purchasePrice,
+      seller = sellerName,
+      id = Id64ToString(itemUniqueId),
     }
     internal:addTraderInfo(guildId, guildName)
     local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id, theEvent.timestamp)
@@ -612,12 +606,12 @@ function internal:addTraderInfo(guildId, guildName)
   local zoneId = GetZoneId(zoneIndex)
   if subzoneName == "" then subzoneName = zoneName end
   local theInfo = {
-    guildName   = guildName,
-    local_x     = local_x,
-    local_y     = local_y,
-    zoneName    = zoneName,
+    guildName = guildName,
+    local_x = local_x,
+    local_y = local_y,
+    zoneName = zoneName,
     subzoneName = subzoneName,
-    zoneId      = zoneId,
+    zoneId = zoneId,
   }
   if GS17DataSavedVariables[internal.visitedNamespace] == nil then GS17DataSavedVariables[internal.visitedNamespace] = {} end
   if GS17DataSavedVariables[internal.visitedNamespace][guildId] == nil then GS17DataSavedVariables[internal.visitedNamespace][guildId] = {} end

@@ -31,7 +31,7 @@ function IFScrollList:BuildMasterList()
   local listControl = self:GetListControl()
   ZO_ScrollList_Clear(listControl)
   local scrollDataList = ZO_ScrollList_GetDataList(listControl)
-  for i, itemData in ipairs(self.masterList) do
+  for _, itemData in ipairs(self.masterList) do
     table.insert(scrollDataList, ZO_ScrollList_CreateDataEntry(ITEM_DATA, itemData))
   end
 end

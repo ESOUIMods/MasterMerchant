@@ -1,17 +1,17 @@
 function MasterMerchant.InitDealFilterFragmentClass()
-  local AGS                          = AwesomeGuildStore
+  local AGS = AwesomeGuildStore
 
   local ValueRangeFilterFragmentBase = AGS.class.ValueRangeFilterFragmentBase
-  local SimpleIconButton             = AGS.class.SimpleIconButton
+  local SimpleIconButton = AGS.class.SimpleIconButton
 
-  local BUTTON_SIZE                  = 36
-  local BUTTON_OFFSET_X              = -6
-  local BUTTON_OFFSET_Y              = 2
+  local BUTTON_SIZE = 36
+  local BUTTON_OFFSET_X = -6
+  local BUTTON_OFFSET_Y = 2
 
-  local QUALITY_BUTTON_OVER_ICON     = "AwesomeGuildStore/images/qualitybuttons/over.dds"
+  local QUALITY_BUTTON_OVER_ICON = "AwesomeGuildStore/images/qualitybuttons/over.dds"
 
-  local DealFilterFragment           = ValueRangeFilterFragmentBase:Subclass()
-  MasterMerchant.DealFilterFragment  = DealFilterFragment
+  local DealFilterFragment = ValueRangeFilterFragmentBase:Subclass()
+  MasterMerchant.DealFilterFragment = DealFilterFragment
 
   function DealFilterFragment:New(...)
     return ValueRangeFilterFragmentBase.New(self, ...)
@@ -20,10 +20,10 @@ function MasterMerchant.InitDealFilterFragmentClass()
   function DealFilterFragment:Initialize(filterId)
     ValueRangeFilterFragmentBase.Initialize(self, filterId)
 
-    local filter    = self.filter
+    local filter = self.filter
     local container = self:GetContainer()
-    local config    = self.filter:GetConfig()
-    self.steps      = config.steps
+    local config = self.filter:GetConfig()
+    self.steps = config.steps
 
     local function SetMinDeal(button, ctrl, alt, shift)
       local min, max = filter:GetValues()
@@ -37,10 +37,10 @@ function MasterMerchant.InitDealFilterFragmentClass()
       filter:SetValues(min, button.value)
     end
 
-    local buttons    = {}
-    local width      = container:GetWidth() - BUTTON_OFFSET_X * 2
+    local buttons = {}
+    local width = container:GetWidth() - BUTTON_OFFSET_X * 2
     local valueCount = #config.steps
-    local spacing    = width / valueCount
+    local spacing = width / valueCount
     for i = 1, valueCount do
       local button = self:CreateButton(container, i, config.steps[i])
       button:SetAnchor(TOP, self.slider.control, BOTTOM, 0, BUTTON_OFFSET_Y, ANCHOR_CONSTRAINS_Y)
@@ -58,7 +58,7 @@ function MasterMerchant.InitDealFilterFragmentClass()
 
   function DealFilterFragment:CreateButton(container, i, data)
     local control = CreateControl("$(parent)Button" .. i, container, CT_BUTTON)
-    local button  = SimpleIconButton:New(control)
+    local button = SimpleIconButton:New(control)
     button:SetClickSound(SOUNDS.DEFAULT_CLICK)
     button:SetSize(BUTTON_SIZE)
     button:SetTooltipText(data.label)

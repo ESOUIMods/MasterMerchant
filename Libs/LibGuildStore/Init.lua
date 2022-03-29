@@ -106,7 +106,7 @@ end
 -------------------------------------------------
 
 function internal:is_in(search_value, search_table)
-  for k, v in pairs(search_table) do
+  for _, v in pairs(search_table) do
     if search_value == v then return true end
     if type(search_value) == "string" then
       if string.find(string.lower(v), string.lower(search_value)) then return true end
@@ -141,19 +141,19 @@ internal.saveVarsDefaults = {
 -- These defaults are used with the Lam menu not the startup routine
 internal.defaults = {
   -- ["firstRun"] = true not needed when reset
-  updateAdditionalText       = false,
-  historyDepth               = 90,
-  minItemCount               = 20,
-  maxItemCount               = 5000,
-  showGuildInitSummary       = false,
-  showIndexingSummary        = false,
-  showTruncateSummary        = false,
-  minimalIndexing            = false,
-  useSalesHistory            = false,
-  overrideMMImport           = false,
-  historyDepthSL             = 60,
-  historyDepthPI             = 180,
-  historyDepthCI             = 180,
+  updateAdditionalText = false,
+  historyDepth = 90,
+  minItemCount = 20,
+  maxItemCount = 5000,
+  showGuildInitSummary = false,
+  showIndexingSummary = false,
+  showTruncateSummary = false,
+  minimalIndexing = false,
+  useSalesHistory = false,
+  overrideMMImport = false,
+  historyDepthSL = 60,
+  historyDepthPI = 180,
+  historyDepthCI = 180,
   libHistoireScanByTimestamp = false,
 }
 
@@ -251,17 +251,17 @@ local currencyFormatDealOptions = {
 }
 ]]--
 internal.potionVarientTable = {
-  [0]   = 0,
-  [1]   = 0,
-  [3]   = 1,
-  [10]  = 2,
-  [19]  = 2, -- level 19 pots I found
-  [20]  = 3,
-  [24]  = 3, -- level 24 pots I found
-  [30]  = 4,
-  [39]  = 4, -- level 39 pots I found
-  [40]  = 5,
-  [44]  = 5, -- level 44 pots I found
+  [0] = 0,
+  [1] = 0,
+  [3] = 1,
+  [10] = 2,
+  [19] = 2, -- level 19 pots I found
+  [20] = 3,
+  [24] = 3, -- level 24 pots I found
+  [30] = 4,
+  [39] = 4, -- level 39 pots I found
+  [40] = 5,
+  [44] = 5, -- level 44 pots I found
   [125] = 6,
   [129] = 7,
   [134] = 8,

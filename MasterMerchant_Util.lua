@@ -105,19 +105,6 @@ function MasterMerchant.GetItemLinePrice(itemLink)
   return 0
 end
 
-local function GetLevelAndCPRequirementFromItemLink(itemLink)
-  local link = { ZO_LinkHandler_ParseLink(itemLink) }
-  return tonumber(link[5]), tonumber(link[6])
-end
-
-local function GetPotionPowerLevel(itemLink)
-  local CP, level = GetLevelAndCPRequirementFromItemLink(itemLink)
-  if level < 50 then
-    return level
-  end
-  return CP
-end
-
 function MasterMerchant:playSounds(lastIndex)
 
   local index, value = next(SOUNDS, lastIndex)

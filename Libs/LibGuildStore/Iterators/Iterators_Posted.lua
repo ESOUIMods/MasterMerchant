@@ -1,4 +1,3 @@
-local lib = _G["LibGuildStore"]
 local internal = _G["LibGuildStore_Internal"]
 local posted_items_data = _G["LibGuildStore_PostedItemsData"]
 local pir_index = _G["LibGuildStore_PostedItemsIndex"]
@@ -9,7 +8,7 @@ function internal:CheckForDuplicatePostedItem(itemLink, eventID)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
 
   if posted_items_data[theIID] and posted_items_data[theIID][itemIndex] then
-    for k, v in pairs(posted_items_data[theIID][itemIndex]['sales']) do
+    for _, v in pairs(posted_items_data[theIID][itemIndex]['sales']) do
       if v.id == eventID then
         return true
       end
@@ -66,10 +65,10 @@ function internal:addPostedItem(theEvent)
     searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
     searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     posted_items_data[theIID][itemIndex] = {
-      itemIcon      = GetItemLinkInfo(theEvent.itemLink),
+      itemIcon = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
-      itemDesc      = searchItemDesc,
-      sales         = { newEvent } }
+      itemDesc = searchItemDesc,
+      sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
 
@@ -157,16 +156,14 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc,
-              postfunc,
-              extraData) end, nil)
+            LEQ:ContinueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
 
         if extraData.saleRemoved then
           local sales = {}
-          for sid, sd in pairs(versiondata['sales']) do
+          for _, sd in pairs(versiondata['sales']) do
             if (sd ~= nil) and (type(sd) == 'table') then
               table.insert(sales, sd)
             end
@@ -176,8 +173,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid),
-        "^%d+:%d+:%d+:%d+:%d+")))) then
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount = (extraData.versionCount or 0) + 1
         versionlist[versionid] = nil
         extraData.versionRemoved = true
@@ -185,7 +181,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
 
       if LibGuildStore_SavedVariables["updateAdditionalText"] then
         local itemData = nil
-        for sid, sd in pairs(versiondata['sales']) do
+        for _, sd in pairs(versiondata['sales']) do
           if (sd ~= nil) and (type(sd) == 'table') then
             itemData = sd
             break
@@ -210,8 +206,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc, postfunc,
-          extraData) end, nil)
+        LEQ:ContinueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -245,7 +240,7 @@ end
 function internal:TruncatePostedItemsHistory()
   internal:dm("Debug", "TruncatePostedItemsHistory")
 
-  -- DEBUG  TruncateHistory
+  -- DEBUG  TruncatePostedItemsHistory
   -- do return end
 
   local prefunc = function(extraData)
@@ -261,15 +256,14 @@ function internal:TruncatePostedItemsHistory()
 
     local salesDeleted = 0
     salesCount = versiondata.totalCount
-    local salesDataTable = internal:spairs(versiondata['sales'],
-      function(a, b) return internal:CleanTimestamp(a) < internal:CleanTimestamp(b) end)
-    for saleid, saledata in salesDataTable do
-      if (saledata['timestamp'] < extraData.epochBack
-        or saledata['timestamp'] == nil
-        or type(saledata['timestamp']) ~= 'number'
+    local salesDataTable = internal:spairs(versiondata['sales'], function(a, b) return internal:CleanTimestamp(a) < internal:CleanTimestamp(b) end)
+    for salesId, salesData in salesDataTable do
+      if (salesData['timestamp'] < extraData.epochBack
+        or salesData['timestamp'] == nil
+        or type(salesData['timestamp']) ~= 'number'
       ) then
         -- Remove it by setting it to nil
-        versiondata['sales'][saleid] = nil
+        versiondata['sales'][salesId] = nil
         salesDeleted = salesDeleted + 1
         extraData.wasAltered = true
       end
@@ -323,7 +317,6 @@ function internal:IndexPostedItemsData()
 
     local playerName = zo_strlower(GetDisplayName())
     local selfSale = playerName == zo_strlower(currentSeller)
-    local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
     local searchText = ""
     if LibGuildStore_SavedVariables["minimalIndexing"] then
       if selfSale then
@@ -334,7 +327,7 @@ function internal:IndexPostedItemsData()
       versiondata.itemDesc = versiondata.itemDesc or GetItemLinkName(currentItemLink)
       versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
 
-      -- if currentBuyer then temp[1] = 'b' .. currentBuyer end
+      local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
       if currentSeller then temp[3] = 's' .. currentSeller end
       temp[5] = currentGuild or ''
       temp[7] = versiondata.itemDesc or ''
@@ -379,10 +372,12 @@ function internal:InitPostedItemsHistory()
 
   if internal.postedItems == nil then
     internal.postedItems = {}
+    extradata.doPostedItems = true
   end
 
   if internal.postedSellers == nil then
     internal.postedSellers = {}
+    extradata.doPostedSellers = true
   end
 
   local prefunc = function(extraData)
@@ -396,24 +391,27 @@ function internal:InitPostedItemsHistory()
     local currentGuild = internal:GetGuildNameByIndex(saledata['guild'])
     if currentGuild then
       local currentSeller = internal:GetAccountNameByIndex(saledata['seller'])
-      local currentBuyer = internal:GetAccountNameByIndex(saledata['buyer'])
 
-      if not internal.postedItems[currentGuild] then
-        internal.postedItems[currentGuild] = MMGuild:new(currentGuild)
+      if (extradata.doPostedItems) then
+        if not internal.postedItems[currentGuild] then
+          internal.postedItems[currentGuild] = MMGuild:new(currentGuild)
+        end
+        local _, firstsaledata = next(versiondata.sales, nil)
+        local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
+        local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
+        local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
+        local searchData = searchDataDesc .. ' ' .. searchDataAdder
+        local guild = internal.postedItems[currentGuild]
+        guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
       end
-      local guild = internal.postedItems[currentGuild]
-      local _, firstsaledata = next(versiondata.sales, nil)
-      local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
-      local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
-      local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
-      local searchData = searchDataDesc .. ' ' .. searchDataAdder
-      guild:addPurchaseByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, nil, searchData)
 
-      if not internal.postedSellers[currentGuild] then
-        internal.postedSellers[currentGuild] = MMGuild:new(currentGuild)
+      if (extradata.doPostedSellers) then
+        if not internal.postedSellers[currentGuild] then
+          internal.postedSellers[currentGuild] = MMGuild:new(currentGuild)
+        end
+        local guild = internal.postedSellers[currentGuild]
+        guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, nil)
       end
-      local guild = internal.postedSellers[currentGuild]
-      guild:addPurchaseByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, nil)
 
     end
     return false
@@ -425,7 +423,7 @@ function internal:InitPostedItemsHistory()
       guild:sort()
     end
 
-    for guildName, guild in pairs(internal.postedSellers) do
+    for _, guild in pairs(internal.postedSellers) do
       guild:sort()
     end
 
@@ -476,4 +474,3 @@ function internal:ReferencePostedItemsDataContainer()
     end
   end
 end
-

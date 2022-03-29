@@ -1,11 +1,6 @@
-local lib = _G["LibGuildStore"]
 local internal = _G["LibGuildStore_Internal"]
 local mm_sales_data = _G["LibGuildStore_MM_SalesData"]
 local att_sales_data = _G["LibGuildStore_ATT_SalesData"]
-local sales_data = _G["LibGuildStore_SalesData"]
-local sr_index = _G["LibGuildStore_SalesIndex"]
-local purchases_data = _G["LibGuildStore_PurchaseData"]
-local pr_index = _G["LibGuildStore_PurchaseIndex"]
 
 ----------------------------------------
 ----- ImportPricingData           -----
@@ -39,16 +34,15 @@ function internal:ImportShoppingList()
   ["ItemLink"] = 58,
   ]]--
   for i = 1, #ShoppingListVar.Default.ShoppingList["$AccountWide"].Purchases do
-    local added = false
     local theEvent = {
-      guild     = ShoppingList.SavedData.System.Tables["Guilds"][ShoppingList.SavedData.System.Purchases[i]["Guild"]],
-      itemLink  = ShoppingList.SavedData.System.Tables["ItemLinks"][ShoppingList.SavedData.System.Purchases[i]["ItemLink"]],
-      quant     = ShoppingList.SavedData.System.Purchases[i]["Quantity"],
+      guild = ShoppingList.SavedData.System.Tables["Guilds"][ShoppingList.SavedData.System.Purchases[i]["Guild"]],
+      itemLink = ShoppingList.SavedData.System.Tables["ItemLinks"][ShoppingList.SavedData.System.Purchases[i]["ItemLink"]],
+      quant = ShoppingList.SavedData.System.Purchases[i]["Quantity"],
       timestamp = ShoppingList.SavedData.System.Purchases[i]["TimeStamp"],
-      price     = ShoppingList.SavedData.System.Purchases[i]["Price"],
-      seller    = ShoppingList.SavedData.System.Tables["Sellers"][ShoppingList.SavedData.System.Purchases[i]["Seller"]],
-      buyer     = ShoppingList.SavedData.System.Tables["Buyers"][ShoppingList.SavedData.System.Purchases[i]["Buyer"]],
-      id        = ShoppingList.SavedData.System.Purchases[i]["itemUniqueId"],
+      price = ShoppingList.SavedData.System.Purchases[i]["Price"],
+      seller = ShoppingList.SavedData.System.Tables["Sellers"][ShoppingList.SavedData.System.Purchases[i]["Seller"]],
+      buyer = ShoppingList.SavedData.System.Tables["Buyers"][ShoppingList.SavedData.System.Purchases[i]["Buyer"]],
+      id = ShoppingList.SavedData.System.Purchases[i]["itemUniqueId"],
     }
     local duplicate = internal:CheckForDuplicatePurchase(theEvent.itemLink, theEvent.id)
     if not duplicate then
@@ -227,16 +221,14 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc,
-              postfunc,
-              extraData) end, nil)
+            LEQ:ContinueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
 
         if extraData.saleRemoved then
           local sales = {}
-          for sid, sd in pairs(versiondata['sales']) do
+          for _, sd in pairs(versiondata['sales']) do
             if (sd ~= nil) and (type(sd) == 'table') then
               table.insert(sales, sd)
             end
@@ -246,8 +238,7 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid),
-        "^%d+:%d+:%d+:%d+:%d+")))) then
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount = (extraData.versionCount or 0) + 1
         versionlist[versionid] = nil
         extraData.versionRemoved = true
@@ -264,8 +255,7 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc,
-          extraData) end, nil)
+        LEQ:ContinueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -355,7 +345,7 @@ function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, lo
 
         if extraData.saleRemoved then
           local sales = {}
-          for sid, sd in pairs(versiondata['sales']) do
+          for _, sd in pairs(versiondata['sales']) do
             if (sd ~= nil) and (type(sd) == 'table') then
               table.insert(sales, sd)
             end
@@ -365,8 +355,7 @@ function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, lo
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid),
-        "^%d+:%d+:%d+:%d+:%d+")))) then
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount = (extraData.versionCount or 0) + 1
         versionlist[versionid] = nil
         extraData.versionRemoved = true
@@ -513,20 +502,18 @@ function internal:ReferenceATTSales(otherData)
   local savedVars = otherData[attMegaserver]['sales']
 
   local theEvent = {}
-  local addedCount = 0
-  local skippedCount = 0
   local guildId = 0
   for saleId, saleData in pairs(savedVars) do
     theEvent = {
-      buyer     = saleData["buyerName"],
-      guild     = saleData["guildName"],
-      itemLink  = saleData["itemLink"],
-      quant     = saleData["quantity"],
+      buyer = saleData["buyerName"],
+      guild = saleData["guildName"],
+      itemLink = saleData["itemLink"],
+      quant = saleData["quantity"],
       timestamp = saleData["timeStamp"],
-      price     = saleData["price"],
-      seller    = saleData["sellerName"],
-      wasKiosk  = false,
-      id        = tostring(saleId),
+      price = saleData["price"],
+      seller = saleData["sellerName"],
+      wasKiosk = false,
+      id = tostring(saleId),
     }
     --[[ TODO come up with a way to use wasKiosk when possible. The
     issue is that you only have access to the guilds you belong to
@@ -580,11 +567,10 @@ end
 -- DEBUG
 function internal:CompareSalesIds()
   internal:dm("Debug", "CompareSalesIds")
-  local mmsaveData = dataset[internal.dataNamespace]
   local itemIds = {}
-  for itemID, itemData in pairs(att_sales_data) do
-    for itemIndex, itemIndexData in pairs(itemData) do
-      for key, sale in pairs(itemIndexData['sales']) do
+  for _, itemData in pairs(att_sales_data) do
+    for _, itemIndexData in pairs(itemData) do
+      for _, sale in pairs(itemIndexData['sales']) do
         if not itemIds[sale.id] then
           itemIds[sale.id] = true
         else
@@ -623,22 +609,16 @@ function internal:ImportATTPurchases()
   },
   ]]--
   local theEvent = {}
-  local addedCount = 0
-  local skippedCount = 0
-  local guildId = 0
-  for saleId, saleData in pairs(savedVars) do
+  for _, saleData in pairs(savedVars) do
     theEvent = {
-      buyer     = saleData["buyerName"],
-      guild     = saleData["guildName"],
-      itemLink  = saleData["itemLink"],
-      quant     = saleData["quantity"],
+      buyer = saleData["buyerName"],
+      guild = saleData["guildName"],
+      itemLink = saleData["itemLink"],
+      quant = saleData["quantity"],
       timestamp = saleData["timeStamp"],
-      price     = saleData["price"],
-      seller    = saleData["sellerName"],
+      price = saleData["price"],
+      seller = saleData["sellerName"],
     }
-    local theIID = GetItemLinkItemId(theEvent.itemLink)
-    local itemIndex = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
-
     local duplicate = internal:CheckForDuplicateATTPurchase(theEvent)
     if not duplicate then
       internal:addPurchaseData(theEvent)

@@ -145,7 +145,7 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   -- MasterMerchant
   -- PopupTooltipGraph
   if originalBonanzaPriceValue == originalAveragePriceValue then
-      self.x_averagePriceValue = self.x_averagePriceValue + 15
+    self.x_averagePriceValue = self.x_averagePriceValue + 15
   end
   if self.x_averagePriceValue < 15 then self.x_averagePriceValue = 15 end
   if self.x_averagePriceValue > 105 then self.x_averagePriceValue = 105 end
@@ -188,7 +188,7 @@ function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
   local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
   local lengthSellerName = string.len(sellerName) + 2
   if lengthBlacklist + lengthSellerName > 2000 then
-     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
+    MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
@@ -201,7 +201,7 @@ function MM_Graph:OnSellerNameClicked(self, mouseButton, sellerName, itemLink)
   local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
   local lengthSellerName = string.len(sellerName) + 2
   if lengthBlacklist + lengthSellerName > 2000 then
-     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
+    MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"

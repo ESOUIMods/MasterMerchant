@@ -13,15 +13,15 @@ MMScrollList = ZO_SortFilterList:Subclass()
 MMScrollList.defaults = { }
 -- Sort keys for the scroll lists
 MMScrollList.SORT_KEYS = {
-  ['price']         = { isNumeric = true },
-  ['time']          = { isNumeric = true },
-  ['rank']          = { isNumeric = true },
-  ['sales']         = { isNumeric = true },
-  ['tax']           = { isNumeric = true },
-  ['count']         = { isNumeric = true },
-  ['name']          = { isNumeric = false },
+  ['price'] = { isNumeric = true },
+  ['time'] = { isNumeric = true },
+  ['rank'] = { isNumeric = true },
+  ['sales'] = { isNumeric = true },
+  ['tax'] = { isNumeric = true },
+  ['count'] = { isNumeric = true },
+  ['name'] = { isNumeric = false },
   ['itemGuildName'] = { isNumeric = false },
-  ['guildName']     = { isNumeric = false }
+  ['guildName'] = { isNumeric = false }
 }
 
 MasterMerchant = { }
@@ -165,11 +165,11 @@ end
 -- mark whether we need to RefreshData() before showing
 -- ITEMS, GUILDS, LISTINGS, PURCHASES, REPORTS
 MasterMerchant.listIsDirty = {
-  [MasterMerchant.itemsViewSize]     = false,
-  [MasterMerchant.guildsViewSize]    = false,
-  [MasterMerchant.listingsViewSize]  = false,
+  [MasterMerchant.itemsViewSize] = false,
+  [MasterMerchant.guildsViewSize] = false,
+  [MasterMerchant.listingsViewSize] = false,
   [MasterMerchant.purchasesViewSize] = false,
-  [MasterMerchant.reportsViewSize]   = false,
+  [MasterMerchant.reportsViewSize] = false,
 }
 
 MasterMerchant.scrollList = nil
@@ -232,17 +232,17 @@ local currencyFormatDealOptions = {
 }
 ]]--
 MasterMerchant.potionVarientTable = {
-  [0]   = 0,
-  [1]   = 0,
-  [3]   = 1,
-  [10]  = 2,
-  [19]  = 2, -- level 19 pots I found
-  [20]  = 3,
-  [24]  = 3, -- level 24 pots I found
-  [30]  = 4,
-  [39]  = 4, -- level 39 pots I found
-  [40]  = 5,
-  [44]  = 5, -- level 44 pots I found
+  [0] = 0,
+  [1] = 0,
+  [3] = 1,
+  [10] = 2,
+  [19] = 2, -- level 19 pots I found
+  [20] = 3,
+  [24] = 3, -- level 24 pots I found
+  [30] = 4,
+  [39] = 4, -- level 39 pots I found
+  [40] = 5,
+  [44] = 5, -- level 44 pots I found
   [125] = 6,
   [129] = 7,
   [134] = 8,
@@ -257,15 +257,15 @@ MasterMerchant.shellGaps = {
 
 -- Sound table for mapping readable names to sound names
 MasterMerchant.alertSounds = {
-  [1]  = { name = "None", sound = 'No_Sound' },
-  [2]  = { name = "Add Guild Member", sound = 'GuildRoster_Added' },
-  [3]  = { name = "Armor Glyph", sound = 'Enchanting_ArmorGlyph_Placed' },
-  [4]  = { name = "Book Acquired", sound = 'Book_Acquired' },
-  [5]  = { name = "Book Collection Completed", sound = 'Book_Collection_Completed' },
-  [6]  = { name = "Boss Killed", sound = 'SkillXP_BossKilled' },
-  [7]  = { name = "Charge Item", sound = 'InventoryItem_ApplyCharge' },
-  [8]  = { name = "Completed Event", sound = 'ScriptedEvent_Completion' },
-  [9]  = { name = "Dark Fissure Closed", sound = 'SkillXP_DarkFissureClosed' },
+  [1] = { name = "None", sound = 'No_Sound' },
+  [2] = { name = "Add Guild Member", sound = 'GuildRoster_Added' },
+  [3] = { name = "Armor Glyph", sound = 'Enchanting_ArmorGlyph_Placed' },
+  [4] = { name = "Book Acquired", sound = 'Book_Acquired' },
+  [5] = { name = "Book Collection Completed", sound = 'Book_Collection_Completed' },
+  [6] = { name = "Boss Killed", sound = 'SkillXP_BossKilled' },
+  [7] = { name = "Charge Item", sound = 'InventoryItem_ApplyCharge' },
+  [8] = { name = "Completed Event", sound = 'ScriptedEvent_Completion' },
+  [9] = { name = "Dark Fissure Closed", sound = 'SkillXP_DarkFissureClosed' },
   [10] = { name = "Emperor Coronated", sound = 'Emperor_Coronated_Ebonheart' },
   [11] = { name = "Gate Closed", sound = 'AvA_Gate_Closed' },
   [12] = { name = "Lockpicking Stress", sound = 'Lockpicking_chamber_stress' },
@@ -3311,49 +3311,49 @@ MasterMerchant.recipeData = {}
 setmetatable(MasterMerchant.recipeData, recipeMetatable)
 
 local effectIds = { -- 1 == positive potency 2 == negative potency
-  [43573]  = { 45831, 2 },
-  [26580]  = { 45831, 1 },
-  [45868]  = { 45832, 2 },
-  [26582]  = { 45832, 1 },
-  [45867]  = { 45833, 2 },
-  [26588]  = { 45833, 1 },
-  [26581]  = { 45834, 1 },
-  [45869]  = { 45834, 2 },
-  [26583]  = { 45835, 1 },
-  [45870]  = { 45835, 2 },
-  [26589]  = { 45836, 1 },
-  [45871]  = { 45836, 2 },
-  [26586]  = { 45837, 2 },
-  [26587]  = { 45837, 1 },
-  [26848]  = { 45838, 1 },
-  [26849]  = { 45838, 2 },
-  [5365]   = { 45839, 1 },
-  [5364]   = { 45839, 2 },
-  [43570]  = { 45840, 2 },
-  [26844]  = { 45840, 1 },
-  [26841]  = { 45841, 1 },
-  [26847]  = { 45841, 2 },
-  [26845]  = { 45842, 2 },
-  [5366]   = { 45842, 1 },
-  [54484]  = { 45843, 1 },
-  [26591]  = { 45843, 2 },
-  [45874]  = { 45846, 1 },
-  [45875]  = { 45846, 2 },
-  [45885]  = { 45847, 2 },
-  [45883]  = { 45847, 1 },
-  [45886]  = { 45848, 2 },
-  [45884]  = { 45848, 1 },
-  [45873]  = { 45849, 2 },
-  [45872]  = { 45849, 1 },
+  [43573] = { 45831, 2 },
+  [26580] = { 45831, 1 },
+  [45868] = { 45832, 2 },
+  [26582] = { 45832, 1 },
+  [45867] = { 45833, 2 },
+  [26588] = { 45833, 1 },
+  [26581] = { 45834, 1 },
+  [45869] = { 45834, 2 },
+  [26583] = { 45835, 1 },
+  [45870] = { 45835, 2 },
+  [26589] = { 45836, 1 },
+  [45871] = { 45836, 2 },
+  [26586] = { 45837, 2 },
+  [26587] = { 45837, 1 },
+  [26848] = { 45838, 1 },
+  [26849] = { 45838, 2 },
+  [5365] = { 45839, 1 },
+  [5364] = { 45839, 2 },
+  [43570] = { 45840, 2 },
+  [26844] = { 45840, 1 },
+  [26841] = { 45841, 1 },
+  [26847] = { 45841, 2 },
+  [26845] = { 45842, 2 },
+  [5366] = { 45842, 1 },
+  [54484] = { 45843, 1 },
+  [26591] = { 45843, 2 },
+  [45874] = { 45846, 1 },
+  [45875] = { 45846, 2 },
+  [45885] = { 45847, 2 },
+  [45883] = { 45847, 1 },
+  [45886] = { 45848, 2 },
+  [45884] = { 45848, 1 },
+  [45873] = { 45849, 2 },
+  [45872] = { 45849, 1 },
   [166046] = { 166045, 2 },
   [166047] = { 166045, 1 },
-  [68344]  = { 68342, 2 },
-  [68343]  = { 68342, 1 },
+  [68344] = { 68342, 2 },
+  [68343] = { 68342, 1 },
 }
 -- 68344
 
 local potencyIds = {
-  [5]  = { 45855, 45817 },
+  [5] = { 45855, 45817 },
   [10] = { 45856, 45818 },
   [15] = { 45857, 45819 },
   [20] = { 45806, 45820 },
