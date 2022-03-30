@@ -7,6 +7,15 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.6.91
+
+-- Bug Fix: Bonanza price was not using the Guild and Account filter names properly.
+-- Bug Fix: Changed incorrect notification that BeamMeUp was not installed (if it was not detected) when right clicking the location column in the Bonanza window to jump to the zone for that trader.
+-- Added Lock Button.
+-- Added 3 different price to chat formats under Master Merchant settings.
+-- Added right click option for Bonanza window for the seller's column so you can more easily add them to the Guild and Account filter. This functions the same as right clicking a dot on the graph.
+-- Omit the Bonanza price when there are less then 6 valid prices after trimming outliers. There are two separate settings. One for the graph and one for price to chat.
+
 ## ChangeLog for 3.6.90
 
 -- Removed dummy importers. Download Importers for Master Merchant 3.0 to import older data.
