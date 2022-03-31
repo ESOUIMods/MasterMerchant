@@ -7,6 +7,10 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.6.92
+
+Update French and fix Japanese and Portuguese strings
+
 ## ChangeLog for 3.6.91
 
 -- Bug Fix: Bonanza price was not using the Guild and Account filter names properly.
