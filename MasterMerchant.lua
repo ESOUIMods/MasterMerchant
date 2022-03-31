@@ -3562,7 +3562,7 @@ function MasterMerchant:FirstInitialize()
 
       listView.dataTypes[1].setupCallback = function(control, slot)
         originalCall(control, slot)
-        self:ReplaceInventoryPrice(control, slot)
+        self:SwitchUnitPrice(control, slot)
       end
     end
   end
@@ -3571,7 +3571,7 @@ function MasterMerchant:FirstInitialize()
   local originalCall = ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback
   SecurePostHook(ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1], "setupCallback", function(control, slot)
     originalCall(control, slot)
-    self:ReplaceInventoryPrice(control, slot)
+    self:SwitchUnitPrice(control, slot)
   end)
 
 end
@@ -3639,7 +3639,7 @@ function MasterMerchant:SecondInitialize()
   end, 10)
 end
 
-function MasterMerchant:ReplaceInventoryPrice(control, slot)
+function MasterMerchant:SwitchUnitPrice(control, slot)
   local averagePrice = 0
   local sellPriceControl = control:GetNamedChild("SellPrice")
   if MasterMerchant.systemSavedVariables.replaceInventoryValues then

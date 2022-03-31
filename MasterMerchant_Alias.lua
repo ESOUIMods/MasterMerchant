@@ -102,5 +102,5 @@ end
 
 function MasterMerchant:SwitchPrice(control, slot)
   GenerateLogMessage("SwitchPrice")
-  MasterMerchant:ReplaceInventoryPrice(control, slot)
+  MasterMerchant:SwitchUnitPrice(control, slot)
 end
