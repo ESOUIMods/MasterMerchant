@@ -9,7 +9,7 @@ Repository for personal changes as I am not trying to take over Master Merchant.
 
 ## ChangeLog for 3.6.92
 
-Update French and fix Japanese and Portuguese strings
+-- Update French and fix Japanese and Portuguese strings
 
 ## ChangeLog for 3.6.91
 
