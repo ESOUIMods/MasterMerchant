@@ -9,172 +9,172 @@ Repository for personal changes as I am not trying to take over Master Merchant.
 
 ## ChangeLog for 3.6.92
 
--- Update French and fix Japanese and Portuguese strings
+- Update French and fix Japanese and Portuguese strings
 
 ## ChangeLog for 3.6.91
 
--- Bug Fix: Bonanza price was not using the Guild and Account filter names properly.
--- Bug Fix: Changed incorrect notification that BeamMeUp was not installed (if it was not detected) when right clicking the location column in the Bonanza window to jump to the zone for that trader.
--- Added Lock Button.
--- Added 3 different price to chat formats under Master Merchant settings.
--- Added right click option for Bonanza window for the seller's column so you can more easily add them to the Guild and Account filter. This functions the same as right clicking a dot on the graph.
--- Omit the Bonanza price when there are less then 6 valid prices after trimming outliers. There are two separate settings. One for the graph and one for price to chat.
+- Bug Fix: Bonanza price was not using the Guild and Account filter names properly.
+- Bug Fix: Changed incorrect notification that BeamMeUp was not installed (if it was not detected) when right clicking the location column in the Bonanza window to jump to the zone for that trader.
+- Added Lock Button.
+- Added 3 different price to chat formats under Master Merchant settings.
+- Added right click option for Bonanza window for the seller's column so you can more easily add them to the Guild and Account filter. This functions the same as right clicking a dot on the graph.
+- Omit the Bonanza price when there are less then 6 valid prices after trimming outliers. There are two separate settings. One for the graph and one for price to chat.
 
 ## ChangeLog for 3.6.90
 
--- Removed dummy importers. Download Importers for Master Merchant 3.0 to import older data.
+- Removed dummy importers. Download Importers for Master Merchant 3.0 to import older data.
 
 ## ChangeLog for 3.6.89
 
--- Removed localization strings from GetControl()
+- Removed localization strings from GetControl()
 
 ## ChangeLog for 3.6.88
 
--- Added Italian translation (Dusty82)
--- Update Russian translation (mychaelo)
+- Added Italian translation (Dusty82)
+- Update Russian translation (mychaelo)
 
 ## ChangeLog for 3.6.87
 
--- Pre PTS Version
+- Pre PTS Version
 
 ## ChangeLog for 3.6.86
 
--- Update LibGuildStore French translation (Jakez31)
--- Update German translation (Baertram)
+- Update LibGuildStore French translation (Jakez31)
+- Update German translation (Baertram)
 
 ## ChangeLog for 3.6.85
 
--- Update German translation (Baertram)
+- Update German translation (Baertram)
 
 ## ChangeLog for 3.6.84
 
--- Update LibGuildStore French translation (Jakez31)
+- Update LibGuildStore French translation (Jakez31)
 
 ## ChangeLog for 3.6.83
 
--- Update French translation (Jakez31)
--- Added some additional localization strings
+- Update French translation (Jakez31)
+- Added some additional localization strings
 
 ## ChangeLog for 3.6.82
 
--- Fix for linking from crafting stations
--- Update Polish translation
+- Fix for linking from crafting stations
+- Update Polish translation
 
 ## ChangeLog for 3.6.81
 
--- Added new recipes for craft cost
+- Added new recipes for craft cost
 
 ## ChangeLog for 3.6.80
 
--- Fix for linking item prices when there is no MM price for the day range being used
+- Fix for linking item prices when there is no MM price for the day range being used
 
 ## ChangeLog for 3.6.79
 
--- Adjustment to Refresh: Won't sort ranks information during refresh as thousands of records are added one at a time. If you notice issues after a Refresh with the Ranks view, reload the UI for now until 3.8.x.
+- Adjustment to Refresh: Won't sort ranks information during refresh as thousands of records are added one at a time. If you notice issues after a Refresh with the Ranks view, reload the UI for now until 3.8.x.
 
 ## ChangeLog for 3.6.78
 
--- Fix: Additional bypass for AddExtraListingsData() when encountering an erroneous record where the ["sales"] table is empty or doesn't exist.
+- Fix: Additional bypass for AddExtraListingsData() when encountering an erroneous record where the ["sales"] table is empty or doesn't exist.
 
 ## ChangeLog for 3.6.76
 
--- Fix: Additional bypass for AddExtraSalesData() when encountering an erroneous record where the ["sales"] table is empty or doesn't exist.
+- Fix: Additional bypass for AddExtraSalesData() when encountering an erroneous record where the ["sales"] table is empty or doesn't exist.
 
 ## ChangeLog for 3.6.74
 
--- Updated detailed graph points to say Today, Yesterday, or X days ago.
+- Updated detailed graph points to say Today, Yesterday, or X days ago.
 
 NOTE: You are lucky I had a brainstorm because I did not want to revert to use zo_strformat() because it is the most costly way to format the strings
 
 ## ChangeLog for 3.6.73
 
--- Fix: Bypass for AddExtraSalesData() when encountering erroneous records. All erroneous records will first be logged then removed from the data pool / LazyPyro
--- Fix: MasterMerchant_UI.lua:1229 when searching for Necklace of a Mother's Sorrow / Thrasher
+- Fix: Bypass for AddExtraSalesData() when encountering erroneous records. All erroneous records will first be logged then removed from the data pool / LazyPyro
+- Fix: MasterMerchant_UI.lua:1229 when searching for Necklace of a Mother's Sorrow / Thrasher
 
 ## ChangeLog for 3.6.72
 
--- Update Russian translation
+- Update Russian translation
 
 ## ChangeLog for 3.6.71
 
--- Address Issue: Iterators_General.lua:202: attempt to index a number value
+- Address Issue: Iterators_General.lua:202: attempt to index a number value
 
 ## ChangeLog for 3.6.70
 
--- Removed some old saved variable retention routines when loading the old MM files for importing
+- Removed some old saved variable retention routines when loading the old MM files for importing
 
 ## ChangeLog for 3.6.69
 
--- Use SetAfterEventTime() for first scan and refresh instead of SetAfterEventId
+- Use SetAfterEventTime() for first scan and refresh instead of SetAfterEventId
 
 ## ChangeLog for 3.6.68
 
--- Added TTC and Bonanza options when replacing inventory price values
+- Added TTC and Bonanza options when replacing inventory price values
 
 ## ChangeLog for 3.6.65, 3.6.66, 3.6.67
 
--- Updated Manifest files with new version numbers for dependencies
--- Fix: MasterMerchant.lua:3664: attempt to index a nil value when using TamrielTradeCentre and changing the Deal Calculator settings
--- Fix: When adding buying advice and for some reason the itemLink is an empty string
--- Fix: When adding buying advice and for some reason the TTC Suggested Price is nil
+- Updated Manifest files with new version numbers for dependencies
+- Fix: MasterMerchant.lua:3664: attempt to index a nil value when using TamrielTradeCentre and changing the Deal Calculator settings
+- Fix: When adding buying advice and for some reason the itemLink is an empty string
+- Fix: When adding buying advice and for some reason the TTC Suggested Price is nil
 
--- Thanks to Talisman for sticking with it until the issue was resolved.
+- Thanks to Talisman for sticking with it until the issue was resolved.
 
 ## ChangeLog for 3.6.64
 
--- Update to prevent LWC from causing an error by accessing MM to early before it initializes
+- Update to prevent LWC from causing an error by accessing MM to early before it initializes
 
 NOTE: For future reference. Future releases will not contain patches and hot-fixes for other authors mods. It is their job to ask which functions to use for the information they want. If there is no API then they should not alter MM functionality. Other authors like sirinsidiator would not alter their mod if authors were altering the mod's internal functionality or using the incorrect function. For example if an author changed AGS functionality no patches would be made. It would be discussed and if the sirinsidiator objected to the feature request then that would be the end of it.
 
 ## ChangeLog for 3.6.63
 
--- Enhancement to trimming outliers
+- Enhancement to trimming outliers
 
 ## ChangeLog for 3.6.62
 
--- Added silent logging of mods using MM pricing functions for debug purposes
--- Fix: Price Calculator Russian client
+- Added silent logging of mods using MM pricing functions for debug purposes
+- Fix: Price Calculator Russian client
 
 ## ChangeLog for 3.6.61
 
--- Hotfix: Disable all notifications for mod authors using the wrong MM functions for information. I will have to find a different approach. I apologize however, I don't know which programs use MM for data.
+- Hotfix: Disable all notifications for mod authors using the wrong MM functions for information. I will have to find a different approach. I apologize however, I don't know which programs use MM for data.
 
 I intend to make improvements and when I do I can't preemptively inform authors ahead of time that there will be changes. MM is not a library like LibGPS where you might want to create an alias routine for backwards compatibility.
 
 ## ChangeLog for 3.6.60
 
--- Behavior Change: Due to so many other mods accessing MM for pricing data I can not control how they do it or what they break. There are now notifications for popular functions if authors use them. Tell the author to contact me for how they should access MM data.
--- Debug Log: There is a revised attempt to catch errors with the Bonanza price when the information is incomplete.
--- While testing the Reset function for resetting Bonanza information I realized it didn't clear the scroll list. A temporary fix is in place to reload the UI when the reset is complete.
+- Behavior Change: Due to so many other mods accessing MM for pricing data I can not control how they do it or what they break. There are now notifications for popular functions if authors use them. Tell the author to contact me for how they should access MM data.
+- Debug Log: There is a revised attempt to catch errors with the Bonanza price when the information is incomplete.
+- While testing the Reset function for resetting Bonanza information I realized it didn't clear the scroll list. A temporary fix is in place to reload the UI when the reset is complete.
 
 ## ChangeLog for 3.6.59
 
--- Fix: bad argument #2 to 'string.sub' (integer expected, got nil) MasterMerchant.lua:776: in function 'MasterMerchant:BonanzaPriceTip'
+- Fix: bad argument #2 to 'string.sub' (integer expected, got nil) MasterMerchant.lua:776: in function 'MasterMerchant:BonanzaPriceTip'
 
 ## ChangeLog for 3.6.58
 
--- Hotfix: Bonanza pricing was not ignoring account names or guilds added to the Guild & Account filter
+- Hotfix: Bonanza pricing was not ignoring account names or guilds added to the Guild & Account filter
 
 ## ChangeLog for 3.6.57
 
--- Added TTC and Bonanza to Deal Calculator. Choose from MM Avg, TTC Avg, TTC sug, Bonanza prices.
--- Added new condensed TTC tooltip. Toggle on in Master Merchant settings.
+- Added TTC and Bonanza to Deal Calculator. Choose from MM Avg, TTC Avg, TTC sug, Bonanza prices.
+- Added new condensed TTC tooltip. Toggle on in Master Merchant settings.
 
 ## ChangeLog for 3.6.56
 
--- Fix for tooltip stats generation when not trimming outliers
+- Fix for tooltip stats generation when not trimming outliers
 
 ## ChangeLog for 3.6.55
 
--- Fix for: MasterMerchant.lua:486: operator - is not supported for number - nil
+- Fix for: MasterMerchant.lua:486: operator - is not supported for number - nil
 
 ## ChangeLog for 3.6.54
 
--- Fix for: MasterMerchant.lua:555: operator / is not supported for nil / number
+- Fix for: MasterMerchant.lua:555: operator / is not supported for nil / number
 
 ## ChangeLog for 3.6.53
 
--- Added tooltip cache back as it was still a bit jerky for my taste
+- Added tooltip cache back as it was still a bit jerky for my taste
 
 ## ChangeLog for 3.6.52
 
@@ -215,8 +215,8 @@ NOTE: Tooltip calculation still needs to be looked at and why it pauses so much.
 - Import MM Sales and Purchases (ShoppingList)
 - NA and EU data is stored separately
 - Bonanza, tracks items listed on traders you visit
--- The Bonanza data is used to calculate an average price of the items seen at other kiosks
--- Bonanza items can be filtered by name, type, and known or unknown. For subtype such as Divines, Praxis, One-Handed use the search box
+- The Bonanza data is used to calculate an average price of the items seen at other kiosks
+- Bonanza items can be filtered by name, type, and known or unknown. For subtype such as Divines, Praxis, One-Handed use the search box
 - BeamMeUp can be used to travel to the zone the trader is located in. With the usual restrictions of course.
 - Purchases are now part of the MM window and the standalone ShoppingList is no longer needed (Purchases can be imported)
 - The MM window will now show posted and canceled items you list on your guilds traders
@@ -693,10 +693,10 @@ Turbo Mode
 -  Please use Turbo mode sparingly, think of the poor servers!
 -  Turbo mode is not available from 1 hour before trader flip until 1 hour after trader flip.
 -  Turbo mode status is NOT remembered across reloads/logins and must be manually activated.
-When you join a new guild, MM scans back only 3 days to get you started. You can manually load more with the '/mm missing' command.
-Added new recipes to Craft Cost calculations.
-Please visit tinyurl.com/MMIssueGuide if you are having any issues with MM.
-'/mm help' gives some details on MM options and functions.
+-  When you join a new guild, MM scans back only 3 days to get you started. You can manually load more with the '/mm missing' command.
+-  Added new recipes to Craft Cost calculations.
+-  Please visit tinyurl.com/MMIssueGuide if you are having any issues with MM.
+-  '/mm help' gives some details on MM options and functions.
 
 
 ## ChangeLog for 2.1.0a
@@ -1062,7 +1062,7 @@ Added "Stats to Chat" to the right click menu in a number of places.
   Update for patch 1.5; updated API version
 
 
---Shopkeeper ChangeLog:
+-Shopkeeper ChangeLog:
 
 ## ChangeLog for 0.9.7(a)
   Update for patch 1.4; updated API version
