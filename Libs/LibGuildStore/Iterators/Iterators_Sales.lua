@@ -359,6 +359,15 @@ function internal:TruncateSalesHistory()
 
     local salesDeleted = 0
     salesCount = versiondata.totalCount
+     --[[TODO Determine how the salesCount can be 0 and there is an empty
+     sale in the table.
+     [8] = {},
+     ]]--
+    if salesCount == 0 then
+      versiondata['sales'] = {}
+      extraData.saleRemoved = false
+      return true
+    end
     local salesDataTable = internal:spairs(versiondata['sales'], function(a, b) return internal:CleanTimestamp(a) < internal:CleanTimestamp(b) end)
     for salesId, salesData in salesDataTable do
       if LibGuildStore_SavedVariables["useSalesHistory"] then

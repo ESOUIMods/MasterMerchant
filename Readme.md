@@ -7,6 +7,10 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.6.93
+
+- Update Truncate routines to watch for a total count of 0
+
 ## ChangeLog for 3.6.92
 
 - Update French and fix Japanese and Portuguese strings

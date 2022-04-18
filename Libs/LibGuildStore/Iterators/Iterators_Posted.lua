@@ -256,6 +256,11 @@ function internal:TruncatePostedItemsHistory()
 
     local salesDeleted = 0
     salesCount = versiondata.totalCount
+    if salesCount == 0 then
+      versiondata['sales'] = {}
+      extraData.saleRemoved = false
+      return true
+    end
     local salesDataTable = internal:spairs(versiondata['sales'], function(a, b) return internal:CleanTimestamp(a) < internal:CleanTimestamp(b) end)
     for salesId, salesData in salesDataTable do
       if (salesData['timestamp'] < extraData.epochBack
