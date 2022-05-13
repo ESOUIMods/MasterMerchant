@@ -1465,13 +1465,13 @@ function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, contro
     MasterMerchant:dm("Info", GetString(MM_ZONE_INVALID))
     return
   end
-  if not Teleporter then
+  if not BMU then
     MasterMerchant:dm("Info", GetString(MM_BEAM_ME_UP_MISSING))
     return
   end
   if (button == 2 and player ~= '') then
     ClearMenu()
-    AddMenuItem(GetString(MM_TRAVEL_TO_ZONE_TEXT), function() Teleporter.sc_porting(guildZoneId) end)
+    AddMenuItem(GetString(MM_TRAVEL_TO_ZONE_TEXT), function() BMU.sc_porting(guildZoneId) end)
     ShowMenu(control)
   end
 end
