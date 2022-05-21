@@ -2452,6 +2452,46 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
   self:GenerateStatsAndGraph(Popup, Popup.mmActiveTip)
 end
 
+function MasterMerchant:addStatsProvisionerTooltip(Popup)
+
+  local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
+  Popup.lastLink = GetRecipeResultItemLink(recipeListIndex, recipeIndex)
+
+  --Make sure Info Tooltip and Context Menu is on top of the popup
+  --InformationTooltip:GetOwningWindow():BringWindowToTop()
+  Popup:GetOwningWindow():SetDrawTier(ZO_Menus:GetDrawTier() - 1)
+
+  -- Make sure we don't double-add stats (or double-calculate them if they bring
+  -- up the same link twice) since we have to call this on Update rather than Show
+  if (not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost))
+    or Popup.lastLink == nil
+    or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
+    -- thanks Garkin
+    return
+  end
+
+  if Popup.mmActiveTip ~= Popup.lastLink then
+    if Popup.graphPool then
+      Popup.graphPool:ReleaseAllObjects()
+    end
+    Popup.mmGraph = nil
+    if Popup.textPool then
+      Popup.textPool:ReleaseAllObjects()
+    end
+    Popup.mmText = nil
+    Popup.mmBonanzaText = nil
+    Popup.mmTTCText = nil
+    Popup.mmCraftText = nil
+    Popup.mmTextDebug = nil
+    Popup.mmQualityDown = nil
+  end
+  Popup.mmActiveTip = Popup.lastLink
+  self.isShiftPressed = IsShiftKeyDown()
+  self.isCtrlPressed = IsControlKeyDown()
+
+  self:GenerateStatsAndGraph(Popup, Popup.mmActiveTip)
+end
+
 function MasterMerchant:remStatsPopupTooltip(Popup)
   if Popup.graphPool then
     Popup.graphPool:ReleaseAllObjects()
