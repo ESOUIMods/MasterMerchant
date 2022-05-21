@@ -308,7 +308,7 @@ local function SetupData()
   LEQ:Start()
 end
 
-local function Initilizze()
+local function LibGuildStoreInitialize()
   SetupDefaults()
   for i = 1, GetNumGuilds() do
     local guildId = GetGuildId(i)
@@ -609,7 +609,7 @@ local function OnAddOnLoaded(eventCode, addonName)
   if addonName == lib.libName then
     SLASH_COMMANDS['/lgs'] = internal.Slash
     internal:dm("Debug", "LibGuildStore Loaded")
-    Initilizze()
+    LibGuildStoreInitialize()
   end
 end
 
