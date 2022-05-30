@@ -74,7 +74,7 @@ function internal:addSalesData(theEvent)
   local buyerHash = internal:AddSalesTableData("accountNames", theEvent.buyer)
   local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
   local guildHash = internal:AddSalesTableData("guildNames", theEvent.guild)
-
+  local formattedItemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
   --[[The quality effects itemIndex although the ID from the
   itemLink may be the same. We will keep them separate.
   ]]--
@@ -89,7 +89,7 @@ function internal:addSalesData(theEvent)
   ]]--
   local hashUsed = "alreadyExisted"
   if not sales_data[theIID] then
-    sales_data[theIID], hashUsed = internal:SetGuildStoreData(theEvent.itemLink, theIID)
+    sales_data[theIID], hashUsed = internal:SetGuildStoreData(formattedItemName, theIID)
   end
 
   local insertedIndex = 1
@@ -117,13 +117,13 @@ function internal:addSalesData(theEvent)
   else
     if sales_data[theIID][itemIndex] == nil then sales_data[theIID][itemIndex] = {} end
     if sales_data[theIID][itemIndex]['sales'] == nil then sales_data[theIID][itemIndex]['sales'] = {} end
-    searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
+    searchItemDesc = formattedItemName
     searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     sales_data[theIID][itemIndex] = {
-      itemIcon      = GetItemLinkInfo(theEvent.itemLink),
+      itemIcon = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
-      itemDesc      = searchItemDesc,
-      sales         = { newEvent } }
+      itemDesc = searchItemDesc,
+      sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
   sales_data[theIID][itemIndex].wasAltered = true
@@ -141,11 +141,11 @@ function internal:addSalesData(theEvent)
 
   guild = internal.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildSales[theEvent.guild] = guild
-  guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
+  guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil)
 
   guild = internal.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildPurchases[theEvent.guild] = guild
-  guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk)
+  guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk, nil)
 
   guild = internal.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildItems[theEvent.guild] = guild
@@ -359,10 +359,10 @@ function internal:TruncateSalesHistory()
 
     local salesDeleted = 0
     salesCount = versiondata.totalCount
-     --[[TODO Determine how the salesCount can be 0 and there is an empty
-     sale in the table.
-     [8] = {},
-     ]]--
+    --[[TODO Determine how the salesCount can be 0 and there is an empty
+    sale in the table.
+    [8] = {},
+    ]]--
     if salesCount == 0 then
       versiondata['sales'] = {}
       extraData.saleRemoved = false
@@ -591,25 +591,25 @@ function internal:InitItemHistory()
 
       if (extradata.doGuildItems) then
         for _, guild in pairs(internal.guildItems) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 
       if (extradata.doMyItems) then
         for _, guild in pairs(internal.myItems) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 
       if (extradata.doGuildSales) then
         for _, guild in pairs(internal.guildSales) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 
       if (extradata.doGuildPurchases) then
         for _, guild in pairs(internal.guildPurchases) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 
@@ -690,9 +690,9 @@ function internal:CleanOutBad()
       -- Remove it
       -- saledata['itemLink']
       local dataInfo = {
-        lang        = MasterMerchant.effective_lang,
+        lang = MasterMerchant.effective_lang,
         individualSale = versiondata['sales'][saleid],
-        namespace    = internal.dataNamespace,
+        namespace = internal.dataNamespace,
         timestamp = GetTimeStamp(),
         itemLink = currentItemLink
       }
@@ -749,15 +749,15 @@ function internal:CleanOutBad()
       },
       ]]--
       local theEvent = {
-        buyer     = currentBuyer,
-        guild     = currentGuild,
-        itemLink  = currentItemLink,
-        quant     = saledata.quant,
+        buyer = currentBuyer,
+        guild = currentGuild,
+        itemLink = currentItemLink,
+        quant = saledata.quant,
         timestamp = saledata.timestamp,
-        price     = saledata.price,
-        seller    = currentSeller,
-        wasKiosk  = saledata.wasKiosk,
-        id        = Id64ToString(saledata.id)
+        price = saledata.price,
+        seller = currentSeller,
+        wasKiosk = saledata.wasKiosk,
+        id = Id64ToString(saledata.id)
       }
       internal:addSalesData(theEvent)
       extraData.moveCount = extraData.moveCount + 1
@@ -1082,16 +1082,16 @@ end
 function internal:checkForDoubles()
 
   local dataList = {
-    [0]  = GS00DataSavedVariables,
-    [1]  = GS01DataSavedVariables,
-    [2]  = GS02DataSavedVariables,
-    [3]  = GS03DataSavedVariables,
-    [4]  = GS04DataSavedVariables,
-    [5]  = GS05DataSavedVariables,
-    [6]  = GS06DataSavedVariables,
-    [7]  = GS07DataSavedVariables,
-    [8]  = GS08DataSavedVariables,
-    [9]  = GS09DataSavedVariables,
+    [0] = GS00DataSavedVariables,
+    [1] = GS01DataSavedVariables,
+    [2] = GS02DataSavedVariables,
+    [3] = GS03DataSavedVariables,
+    [4] = GS04DataSavedVariables,
+    [5] = GS05DataSavedVariables,
+    [6] = GS06DataSavedVariables,
+    [7] = GS07DataSavedVariables,
+    [8] = GS08DataSavedVariables,
+    [9] = GS09DataSavedVariables,
     [10] = GS10DataSavedVariables,
     [11] = GS11DataSavedVariablesa,
     [12] = GS12DataSavedVariables,

@@ -183,7 +183,7 @@ function internal:VerifyItemLinks(hash, task)
     task:For(pairs(itemIndex)):Do(function(_, itemIndexData)
       task:For(pairs(itemIndexData['sales'])):Do(function(_, saleData)
         local currentLink = internal:GetItemLinkByIndex(saleData.itemLink)
-        local currentHash = internal:MakeHashString(currentLink)
+        local currentHash = internal:MakeHashStringByItemLink(currentLink)
         if currentHash ~= hash then
           task:Then(function(task) internal:dm("Debug", "sale in wrong file") end)
         end

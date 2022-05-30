@@ -176,44 +176,47 @@ function internal:LibAddonInit()
       default = internal.defaults.overrideMMImport,
     }
   end
-  optionsData[#optionsData + 1] = {
-    type = "header",
-    name = GetString(GS_IMPORT_ATT_BUTTON),
-    width = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportATTData",
-  }
-  optionsData[#optionsData + 1] = {
-    type = "description",
-    title = GetString(GS_IMPORT_ATT_SALES),
-    text = GetString(GS_IMPORT_ATT_DESC),
-  }
-  optionsData[#optionsData + 1] = {
-    type = "button",
-    name = GetString(GS_IMPORT_ATT_NAME),
-    tooltip = GetString(GS_IMPORT_ATT_TIP),
-    func = function()
-      internal:SlashImportATTSales()
-    end,
-  }
-  optionsData[#optionsData + 1] = {
-    type = "header",
-    name = GetString(GS_IMPORT_ATT_PURCHASE_BUTTON),
-    width = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportATTPurchaces",
-  }
-  optionsData[#optionsData + 1] = {
-    type = "description",
-    title = GetString(GS_IMPORT_ATT_PURCHASES),
-    text = GetString(GS_IMPORT_ATT_PURCHASE_DESC),
-  }
-  optionsData[#optionsData + 1] = {
-    type = "button",
-    name = GetString(GS_IMPORT_ATT_PURCHASE_NAME),
-    tooltip = GetString(GS_IMPORT_ATT_PURCHASE_TIP),
-    func = function()
-      internal:ImportATTPurchases()
-    end,
-  }
+  -- import ATT
+  if internal:ArkadiusDataActive() then
+    optionsData[#optionsData + 1] = {
+      type = "header",
+      name = GetString(GS_IMPORT_ATT_BUTTON),
+      width = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportATTData",
+    }
+    optionsData[#optionsData + 1] = {
+      type = "description",
+      title = GetString(GS_IMPORT_ATT_SALES),
+      text = GetString(GS_IMPORT_ATT_DESC),
+    }
+    optionsData[#optionsData + 1] = {
+      type = "button",
+      name = GetString(GS_IMPORT_ATT_NAME),
+      tooltip = GetString(GS_IMPORT_ATT_TIP),
+      func = function()
+        internal:SlashImportATTSales()
+      end,
+    }
+    optionsData[#optionsData + 1] = {
+      type = "header",
+      name = GetString(GS_IMPORT_ATT_PURCHASE_BUTTON),
+      width = "full",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportATTPurchaces",
+    }
+    optionsData[#optionsData + 1] = {
+      type = "description",
+      title = GetString(GS_IMPORT_ATT_PURCHASES),
+      text = GetString(GS_IMPORT_ATT_PURCHASE_DESC),
+    }
+    optionsData[#optionsData + 1] = {
+      type = "button",
+      name = GetString(GS_IMPORT_ATT_PURCHASE_NAME),
+      tooltip = GetString(GS_IMPORT_ATT_PURCHASE_TIP),
+      func = function()
+        internal:ImportATTPurchases()
+      end,
+    }
+  end
   optionsData[#optionsData + 1] = {
     type = "header",
     name = GetString(GS_REFRESH_BUTTON),

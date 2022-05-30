@@ -153,6 +153,7 @@ ZO_CreateStringId("GS_POSTED_ITEMS_TITLE", "Gebuchte Gegenstände")
 ZO_CreateStringId("GS_CANCELED_ITEMS_TITLE", "Abgebrochene Gegenstände")
 
 ZO_CreateStringId("GS_LIBGUILDSTORE_INITIALIZING", "LibGuildStore Initialisierung")
+ZO_CreateStringId("GS_LIBGUILDSTORE_REFERENCE_DATA", "Referencing Sales Data Container")
 ZO_CreateStringId("GS_LIBGUILDSTORE_TRUNCATE", "LibGuildStore Abschneiden der Einträge begonnen...")
 ZO_CreateStringId("GS_LIBGUILDSTORE_HISTORY_INIT", "LibGuildStore Historie Initialisierung begonnen...")
 ZO_CreateStringId("GS_LIBGUILDSTORE_INDEX_DATA", "LibGuildStore Indizierung beendet...")

@@ -62,11 +62,11 @@ function MMSeller:addSale(rankIndex, amount, stack, sort, tax)
   end
 
   if sort then
-    self:sort(rankIndex, guildRanks)
+    self:SortByIndexAndRanks(rankIndex, guildRanks)
   end
 end
 
-function MMSeller:sort(rankIndex, guildRanks)
+function MMSeller:SortByIndexAndRanks(rankIndex, guildRanks)
   while ((self.rank[rankIndex] or 0) > 1) and (guildRanks[self.rank[rankIndex] - 1]) and ((self.sales[rankIndex] or 0) > (guildRanks[self.rank[rankIndex] - 1].sales[rankIndex] or 0)) do
 
     local swapSeller = guildRanks[self.rank[rankIndex] - 1]
@@ -103,7 +103,8 @@ MMGuild = {
   tax = {},
   count = {},
   stack = {},
-  initDateTime = GetTimeStamp()
+  rankIsDirty = {},
+  initDateTime = GetTimeStamp(),
 }
 
 function MMGuild:new(_name)
@@ -235,61 +236,100 @@ function MMGuild:removeRankIndex(rankIndex)
   if (self.rank[rankIndex]) then self.rank[rankIndex] = nil end
 end
 
+function MMGuild:MarkDirty(rankIndex)
+  self.rankIsDirty[rankIndex] = true
+end
+
+function MMGuild:MarkClean(rankIndex)
+  self.rankIsDirty[rankIndex] = false
+end
+
+function MMGuild:IsDirty(rankIndex)
+  return self.rankIsDirty[rankIndex]
+end
+
 function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)
+
   if sellerName == nil then return end
   if timestamp == nil then return end
   if type(timestamp) ~= 'number' then return end
-  if (timestamp >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:addSale(sellerName, 4, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:addSale(sellerName, 5, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.sixStart) then self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.sevenStart) then self:addSale(sellerName, 7, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.eightStart) then self:addSale(sellerName, 8, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:addSale(sellerName, 9, amount, stack, wasKiosk, sort,
-    searchText) end ;
+
+  if (timestamp >= self.oneStart) then
+    self:MarkDirty(1)
+    self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.twoStart and timestamp < self.oneStart) then
+    self:MarkDirty(2)
+    self:addSale(sellerName, 2, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then
+    self:MarkDirty(3)
+    self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then
+    self:MarkDirty(4)
+    self:addSale(sellerName, 4, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then
+    self:MarkDirty(5)
+    self:addSale(sellerName, 5, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.sixStart) then
+    self:MarkDirty(6)
+    self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.sevenStart) then
+    self:MarkDirty(7)
+    self:addSale(sellerName, 7, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.eightStart) then
+    self:MarkDirty(8)
+    self:addSale(sellerName, 8, amount, stack, wasKiosk, sort, searchText)
+  end
+  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then
+    self:MarkDirty(9)
+    self:addSale(sellerName, 9, amount, stack, wasKiosk, sort, searchText)
+  end
 end
 
 function MMGuild:removeSaleByDate(sellerName, timestamp, amount, stack)
   if sellerName == nil then return end
-  if (timestamp >= self.oneStart) then self:removeSale(sellerName, 1, amount) end ;
-  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end ;
-  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end ;
-  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end ;
-  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end ;
-  if (timestamp >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end ;
-  if (timestamp >= self.sevenStart) then self:removeSale(sellerName, 7, amount, stack) end ;
-  if (timestamp >= self.eightStart) then self:removeSale(sellerName, 8, amount, stack) end ;
-  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end ;
+  if (timestamp >= self.oneStart) then self:removeSale(sellerName, 1, amount) end
+  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end
+  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end
+  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end
+  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end
+  if (timestamp >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end
+  if (timestamp >= self.sevenStart) then self:removeSale(sellerName, 7, amount, stack) end
+  if (timestamp >= self.eightStart) then self:removeSale(sellerName, 8, amount, stack) end
+  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end
 end
 
-function MMGuild:sortRankIndex(rankIndex)
-  MasterMerchant.shellSort(self.ranks[rankIndex] or {}, function(sortA, sortB)
-    return (sortA.sales[rankIndex] or 0) > (sortB.sales[rankIndex] or 0)
-  end)
+function MMGuild:SortByRankIndex(rankIndex)
+  if self:IsDirty(rankIndex) then
+    MasterMerchant.shellSort(self.ranks[rankIndex] or {}, function(sortA, sortB)
+      return (sortA.sales[rankIndex] or 0) > (sortB.sales[rankIndex] or 0)
+    end)
 
-  local i = 1
-  while self.ranks[rankIndex] and self.ranks[rankIndex][i] do
-    self.ranks[rankIndex][i].rank[rankIndex] = i
-    i = i + 1
+    local i = 1
+    while self.ranks[rankIndex] and self.ranks[rankIndex][i] do
+      self.ranks[rankIndex][i].rank[rankIndex] = i
+      i = i + 1
+    end
+    self:MarkClean(rankIndex)
   end
 end
 
-function MMGuild:sort()
-  self:sortRankIndex(1)
-  self:sortRankIndex(2)
-  self:sortRankIndex(3)
-  self:sortRankIndex(4)
-  self:sortRankIndex(5)
-  self:sortRankIndex(6)
-  self:sortRankIndex(7)
-  self:sortRankIndex(8)
-  self:sortRankIndex(9)
+function MMGuild:SortAllRanks()
+  self:SortByRankIndex(1)
+  self:SortByRankIndex(2)
+  self:SortByRankIndex(3)
+  self:SortByRankIndex(4)
+  self:SortByRankIndex(5)
+  self:SortByRankIndex(6)
+  self:SortByRankIndex(7)
+  self:SortByRankIndex(8)
+  self:SortByRankIndex(9)
 end
 
 function MMGuild:addPurchaseByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)

@@ -425,11 +425,11 @@ function internal:InitPostedItemsHistory()
   local postfunc = function(extraData)
 
     for _, guild in pairs(internal.postedItems) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     for _, guild in pairs(internal.postedSellers) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     internal:DatabaseBusy(false)

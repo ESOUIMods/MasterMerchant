@@ -34,9 +34,9 @@ function internal:concatHash(a, ...)
   end
 end
 
-function internal:GetGuildNameByIndex(index)
-  if not index or not internal.guildNameByIdLookup[index] then return nil end
-  return internal.guildNameByIdLookup[index]
+function internal:GetAccountNameByIndex(index)
+  if not index or not internal.accountNameByIdLookup[index] then return nil end
+  return internal.accountNameByIdLookup[index]
 end
 
 function internal:GetItemLinkByIndex(index)
@@ -44,16 +44,26 @@ function internal:GetItemLinkByIndex(index)
   return internal.itemLinkNameByIdLookup[index]
 end
 
-function internal:GetAccountNameByIndex(index)
-  if not index or not internal.accountNameByIdLookup[index] then return nil end
-  return internal.accountNameByIdLookup[index]
+function internal:GetGuildNameByIndex(index)
+  if not index or not internal.guildNameByIdLookup[index] then return nil end
+  return internal.guildNameByIdLookup[index]
 end
 
 -- uses mod to determine which save files to use
-function internal:MakeHashString(itemLink)
+function internal:MakeHashStringByItemLink(itemLink)
   local name = string.lower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
   local hash = 0
   for c in zo_strgmatch(name, '.') do
+    if c then hash = hash + string.byte(c) end
+  end
+  return hash % 16
+end
+
+-- uses mod to determine which save files to use
+function internal:MakeHashStringByFormattedItemName(itemName)
+  local name = string.lower(itemName)
+  local hash = 0
+  for c in zo_strgmatch(itemName, '.') do
     if c then hash = hash + string.byte(c) end
   end
   return hash % 16
@@ -88,7 +98,7 @@ local function GetItemsTrait(itemLink, itemType)
     return GetItemLinkTraitType(itemLink) or 0
   end
   local powerLevel = GetPotionPowerLevel(itemLink)
-  return MasterMerchant.potionVarientTable[powerLevel] or 0
+  return internal.potionVarientTable[powerLevel] or 0
 end
 
 local function GetRequiredLevel(itemLink, itemType)
@@ -139,8 +149,7 @@ function internal:AddSearchToItem(itemLink)
   if (itemQuality == ITEM_DISPLAY_QUALITY_ARCANE) then adder = internal:concat(adder, GetString(GS_COLOR_BLUE)) end
   if (itemQuality == ITEM_DISPLAY_QUALITY_ARTIFACT) then adder = internal:concat(adder, GetString(GS_COLOR_PURPLE)) end
   if (itemQuality == ITEM_DISPLAY_QUALITY_LEGENDARY) then adder = internal:concat(adder, GetString(GS_COLOR_GOLD)) end
-  if (itemQuality == ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE) then adder = internal:concat(adder,
-    GetString(GS_COLOR_ORANGE)) end
+  if (itemQuality == ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE) then adder = internal:concat(adder, GetString(GS_COLOR_ORANGE)) end
 
   -- adds Mythic Legendary
   adder = internal:concat(adder, zo_strformat("<<t:1>>", GetString("SI_ITEMDISPLAYQUALITY", itemQuality))) -- verified
@@ -225,35 +234,48 @@ function internal:AddSearchToItem(itemLink)
   return string.lower(adder)
 end
 
+function internal:BuildAccountNameLookup()
+  internal:dm("Debug", "BuildAccountNameLookup")
+  if not GS16DataSavedVariables["accountNames"] then GS16DataSavedVariables["accountNames"] = {} end
+  internal.accountNamesCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["accountNames"])
+  local count = 0
+  for key, value in pairs(GS16DataSavedVariables["accountNames"]) do
+    count = count + 1
+    internal.accountNameByIdLookup[value] = key
+  end
+  if count ~= internal.accountNamesCount then internal:dm("Warn", "Account Names Count Mismatch") end
+end
+
+function internal:BuildItemLinkNameLookup()
+  internal:dm("Debug", "BuildItemLinkNameLookup")
+  if not GS16DataSavedVariables["itemLink"] then GS16DataSavedVariables["itemLink"] = {} end
+  internal.itemLinksCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["itemLink"])
+  local count = 0
+  for key, value in pairs(GS16DataSavedVariables["itemLink"]) do
+    count = count + 1
+    internal.itemLinkNameByIdLookup[value] = key
+  end
+  if count ~= internal.itemLinksCount then internal:dm("Warn", "ItemLink Count Mismatch") end
+end
+
+function internal:BuildGuildNameLookup()
+  internal:dm("Debug", "BuildGuildNameLookup")
+  if not GS16DataSavedVariables["guildNames"] then GS16DataSavedVariables["guildNames"] = {} end
+  internal.guildNamesCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["guildNames"])
+  local count = 0
+  for key, value in pairs(GS16DataSavedVariables["guildNames"]) do
+    count = count + 1
+    internal.guildNameByIdLookup[value] = key
+  end
+  if count ~= internal.guildNamesCount then internal:dm("Warn", "Guild Names Count Mismatch") end
+end
+
 function internal:BuildTraderNameLookup()
   internal:dm("Debug", "BuildTraderNameLookup")
   if not GS17DataSavedVariables[internal.visitedNamespace] then GS17DataSavedVariables[internal.visitedNamespace] = {} end
   for key, value in pairs(GS17DataSavedVariables[internal.visitedNamespace]) do
     local currentGuild = value.guildName
     internal.traderIdByNameLookup[currentGuild] = key
-  end
-end
-
-function internal:BuildAccountNameLookup()
-  internal:dm("Debug", "BuildAccountNameLookup")
-  if not GS16DataSavedVariables["accountNames"] then GS16DataSavedVariables["accountNames"] = {} end
-  for key, value in pairs(GS16DataSavedVariables["accountNames"]) do
-    internal.accountNameByIdLookup[value] = key
-  end
-end
-
-function internal:BuildItemLinkNameLookup()
-  internal:dm("Debug", "BuildItemLinkNameLookup")
-  if not GS16DataSavedVariables["itemLink"] then GS16DataSavedVariables["itemLink"] = {} end
-  for key, value in pairs(GS16DataSavedVariables["itemLink"]) do
-    internal.itemLinkNameByIdLookup[value] = key
-  end
-end
-function internal:BuildGuildNameLookup()
-  internal:dm("Debug", "BuildGuildNameLookup")
-  if not GS16DataSavedVariables["guildNames"] then GS16DataSavedVariables["guildNames"] = {} end
-  for key, value in pairs(GS16DataSavedVariables["guildNames"]) do
-    internal.guildNameByIdLookup[value] = key
   end
 end
 
@@ -286,15 +308,15 @@ function internal:SetVisitedGuildsData(theIID)
 end
 
 function internal:SetTraderListingData(itemLink, theIID)
-  local hash = internal:MakeHashString(itemLink)
+  local hash = internal:MakeHashStringByItemLink(itemLink)
   local dataTable = _G[string.format("GS%02dDataSavedVariables", hash)]
   local savedVars = dataTable[internal.listingsNamespace]
   savedVars[theIID] = {}
   return savedVars[theIID], hash
 end
 
-function internal:SetGuildStoreData(itemLink, theIID)
-  local hash = internal:MakeHashString(itemLink)
+function internal:SetGuildStoreData(formattedItemName, theIID)
+  local hash = internal:MakeHashStringByFormattedItemName(formattedItemName)
   local dataTable = _G[string.format("GS%02dDataSavedVariables", hash)]
   local savedVars = dataTable[internal.dataNamespace]
   savedVars[theIID] = {}
@@ -306,18 +328,24 @@ end
 function internal:AddSalesTableData(key, value)
   local saveData = GS16DataSavedVariables[key]
   if not saveData[value] then
-    local index = internal:NonContiguousNonNilCount(GS16DataSavedVariables[key]) + 1
-    saveData[value] = index
     if key == "accountNames" then
-      internal.accountNameByIdLookup[index] = value
+      internal.accountNamesCount = internal.accountNamesCount + 1
+      internal.accountNameByIdLookup[internal.accountNamesCount] = value
+      saveData[value] = internal.accountNamesCount
+      return internal.accountNamesCount
     end
     if key == "itemLink" then
-      internal.itemLinkNameByIdLookup[index] = value
+      internal.itemLinksCount = internal.itemLinksCount + 1
+      internal.itemLinkNameByIdLookup[internal.itemLinksCount] = value
+      saveData[value] = internal.itemLinksCount
+      return internal.itemLinksCount
     end
     if key == "guildNames" then
-      internal.guildNameByIdLookup[index] = value
+      internal.guildNamesCount = internal.guildNamesCount + 1
+      internal.guildNameByIdLookup[internal.guildNamesCount] = value
+      saveData[value] = internal.guildNamesCount
+      return internal.guildNamesCount
     end
-    return index
   else
     return saveData[value]
   end
@@ -340,6 +368,7 @@ function internal:SetupListener(guildId)
     end
   end
   internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
+    --internal:dm("Info", "SetEventCallback")
     if eventType == GUILD_EVENT_ITEM_SOLD then
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
         LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = Id64ToString(eventId)

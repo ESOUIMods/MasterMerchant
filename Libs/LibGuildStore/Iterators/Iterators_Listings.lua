@@ -79,10 +79,10 @@ function internal:addListingData(theEvent)
     searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
     searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     listings_data[theIID][itemIndex] = {
-      itemIcon      = GetItemLinkInfo(theEvent.itemLink),
+      itemIcon = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
-      itemDesc      = searchItemDesc,
-      sales         = { newEvent } }
+      itemDesc = searchItemDesc,
+      sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
   listings_data[theIID][itemIndex].wasAltered = true
@@ -445,11 +445,11 @@ function internal:InitListingHistory()
   local postfunc = function(extraData)
 
     for _, guild in pairs(internal.listedItems) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     for _, guild in pairs(internal.listedSellers) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     internal:DatabaseBusy(false)
