@@ -103,7 +103,7 @@ MMGuild = {
   tax = {},
   count = {},
   stack = {},
-  initDateTime = GetTimeStamp()
+  initDateTime = GetTimeStamp(),
 }
 
 function MMGuild:new(_name)

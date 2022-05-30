@@ -391,7 +391,7 @@ function internal:InitCancelledItemsHistory()
     extraData.totalRecords = extraData.totalRecords + 1
     local currentGuild = internal:GetGuildNameByIndex(saledata['guild'])
     if currentGuild then
-        local currentSeller = internal:GetAccountNameByIndex(saledata['seller'])
+      local currentSeller = internal:GetAccountNameByIndex(saledata['seller'])
 
       if (extradata.doCancelledItems) then
         if not internal.cancelledItems[currentGuild] then

@@ -120,10 +120,10 @@ function internal:addSalesData(theEvent)
     searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
     searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     sales_data[theIID][itemIndex] = {
-      itemIcon      = GetItemLinkInfo(theEvent.itemLink),
+      itemIcon = GetItemLinkInfo(theEvent.itemLink),
       itemAdderText = searchItemAdderText,
-      itemDesc      = searchItemDesc,
-      sales         = { newEvent } }
+      itemDesc = searchItemDesc,
+      sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
   sales_data[theIID][itemIndex].wasAltered = true
@@ -359,10 +359,10 @@ function internal:TruncateSalesHistory()
 
     local salesDeleted = 0
     salesCount = versiondata.totalCount
-     --[[TODO Determine how the salesCount can be 0 and there is an empty
-     sale in the table.
-     [8] = {},
-     ]]--
+    --[[TODO Determine how the salesCount can be 0 and there is an empty
+    sale in the table.
+    [8] = {},
+    ]]--
     if salesCount == 0 then
       versiondata['sales'] = {}
       extraData.saleRemoved = false
@@ -690,9 +690,9 @@ function internal:CleanOutBad()
       -- Remove it
       -- saledata['itemLink']
       local dataInfo = {
-        lang        = MasterMerchant.effective_lang,
+        lang = MasterMerchant.effective_lang,
         individualSale = versiondata['sales'][saleid],
-        namespace    = internal.dataNamespace,
+        namespace = internal.dataNamespace,
         timestamp = GetTimeStamp(),
         itemLink = currentItemLink
       }
@@ -749,15 +749,15 @@ function internal:CleanOutBad()
       },
       ]]--
       local theEvent = {
-        buyer     = currentBuyer,
-        guild     = currentGuild,
-        itemLink  = currentItemLink,
-        quant     = saledata.quant,
+        buyer = currentBuyer,
+        guild = currentGuild,
+        itemLink = currentItemLink,
+        quant = saledata.quant,
         timestamp = saledata.timestamp,
-        price     = saledata.price,
-        seller    = currentSeller,
-        wasKiosk  = saledata.wasKiosk,
-        id        = Id64ToString(saledata.id)
+        price = saledata.price,
+        seller = currentSeller,
+        wasKiosk = saledata.wasKiosk,
+        id = Id64ToString(saledata.id)
       }
       internal:addSalesData(theEvent)
       extraData.moveCount = extraData.moveCount + 1
@@ -1082,16 +1082,16 @@ end
 function internal:checkForDoubles()
 
   local dataList = {
-    [0]  = GS00DataSavedVariables,
-    [1]  = GS01DataSavedVariables,
-    [2]  = GS02DataSavedVariables,
-    [3]  = GS03DataSavedVariables,
-    [4]  = GS04DataSavedVariables,
-    [5]  = GS05DataSavedVariables,
-    [6]  = GS06DataSavedVariables,
-    [7]  = GS07DataSavedVariables,
-    [8]  = GS08DataSavedVariables,
-    [9]  = GS09DataSavedVariables,
+    [0] = GS00DataSavedVariables,
+    [1] = GS01DataSavedVariables,
+    [2] = GS02DataSavedVariables,
+    [3] = GS03DataSavedVariables,
+    [4] = GS04DataSavedVariables,
+    [5] = GS05DataSavedVariables,
+    [6] = GS06DataSavedVariables,
+    [7] = GS07DataSavedVariables,
+    [8] = GS08DataSavedVariables,
+    [9] = GS09DataSavedVariables,
     [10] = GS10DataSavedVariables,
     [11] = GS11DataSavedVariablesa,
     [12] = GS12DataSavedVariables,
