@@ -88,7 +88,7 @@ local function GetItemsTrait(itemLink, itemType)
     return GetItemLinkTraitType(itemLink) or 0
   end
   local powerLevel = GetPotionPowerLevel(itemLink)
-  return MasterMerchant.potionVarientTable[powerLevel] or 0
+  return internal.potionVarientTable[powerLevel] or 0
 end
 
 local function GetRequiredLevel(itemLink, itemType)

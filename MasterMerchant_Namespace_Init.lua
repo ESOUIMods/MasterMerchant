@@ -231,24 +231,6 @@ local currencyFormatDealOptions = {
 --- the other qualities
 }
 ]]--
-MasterMerchant.potionVarientTable = {
-  [0] = 0,
-  [1] = 0,
-  [3] = 1,
-  [10] = 2,
-  [19] = 2, -- level 19 pots I found
-  [20] = 3,
-  [24] = 3, -- level 24 pots I found
-  [30] = 4,
-  [39] = 4, -- level 39 pots I found
-  [40] = 5,
-  [44] = 5, -- level 44 pots I found
-  [125] = 6,
-  [129] = 7,
-  [134] = 8,
-  [307] = 9, -- health potion I commonly find
-  [308] = 9,
-}
 
 -- Gap values for Shell sort
 MasterMerchant.shellGaps = {
