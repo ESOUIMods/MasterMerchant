@@ -258,8 +258,9 @@ end
 local function SetupData()
   internal:dm("Debug", "SetupData")
   local LEQ = LibExecutionQueue:new()
-  LEQ:Add(function() BuildLookupTables() end, 'BuildLookupTables')
   LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INITIALIZING)) end, "LibGuildStoreInitializing")
+  LEQ:Add(function() BuildLookupTables() end, 'BuildLookupTables')
+  LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_REFERENCE_DATA)) end, "LibGuildStoreReferenceDataContainers")
   -- Place data into containers
   LEQ:Add(function() internal:ReferenceSalesDataContainer() end, 'ReferenceSalesDataContainer')
   LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
