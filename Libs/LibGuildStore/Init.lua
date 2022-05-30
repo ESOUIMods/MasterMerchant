@@ -184,6 +184,10 @@ internal.totalListings = 0
 internal.totalPosted = 0
 internal.totalCanceled = 0
 
+internal.accountNamesCount = 0
+internal.itemLinksCount = 0
+internal.guildNamesCount = 0
+
 internal.purchasedItems = nil
 internal.purchasedBuyer = nil
 internal.listedItems = nil
