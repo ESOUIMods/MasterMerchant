@@ -34,9 +34,9 @@ function internal:concatHash(a, ...)
   end
 end
 
-function internal:GetGuildNameByIndex(index)
-  if not index or not internal.guildNameByIdLookup[index] then return nil end
-  return internal.guildNameByIdLookup[index]
+function internal:GetAccountNameByIndex(index)
+  if not index or not internal.accountNameByIdLookup[index] then return nil end
+  return internal.accountNameByIdLookup[index]
 end
 
 function internal:GetItemLinkByIndex(index)
@@ -44,9 +44,9 @@ function internal:GetItemLinkByIndex(index)
   return internal.itemLinkNameByIdLookup[index]
 end
 
-function internal:GetAccountNameByIndex(index)
-  if not index or not internal.accountNameByIdLookup[index] then return nil end
-  return internal.accountNameByIdLookup[index]
+function internal:GetGuildNameByIndex(index)
+  if not index or not internal.guildNameByIdLookup[index] then return nil end
+  return internal.guildNameByIdLookup[index]
 end
 
 -- uses mod to determine which save files to use
@@ -225,15 +225,6 @@ function internal:AddSearchToItem(itemLink)
   return string.lower(adder)
 end
 
-function internal:BuildTraderNameLookup()
-  internal:dm("Debug", "BuildTraderNameLookup")
-  if not GS17DataSavedVariables[internal.visitedNamespace] then GS17DataSavedVariables[internal.visitedNamespace] = {} end
-  for key, value in pairs(GS17DataSavedVariables[internal.visitedNamespace]) do
-    local currentGuild = value.guildName
-    internal.traderIdByNameLookup[currentGuild] = key
-  end
-end
-
 function internal:BuildAccountNameLookup()
   internal:dm("Debug", "BuildAccountNameLookup")
   if not GS16DataSavedVariables["accountNames"] then GS16DataSavedVariables["accountNames"] = {} end
@@ -254,6 +245,15 @@ function internal:BuildGuildNameLookup()
   if not GS16DataSavedVariables["guildNames"] then GS16DataSavedVariables["guildNames"] = {} end
   for key, value in pairs(GS16DataSavedVariables["guildNames"]) do
     internal.guildNameByIdLookup[value] = key
+  end
+end
+
+function internal:BuildTraderNameLookup()
+  internal:dm("Debug", "BuildTraderNameLookup")
+  if not GS17DataSavedVariables[internal.visitedNamespace] then GS17DataSavedVariables[internal.visitedNamespace] = {} end
+  for key, value in pairs(GS17DataSavedVariables[internal.visitedNamespace]) do
+    local currentGuild = value.guildName
+    internal.traderIdByNameLookup[currentGuild] = key
   end
 end
 
