@@ -239,33 +239,28 @@ function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, s
   if sellerName == nil then return end
   if timestamp == nil then return end
   if type(timestamp) ~= 'number' then return end
-  if (timestamp >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:addSale(sellerName, 4, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:addSale(sellerName, 5, amount, stack, wasKiosk, sort,
-    searchText) end ;
-  if (timestamp >= self.sixStart) then self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.sevenStart) then self:addSale(sellerName, 7, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.eightStart) then self:addSale(sellerName, 8, amount, stack, wasKiosk, sort, searchText) end ;
-  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:addSale(sellerName, 9, amount, stack, wasKiosk, sort,
-    searchText) end ;
+  if (timestamp >= self.oneStart) then self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:addSale(sellerName, 2, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:addSale(sellerName, 4, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:addSale(sellerName, 5, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.sixStart) then self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.sevenStart) then self:addSale(sellerName, 7, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.eightStart) then self:addSale(sellerName, 8, amount, stack, wasKiosk, sort, searchText) end
+  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:addSale(sellerName, 9, amount, stack, wasKiosk, sort, searchText) end
 end
 
 function MMGuild:removeSaleByDate(sellerName, timestamp, amount, stack)
   if sellerName == nil then return end
-  if (timestamp >= self.oneStart) then self:removeSale(sellerName, 1, amount) end ;
-  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end ;
-  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end ;
-  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end ;
-  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end ;
-  if (timestamp >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end ;
-  if (timestamp >= self.sevenStart) then self:removeSale(sellerName, 7, amount, stack) end ;
-  if (timestamp >= self.eightStart) then self:removeSale(sellerName, 8, amount, stack) end ;
-  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end ;
+  if (timestamp >= self.oneStart) then self:removeSale(sellerName, 1, amount) end
+  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end
+  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end
+  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end
+  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end
+  if (timestamp >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end
+  if (timestamp >= self.sevenStart) then self:removeSale(sellerName, 7, amount, stack) end
+  if (timestamp >= self.eightStart) then self:removeSale(sellerName, 8, amount, stack) end
+  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end
 end
 
 function MMGuild:sortRankIndex(rankIndex)
