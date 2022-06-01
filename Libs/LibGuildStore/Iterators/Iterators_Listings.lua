@@ -445,11 +445,11 @@ function internal:InitListingHistory()
   local postfunc = function(extraData)
 
     for _, guild in pairs(internal.listedItems) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     for _, guild in pairs(internal.listedSellers) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     internal:DatabaseBusy(false)

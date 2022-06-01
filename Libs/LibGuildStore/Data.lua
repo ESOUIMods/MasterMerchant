@@ -50,10 +50,20 @@ function internal:GetGuildNameByIndex(index)
 end
 
 -- uses mod to determine which save files to use
-function internal:MakeHashString(itemLink)
+function internal:MakeHashStringByItemLink(itemLink)
   local name = string.lower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
   local hash = 0
   for c in zo_strgmatch(name, '.') do
+    if c then hash = hash + string.byte(c) end
+  end
+  return hash % 16
+end
+
+-- uses mod to determine which save files to use
+function internal:MakeHashStringByFormattedItemName(itemName)
+  local name = string.lower(itemName)
+  local hash = 0
+  for c in zo_strgmatch(itemName, '.') do
     if c then hash = hash + string.byte(c) end
   end
   return hash % 16
@@ -298,15 +308,15 @@ function internal:SetVisitedGuildsData(theIID)
 end
 
 function internal:SetTraderListingData(itemLink, theIID)
-  local hash = internal:MakeHashString(itemLink)
+  local hash = internal:MakeHashStringByItemLink(itemLink)
   local dataTable = _G[string.format("GS%02dDataSavedVariables", hash)]
   local savedVars = dataTable[internal.listingsNamespace]
   savedVars[theIID] = {}
   return savedVars[theIID], hash
 end
 
-function internal:SetGuildStoreData(itemLink, theIID)
-  local hash = internal:MakeHashString(itemLink)
+function internal:SetGuildStoreData(formattedItemName, theIID)
+  local hash = internal:MakeHashStringByFormattedItemName(formattedItemName)
   local dataTable = _G[string.format("GS%02dDataSavedVariables", hash)]
   local savedVars = dataTable[internal.dataNamespace]
   savedVars[theIID] = {}
@@ -358,6 +368,7 @@ function internal:SetupListener(guildId)
     end
   end
   internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
+    --internal:dm("Info", "SetEventCallback")
     if eventType == GUILD_EVENT_ITEM_SOLD then
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
         LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = Id64ToString(eventId)

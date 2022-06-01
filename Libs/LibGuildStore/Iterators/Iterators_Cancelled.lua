@@ -421,11 +421,11 @@ function internal:InitCancelledItemsHistory()
   local postfunc = function(extraData)
 
     for _, guild in pairs(internal.cancelledItems) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     for _, guild in pairs(internal.cancelledSellers) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     internal:DatabaseBusy(false)

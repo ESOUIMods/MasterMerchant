@@ -74,7 +74,7 @@ function internal:addSalesData(theEvent)
   local buyerHash = internal:AddSalesTableData("accountNames", theEvent.buyer)
   local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
   local guildHash = internal:AddSalesTableData("guildNames", theEvent.guild)
-
+  local formattedItemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
   --[[The quality effects itemIndex although the ID from the
   itemLink may be the same. We will keep them separate.
   ]]--
@@ -89,7 +89,7 @@ function internal:addSalesData(theEvent)
   ]]--
   local hashUsed = "alreadyExisted"
   if not sales_data[theIID] then
-    sales_data[theIID], hashUsed = internal:SetGuildStoreData(theEvent.itemLink, theIID)
+    sales_data[theIID], hashUsed = internal:SetGuildStoreData(formattedItemName, theIID)
   end
 
   local insertedIndex = 1
@@ -117,7 +117,7 @@ function internal:addSalesData(theEvent)
   else
     if sales_data[theIID][itemIndex] == nil then sales_data[theIID][itemIndex] = {} end
     if sales_data[theIID][itemIndex]['sales'] == nil then sales_data[theIID][itemIndex]['sales'] = {} end
-    searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
+    searchItemDesc = formattedItemName
     searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
     sales_data[theIID][itemIndex] = {
       itemIcon = GetItemLinkInfo(theEvent.itemLink),
@@ -141,11 +141,11 @@ function internal:addSalesData(theEvent)
 
   guild = internal.guildSales[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildSales[theEvent.guild] = guild
-  guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false)
+  guild:addSaleByDate(theEvent.seller, theEvent.timestamp, theEvent.price, theEvent.quant, false, nil)
 
   guild = internal.guildPurchases[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildPurchases[theEvent.guild] = guild
-  guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk)
+  guild:addSaleByDate(theEvent.buyer, theEvent.timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk, nil)
 
   guild = internal.guildItems[theEvent.guild] or MMGuild:new(theEvent.guild)
   internal.guildItems[theEvent.guild] = guild
@@ -591,25 +591,25 @@ function internal:InitItemHistory()
 
       if (extradata.doGuildItems) then
         for _, guild in pairs(internal.guildItems) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 
       if (extradata.doMyItems) then
         for _, guild in pairs(internal.myItems) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 
       if (extradata.doGuildSales) then
         for _, guild in pairs(internal.guildSales) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 
       if (extradata.doGuildPurchases) then
         for _, guild in pairs(internal.guildPurchases) do
-          guild:sort()
+          guild:SortAllRanks()
         end
       end
 

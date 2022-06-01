@@ -461,11 +461,11 @@ function internal:InitPurchaseHistory()
   local postfunc = function(extraData)
 
     for _, guild in pairs(internal.purchasedItems) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     for _, guild in pairs(internal.purchasedBuyer) do
-      guild:sort()
+      guild:SortAllRanks()
     end
 
     internal:DatabaseBusy(false)
