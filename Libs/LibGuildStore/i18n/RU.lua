@@ -151,7 +151,7 @@ ZO_CreateStringId("GS_POSTED_ITEMS_TITLE", "Выставленные товар�
 ZO_CreateStringId("GS_CANCELED_ITEMS_TITLE", "Отменённые товары")
 
 ZO_CreateStringId("GS_LIBGUILDSTORE_INITIALIZING", "LibGuildStore запускается")
-ZO_CreateStringId("GS_LIBGUILDSTORE_REFERENCE_DATA", "Referencing Sales Data Container")
+ZO_CreateStringId("GS_LIBGUILDSTORE_REFERENCE_DATA", "LibGuildStore Referencing Sales Data Containers")
 ZO_CreateStringId("GS_LIBGUILDSTORE_TRUNCATE", "LibGuildStore отсекает старые записи…")
 ZO_CreateStringId("GS_LIBGUILDSTORE_HISTORY_INIT", "LibGuildStore подготавливает журналирование к работе…")
 ZO_CreateStringId("GS_LIBGUILDSTORE_INDEX_DATA", "LibGuildStore закончила индексировать данные")

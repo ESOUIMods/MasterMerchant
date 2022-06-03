@@ -152,7 +152,7 @@ ZO_CreateStringId("GS_POSTED_ITEMS_TITLE", "Oggetti Pubblicati")
 ZO_CreateStringId("GS_CANCELED_ITEMS_TITLE", "Oggetti Cancellati")
 
 ZO_CreateStringId("GS_LIBGUILDSTORE_INITIALIZING", "Inizializzazione di LibGuildStore")
-ZO_CreateStringId("GS_LIBGUILDSTORE_REFERENCE_DATA", "Referencing Sales Data Container")
+ZO_CreateStringId("GS_LIBGUILDSTORE_REFERENCE_DATA", "LibGuildStore Referencing Sales Data Containers")
 ZO_CreateStringId("GS_LIBGUILDSTORE_TRUNCATE", "Inizia a troncare i record di LibGuildStore...")
 ZO_CreateStringId("GS_LIBGUILDSTORE_HISTORY_INIT", "Inizializzazione della cronologia di LibGuildStore avviata...")
 ZO_CreateStringId("GS_LIBGUILDSTORE_INDEX_DATA", "Dati Indice LibGuildStore completato...")

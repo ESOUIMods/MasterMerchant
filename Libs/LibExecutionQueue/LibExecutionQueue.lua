@@ -1,32 +1,34 @@
-LibExecutionQueue = {}
+local libName, libVersion = "LibExecutionQueue", 200
+local lib
+lib = {}
 
-function LibExecutionQueue:new(_wait)
+function lib:new(_wait)
   -- This is a singleton
 
   self.Queue = self.Queue or {}
   if self.Paused == nil then self.Paused = true end
   self.Wait = _wait or self.Wait or 20
 
-  return LibExecutionQueue
+  return lib
 end
 
-function LibExecutionQueue:Add(func, name)
+function lib:Add(func, name)
   table.insert(self.Queue, 1, { func, name })
 end
 
-function LibExecutionQueue:ContinueWith(func, name)
+function lib:ContinueWith(func, name)
   table.insert(self.Queue, { func, name })
   self:Start()
 end
 
-function LibExecutionQueue:Start()
+function lib:Start()
   if self.Paused then
     self.Paused = false
     self:Next()
   end
 end
 
-function LibExecutionQueue:Next()
+function lib:Next()
   if not self.Paused then
     local nextFunc = table.remove(self.Queue)
     if nextFunc then
@@ -39,8 +41,8 @@ function LibExecutionQueue:Next()
   end
 end
 
-function LibExecutionQueue:Pause()
+function lib:Pause()
   self.Paused = true
 end
 
-
+LibExecutionQueue = lib
