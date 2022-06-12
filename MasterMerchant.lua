@@ -1347,9 +1347,7 @@ function MasterMerchant.LinkHandler_OnLinkMouseUp(link, button, _, _, linkType, 
         AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
       end
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() MasterMerchant:OnItemLinkAction(link) end)
-      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end,
-        MENU_ADD_OPTION_LABEL)
-
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() MasterMerchant:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
       ShowMenu()
     end)
   end

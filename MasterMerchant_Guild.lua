@@ -306,7 +306,7 @@ function MMGuild:removeSaleByDate(sellerName, timestamp, amount, stack)
 end
 
 function MMGuild:SortByRankIndex(rankIndex)
-  if self:IsDirty(rankIndex) then
+  --if self:IsDirty(rankIndex) then
     MasterMerchant.shellSort(self.ranks[rankIndex] or {}, function(sortA, sortB)
       return (sortA.sales[rankIndex] or 0) > (sortB.sales[rankIndex] or 0)
     end)
@@ -317,7 +317,7 @@ function MMGuild:SortByRankIndex(rankIndex)
       i = i + 1
     end
     self:MarkClean(rankIndex)
-  end
+  --end
 end
 
 function MMGuild:SortAllRanks()
