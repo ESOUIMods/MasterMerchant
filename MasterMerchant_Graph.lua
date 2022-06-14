@@ -1,9 +1,7 @@
 MM_Graph = ZO_Object:Subclass()
-MM_Graph.itemLink = nil
 
 function MM_Graph:New(control, pointTemplate, labelTemplate)
   local graph = ZO_Object.New(self)
-
   graph.control = control
 
   pointTemplate = pointTemplate or "MM_Point"
@@ -184,15 +182,18 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   self.textAdjustmentY = self.x_startLabelMarker:GetFontHeight() / 4
 end
 
-function MM_Graph:OnGraphPointClicked(self, mouseButton, sellerName)
+function MM_Graph:OnGraphPointClicked(graphPointControl, mouseButton, sellerName)
   local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
   local lengthSellerName = string.len(sellerName) + 2
+  local parentControl = graphPointControl:GetParent()
+  local itemLink = parentControl.itemLink
+  if not itemLink then MasterMerchant:dm("Warn", "OnGraphPointClicked has no itemLink") end
   if lengthBlacklist + lengthSellerName > 2000 then
     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
-      MasterMerchant:ClearItemCacheByItemLink(MM_Graph.itemLink)
+      MasterMerchant:ClearItemCacheByItemLink(itemLink)
     end
   end
 end

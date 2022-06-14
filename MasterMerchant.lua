@@ -1331,7 +1331,7 @@ function MasterMerchant:onItemActionPopupInfoLink(itemLink)
   changes the outcome of the calculations so the tooltip
   cache needs to be reset
   ]]--
-  MM_Graph.itemLink = itemLink
+  if not itemLink then MasterMerchant:dm("Warn", "onItemActionPopupInfoLink has no itemLink") end
   ZO_PopupTooltip_SetLink(itemLink)
 end
 
@@ -1570,13 +1570,10 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
   if (link and zo_strmatch(link, '|H.-:item:(.-):')) then
     zo_callLater(function()
       if MasterMerchant:itemCraftPrice(link) then
-        AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(link) end,
-          MENU_ADD_OPTION_LABEL)
+        AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
       end
-      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end,
-        MENU_ADD_OPTION_LABEL)
-      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:OnItemLinkAction(link) end,
-        MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:OnItemLinkAction(link) end, MENU_ADD_OPTION_LABEL)
       ShowMenu(self)
     end, 50)
   end

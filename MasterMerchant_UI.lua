@@ -2266,10 +2266,12 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
 
       if tooltip.mmGraph then
         local graph = tooltip.mmGraph
+        graph.itemLink = itemLink
 
         if not graph.points then
           graph.points = MM_Graph:New(graph, "MM_Point")
         end
+
         if graphInfo.low == graphInfo.high then
           graphInfo.low = statsInfo.avgPrice * 0.85
           graphInfo.high = statsInfo.avgPrice * 1.15
