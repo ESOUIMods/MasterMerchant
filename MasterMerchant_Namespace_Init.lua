@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.00'
+MasterMerchant.version = '3.7.01'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -148,6 +148,7 @@ MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for toolti
 MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
 MasterMerchant.fontListChoices = {} -- added 12-16 but always there
 MasterMerchant.isFirstScan = false -- added again 5-14-2021 but used previously
+MasterMerchant.guildList = {}
 MasterMerchant.a_test = {}
 MasterMerchant.aa_test = {}
 MasterMerchant.aaa_test = {}

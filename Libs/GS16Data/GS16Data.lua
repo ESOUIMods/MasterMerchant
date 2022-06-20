@@ -7,6 +7,14 @@ lib.defaults = {
   ["guildNames"] = {},
   ["visitedNATraders"] = {},
   ["visitedEUTraders"] = {},
+  ["currentNAGuilds"] = {
+    ["count"] = 0,
+    ["guilds"] = {},
+  },
+  ["currentEUGuilds"] = {
+    ["count"] = 0,
+    ["guilds"] = {},
+  },
 }
 
 local function Initialize()

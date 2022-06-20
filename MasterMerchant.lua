@@ -3089,18 +3089,6 @@ function MasterMerchant.SetupPendingPost(self)
   end
 end
 
---[[ register event monitor
-local function OnPlayerDeactivated(eventCode)
-  EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
-end
-EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventDisable", EVENT_PLAYER_DEACTIVATED, OnPlayerDeactivated)
-
-local function OnPlayerActivated(eventCode)
-  EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED, function(...) MasterMerchant:ProcessGuildHistoryResponse(...) end)
-end
-EVENT_MANAGER:RegisterForEvent(MasterMerchant.name.."_EventEnable", EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
-]]--
-
 local function CompleteMasterMerchantSetup()
   MasterMerchant:dm("Debug", "CompleteMasterMerchantSetup")
 
@@ -3313,8 +3301,6 @@ function MasterMerchant:FirstInitialize()
   want to refresh the data or the filter, unless this just happesn upon creation
   ]]--
   MasterMerchant.systemSavedVariables.viewSize = ITEMS
-
-  self.currentGuildID = GetGuildId(1) or 0
 
   MasterMerchant.systemSavedVariables.diplayGuildInfo = MasterMerchant.systemSavedVariables.diplayGuildInfo or false
 
@@ -3708,25 +3694,6 @@ function MasterMerchant:InitScrollLists()
   -- sets isFirstScan to true if offlineSales enabled so that alerts are displayed
   MasterMerchant.isFirstScan = MasterMerchant.systemSavedVariables.offlineSales
 
-  local numGuilds = GetNumGuilds()
-  if numGuilds > 0 then
-    MasterMerchant.currentGuildID = GetGuildId(1) or 0
-    --MasterMerchant:UpdateControlData()
-    --MasterMerchant:dm("Debug", "MasterMerchant.currentGuildID: " .. MasterMerchant.currentGuildID)
-  else
-    -- used for event index on guild history tab
-    MasterMerchant.currentGuildID = 0
-  end
-  for i = 1, numGuilds do
-    local guildID = GetGuildId(i)
-    for m = 1, GetNumGuildMembers(guildID) do
-      local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildID, m)
-      if MasterMerchant.guildMemberInfo[guildID] == nil then MasterMerchant.guildMemberInfo[guildID] = {} end
-      MasterMerchant.guildMemberInfo[guildID][string.lower(guildMemInfo)] = true
-    end
-  end
-
-
   --[[ Sales exist, but no way to know from what source
   previously this would set a variable of veryFirstScan to false
   and true just below
@@ -3905,6 +3872,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
     MasterMerchant:initAGSIntegration()
   end
 end
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 
 function MasterMerchant.Slash(allArgs)
   local args = ""
@@ -4052,6 +4020,3 @@ function MasterMerchant.Slash(allArgs)
 
   MasterMerchant:ToggleMasterMerchantWindow()
 end
-
--- Register for the OnAddOnLoaded event
-EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

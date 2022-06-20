@@ -154,7 +154,6 @@ ZO_CreateStringId("GS_LIBGUILDSTORE_INITIALIZING", "LibGuildStore запуска
 ZO_CreateStringId("GS_LIBGUILDSTORE_REFERENCE_DATA", "LibGuildStore Referencing Sales Data Containers")
 ZO_CreateStringId("GS_LIBGUILDSTORE_TRUNCATE", "LibGuildStore отсекает старые записи…")
 ZO_CreateStringId("GS_LIBGUILDSTORE_HISTORY_INIT", "LibGuildStore подготавливает журналирование к работе…")
-ZO_CreateStringId("GS_LIBGUILDSTORE_INDEX_DATA", "LibGuildStore закончила индексировать данные")
 ZO_CreateStringId("GS_LIBGUILDSTORE_BUSY", "LibGuildStore занята")
 
 ZO_CreateStringId("GS_IMPORTING_ATT_SALES", "Импорт продаж ATT")

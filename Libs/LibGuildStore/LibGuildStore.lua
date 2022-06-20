@@ -86,6 +86,7 @@ local function SetNamespace()
     internal.visitedNamespace = internal.GS_NA_VISIT_TRADERS_NAMESPACE
     internal.pricingNamespace = internal.GS_NA_PRICING_NAMESPACE
     internal.nameFilterNamespace = internal.GS_NA_NAME_FILTER_NAMESPACE
+    internal.guildListNamespace = internal.GS_NA_GUILD_LIST_NAMESPACE
   else
     internal.firstrunNamespace = internal.GS_EU_FIRST_RUN_NAMESPACE
     internal.libHistoireNamespace = internal.GS_EU_LIBHISTOIRE_NAMESPACE
@@ -97,6 +98,7 @@ local function SetNamespace()
     internal.visitedNamespace = internal.GS_EU_VISIT_TRADERS_NAMESPACE
     internal.pricingNamespace = internal.GS_EU_PRICING_NAMESPACE
     internal.nameFilterNamespace = internal.GS_EU_NAME_FILTER_NAMESPACE
+    internal.guildListNamespace = internal.GS_EU_GUILD_LIST_NAMESPACE
   end
 end
 
@@ -105,7 +107,7 @@ function internal:SetupListenerLibHistoire()
   for i = 1, GetNumGuilds() do
     local guildId = GetGuildId(i)
     internal.LibHistoireListener[guildId] = {}
-    zo_callLater(function() internal:SetupListener(guildId) end, 1500 * i)
+    internal:QueueGuildHistoryListener(guildId)
   end
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     internal:StartQueue()
@@ -151,6 +153,60 @@ local function SetupLibHistoireContainers()
   end
 end
 
+function internal:SetupGuildContainers()
+  internal:dm("Debug", "SetupGuildContainers")
+
+  -- if first initialization
+  if GS17DataSavedVariables["currentNAGuilds"] == nil then GS17DataSavedVariables["currentNAGuilds"] = {} end
+  if GS17DataSavedVariables["currentEUGuilds"] == nil then GS17DataSavedVariables["currentEUGuilds"] = {} end
+  if GS17DataSavedVariables["currentNAGuilds"]["count"] == nil then GS17DataSavedVariables["currentNAGuilds"]["count"] = 0 end
+  if GS17DataSavedVariables["currentEUGuilds"]["count"] == nil then GS17DataSavedVariables["currentEUGuilds"]["count"] = 0 end
+  if GS17DataSavedVariables["currentNAGuilds"]["guilds"] == nil then GS17DataSavedVariables["currentNAGuilds"]["guilds"] = {} end
+  if GS17DataSavedVariables["currentEUGuilds"]["guilds"] == nil then GS17DataSavedVariables["currentEUGuilds"]["guilds"] = {} end
+
+  local function guildExists(guildName)
+    if GS17DataSavedVariables[internal.guildListNamespace]["count"] == 0 then return false end
+    for i = 1, #GS17DataSavedVariables[internal.guildListNamespace]["guilds"] do
+      local currentGuild = GS17DataSavedVariables[internal.guildListNamespace]["guilds"][i]
+      if currentGuild.guildName == guildName then return true end
+    end
+    return false
+  end
+
+  for guildNum = 1, GetNumGuilds() do
+    local guildId = GetGuildId(guildNum)
+    local guildName = GetGuildName(guildId)
+    if not guildExists(guildName) then
+      GS17DataSavedVariables[internal.guildListNamespace]["count"] = GS17DataSavedVariables[internal.guildListNamespace]["count"] + 1
+      local count = GS17DataSavedVariables[internal.guildListNamespace]["count"]
+      GS17DataSavedVariables[internal.guildListNamespace]["guilds"][count] = { guildId = guildId, guildName = guildName }
+    end
+  end
+end
+
+function internal:GetGuildListAll()
+  --internal:dm("Debug", "GetGuildList")
+  if GS17DataSavedVariables[internal.guildListNamespace]["count"] == 0 then return { } end
+  local guildList = ''
+  for guildNum, data in pairs(GS17DataSavedVariables[internal.guildListNamespace]["guilds"]) do
+    guildList = guildList .. data.guildName .. ', '
+  end
+  return guildList
+end
+
+-- /script d(LibGuildStore_Internal:GetGuildList())
+-- /script d(zo_plainstrfind(LibGuildStore_Internal:GetGuildList(), "Real Guild Best Guild"))
+function internal:GetGuildList()
+  internal:dm("Debug", "GetGuildList")
+  local guildList = ''
+  for guildNum = 1, GetNumGuilds() do
+    local guildId = GetGuildId(guildNum)
+    local guildName = GetGuildName(guildId)
+    guildList = guildList .. guildName .. ', '
+  end
+  return guildList
+end
+
 local function SetupDefaults()
   --[[
   internal.GS_NA_NAMESPACE          = "datana"
@@ -176,6 +232,9 @@ local function SetupDefaults()
 
   internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
   internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
+
+  internal.GS_NA_GUILD_LIST_NAMESPACE = "currentNAGuilds"
+  internal.GS_EU_GUILD_LIST_NAMESPACE = "currentEUGuilds"
   ]]--
   internal:dm("Debug", "SetupDefaults")
   SetNamespace()
@@ -219,6 +278,8 @@ local function SetupDefaults()
     if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0" end
   end
 
+  MasterMerchant.guildList = internal:GetGuildList()
+
   --cleanup old vars and this can be removed for production
   GS17DataSavedVariables["purchases"] = nil
   GS17DataSavedVariables["listings"] = nil
@@ -243,6 +304,7 @@ local function SetupDefaults()
   if GS17DataSavedVariables["namefilterna"] == nil then GS17DataSavedVariables["namefilterna"] = {} end
   if GS17DataSavedVariables["namefiltereu"] == nil then GS17DataSavedVariables["namefiltereu"] = {} end
 
+  internal:SetupGuildContainers()
   SetupLibHistoireContainers()
   SetupLibGuildStore()
 end
@@ -303,7 +365,6 @@ local function SetupData()
   LEQ:Add(function() internal:IndexPostedItemsData() end, 'IndexPostedItemsData')
   LEQ:Add(function() internal:IndexCancelledItemData() end, 'IndexCancelledItemData')
 
-  LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INDEX_DATA)) end, "LibGuildStoreIndexData")
   LEQ:Add(function() lib.guildStoreReady = true end, "LibGuildStoreIndexData")
   -- and...
   LEQ:Start()
@@ -317,9 +378,9 @@ local function LibGuildStoreInitialize()
     internal.currentGuilds[guildId] = guildName
     internal.alertQueue[guildName] = {}
     for m = 1, GetNumGuildMembers(guildId) do
-      local guildMemInfo, _, _, _, _ = GetGuildMemberInfo(guildId, m)
+      local name, _, _, _, _ = GetGuildMemberInfo(guildId, m)
       if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
-      internal.guildMemberInfo[guildId][string.lower(guildMemInfo)] = true
+      internal.guildMemberInfo[guildId][string.lower(name)] = true
     end
   end
   internal:LibAddonInit()
@@ -387,8 +448,7 @@ local function LibGuildStoreInitialize()
       end)
   else
     -- for vanilla without AwesomeGuildStore to add purchace data
-    EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE,
-      function(...) internal:onTradingHouseEvent(...) end)
+    EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE, function(...) internal:onTradingHouseEvent(...) end)
   end
   --[[
     AGS.callback.BEFORE_INITIAL_SETUP = "BeforeInitialSetup"

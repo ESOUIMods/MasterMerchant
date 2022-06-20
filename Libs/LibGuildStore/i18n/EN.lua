@@ -154,7 +154,6 @@ ZO_CreateStringId("GS_LIBGUILDSTORE_INITIALIZING", "LibGuildStore Initializing")
 ZO_CreateStringId("GS_LIBGUILDSTORE_REFERENCE_DATA", "LibGuildStore Referencing Sales Data Containers")
 ZO_CreateStringId("GS_LIBGUILDSTORE_TRUNCATE", "LibGuildStore Truncate Records Started...")
 ZO_CreateStringId("GS_LIBGUILDSTORE_HISTORY_INIT", "LibGuildStore History Initialization Started...")
-ZO_CreateStringId("GS_LIBGUILDSTORE_INDEX_DATA", "LibGuildStore Index Data Finished...")
 ZO_CreateStringId("GS_LIBGUILDSTORE_BUSY", "LibGuildStore is busy")
 
 ZO_CreateStringId("GS_IMPORTING_ATT_SALES", "Importing ATT Sales")

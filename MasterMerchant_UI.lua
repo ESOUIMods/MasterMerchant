@@ -1188,8 +1188,7 @@ function MMScrollList:FilterScrollList()
                 matchesAll = (matchesAll and string.find(gn, searchWord))
               end
               if matchesAll then
-                table.insert(listData,
-                  ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
           end
@@ -1225,8 +1224,7 @@ function MMScrollList:FilterScrollList()
                     matchesAll = (matchesAll and string.find(gn, searchWord))
                   end
                   if matchesAll then
-                    table.insert(listData,
-                      ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
+                    table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
                   end
                 end
               end
@@ -1290,8 +1288,7 @@ function MMScrollList:FilterScrollList()
         for j, subval in pairs(val) do
           for i in pairs(subval) do
             local actualItem = sales_data[k][j]['sales'][i]
-            table.insert(listData,
-              ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
+            table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
           end
         end
       end
@@ -1311,14 +1308,6 @@ function MMScrollList:FilterScrollList()
       end
     end
 
-    local guildList = ''
-    local guildNum = 1
-    while guildNum <= GetNumGuilds() do
-      local guildID = GetGuildId(guildNum)
-      guildList = guildList .. GetGuildName(guildID) .. ', '
-      guildNum = guildNum + 1
-    end
-
     local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
     if searchText == nil or searchText == '' then
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
@@ -1326,14 +1315,12 @@ function MMScrollList:FilterScrollList()
         for gn, g in pairs(dataSet) do
           local sellerData = g.sellers[GetDisplayName()] or nil
           if (sellerData and sellerData.sales[rankIndex]) then
-            if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-              table.insert(listData, ZO_ScrollList_CreateDataEntry(1,
-                { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
+            if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(MasterMerchant.guildList, gn)) then
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
             end
           else
-            if zo_plainstrfind(guildList, gn) then
-              table.insert(listData,
-                ZO_ScrollList_CreateDataEntry(1, { gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false }))
+            if zo_plainstrfind(MasterMerchant.guildList, gn) then
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false }))
             end
           end
         end
@@ -1341,16 +1328,14 @@ function MMScrollList:FilterScrollList()
         -- all guild sales
         for gn, g in pairs(dataSet) do
           if (MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item') then
-            if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
-              table.insert(listData, ZO_ScrollList_CreateDataEntry(1,
-                { gn, GetString(MM_ENTIRE_GUILD), g.sales[rankIndex], 0, g.count[rankIndex], g.stack[rankIndex], g.sales[rankIndex], g.tax[rankIndex] }))
+            if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(MasterMerchant.guildList, gn)) then
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { gn, GetString(MM_ENTIRE_GUILD), g.sales[rankIndex], 0, g.count[rankIndex], g.stack[rankIndex], g.sales[rankIndex], g.tax[rankIndex] }))
             end
           end
           for sn, sellerData in pairs(g.sellers) do
             if (sellerData and sellerData.sales[rankIndex]) then
-              if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1,
-                  { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
+              if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(MasterMerchant.guildList, gn)) then
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
               end
             else
               --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
@@ -1373,9 +1358,8 @@ function MMScrollList:FilterScrollList()
           if matchesAll then
             local sellerData = g.sellers[GetDisplayName()] or nil
             if (sellerData and sellerData.sales[rankIndex]) then
-              if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(guildList, gn)) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1,
-                  { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
+              if (sellerData.sales[rankIndex] > 0) or (zo_plainstrfind(MasterMerchant.guildList, gn)) then
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
               end
             else
               --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, GetDisplayName(), 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
@@ -1396,9 +1380,8 @@ function MMScrollList:FilterScrollList()
             matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
           end
           if matchesAll and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
-            if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(guildList, gn)) then
-              table.insert(listData, ZO_ScrollList_CreateDataEntry(1,
-                { gn, GetString(MM_ENTIRE_GUILD), g.sales[rankIndex], 0, g.count[rankIndex], g.stack[rankIndex], g.sales[rankIndex], g.tax[rankIndex], false }))
+            if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(MasterMerchant.guildList, gn)) then
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { gn, GetString(MM_ENTIRE_GUILD), g.sales[rankIndex], 0, g.count[rankIndex], g.stack[rankIndex], g.sales[rankIndex], g.tax[rankIndex], false }))
             end
           end
           for sn, sellerData in pairs(g.sellers) do
@@ -1418,8 +1401,7 @@ function MMScrollList:FilterScrollList()
             end
             if matchesAll then
               if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1,
-                  { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { gn, sellerData.sellerName, sellerData.sales[rankIndex], sellerData.rank[rankIndex], sellerData.count[rankIndex], sellerData.stack[rankIndex], g.sales[rankIndex], sellerData.tax[rankIndex], sellerData.outsideBuyer }))
               else
                 --table.insert(listData, ZO_ScrollList_CreateDataEntry(1, {gn, sellerData.sellerName, 0, 9999, 0, 0, g.sales[rankIndex], 0, false}))
               end
@@ -1528,8 +1510,7 @@ function MMScrollList:FilterScrollList()
               --d(item)
             else
               if (item.timestamp > timeCheck) then
-                table.insert(listData,
-                  ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
+                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
           end
@@ -1586,8 +1567,7 @@ function MMScrollList:FilterScrollList()
         for j, subval in pairs(val) do
           for i in pairs(subval) do
             local actualItem = purchases_data[k][j]['sales'][i]
-            table.insert(listData,
-              ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
+            table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, actualItem.timestamp, actualItem.price, actualItem.quant }))
           end
         end
       end
@@ -3613,14 +3593,51 @@ function MasterMerchant:SetupScrollLists()
   self.nameFilterScrollList = IFScrollList:New(MasterMerchantFilterByNameWindow)
 end
 
-local function OnPlayerJoinedGuild(eventCode, guildServerId, characterName, guildId)
-  --EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
-  MasterMerchant:dm("Debug", "OnPlayerJoinedGuild")
+local function OnGuildMemberAdded(eventCode, guildId, displayName)
+  internal.guildMemberInfo[guildId][string.lower(displayName)] = true
 end
-local function OnPlayerLeaveGuild(eventCode, guildServerId, characterName, guildId)
-  --EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name.."_EventMon", EVENT_GUILD_HISTORY_RESPONSE_RECEIVED)
-  MasterMerchant:dm("Debug", "OnPlayerLeaveGuild")
-end
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_MemberAdded", EVENT_GUILD_MEMBER_ADDED, OnGuildMemberAdded)
 
+local function OnGuildMemberRemoved(eventCode, guildId, displayName, characterName)
+  internal.guildMemberInfo[guildId][string.lower(displayName)] = nil
+end
+EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_MemberRemoved", EVENT_GUILD_MEMBER_REMOVED, OnGuildMemberRemoved)
+
+-- LibGuildStore_Internal
+local function OnPlayerJoinedGuild(eventCode, guildId, guildName)
+  --MasterMerchant:dm("Debug", "OnPlayerJoinedGuild")
+  internal:SetupGuildContainers()
+  MasterMerchant.guildList = internal:GetGuildList()
+  internal.LibHistoireListener[guildId] = { }
+  LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
+  internal.eventsNeedProcessing[guildId] = true
+  internal.timeEstimated[guildId] = false
+  internal.currentGuilds[guildId] = guildName
+  internal.alertQueue[guildName] = {}
+  for m = 1, GetNumGuildMembers(guildId) do
+    local name, _, _, _, _ = GetGuildMemberInfo(guildId, m)
+    if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
+    internal.guildMemberInfo[guildId][string.lower(name)] = true
+  end
+
+  internal.LibHistoireListenerReady[guildId] = false
+  internal:QueueGuildHistoryListener(guildId)
+end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_JoinedGuild", EVENT_GUILD_SELF_JOINED_GUILD, OnPlayerJoinedGuild)
+
+local function OnPlayerLeaveGuild(eventCode, guildId, guildName)
+  --MasterMerchant:dm("Debug", "OnPlayerLeaveGuild")
+  if internal.LibHistoireListener[guildId] ~= nil and internal.LibHistoireListener[guildId].running then
+    MasterMerchant:dm("Debug", "Stopping listener")
+    internal.LibHistoireListener[guildId]:Stop()
+  end
+  MasterMerchant.guildList = internal:GetGuildList()
+  LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = nil
+  internal.eventsNeedProcessing[guildId] = nil
+  internal.timeEstimated[guildId] = nil
+  internal.LibHistoireListener[guildId] = nil
+  internal.currentGuilds[guildId] = nil
+  internal.alertQueue[guildName] = nil
+  internal.guildMemberInfo[guildId] = nil
+end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_LeaveGuild", EVENT_GUILD_SELF_LEFT_GUILD, OnPlayerLeaveGuild)

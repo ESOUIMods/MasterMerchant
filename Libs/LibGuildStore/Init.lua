@@ -159,6 +159,7 @@ internal.defaults = {
 
 if not LibGuildStore_SavedVariables then LibGuildStore_SavedVariables = internal.saveVarsDefaults end
 internal.LibHistoireListener = { } -- added for debug on 10-31
+internal.LibHistoireListenerReady = { } -- added 6-19-22
 internal.alertQueue = { }
 internal.guildMemberInfo = { }
 internal.accountNameByIdLookup = { }
@@ -223,13 +224,16 @@ internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
 internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
 internal.GS_ALL_PRICING_NAMESPACE = "pricingdataall"
 
+internal.GS_NA_GUILD_LIST_NAMESPACE = "currentNAGuilds"
+internal.GS_EU_GUILD_LIST_NAMESPACE = "currentEUGuilds"
+
 internal.NON_GUILD_MEMBER_PURCHASE = 0
 internal.GUILD_MEMBER_PURCHASE = 1
 internal.IMPORTED_PURCHASE = 2
 
-internal.GS_CHECK_ACCOUNTNAME = "AccountNames"
-internal.GS_CHECK_ITEMLINK = "ItemLink"
-internal.GS_CHECK_GUILDNAME = "GuildNames"
+internal.GS_CHECK_ACCOUNTNAME = "accountNames"
+internal.GS_CHECK_ITEMLINK = "itemLink"
+internal.GS_CHECK_GUILDNAME = "guildNames"
 internal.PlayerSpecialText = 'hfdkkdfunlajjamdhsiwsuwj'
 internal.dataToReset = ""
 internal.listingsToReset = ""
@@ -244,6 +248,7 @@ internal.cancelledNamespace = ""
 internal.visitedNamespace = ""
 internal.pricingNamespace = ""
 internal.nameFilterNamespace = ""
+internal.guildListNamespace = ""
 
 lib.guildStoreReady = false -- when no more events are pending
 

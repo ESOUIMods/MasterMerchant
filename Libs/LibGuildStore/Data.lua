@@ -351,11 +351,41 @@ function internal:AddSalesTableData(key, value)
   end
 end
 
+function internal:QueueGuildHistoryListener(guildId)
+  internal:SetupGuildHistoryListener(guildId)
+  if not internal.LibHistoireListenerReady[guildId] then
+    internal:dm("Debug", "LibHistoireListener not ready")
+    zo_callLater(function() internal:QueueGuildHistoryListener(guildId) end, 1000)
+  else
+    internal:SetupListener(guildId)
+  end
+end
+
+-- /script LibGuildStore_Internal:SetupGuildHistoryListener(guildId)
+function internal:SetupGuildHistoryListener(guildId)
+  --internal:dm("Debug", "SetupGuildHistoryListener: " .. guildId)
+ if internal.LibHistoireListener == nil then internal.LibHistoireListener = { } end
+ if internal.LibHistoireListener[guildId] == nil then internal.LibHistoireListener[guildId] = { } end
+
+  internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
+  if internal.LibHistoireListener[guildId] == nil then
+    --internal:dm("Warn", "The Listener was nil")
+  elseif internal.LibHistoireListener[guildId] ~= nil then
+    --internal:dm("Debug", "The Listener was not nil, Listener ready.")
+    internal.LibHistoireListenerReady[guildId] = true
+  end
+end
+
+-- /script LibGuildStore_Internal.LibHistoireListener[guildId]:SetAfterEventId(StringToId64("0"))
 function internal:SetupListener(guildId)
   internal:dm("Debug", "SetupListener: " .. guildId)
-  -- listener
-  internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
+  --internal:SetupGuildHistoryListener(guildId)
   local lastReceivedEventID
+  if internal.LibHistoireListener[guildId] == nil then
+    internal:dm("Warn", "The Listener was still nil somehow")
+    return
+  end
+
   if LibGuildStore_SavedVariables.libHistoireScanByTimestamp then
     local setAfterTimestamp = GetTimeStamp() - ((LibGuildStore_SavedVariables.historyDepth + 1) * ZO_ONE_DAY_IN_SECONDS)
     internal.LibHistoireListener[guildId]:SetAfterEventTime(setAfterTimestamp)

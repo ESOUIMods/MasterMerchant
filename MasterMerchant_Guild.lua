@@ -307,16 +307,16 @@ end
 
 function MMGuild:SortByRankIndex(rankIndex)
   --if self:IsDirty(rankIndex) then
-    MasterMerchant.shellSort(self.ranks[rankIndex] or {}, function(sortA, sortB)
-      return (sortA.sales[rankIndex] or 0) > (sortB.sales[rankIndex] or 0)
-    end)
+  MasterMerchant.shellSort(self.ranks[rankIndex] or {}, function(sortA, sortB)
+    return (sortA.sales[rankIndex] or 0) > (sortB.sales[rankIndex] or 0)
+  end)
 
-    local i = 1
-    while self.ranks[rankIndex] and self.ranks[rankIndex][i] do
-      self.ranks[rankIndex][i].rank[rankIndex] = i
-      i = i + 1
-    end
-    self:MarkClean(rankIndex)
+  local i = 1
+  while self.ranks[rankIndex] and self.ranks[rankIndex][i] do
+    self.ranks[rankIndex][i].rank[rankIndex] = i
+    i = i + 1
+  end
+  self:MarkClean(rankIndex)
   --end
 end
 
