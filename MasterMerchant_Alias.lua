@@ -75,14 +75,12 @@ end
 
 function MasterMerchant:itemStats(itemLink, clickable)
   GenerateLogMessage("itemStats")
-  local itemID = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
+  return MasterMerchant:GetTooltipStats(itemLink, true, true)
 end
 
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
   GenerateLogMessage("toolTipStats")
-  return MasterMerchant:GetTooltipStats(itemID, itemIndex, true, true)
+  return { }
 end
 
 function MasterMerchant:addStatsAndGraph(tooltip, itemLink)

@@ -71,6 +71,9 @@ function internal:IsValidItemLink(itemLink)
     internal:dm("Debug", "count ~= 22")
     validLink = false
   end
+  -- /script d(GetItemLinkItemId("|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h"))
+  -- /script d(tonumber(zo_strmatch("|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h", '|H.-:item:(.-):')))
+  -- "|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h"
   local theIID = GetItemLinkItemId(itemLink)
   local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
   if not theIID then
@@ -143,7 +146,7 @@ function internal:UpdateExtraSalesData(savedVars)
     savedVars.oldestTime = oldestTime
     savedVars.wasAltered = false
   else
-    internal:dm("Warn", "Wait, hold up, somethin ain't right!")
+    internal:dm("Warn", "Wait, hold up, somethin ain't right! UpdateExtraSalesData")
   end
 end
 

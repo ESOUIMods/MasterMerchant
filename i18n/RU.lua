@@ -75,6 +75,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Добавлять на экран со
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "График с ценами")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Добавлять в подсказки предметов интервальный график продаж.")
 
+ZO_CreateStringId("SK_ADD_VOUCHER_NAME", "Add cost per voucher for Writs")
+ZO_CreateStringId("SK_ADD_VOUCHER_TIP", "Adds cost per voucher for Writs based on the average price of the Writ. Writ Worthy adds cost per voucher based on the materials needed to craft the requirement.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Показать продажи гильдий")
@@ -193,6 +196,10 @@ ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "Цена от MM (%s прод./%s шт., %s д.): %s")
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "Цена от MM (%s прод./%s шт., %s д.): %s")
 ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza-цена (%s разм./%s шт.): %s")
+ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_MULTI", "MM price (%s sales/%s items, %s days): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_BONANZA_WRIT_GRAPHTIP", "Bonanza price (%s listings/%s items): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_TO_CHAT_PER_VOUCHER", " / %s : per voucher")
 
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s разм.] рек.: %s, ср.: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[У TTC нет данных]")
@@ -259,7 +266,8 @@ ZO_CreateStringId("MM_RANGE_FOCUS3", "Вариант №3")
 ZO_CreateStringId("MM_RANGE_NONE", "Нет")
 ZO_CreateStringId("MM_BLACKLIST_NAME", "Фильтр гильдий и учётных записей")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "Укажите имена игроков и названия гильдий, которые нужно исключить из расчёта цен MM.")
-ZO_CreateStringId("MM_BLACKLIST_MENU", "Поместить продавца в фильтр")
+ZO_CreateStringId("MM_BLACKLIST_MENU_SELLER", "Поместить продавца в фильтр")
+ZO_CreateStringId("MM_BLACKLIST_MENU_GUILD", "Add Guild to Filter")
 ZO_CreateStringId("MM_BLACKLIST_EXCEEDS", "Добавление невозможно. Фильтр гильдий и учётных записей достиг лимита в 2000 символов.")
 
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Свой интервал")

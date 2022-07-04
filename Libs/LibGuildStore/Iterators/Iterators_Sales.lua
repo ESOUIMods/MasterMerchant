@@ -687,8 +687,6 @@ function internal:CleanOutBad()
       return
     end
     if not internal:IsValidItemLink(currentItemLink) then
-      -- Remove it
-      -- saledata['itemLink']
       local dataInfo = {
         lang = MasterMerchant.effective_lang,
         individualSale = versiondata['sales'][saleid],
@@ -699,6 +697,7 @@ function internal:CleanOutBad()
       if GS17DataSavedVariables["erroneous_links"] == nil then GS17DataSavedVariables["erroneous_links"] = {} end
       if GS17DataSavedVariables["erroneous_links"][itemid] == nil then GS17DataSavedVariables["erroneous_links"][itemid] = {} end
       table.insert(GS17DataSavedVariables["erroneous_links"][itemid], dataInfo)
+      -- Remove sale
       versiondata['sales'][saleid] = nil
       extraData.wasAltered = true
       extraData.badItemLinkCount = extraData.badItemLinkCount + 1

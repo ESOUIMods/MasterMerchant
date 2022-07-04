@@ -95,9 +95,7 @@ end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
   if itemLink then
-    local theIID = GetItemLinkItemId(itemLink)
-    local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-    local tipStats = MasterMerchant:GetTooltipStats(theIID, itemIndex, true, true)
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, true)
     if tipStats.avgPrice then
       return tipStats.avgPrice
     end
@@ -144,7 +142,7 @@ end
 function MasterMerchant.TextTimeSince(theTime, useLowercase)
   local secsSince = GetTimeStamp() - theTime
 
-  if secsSince < 864000 then
+  if secsSince < ZO_ONE_DAY_IN_SECONDS then
     return ZO_FormatDurationAgo(secsSince)
   else
     return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / ZO_ONE_DAY_IN_SECONDS))

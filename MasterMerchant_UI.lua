@@ -1988,8 +1988,6 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
 
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
-  local itemID = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   local tipLine = nil
   local bonanzaTipline = nil
   local tipLineTTC = nil
@@ -1999,7 +1997,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
   -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- input ['graphInfo']: oldestTime, lowPrice, highPrice, salesPoints
   -- return ['graphInfo']: oldestTime, low, high, points
-  local statsInfo = self:GetTooltipStats(itemID, itemIndex, false, false)
+  local statsInfo = self:GetTooltipStats(itemLink, false, false)
   local graphInfo = statsInfo.graphInfo
 
   local xBonanza = ""
@@ -2007,10 +2005,10 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
     craftCostLine = self:CraftCostPriceTip(itemLink, false)
   end
   if statsInfo.avgPrice then
-    tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false)
+    tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false, statsInfo.numVouchers)
   end
   if statsInfo.bonanzaPrice then
-    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, false)
+    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, false, statsInfo.numVouchers)
   end
   if TamrielTradeCentre then
     tipLineTTC = MasterMerchant:TTCPriceTip(itemLink)
@@ -3109,7 +3107,7 @@ function MasterMerchant:SwitchReportsViewMode()
     MasterMerchant:RefreshAlteredWindowData(true)
     ZO_Scroll_ResetToTop(self.reportsScrollList.list)
   else
-    MasterMerchant:dm("Warn", "Shit Hit the fan SwitchSalesViewMode")
+    MasterMerchant:dm("Warn", "Shit Hit the fan SwitchReportsViewMode")
     MasterMerchant:dm("Warn", MasterMerchant.systemSavedVariables.viewSize)
   end
 end
@@ -3594,6 +3592,7 @@ function MasterMerchant:SetupScrollLists()
 end
 
 local function OnGuildMemberAdded(eventCode, guildId, displayName)
+  if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
   internal.guildMemberInfo[guildId][string.lower(displayName)] = true
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_MemberAdded", EVENT_GUILD_MEMBER_ADDED, OnGuildMemberAdded)

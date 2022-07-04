@@ -74,6 +74,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "MMウィンドウで選択した概算�
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "価格履歴グラフを表示")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "価格履歴グラフをアイテムツールチップに含めます。")
 
+ZO_CreateStringId("SK_ADD_VOUCHER_NAME", "Add cost per voucher for Writs")
+ZO_CreateStringId("SK_ADD_VOUCHER_TIP", "Adds cost per voucher for Writs based on the average price of the Writ. Writ Worthy adds cost per voucher based on the materials needed to craft the requirement.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")
@@ -192,6 +195,10 @@ ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "MM 価格 (%s 売上高/%s 販売商品, %s 日): %s")
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "MM 価格 (%s 売上高/%s 販売商品, %s 日々): %s")
 ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza price (%s リスト/%s 販売商品): %s")
+ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_MULTI", "MM price (%s sales/%s items, %s days): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_BONANZA_WRIT_GRAPHTIP", "Bonanza price (%s listings/%s items): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_TO_CHAT_PER_VOUCHER", " / %s : per voucher")
 
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s listings] Sug: %s, Avg: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")
@@ -258,7 +265,8 @@ ZO_CreateStringId("MM_RANGE_FOCUS3", "集中3")
 ZO_CreateStringId("MM_RANGE_NONE", "なし")
 ZO_CreateStringId("MM_BLACKLIST_NAME", "Guild & Account Filter")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "MMが計算時、無視したいプレイヤーとギルドの名前のリストです。")
-ZO_CreateStringId("MM_BLACKLIST_MENU", "Add Seller to Filter")
+ZO_CreateStringId("MM_BLACKLIST_MENU_SELLER", "Add Seller to Filter")
+ZO_CreateStringId("MM_BLACKLIST_MENU_GUILD", "Add Guild to Filter")
 ZO_CreateStringId("MM_BLACKLIST_EXCEEDS", "Can not append account name. The Guild & Account Filter would exceed 2000 characters.")
 
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Custom Timeframe")

@@ -74,6 +74,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Zeigt die Summe der Käufe und Verkäuf
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Preisverlauf Diagramm anzeigen")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Zeigt ein Diagramm über den Verlauf des Gegenstandpreises im Tooltip an.")
 
+ZO_CreateStringId("SK_ADD_VOUCHER_NAME", "Add cost per voucher for Writs")
+ZO_CreateStringId("SK_ADD_VOUCHER_TIP", "Adds cost per voucher for Writs based on the average price of the Writ. Writ Worthy adds cost per voucher based on the materials needed to craft the requirement.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Zeige Gilden Verkäufe")
@@ -192,6 +195,10 @@ ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Preis: Vorg.: %s/Durch.: %s")
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "MM Preis (%s Verkäufe/%s Gegenstände, %s Tag): %s")
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "MM Preis (%s Verkäufe/%s Gegenstände, %s Tage): %s")
 ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza Preis (%s Gelistete/%s Gegenstände): %s")
+ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_MULTI", "MM price (%s sales/%s items, %s days): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_BONANZA_WRIT_GRAPHTIP", "Bonanza price (%s listings/%s items): %s\n%s per voucher (of average)")
+ZO_CreateStringId("MM_TO_CHAT_PER_VOUCHER", " / %s : per voucher")
 
 ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s Gelistete] Vorg.: %s, Durch.: %s")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[Kein TTC Preis]")
@@ -258,7 +265,8 @@ ZO_CreateStringId("MM_RANGE_FOCUS3", "Fokus 3")
 ZO_CreateStringId("MM_RANGE_NONE", "Keine")
 ZO_CreateStringId("MM_BLACKLIST_NAME", "Gilde & Account Filter")
 ZO_CreateStringId("MM_BLACKLIST_TIP", "Auflisten der Namen der Spieler und Gilden, welche MM in den Preis Berechnungen ignorieren soll.")
-ZO_CreateStringId("MM_BLACKLIST_MENU", "Filter: Verkäufer hinzuf.")
+ZO_CreateStringId("MM_BLACKLIST_MENU_SELLER", "Filter: Verkäufer hinzuf.")
+ZO_CreateStringId("MM_BLACKLIST_MENU_GUILD", "Add Guild to Filter")
 ZO_CreateStringId("MM_BLACKLIST_EXCEEDS", "Filter Name kann nicht hinzugefügt werden. Gilden & Account Filter würde die 2000 Zeichen überschreiten.")
 
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_NAME", "Eigener Zeitrahmen")

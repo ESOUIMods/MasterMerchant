@@ -214,7 +214,7 @@ end
 function MM_Graph:MyGraphPointClickHandler(self, button, upInside, sellerName)
   if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then
     ClearMenu()
-    AddMenuItem(GetString(MM_BLACKLIST_MENU), function() MM_Graph:OnGraphPointClicked(self, button, sellerName) end)
+    AddMenuItem(GetString(MM_BLACKLIST_MENU_SELLER), function() MM_Graph:OnGraphPointClicked(self, button, sellerName) end)
     ShowMenu()
   end
 end

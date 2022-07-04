@@ -84,11 +84,20 @@ end
 
 -- The index consists of the item's required level, required vet
 -- level, quality, and trait(if any), separated by colons.
+-- /script d(zo_strmatch("|H1:item:6000:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", '|H.-:item:.-:(%d-)|h'))
 local itemIndexCache = { }
 
-local function GetItemLinkParseData(itemLink, itemType)
-  if itemType ~= ITEMTYPE_MASTER_WRIT then
-    return zo_strmatch(itemLink, '|H.-:item:.-:(%d-)|h') or 0
+function internal:GetItemLinkParseData(itemLink, itemType)
+  local data = select(24, ZO_LinkHandler_ParseLink(itemLink))
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+  local theIID = GetItemLinkItemId(itemLink)
+  if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
+    return data
+  end
+  if itemType == ITEMTYPE_MASTER_WRIT then
+    local quotient, remainder = math.modf(data / 10000)
+    local writcount = quotient + math.floor(0.5 + remainder)
+    return writcount
   end
   return 0
 end
@@ -107,9 +116,10 @@ end
 
 local function CreateIndexFromLink(itemLink)
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  return GetRequiredLevel(itemLink, itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkQuality(itemLink) .. ":" .. GetItemsTrait(itemLink, itemType) .. ":" .. GetItemLinkParseData(itemLink, itemType)
+  return GetRequiredLevel(itemLink, itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkDisplayQuality(itemLink) .. ":" .. GetItemsTrait(itemLink, itemType) .. ":" .. internal:GetItemLinkParseData(itemLink)
 end
 
+-- /script d(LibGuildStore_Internal.GetOrCreateIndexFromLink("|H0:item:44714:308:50:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:853248|h|h"))
 function internal.GetOrCreateIndexFromLink(itemLink)
   local index = itemIndexCache[itemLink]
   if not index then
