@@ -26,7 +26,7 @@ NOTE: The documentation is not updated so in order to update how potions and wri
 - Option to not use the price per voucher since Writ Worthy shows cost based on the craft cost of the requirement for the Writ.
 - Writs are sorted by voucher count so some writs may not have any sales information when they may have previously.
 
-### Writ Change: 
+### Writ Change:
 
 After a conversation with Octopuss which didn't go well and I apologize for that, I went out looking at Writs on other traders. I mentioned I needed to rewrite the Writ system with 3.3.6 anyway.
 
