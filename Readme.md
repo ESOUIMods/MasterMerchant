@@ -7,6 +7,71 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog for 3.7.02
+
+### For Authors:
+
+The function MasterMerchant:toolTipStats() has been removed. Use MasterMerchant:itemStats(itemLink, false) instead.
+
+### For Users:
+
+NOTE: The documentation is not updated so in order to update how potions and writs are sorted, you will need to use the following slash command
+
+/lgs clean, which is /LGS CLEAN but use lowercase.
+
+### Changes:
+
+- Added right click options to guild store (Vanilla and AGS) to add the Seller or the Guild Name to the Guild and Account filter.
+- Added voucher information for Writs to the tooltip and price to chat. The price per voucher is based on the average not the exact Writ itself. So don't whip out your calculator and tell me that x / y isn't zz.zz. It's based on the total average.
+- Option to not use the price per voucher since Writ Worthy shows cost based on the craft cost of the requirement for the Writ.
+- Writs are sorted by voucher count so some writs may not have any sales information when they may have previously.
+
+### Writ Change: 
+
+After a conversation with Octopuss which didn't go well and I apologize for that, I went out looking at Writs on other traders. I mentioned I needed to rewrite the Writ system with 3.3.6 anyway.
+
+Using Bonanza and other things I looked at prices, cost per voucher, and what you have to craft. I noticed that even though you may need Roe or Dreugh Wax to make them, the prices were all over the place. After asking about things it seemed people throw them up and if they sell quickly, price it higher the next time. I still don't like how some Writs will now have no sales data because of the amount of Vouchers but it seems the change is needed.
+
+The other thing I noticed is that Awesome Guild Store has a price per voucher as well. The price uses the same calculation as MM such that it is the average price and voucher count. Writ Worthy has hard coded information for calculating prices for crafting the requirement for the Writ.
+
+## ChangeLog for 3.7.01
+
+NOTE: MM has never had a method to account for joining and leaving guilds. Meaning it never configured the many arrays needed for MM to function. I added some additional code for LibHistoire to help the library if either event occurs.
+
+Thanks to all the GMs that let me join and leave their guilds. I probably bothered them more then they wanted. Guilds that helped were: Feline Great Meowporium, Free Marketers, Spicy Economics, Krafty Retro Designs, and the Conquest of Tamriel.
+
+If you have any issues just make sure sales are linked as mentioned in the documentation listed on the description page and then use the Refresh LibHistoire button from the LibGuildStore settings menu.
+
+- Added methods to account for leaving and joining a guild after you log in with LibHistoire already running. If you join a guild just open their sales tab once. Which at that point everything should be set up and ready to receive sales data from LibHistoire.
+
+## ChangeLog for 3.7.00
+
+- Updated feature to right click dots to add sellers to the Guild & Account filter. The High Isle update seemed to have broken it even if it was intermittent.
+
+## ChangeLog for 3.6.99
+
+- Reverted a portion of the routine for saving sales data faster because ranks were not being presented properly. This will probably have an impact on saving events and it will be slower again.
+
+## ChangeLog for 3.6.98
+
+- Update to routines for saving sales data from LibHistoire. System specifications will impact this to a degree. However, the amount of sales you retain will have the greatest impact. The data should be saved a little quicker.
+
+## ChangeLog for 3.6.97
+
+- Update to contextual menus for the tooltips to address an issue I thought was resolved in 3.6.82 but obviously broke again
+
+## ChangeLog for 3.6.96
+
+- Updated recipe data used to calculate the craft cost for PTS or upcoming High Isle chapter. Should also address a minor lack of craft cost in newer Ascending Tide recipes.
+
+## ChangeLog for 3.6.95
+
+- Update for Bonanza interface for internal BeamMeUp changes
+
+## ChangeLog for 3.6.94
+
+- Pre PTS Version
+
 ## ChangeLog for 3.6.93
 
 - Update Truncate routines to watch for a total count of 0
