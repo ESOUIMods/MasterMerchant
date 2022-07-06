@@ -4,6 +4,7 @@
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
 local internal = _G["LibGuildStore_Internal"]
+local LDT = LibDateTime
 specialDWCount = 0
 
 local mfloor = math.floor
@@ -137,16 +138,13 @@ function MMGuild:new(_name)
 
   -- /script MasterMerchant:dm("Info", { GetGuildKioskCycleTimes() } )
   -- Calc Guild Week Cutoff
-  local _, weekCutoff = GetGuildKioskCycleTimes()
-  local timeStamp = GetTimeStamp()
+  local kioskCycle = GetGuildKioskCycleTimes()
+  local weekCutoff, _ = LDT:GetTraderDay(kioskCycle)
   if weekCutoff == 0 then
     -- guild system is down, do something about it
     weekCutoff = guild_system_offline() -- do not subtract time because of while loop
     o.week_start = weekCutoff -- this is 7 day back already
     o.kiosk_cycle = weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS) -- add 7 days for when week would end
-  else
-    weekCutoff = timeStamp - (timeStamp % ZO_ONE_DAY_IN_SECONDS) + (weekCutoff % ZO_ONE_DAY_IN_SECONDS)
-    weekCutoff = weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
 
   -- Calc Day Cutoff in Local Time
@@ -157,7 +155,7 @@ function MMGuild:new(_name)
   o.twoStart = o.oneStart - ZO_ONE_DAY_IN_SECONDS -- yesterday
 
   -- This Week
-  o.threeStart = weekCutoff - 7 * ZO_ONE_DAY_IN_SECONDS -- GetGuildKioskCycleTimes() minus 7 days
+  o.threeStart = weekCutoff - (7 * ZO_ONE_DAY_IN_SECONDS) -- GetGuildKioskCycleTimes() minus 7 days
   o.threeEnd = weekCutoff -- GetGuildKioskCycleTimes()
   MasterMerchant.a_test = o.threeStart
   MasterMerchant.aa_test = o.threeEnd
