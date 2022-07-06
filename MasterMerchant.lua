@@ -2827,8 +2827,6 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
 end
 
 function MasterMerchant:initBuyingAdvice()
-  --MasterMerchant.a_test_var = TRADING_HOUSE
-  --MasterMerchant.b_test_var = TRADING_HOUSE_GAMEPAD
   --[[Keyboard Mode has a TRADING_HOUSE.searchResultsList
   that is set to
   ZO_TradingHouseBrowseItemsRightPaneSearchResults and
