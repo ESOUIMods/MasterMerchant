@@ -4,7 +4,6 @@
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
 local internal = _G["LibGuildStore_Internal"]
-local LDT = LibDateTime
 specialDWCount = 0
 
 local mfloor = math.floor
@@ -138,8 +137,7 @@ function MMGuild:new(_name)
 
   -- /script MasterMerchant:dm("Info", { GetGuildKioskCycleTimes() } )
   -- Calc Guild Week Cutoff
-  local kioskCycle = GetGuildKioskCycleTimes()
-  local weekCutoff, _ = LDT:GetTraderDay(kioskCycle)
+  local _, weekCutoff = GetGuildKioskCycleTimes()
   if weekCutoff == 0 then
     -- guild system is down, do something about it
     weekCutoff = guild_system_offline() -- do not subtract time because of while loop
