@@ -548,8 +548,7 @@ function internal:ReferenceATTSales(otherData)
       att_sales_data[theIID][itemIndex] = {}
       att_sales_data[theIID][itemIndex].itemIcon = GetItemLinkInfo(theEvent.itemLink)
       att_sales_data[theIID][itemIndex].itemAdderText = internal:AddSearchToItem(theEvent.itemLink)
-      att_sales_data[theIID][itemIndex].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME,
-        GetItemLinkName(theEvent.itemLink))
+      att_sales_data[theIID][itemIndex].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
     end
     if att_sales_data[theIID][itemIndex]['sales'] == nil then att_sales_data[theIID][itemIndex]['sales'] = {} end
     if not idNumbers[saleId] then

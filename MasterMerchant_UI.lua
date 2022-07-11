@@ -1308,7 +1308,7 @@ function MMScrollList:FilterScrollList()
       end
     end
 
-    local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
+    local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
     if searchText == nil or searchText == '' then
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
         -- my guild sales
@@ -2640,7 +2640,7 @@ end
 -- Update Guild Sales window to use the selected date range
 function MasterMerchant:UpdateGuildWindow(rankIndex)
   -- MasterMerchant:dm("Debug", "UpdateGuildWindow")
-  if not rankIndex or rankIndex == 0 then rankIndex = 1 end
+  if not rankIndex or rankIndex == 0 then rankIndex = MM_DATERANGE_TODAY end
   MasterMerchant.systemSavedVariables.rankIndex = rankIndex
   MasterMerchant:RefreshAlteredWindowData(true)
 end
@@ -2648,7 +2648,7 @@ end
 
 -- Update Guild Roster window to use the selected date range
 function MasterMerchant:UpdateRosterWindow(rankIndex)
-  if not rankIndex or rankIndex == 0 then rankIndex = 1 end
+  if not rankIndex or rankIndex == 0 then rankIndex = MM_DATERANGE_TODAY end
   MasterMerchant.systemSavedVariables.rankIndexRoster = rankIndex
   GUILD_ROSTER_MANAGER:RefreshData()
 end
@@ -3164,41 +3164,41 @@ function MasterMerchant:BuildGuiTimeDropdown()
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantGuildTimeChooser)
   timeDropdown:ClearItems()
 
-  local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateGuildWindow(1) end)
+  local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateGuildWindow(MM_DATERANGE_TODAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 1 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_TODAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_YESTERDAY), function() self:UpdateGuildWindow(2) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_YESTERDAY), function() self:UpdateGuildWindow(MM_DATERANGE_YESTERDAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_YESTERDAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_YESTERDAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_YESTERDAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateGuildWindow(3) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateGuildWindow(MM_DATERANGE_THISWEEK) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 3 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_THISWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateGuildWindow(4) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateGuildWindow(MM_DATERANGE_LASTWEEK) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 4 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_LASTWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateGuildWindow(5) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateGuildWindow(MM_DATERANGE_PRIORWEEK) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 5 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_PRIORWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateGuildWindow(8) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateGuildWindow(MM_DATERANGE_7DAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 8 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_7DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateGuildWindow(6) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateGuildWindow(MM_DATERANGE_10DAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 6 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_10DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_30DAY), function() self:UpdateGuildWindow(7) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_30DAY), function() self:UpdateGuildWindow(MM_DATERANGE_30DAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_30DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_30DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_30DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateGuildWindow(9) end)
+  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateGuildWindow(MM_DATERANGE_CUSTOM) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndex == 9 then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
+  if MasterMerchant.systemSavedVariables.rankIndex == MM_DATERANGE_CUSTOM then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
 end
 
 -- Set up the labels and tooltips from translation files and do a couple other UI
@@ -3237,7 +3237,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildWindowMenuFooterSwitchViewButton, RIGHT, 5, 0)
   MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
 
-  MasterMerchant.systemSavedVariables.rankIndex = MasterMerchant.systemSavedVariables.rankIndex or 1
+  MasterMerchant.systemSavedVariables.rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
 
   MasterMerchant:BuildGuiTimeDropdown()
 

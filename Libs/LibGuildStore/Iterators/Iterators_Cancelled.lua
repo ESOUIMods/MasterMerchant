@@ -325,7 +325,7 @@ function internal:IndexCancelledItemData()
       end
     else
       versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
-      versiondata.itemDesc = versiondata.itemDesc or GetItemLinkName(currentItemLink)
+      versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
       versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
 
       local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }

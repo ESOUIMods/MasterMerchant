@@ -107,6 +107,32 @@ MMGuild = {
   initDateTime = GetTimeStamp(),
 }
 
+local function BuildDateRangeTable(dateRanges)
+  MasterMerchant.dateRanges = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_TODAY] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_TODAY].startTimestamp = dateRanges.oneStart
+  MasterMerchant.dateRanges[MM_DATERANGE_YESTERDAY] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_YESTERDAY].startTimestamp = dateRanges.twoStart
+  MasterMerchant.dateRanges[MM_DATERANGE_THISWEEK] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_THISWEEK].startTimestamp = dateRanges.threeStart
+  MasterMerchant.dateRanges[MM_DATERANGE_THISWEEK].endTimestamp = dateRanges.threeEnd
+  MasterMerchant.dateRanges[MM_DATERANGE_LASTWEEK] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_LASTWEEK].startTimestamp = dateRanges.fourStart
+  MasterMerchant.dateRanges[MM_DATERANGE_LASTWEEK].endTimestamp = dateRanges.fourEnd
+  MasterMerchant.dateRanges[MM_DATERANGE_PRIORWEEK] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_PRIORWEEK].startTimestamp = dateRanges.fiveStart
+  MasterMerchant.dateRanges[MM_DATERANGE_PRIORWEEK].endTimestamp = dateRanges.fiveEnd
+  MasterMerchant.dateRanges[MM_DATERANGE_7DAY] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_7DAY].startTimestamp = dateRanges.sixStart
+  MasterMerchant.dateRanges[MM_DATERANGE_10DAY] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_10DAY].startTimestamp = dateRanges.sevenStart
+  MasterMerchant.dateRanges[MM_DATERANGE_30DAY] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_30DAY].startTimestamp = dateRanges.eightStart
+  MasterMerchant.dateRanges[MM_DATERANGE_CUSTOM] = { }
+  MasterMerchant.dateRanges[MM_DATERANGE_CUSTOM].startTimestamp = dateRanges.nineStart
+  MasterMerchant.dateRanges[MM_DATERANGE_CUSTOM].endTimestamp = dateRanges.nineEnd
+end
+
 function MMGuild:new(_name)
   local function guild_system_offline()
     local weekCutoff = 1595962800 -- Tuesday, 28-Jul-20 19:00:00 UTC
@@ -155,43 +181,45 @@ function MMGuild:new(_name)
   -- This Week
   o.threeStart = weekCutoff - (7 * ZO_ONE_DAY_IN_SECONDS) -- GetGuildKioskCycleTimes() minus 7 days
   o.threeEnd = weekCutoff -- GetGuildKioskCycleTimes()
-  MasterMerchant.a_test = o.threeStart
-  MasterMerchant.aa_test = o.threeEnd
 
   -- Last Week
-  o.fourStart = o.threeStart - 7 * ZO_ONE_DAY_IN_SECONDS -- last week Tuesday flip
+  o.fourStart = o.threeStart - (7 * ZO_ONE_DAY_IN_SECONDS) -- last week Tuesday flip
   o.fourEnd = o.threeStart -- last week end
 
   -- Previous Week
-  o.fiveStart = o.fourStart - 7 * ZO_ONE_DAY_IN_SECONDS
+  o.fiveStart = o.fourStart - (7 * ZO_ONE_DAY_IN_SECONDS)
   o.fiveEnd = o.fourStart -- prior week end
 
-  o.sixStart = dayCutoff - 10 * ZO_ONE_DAY_IN_SECONDS -- last 10 days
-  o.sevenStart = dayCutoff - 30 * ZO_ONE_DAY_IN_SECONDS -- last 30 days
-  o.eightStart = dayCutoff - 7 * ZO_ONE_DAY_IN_SECONDS -- last 7 days
+  o.sixStart = dayCutoff - (7 * ZO_ONE_DAY_IN_SECONDS) -- last 7 days
+  o.sevenStart = dayCutoff - (10 * ZO_ONE_DAY_IN_SECONDS) -- last 10 days
+  o.eightStart = dayCutoff - (30 * ZO_ONE_DAY_IN_SECONDS) -- last 30 days
 
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_HOURS) then
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_HOUR_IN_SECONDS -- last x hours
-    o.nineEnd = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
+    o.nineStart = GetTimeStamp() - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_HOUR_IN_SECONDS) -- last x hours
+    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_DAYS) then
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS -- last x days
-    o.nineEnd = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
+    o.nineStart = GetTimeStamp() - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) -- last x days
+    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_WEEKS) then
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS * 7 -- last x weeks
-    o.nineEnd = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
+    o.nineStart = GetTimeStamp() - ((MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) * 7) -- last x weeks
+    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) then
-    o.nineStart = weekCutoff - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS * 7 -- last x full guild weeks
+    o.nineStart = weekCutoff - ((MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) * 7) -- last x full guild weeks
     o.nineEnd = weekCutoff
   end
   if o.nineStart == nil then
     -- Default custom timeframe to Last 3 days if it's undefined
     MasterMerchant.systemSavedVariables.customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS)
     MasterMerchant.systemSavedVariables.customTimeframe = 3
-    o.nineStart = GetTimeStamp() - MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS -- last x days
-    o.nineEnd = GetTimeStamp() + 7 * ZO_ONE_DAY_IN_SECONDS
+    o.nineStart = GetTimeStamp() - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) -- last x days
+    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
+  end
+
+  if MasterMerchant.dateRanges == nil then
+    BuildDateRangeTable(o)
   end
 
   return o
@@ -257,54 +285,54 @@ function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, s
   if type(timestamp) ~= 'number' then return end
 
   if (timestamp >= self.oneStart) then
-    self:MarkDirty(1)
-    self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_TODAY)
+    self:addSale(sellerName, MM_DATERANGE_TODAY, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.twoStart and timestamp < self.oneStart) then
-    self:MarkDirty(2)
-    self:addSale(sellerName, 2, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_YESTERDAY)
+    self:addSale(sellerName, MM_DATERANGE_YESTERDAY, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.threeStart and timestamp < self.threeEnd) then
-    self:MarkDirty(3)
-    self:addSale(sellerName, 3, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_THISWEEK)
+    self:addSale(sellerName, MM_DATERANGE_THISWEEK, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.fourStart and timestamp < self.fourEnd) then
-    self:MarkDirty(4)
-    self:addSale(sellerName, 4, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_LASTWEEK)
+    self:addSale(sellerName, MM_DATERANGE_LASTWEEK, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then
-    self:MarkDirty(5)
-    self:addSale(sellerName, 5, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_PRIORWEEK)
+    self:addSale(sellerName, MM_DATERANGE_PRIORWEEK, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.sixStart) then
-    self:MarkDirty(6)
-    self:addSale(sellerName, 6, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_7DAY)
+    self:addSale(sellerName, MM_DATERANGE_7DAY, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.sevenStart) then
-    self:MarkDirty(7)
-    self:addSale(sellerName, 7, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_10DAY)
+    self:addSale(sellerName, MM_DATERANGE_10DAY, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.eightStart) then
-    self:MarkDirty(8)
-    self:addSale(sellerName, 8, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_30DAY)
+    self:addSale(sellerName, MM_DATERANGE_30DAY, amount, stack, wasKiosk, sort, searchText)
   end
   if (timestamp >= self.nineStart and timestamp < self.nineEnd) then
-    self:MarkDirty(9)
-    self:addSale(sellerName, 9, amount, stack, wasKiosk, sort, searchText)
+    self:MarkDirty(MM_DATERANGE_CUSTOM)
+    self:addSale(sellerName, MM_DATERANGE_CUSTOM, amount, stack, wasKiosk, sort, searchText)
   end
 end
 
 function MMGuild:removeSaleByDate(sellerName, timestamp, amount, stack)
   if sellerName == nil then return end
-  if (timestamp >= self.oneStart) then self:removeSale(sellerName, 1, amount) end
-  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:removeSale(sellerName, 2, amount, stack) end
-  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:removeSale(sellerName, 3, amount, stack) end
-  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:removeSale(sellerName, 4, amount, stack) end
-  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:removeSale(sellerName, 5, amount, stack) end
-  if (timestamp >= self.sixStart) then self:removeSale(sellerName, 6, amount, stack) end
-  if (timestamp >= self.sevenStart) then self:removeSale(sellerName, 7, amount, stack) end
-  if (timestamp >= self.eightStart) then self:removeSale(sellerName, 8, amount, stack) end
-  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:removeSale(sellerName, 9, amount, stack) end
+  if (timestamp >= self.oneStart) then self:removeSale(sellerName, MM_DATERANGE_TODAY, amount) end
+  if (timestamp >= self.twoStart and timestamp < self.oneStart) then self:removeSale(sellerName, MM_DATERANGE_YESTERDAY, amount, stack) end
+  if (timestamp >= self.threeStart and timestamp < self.threeEnd) then self:removeSale(sellerName, MM_DATERANGE_THISWEEK, amount, stack) end
+  if (timestamp >= self.fourStart and timestamp < self.fourEnd) then self:removeSale(sellerName, MM_DATERANGE_LASTWEEK, amount, stack) end
+  if (timestamp >= self.fiveStart and timestamp < self.fiveEnd) then self:removeSale(sellerName, MM_DATERANGE_PRIORWEEK, amount, stack) end
+  if (timestamp >= self.sixStart) then self:removeSale(sellerName, MM_DATERANGE_7DAY, amount, stack) end
+  if (timestamp >= self.sevenStart) then self:removeSale(sellerName, MM_DATERANGE_10DAY, amount, stack) end
+  if (timestamp >= self.eightStart) then self:removeSale(sellerName, MM_DATERANGE_30DAY, amount, stack) end
+  if (timestamp >= self.nineStart and timestamp < self.nineEnd) then self:removeSale(sellerName, MM_DATERANGE_CUSTOM, amount, stack) end
 end
 
 function MMGuild:SortByRankIndex(rankIndex)

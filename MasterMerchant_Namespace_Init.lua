@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.05'
+MasterMerchant.version = '3.7.06'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -155,6 +155,17 @@ MasterMerchant.aaa_test = {}
 MasterMerchant.aaaa_test = {}
 MasterMerchant.aaaaa_test = {}
 MasterMerchant.aaaaaa_test = {}
+
+MasterMerchant.dateRanges = nil
+MM_DATERANGE_TODAY = 1
+MM_DATERANGE_YESTERDAY = 2
+MM_DATERANGE_THISWEEK = 3
+MM_DATERANGE_LASTWEEK = 4
+MM_DATERANGE_PRIORWEEK = 5
+MM_DATERANGE_7DAY = 6
+MM_DATERANGE_10DAY = 7
+MM_DATERANGE_30DAY = 8
+MM_DATERANGE_CUSTOM = 9
 
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2

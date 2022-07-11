@@ -2563,7 +2563,20 @@ function MasterMerchant:ExportSalesData()
   export[guildName] = {}
   local list = export[guildName]
 
-  local epochBack = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 10)
+  local epochStart = MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].startTimestamp
+  local epochEnd = nil
+  if MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].endTimestamp then
+    epochEnd = MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].endTimestamp
+  end
+  local function ValidDaterange(timestamp)
+    if epochEnd then
+      if timestamp >= epochStart and timestamp < epochEnd then return true end
+    else
+      if timestamp >= epochStart then return true end
+    end
+    return false
+  end
+
   for _, v in pairs(sales_data) do
     for _, dataList in pairs(v) do
       if dataList['sales'] then
@@ -2572,11 +2585,7 @@ function MasterMerchant:ExportSalesData()
           local currentGuild = internal:GetGuildNameByIndex(sale['guild'])
           local currentBuyer = internal:GetAccountNameByIndex(sale['buyer'])
           local currentSeller = internal:GetAccountNameByIndex(sale['seller'])
-          if sale.timestamp >= epochBack and (guildName == 'ALL' or guildName == currentGuild) then
-            local itemDesc = dataList['itemDesc']
-            itemDesc = itemDesc:gsub("%^.*$", "", 1)
-            itemDesc = string.gsub(" " .. itemDesc, "%s%l", string.upper):sub(2)
-
+          if ValidDaterange(sale.timestamp) and (guildName == 'ALL' or guildName == currentGuild) then
             table.insert(list,
               currentSeller .. "&" ..
                 currentBuyer .. "&" ..
@@ -2586,10 +2595,9 @@ function MasterMerchant:ExportSalesData()
                 tostring(sale.wasKiosk) .. "&" ..
                 sale.price .. "&" ..
                 currentGuild .. "&" ..
-                itemDesc .. "&" ..
+                dataList['itemDesc'] .. "&" ..
                 dataList['itemAdderText']
             )
-
           end
         end
       end
@@ -2913,45 +2921,43 @@ function MasterMerchant:BuildRosterTimeDropdown()
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantRosterTimeChooser)
   timeDropdown:ClearItems()
 
-  MasterMerchant.systemSavedVariables.rankIndexRoster = MasterMerchant.systemSavedVariables.rankIndexRoster or 1
+  MasterMerchant.systemSavedVariables.rankIndexRoster = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
 
-  local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY),
-    function() self:UpdateRosterWindow(1) end)
+  local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateRosterWindow(MM_DATERANGE_TODAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 1 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_TODAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_YESTERDAY), function() self:UpdateRosterWindow(2) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_YESTERDAY), function() self:UpdateRosterWindow(MM_DATERANGE_YESTERDAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 2 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_YESTERDAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_YESTERDAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_YESTERDAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateRosterWindow(3) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateRosterWindow(MM_DATERANGE_THISWEEK) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 3 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_THISWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateRosterWindow(4) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateRosterWindow(MM_DATERANGE_LASTWEEK) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 4 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_LASTWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateRosterWindow(5) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateRosterWindow(MM_DATERANGE_PRIORWEEK) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 5 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_PRIORWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateRosterWindow(8) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateRosterWindow(MM_DATERANGE_7DAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 8 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_7DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateRosterWindow(6) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateRosterWindow(MM_DATERANGE_10DAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 6 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_10DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_30DAY), function() self:UpdateRosterWindow(7) end)
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_30DAY), function() self:UpdateRosterWindow(MM_DATERANGE_30DAY) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 7 then timeDropdown:SetSelectedItem(GetString(MM_INDEX_30DAY)) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_30DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_30DAY)) end
 
-  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText,
-    function() self:UpdateRosterWindow(9) end)
+  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateRosterWindow(MM_DATERANGE_CUSTOM) end)
   timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == 9 then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
+  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_CUSTOM then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
 end
 
 --/script ZO_SharedRightBackground:SetWidth(1088)
@@ -2983,7 +2989,7 @@ function MasterMerchant:InitRosterChanges()
           internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
           internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
 
-          amountSold = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
+          amountSold = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
 
         end
 
@@ -3017,7 +3023,7 @@ function MasterMerchant:InitRosterChanges()
           internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
           internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
 
-          amountBought = internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
+          amountBought = internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
 
         end
 
@@ -3052,7 +3058,7 @@ function MasterMerchant:InitRosterChanges()
           internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
           internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
 
-          amountSold = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
+          amountSold = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
         end
 
         return math.floor(amountSold * 0.035)
@@ -3085,7 +3091,7 @@ function MasterMerchant:InitRosterChanges()
           internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
           internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
 
-          saleCount = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].count[MasterMerchant.systemSavedVariables.rankIndexRoster or 1] or 0
+          saleCount = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].count[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
 
         end
 
@@ -3250,8 +3256,8 @@ function MasterMerchant:FirstInitialize()
     showCalc = true,
     priceCalcAll = true,
     minProfitFilter = true,
-    rankIndex = 1,
-    rankIndexRoster = 1,
+    rankIndex = MM_DATERANGE_TODAY,
+    rankIndexRoster = MM_DATERANGE_TODAY,
     viewBuyerSeller = 'buyer',
     viewGuildBuyerSeller = 'seller',
     trimOutliers = false,

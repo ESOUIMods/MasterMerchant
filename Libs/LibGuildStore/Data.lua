@@ -374,8 +374,8 @@ end
 -- /script LibGuildStore_Internal:SetupGuildHistoryListener(guildId)
 function internal:SetupGuildHistoryListener(guildId)
   --internal:dm("Debug", "SetupGuildHistoryListener: " .. guildId)
- if internal.LibHistoireListener == nil then internal.LibHistoireListener = { } end
- if internal.LibHistoireListener[guildId] == nil then internal.LibHistoireListener[guildId] = { } end
+  if internal.LibHistoireListener == nil then internal.LibHistoireListener = { } end
+  if internal.LibHistoireListener[guildId] == nil then internal.LibHistoireListener[guildId] = { } end
 
   internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
   if internal.LibHistoireListener[guildId] == nil then
