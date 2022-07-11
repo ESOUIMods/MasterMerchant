@@ -5,12 +5,42 @@
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
 
+function MasterMerchant.CustomDealCalc(setPrice, salesCount, purchasePrice, stackCount)
+  local deal = -1
+  local margin = 0
+  local profit = -1
+  if (setPrice) then
+    local unitPrice = purchasePrice / stackCount
+    profit = (setPrice - unitPrice) * stackCount
+    margin = tonumber(string.format('%.2f', ((setPrice - unitPrice) / setPrice) * 100))
+
+    if (margin >= 100) then
+      deal = 5
+    elseif (margin >= MasterMerchant.systemSavedVariables.customDealSeventyFive) then
+      deal = 4
+    elseif (margin >= MasterMerchant.systemSavedVariables.customDealFifty) then
+      deal = 3
+    elseif (margin >= MasterMerchant.systemSavedVariables.customDealTwentyFive) then
+      deal = 2
+    elseif (margin >= MasterMerchant.systemSavedVariables.customDealZero) then
+      deal = 1
+    else
+      deal = 0
+    end
+  else
+    -- No sales seen
+    deal = -2
+    margin = nil
+  end
+  return deal, margin, profit
+end
+
 --[[TODO Update DealCalculator this so it doesn't return -1 for things and makes more
 sense when you view it in the guild store
 ]]--
 function MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stackCount)
-  if MasterMerchant.CustomDealCalc[GetDisplayName()] then
-    return MasterMerchant.CustomDealCalc[GetDisplayName()](setPrice, salesCount, purchasePrice, stackCount)
+  if MasterMerchant.systemSavedVariables.customDealCalc then
+    return MasterMerchant.CustomDealCalc(setPrice, salesCount, purchasePrice, stackCount)
   end
 
   local deal = -1

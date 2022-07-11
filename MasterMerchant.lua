@@ -1555,38 +1555,6 @@ end
 
 -- End Copyright (c) 2014 Matthew Miller (Mattmillus)
 
-MasterMerchant.CustomDealCalc = {
-  ['@Causa'] = function(setPrice, salesCount, purchasePrice, stackCount)
-    local deal = -1
-    local margin = 0
-    local profit = -1
-    if (setPrice) then
-      local unitPrice = purchasePrice / stackCount
-      profit = (setPrice - unitPrice) * stackCount
-      margin = tonumber(string.format('%.2f', (((setPrice * .92) - unitPrice) / unitPrice) * 100))
-
-      if (margin >= 100) then
-        deal = 5
-      elseif (margin >= 75) then
-        deal = 4
-      elseif (margin >= 50) then
-        deal = 3
-      elseif (margin >= 25) then
-        deal = 2
-      elseif (margin >= 0) then
-        deal = 1
-      else
-        deal = 0
-      end
-    else
-      -- No sales seen
-      deal = -2
-      margin = nil
-    end
-    return deal, margin, profit
-  end
-}
-
 function MasterMerchant:OnTradingHouseListingClicked(itemLink, sellerName)
   -- actually could be seller or guild name
   local lengthBlacklist = string.len(MasterMerchant.systemSavedVariables.blacklist)
@@ -1601,8 +1569,6 @@ function MasterMerchant:OnTradingHouseListingClicked(itemLink, sellerName)
     end
   end
 end
-
-MasterMerchant.CustomDealCalc['@freakyfreak'] = MasterMerchant.CustomDealCalc['@Causa']
 
 function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
   local st = ZO_InventorySlot_GetType(inventorySlot)
@@ -2112,7 +2078,77 @@ function MasterMerchant:LibAddonInit()
       },
     },
   }
-  -- 8 guild roster menu
+  -- 8 Custom Deal Calc
+  optionsData[#optionsData + 1] = {
+    type = 'submenu',
+    name = GetString(MM_DEALCALC_OPTIONS_NAME),
+    tooltip = GetString(MM_DEALCALC_OPTIONS_TIP),
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#CustomDealCalculator",
+    controls = {
+      -- Enable DealCalc
+      [1] = {
+        type = 'checkbox',
+        name = GetString(MM_DEALCALC_ENABLE_NAME),
+        tooltip = GetString(MM_DEALCALC_ENABLE_TIP),
+        getFunc = function() return MasterMerchant.systemSavedVariables.customDealCalc end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.customDealCalc = value end,
+        default = MasterMerchant.systemDefault.customDealCalc,
+      },
+      -- customDealSeventyFive
+      [2] = {
+        type = 'slider',
+        name = GetString(MM_DEALCALC_SEVENTYFIVE_NAME),
+        tooltip = GetString(MM_DEALCALC_SEVENTYFIVE_TIP),
+        min = 0,
+        max = 100,
+        getFunc = function() return MasterMerchant.systemSavedVariables.customDealSeventyFive end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.customDealSeventyFive = value end,
+        default = MasterMerchant.systemDefault.customDealSeventyFive,
+        disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
+      },
+      -- customDealFifty
+      [3] = {
+        type = 'slider',
+        name = GetString(MM_DEALCALC_FIFTY_NAME),
+        tooltip = GetString(MM_DEALCALC_FIFTY_TIP),
+        min = 0,
+        max = 100,
+        getFunc = function() return MasterMerchant.systemSavedVariables.customDealFifty end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.customDealFifty = value end,
+        default = MasterMerchant.systemDefault.customDealFifty,
+        disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
+      },
+      -- customDealTwentyFive
+      [4] = {
+        type = 'slider',
+        name = GetString(MM_DEALCALC_TWENTYFIVE_NAME),
+        tooltip = GetString(MM_DEALCALC_TWENTYFIVE_TIP),
+        min = 0,
+        max = 100,
+        getFunc = function() return MasterMerchant.systemSavedVariables.customDealTwentyFive end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.customDealTwentyFive = value end,
+        default = MasterMerchant.systemDefault.customDealTwentyFive,
+        disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
+      },
+      -- customDealZero
+      [5] = {
+        type = 'slider',
+        name = GetString(MM_DEALCALC_ZERO_NAME),
+        tooltip = GetString(MM_DEALCALC_ZERO_TIP),
+        min = 0,
+        max = 100,
+        getFunc = function() return MasterMerchant.systemSavedVariables.customDealZero end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.customDealZero = value end,
+        default = MasterMerchant.systemDefault.customDealZero,
+        disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
+      },
+      [6] = {
+        type = "description",
+        text = GetString(MM_DEALCALC_OKAY_TEXT),
+      },
+    },
+  }
+  -- 9 guild roster menu
   optionsData[#optionsData + 1] = {
     type = 'submenu',
     name = GetString(MM_GUILD_ROSTER_OPTIONS_NAME),
@@ -2194,7 +2230,7 @@ function MasterMerchant:LibAddonInit()
       },
     },
   }
-  -- 9 Other Tooltips -----------------------------------
+  -- 10 Other Tooltips -----------------------------------
   optionsData[#optionsData + 1] = {
     type = "header",
     name = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
@@ -2311,7 +2347,7 @@ function MasterMerchant:LibAddonInit()
     type = "header",
     name = GetString(MASTER_MERCHANT_PRICETOCHAT_OPTIONS),
     width = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#InventoryOptions",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#PriceToChatOptions",
   }
   -- Whether or not to show the bonanza price if less then 6 listings
   optionsData[#optionsData + 1] = {
@@ -3309,6 +3345,11 @@ function MasterMerchant:FirstInitialize()
     dealCalcToUse = MasterMerchant.USE_MM_AVERAGE,
     useFormatedTime = false,
     addVoucherCost = false,
+    customDealCalc = false,
+    customDealSeventyFive = 75,
+    customDealFifty = 50,
+    customDealTwentyFive = 25,
+    customDealZero = 0,
   }
 
   -- Finished setting up defaults, assign to global

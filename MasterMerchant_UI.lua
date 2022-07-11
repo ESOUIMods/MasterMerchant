@@ -3598,6 +3598,7 @@ end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_MemberAdded", EVENT_GUILD_MEMBER_ADDED, OnGuildMemberAdded)
 
 local function OnGuildMemberRemoved(eventCode, guildId, displayName, characterName)
+  if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
   internal.guildMemberInfo[guildId][string.lower(displayName)] = nil
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_MemberRemoved", EVENT_GUILD_MEMBER_REMOVED, OnGuildMemberRemoved)

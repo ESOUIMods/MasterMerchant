@@ -17,38 +17,38 @@ function MasterMerchant.InitDealFilterClass()
   function DealFilter:Initialize()
     ValueRangeFilterBase.Initialize(self, FILTER_ID.MASTER_MERCHANT_DEAL_FILTER, FilterBase.GROUP_SERVER, {
       -- TRANSLATORS: label of the deal filter
-      label = "Deal Range",
+      label = GetString(AGS_DEAL_RANGE_LABEL),
       min = 1,
       max = 6,
       steps = {
         {
           id = 1,
-          label = "Overpriced",
+          label = GetString(AGS_OVERPRICED_LABEL),
           icon = "MasterMerchant/AGS_Integration/overpriced_%s.dds",
         },
         {
           id = 2,
-          label = "Ok",
+          label = GetString(AGS_OKAY_LABEL),
           icon = "AwesomeGuildStore/images/qualitybuttons/normal_%s.dds",
         },
         {
           id = 3,
-          label = "Reasonable",
+          label = GetString(AGS_REASONABLE_LABEL),
           icon = "AwesomeGuildStore/images/qualitybuttons/magic_%s.dds",
         },
         {
           id = 4,
-          label = "Good",
+          label = GetString(AGS_GOOD_LABEL),
           icon = "AwesomeGuildStore/images/qualitybuttons/arcane_%s.dds",
         },
         {
           id = 5,
-          label = "Great",
+          label = GetString(AGS_GREAT_LABEL),
           icon = "AwesomeGuildStore/images/qualitybuttons/artifact_%s.dds",
         },
         {
           id = 6,
-          label = "Buy it!",
+          label = GetString(AGS_BUYIT_LABEL),
           icon = "AwesomeGuildStore/images/qualitybuttons/legendary_%s.dds",
         }
       }
@@ -110,7 +110,7 @@ function MasterMerchant.InitProfitFilterClass()
   function ProfitFilter:Initialize()
     ValueRangeFilterBase.Initialize(self, FILTER_ID.MASTER_MERCHANT_DEAL_SELECTOR, FilterBase.GROUP_SERVER, {
       -- TRANSLATORS: label of the profit filter
-      label = "Profit Range",
+      label = GetString(AGS_PROFIT_RANGE_LABEL),
       currency = CURT_MONEY,
       min = MIN_PROFIT,
       max = MAX_PROFIT,

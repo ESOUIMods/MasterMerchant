@@ -351,20 +351,20 @@ function MMGuild:SortByRankIndex(rankIndex)
 end
 
 function MMGuild:SortAllRanks()
-  self:SortByRankIndex(1)
-  self:SortByRankIndex(2)
-  self:SortByRankIndex(3)
-  self:SortByRankIndex(4)
-  self:SortByRankIndex(5)
-  self:SortByRankIndex(6)
-  self:SortByRankIndex(7)
-  self:SortByRankIndex(8)
-  self:SortByRankIndex(9)
+  self:SortByRankIndex(MM_DATERANGE_TODAY)
+  self:SortByRankIndex(MM_DATERANGE_YESTERDAY)
+  self:SortByRankIndex(MM_DATERANGE_THISWEEK)
+  self:SortByRankIndex(MM_DATERANGE_LASTWEEK)
+  self:SortByRankIndex(MM_DATERANGE_PRIORWEEK)
+  self:SortByRankIndex(MM_DATERANGE_7DAY)
+  self:SortByRankIndex(MM_DATERANGE_10DAY)
+  self:SortByRankIndex(MM_DATERANGE_30DAY)
+  self:SortByRankIndex(MM_DATERANGE_CUSTOM)
 end
 
 function MMGuild:addPurchaseByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)
   if sellerName == nil then return end
   if timestamp == nil then return end
   if type(timestamp) ~= 'number' then return end
-  self:addSale(sellerName, 1, amount, stack, wasKiosk, sort, searchText)
+  self:addSale(sellerName, MM_DATERANGE_TODAY, amount, stack, wasKiosk, sort, searchText)
 end
