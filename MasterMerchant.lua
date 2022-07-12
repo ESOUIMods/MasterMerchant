@@ -829,7 +829,7 @@ function MasterMerchant:TTCPriceTip(itemLink)
   local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
   if priceStats then
     local suggestedPriceValue = priceStats.SuggestedPrice
-    if MasterMerchant.systemSavedVariables.modifiedSuggestedPrice then
+    if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
       suggestedPriceValue = priceStats.SuggestedPrice * 1.25
     end
     local suggestedPriceString = self.LocalizedNumber(suggestedPriceValue)
@@ -1776,7 +1776,13 @@ MasterMerchant.priceToChatValues = {
 
 local function CheckDealCalcValue()
   if MasterMerchant.systemSavedVariables.dealCalcToUse ~= MasterMerchant.USE_TTC_SUGGESTED then
-    MasterMerchant.systemSavedVariables.modifiedSuggestedPrice = false
+    MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc = false
+  end
+end
+
+local function CheckInventoryValue()
+  if MasterMerchant.systemSavedVariables.dealCalcToUse ~= MasterMerchant.USE_TTC_SUGGESTED then
+    MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = false
   end
 end
 
@@ -2187,9 +2193,9 @@ function MasterMerchant:LibAddonInit()
         type = 'checkbox',
         name = GetString(MM_DEALCALC_MODIFIEDTTC_NAME),
         tooltip = GetString(MM_DEALCALC_MODIFIEDTTC_TIP),
-        getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPrice end,
-        setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPrice = value end,
-        default = MasterMerchant.systemDefault.modifiedSuggestedPrice,
+        getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc = value end,
+        default = MasterMerchant.systemDefault.modifiedSuggestedPriceDealCalc,
         disabled = function() return not (MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED) end,
       },
     },
@@ -2440,10 +2446,22 @@ function MasterMerchant:LibAddonInit()
     choices = MasterMerchant.dealCalcChoices,
     choicesValues = MasterMerchant.dealCalcValues,
     getFunc = function() return MasterMerchant.systemSavedVariables.replacementTypeToUse end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.replacementTypeToUse = value end,
+    setFunc = function(value)
+      MasterMerchant.systemSavedVariables.replacementTypeToUse = value
+      CheckInventoryValue()
+    end,
     default = MasterMerchant.systemDefault.replacementTypeToUse,
     disabled = function() return not MasterMerchant.systemSavedVariables.replaceInventoryValues end,
     warning = GetString(MM_RESET_LISTINGS_WARN),
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_DEALCALC_MODIFIEDTTC_NAME),
+    tooltip = GetString(MM_DEALCALC_MODIFIEDTTC_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = value end,
+    default = MasterMerchant.systemDefault.modifiedSuggestedPriceInventory,
+    disabled = function() return not (MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED) end,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -3378,7 +3396,8 @@ function MasterMerchant:FirstInitialize()
     maxItemCount = 5000,
     disableAttWarn = false,
     dealCalcToUse = MasterMerchant.USE_MM_AVERAGE,
-    modifiedSuggestedPrice = false,
+    modifiedSuggestedPriceDealCalc = false,
+    modifiedSuggestedPriceInventory = false,
     useFormatedTime = false,
     addVoucherCost = false,
     customDealCalc = false,
@@ -3798,7 +3817,7 @@ function MasterMerchant:SwitchUnitPrice(control, slot)
         local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
         if priceStats and priceStats.SuggestedPrice > 0 then
           averagePrice = priceStats.SuggestedPrice
-          if MasterMerchant.systemSavedVariables.modifiedSuggestedPrice then
+          if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory then
             averagePrice = priceStats.SuggestedPrice * 1.25
           end
         end
@@ -3916,7 +3935,7 @@ MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount
       local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
       if priceStats and priceStats.SuggestedPrice > 0 then
         setPrice = priceStats.SuggestedPrice
-        if MasterMerchant.systemSavedVariables.modifiedSuggestedPrice then
+        if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
           setPrice = priceStats.SuggestedPrice * 1.25
         end
         salesCount = priceStats.EntryCount

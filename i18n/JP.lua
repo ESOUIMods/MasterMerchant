@@ -467,8 +467,8 @@ ZO_CreateStringId("AGS_GREAT_LABEL", "Great")
 ZO_CreateStringId("AGS_BUYIT_LABEL", "Buy it!")
 
 -- Custom Deal Calc
-ZO_CreateStringId("MM_DEALCALC_OPTIONS_NAME", "Custom Deal Calculator")
-ZO_CreateStringId("MM_DEALCALC_OPTIONS_TIP", "Options for Custom Deal Calculator.")
+ZO_CreateStringId("MM_DEALCALC_OPTIONS_NAME", "Deal Calculator Options")
+ZO_CreateStringId("MM_DEALCALC_OPTIONS_TIP", "Configure options for the Deal Calculator.")
 ZO_CreateStringId("MM_DEALCALC_ENABLE_NAME", "Enable Custom Deal Calculator")
 ZO_CreateStringId("MM_DEALCALC_ENABLE_TIP", "Enable Custom Deal Calculator.")
 ZO_CreateStringId("MM_DEALCALC_BUYIT_NAME", "|cEECA2ABuy it! Deal Range|r")
