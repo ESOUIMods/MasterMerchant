@@ -828,7 +828,11 @@ function MasterMerchant:TTCPriceTip(itemLink)
   local formatedTTCString = nil
   local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
   if priceStats then
-    local suggestedPriceString = self.LocalizedNumber(priceStats.SuggestedPrice)
+    local suggestedPriceValue = priceStats.SuggestedPrice
+    if MasterMerchant.systemSavedVariables.modifiedSuggestedPrice then
+      suggestedPriceValue = priceStats.SuggestedPrice * 1.25
+    end
+    local suggestedPriceString = self.LocalizedNumber(suggestedPriceValue)
     local avgPriceString = self.LocalizedNumber(priceStats.Avg)
     suggestedPriceString = suggestedPriceString .. MasterMerchant.coinIcon
     avgPriceString = avgPriceString .. MasterMerchant.coinIcon
@@ -1769,6 +1773,13 @@ MasterMerchant.priceToChatValues = {
   MasterMerchant.USE_CONDENSED_FORMAT,
   MasterMerchant.USE_MM_TTC_FORMAT,
 }
+
+local function CheckDealCalcValue()
+  if MasterMerchant.systemSavedVariables.dealCalcToUse ~= MasterMerchant.USE_TTC_SUGGESTED then
+    MasterMerchant.systemSavedVariables.modifiedSuggestedPrice = false
+  end
+end
+
 -- LibAddon init code
 function MasterMerchant:LibAddonInit()
   -- configure font choices
@@ -2094,8 +2105,20 @@ function MasterMerchant:LibAddonInit()
         setFunc = function(value) MasterMerchant.systemSavedVariables.customDealCalc = value end,
         default = MasterMerchant.systemDefault.customDealCalc,
       },
-      -- customDealSeventyFive
+      -- custom customDealBuyIt
       [2] = {
+        type = 'slider',
+        name = GetString(MM_DEALCALC_BUYIT_NAME),
+        tooltip = GetString(MM_DEALCALC_BUYIT_TIP),
+        min = 0,
+        max = 100,
+        getFunc = function() return MasterMerchant.systemSavedVariables.customDealBuyIt end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.customDealBuyIt = value end,
+        default = MasterMerchant.systemDefault.customDealBuyIt,
+        disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
+      },
+      -- customDealSeventyFive
+      [3] = {
         type = 'slider',
         name = GetString(MM_DEALCALC_SEVENTYFIVE_NAME),
         tooltip = GetString(MM_DEALCALC_SEVENTYFIVE_TIP),
@@ -2107,7 +2130,7 @@ function MasterMerchant:LibAddonInit()
         disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
       },
       -- customDealFifty
-      [3] = {
+      [4] = {
         type = 'slider',
         name = GetString(MM_DEALCALC_FIFTY_NAME),
         tooltip = GetString(MM_DEALCALC_FIFTY_TIP),
@@ -2119,7 +2142,7 @@ function MasterMerchant:LibAddonInit()
         disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
       },
       -- customDealTwentyFive
-      [4] = {
+      [5] = {
         type = 'slider',
         name = GetString(MM_DEALCALC_TWENTYFIVE_NAME),
         tooltip = GetString(MM_DEALCALC_TWENTYFIVE_TIP),
@@ -2131,7 +2154,7 @@ function MasterMerchant:LibAddonInit()
         disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
       },
       -- customDealZero
-      [5] = {
+      [6] = {
         type = 'slider',
         name = GetString(MM_DEALCALC_ZERO_NAME),
         tooltip = GetString(MM_DEALCALC_ZERO_TIP),
@@ -2142,9 +2165,32 @@ function MasterMerchant:LibAddonInit()
         default = MasterMerchant.systemDefault.customDealZero,
         disabled = function() return not MasterMerchant.systemSavedVariables.customDealCalc end,
       },
-      [6] = {
+      [7] = {
         type = "description",
         text = GetString(MM_DEALCALC_OKAY_TEXT),
+      },
+      -- Deal Filter Price
+      [8] = {
+        type = 'dropdown',
+        name = GetString(SK_DEAL_CALC_TYPE_NAME),
+        tooltip = GetString(SK_DEAL_CALC_TYPE_TIP),
+        choices = MasterMerchant.dealCalcChoices,
+        choicesValues = MasterMerchant.dealCalcValues,
+        getFunc = function() return MasterMerchant.systemSavedVariables.dealCalcToUse end,
+        setFunc = function(value)
+          MasterMerchant.systemSavedVariables.dealCalcToUse = value
+          CheckDealCalcValue()
+        end,
+        default = MasterMerchant.systemDefault.dealCalcToUse,
+      },
+      [9] = {
+        type = 'checkbox',
+        name = GetString(MM_DEALCALC_MODIFIEDTTC_NAME),
+        tooltip = GetString(MM_DEALCALC_MODIFIEDTTC_TIP),
+        getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPrice end,
+        setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPrice = value end,
+        default = MasterMerchant.systemDefault.modifiedSuggestedPrice,
+        disabled = function() return not (MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED) end,
       },
     },
   }
@@ -2440,17 +2486,6 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.saucy end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
     default = MasterMerchant.systemDefault.saucy,
-  }
-  -- Deal Filter Price
-  optionsData[#optionsData + 1] = {
-    type = 'dropdown',
-    name = GetString(SK_DEAL_CALC_TYPE_NAME),
-    tooltip = GetString(SK_DEAL_CALC_TYPE_TIP),
-    choices = MasterMerchant.dealCalcChoices,
-    choicesValues = MasterMerchant.dealCalcValues,
-    getFunc = function() return MasterMerchant.systemSavedVariables.dealCalcToUse end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.dealCalcToUse = value end,
-    default = MasterMerchant.systemDefault.dealCalcToUse,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -3343,9 +3378,11 @@ function MasterMerchant:FirstInitialize()
     maxItemCount = 5000,
     disableAttWarn = false,
     dealCalcToUse = MasterMerchant.USE_MM_AVERAGE,
+    modifiedSuggestedPrice = false,
     useFormatedTime = false,
     addVoucherCost = false,
     customDealCalc = false,
+    customDealBuyIt = 90,
     customDealSeventyFive = 75,
     customDealFifty = 50,
     customDealTwentyFive = 25,
@@ -3761,6 +3798,9 @@ function MasterMerchant:SwitchUnitPrice(control, slot)
         local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
         if priceStats and priceStats.SuggestedPrice > 0 then
           averagePrice = priceStats.SuggestedPrice
+          if MasterMerchant.systemSavedVariables.modifiedSuggestedPrice then
+            averagePrice = priceStats.SuggestedPrice * 1.25
+          end
         end
       end
 
@@ -3876,6 +3916,9 @@ MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount
       local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
       if priceStats and priceStats.SuggestedPrice > 0 then
         setPrice = priceStats.SuggestedPrice
+        if MasterMerchant.systemSavedVariables.modifiedSuggestedPrice then
+          setPrice = priceStats.SuggestedPrice * 1.25
+        end
         salesCount = priceStats.EntryCount
       end
     end

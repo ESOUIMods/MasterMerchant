@@ -14,7 +14,7 @@ function MasterMerchant.CustomDealCalc(setPrice, salesCount, purchasePrice, stac
     profit = (setPrice - unitPrice) * stackCount
     margin = tonumber(string.format('%.2f', ((setPrice - unitPrice) / setPrice) * 100))
 
-    if (margin >= 100) then
+    if (margin >= MasterMerchant.systemSavedVariables.customDealBuyIt) then
       deal = 5
     elseif (margin >= MasterMerchant.systemSavedVariables.customDealSeventyFive) then
       deal = 4
