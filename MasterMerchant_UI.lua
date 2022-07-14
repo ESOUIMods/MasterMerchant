@@ -482,7 +482,7 @@ function MMScrollList:SetupSalesRow(control, data)
   end
 
   -- Sale time cell
-  control.sellTime:SetText(MasterMerchant.TextTimeSince(actualItem.timestamp, false))
+  control.sellTime:SetText(MasterMerchant.TextTimeSince(actualItem.timestamp))
 
   -- Handle the setting of whether or not to show pre-cut sale prices
   -- math.floor(number + 0.5) is a quick shorthand way to round for
@@ -730,7 +730,7 @@ function MMScrollList:SetupListingsRow(control, data)
   end
 
   -- Sale time cell
-  local dispTime = MasterMerchant.TextTimeSince(actualItem.timestamp, false)
+  local dispTime = MasterMerchant.TextTimeSince(actualItem.timestamp)
   control.listTime:SetText(dispTime)
 
   -- Handle the setting of whether or not to show pre-cut sale prices
@@ -879,7 +879,7 @@ function MMScrollList:SetupPurchasesRow(control, data)
   end
 
   -- Sale time cell
-  local dispTime = MasterMerchant.TextTimeSince(actualItem.timestamp, false)
+  local dispTime = MasterMerchant.TextTimeSince(actualItem.timestamp)
   control.purchaseTime:SetText(dispTime)
 
   -- Handle the setting of whether or not to show pre-cut sale prices
@@ -1003,7 +1003,7 @@ function MMScrollList:SetupReportsRow(control, data)
   end
 
   -- Sale time cell
-  control.sellTime:SetText(MasterMerchant.TextTimeSince(actualItem.timestamp, false))
+  control.sellTime:SetText(MasterMerchant.TextTimeSince(actualItem.timestamp))
 
   -- Handle the setting of whether or not to show pre-cut sale prices
   -- math.floor(number + 0.5) is a quick shorthand way to round for

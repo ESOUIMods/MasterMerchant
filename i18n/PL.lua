@@ -130,6 +130,7 @@ ZO_CreateStringId("SK_SELLER_TOOLTIP", "Widok rankingu")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Widok przedmiotu")
 
 ZO_CreateStringId("SK_TIME_DAYS", "<<1[wczoraj/%d dni temu]>>")
+ZO_CreateStringId("SK_TIME_DAYSAGO", "%s days ago")
 ZO_CreateStringId("SK_THOUSANDS_SEP", " ")
 
 -- Chat and center screen alerts/messages
@@ -484,3 +485,9 @@ ZO_CreateStringId("MM_DEALCALC_ZERO_TIP", "Okay Deal Range, the White color.")
 ZO_CreateStringId("MM_DEALCALC_OKAY_TEXT", "|cC2B280Anything below the|r |cFFFFFFOkay Deal Range|r |cC2B280value will be considered overpriced and appear in|r |cF90202Red|r.")
 ZO_CreateStringId("MM_DEALCALC_MODIFIEDTTC_NAME", "Modify TTC Suggested Price by 25 percent")
 ZO_CreateStringId("MM_DEALCALC_MODIFIEDTTC_TIP", "When enabled the TTC Suggested Price will be modified by 25 percent.")
+
+ZO_CreateStringId("MASTER_MERCHANT_TIMEFORMAT_OPTIONS", "Time Format Options")
+ZO_CreateStringId("MM_SHOW_TIME_NAME", "Toggle time ago vs hours and minutes")
+ZO_CreateStringId("MM_SHOW_TIME_TIP", "Toggle whether or not to show sales by 3 days ago or the time of the sale in hours and minutes.")
+ZO_CreateStringId("MM_USE_TWENTYFOUR_HOUR_TIME_NAME", "Toggle twenty four hour time")
+ZO_CreateStringId("MM_USE_TWENTYFOUR_HOUR_TIME_TIP", "Toggle whether or not to use twenty four hour time.")

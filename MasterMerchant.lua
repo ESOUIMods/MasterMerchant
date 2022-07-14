@@ -362,6 +362,23 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
     return false
   end
 
+  local function GetTimeString(timestamp)
+    local formattedString = nil
+    local quotient, remainder = math.modf((GetTimeStamp() - timestamp) / ZO_ONE_DAY_IN_SECONDS)
+    if MasterMerchant.systemSavedVariables.useFormatedTime then
+      formattedString = MasterMerchant.TextTimeSince(timestamp)
+    else
+      if quotient == 0 then
+        formattedString = GetString(MM_INDEX_TODAY)
+      elseif quotient == 1 then
+        formattedString = GetString(MM_INDEX_YESTERDAY)
+      elseif quotient >= 2 then
+        formattedString = string.format(GetString(SK_TIME_DAYSAGO), quotient)
+      end
+    end
+    return formattedString
+  end
+
   -- local function for processing the dots on the graph
   local function ProcessDots(individualSale, item)
     local tooltip = nil
@@ -371,14 +388,7 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
     rather then actually click anything
     ]]--
     if clickable then
-      local quotient, remainder = math.modf((GetTimeStamp() - item.timestamp) / ZO_ONE_DAY_IN_SECONDS)
-      if quotient == 0 then
-        timeframeString = GetString(MM_INDEX_TODAY)
-      elseif quotient == 1 then
-        timeframeString = GetString(MM_INDEX_YESTERDAY)
-      elseif quotient >= 2 then
-        timeframeString = quotient .. " days ago"
-      end
+      timeframeString = GetTimeString(item.timestamp)
       if item.quant == 1 then
         tooltip = timeframeString .. " " .. string.format(GetString(MM_GRAPH_TIP_SINGLE), currentGuild,
           currentSeller, nameString, currentBuyer, stringPrice)
@@ -1883,6 +1893,30 @@ function MasterMerchant:LibAddonInit()
     end,
     default = MasterMerchant.systemDefault.windowFont,
   }
+  -- 10 Other Tooltips -----------------------------------
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(MASTER_MERCHANT_TIMEFORMAT_OPTIONS),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#TimeFormatOptions",
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_SHOW_TIME_NAME),
+    tooltip = GetString(MM_SHOW_TIME_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.useFormatedTime end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.useFormatedTime = value end,
+    default = MasterMerchant.systemDefault.useFormatedTime,
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_USE_TWENTYFOUR_HOUR_TIME_NAME),
+    tooltip = GetString(MM_USE_TWENTYFOUR_HOUR_TIME_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.useTwentyFourHourTime end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.useTwentyFourHourTime = value end,
+    default = MasterMerchant.systemDefault.useTwentyFourHourTime,
+    disabled = function() return not MasterMerchant.systemSavedVariables.useFormatedTime end,
+  }
   -- 6 Sound and Alert options
   optionsData[#optionsData + 1] = {
     type = 'submenu',
@@ -2769,7 +2803,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
       -- Offline sales report
       if MasterMerchant.isFirstScan and MasterMerchant.systemSavedVariables.offlineSales then
         local stringPrice = self.LocalizedNumber(dispPrice)
-        local textTime = self.TextTimeSince(theEvent.timestamp, true)
+        local textTime = self.TextTimeSince(theEvent.timestamp)
         if i == 1 then
           MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT)))
         end
@@ -2795,7 +2829,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
             -- We'll add a numerical suffix to avoid queueing two identical messages in a row
             -- because the alerts will 'miss' if we do
-            local textTime = self.TextTimeSince(theEvent.timestamp, true)
+            local textTime = self.TextTimeSince(theEvent.timestamp)
             local alertSuffix = ''
             if lastEvent[1] ~= nil and theEvent.itemLink == lastEvent[1].itemLink and textTime == lastEvent[2] then
               lastEvent[3] = lastEvent[3] + 1
@@ -2810,7 +2844,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
           -- Chat alert
           if MasterMerchant.systemSavedVariables.showChatAlerts then
-            MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp, true)))
+            MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp)))
           end -- End of show chat alert
         end -- End of multiple alerts or numAlerts == 1
 
@@ -3399,6 +3433,7 @@ function MasterMerchant:FirstInitialize()
     modifiedSuggestedPriceDealCalc = false,
     modifiedSuggestedPriceInventory = false,
     useFormatedTime = false,
+    useTwentyFourHourTime = false,
     addVoucherCost = false,
     customDealCalc = false,
     customDealBuyIt = 90,

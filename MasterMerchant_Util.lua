@@ -138,14 +138,41 @@ function MasterMerchant.LocalizedNumber(amount)
   return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
 end
 
--- Create a textual representation of a time interval
-function MasterMerchant.TextTimeSince(theTime, useLowercase)
-  local secsSince = GetTimeStamp() - theTime
-
+local function GetTimeAgo(timestamp)
+  local secsSince = GetTimeStamp() - timestamp
+  local formatedTime = nil
   if secsSince < ZO_ONE_DAY_IN_SECONDS then
-    return ZO_FormatDurationAgo(secsSince)
+    formatedTime = ZO_FormatDurationAgo(secsSince)
   else
-    return zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / ZO_ONE_DAY_IN_SECONDS))
+    formatedTime = zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / ZO_ONE_DAY_IN_SECONDS))
+  end
+  return formatedTime
+end
+
+local function GetTimeDateString(timestamp)
+  local timeData = os.date("*t", timestamp)
+  local month = timeData.month
+  local day = timeData.day
+  local hour = timeData.hour
+  local minute = timeData.min
+  if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and (hour > 12) then
+    hour = hour - 12
+  end
+  if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and (hour > 12) then
+    hour = hour - 12
+  end
+  if minute < 10 then
+    minute = "0" .. tostring(minute)
+  end
+  return string.format("%s/%s %s:%s", month, day, hour, minute)
+end
+
+-- Create a textual representation of a time interval
+function MasterMerchant.TextTimeSince(timestamp)
+  if MasterMerchant.systemSavedVariables.useFormatedTime then
+    return GetTimeDateString(timestamp)
+  else
+    return GetTimeAgo(timestamp)
   end
 end
 
