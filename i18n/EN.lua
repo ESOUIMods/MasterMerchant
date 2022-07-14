@@ -459,7 +459,7 @@ ZO_CreateStringId("MM_RELOADUI_WARN", "This will force a UI reload when changed.
 
 -- AGS Integration
 ZO_CreateStringId("AGS_DEAL_RANGE_LABEL", "Deal Range")
-ZO_CreateStringId("AGS_PROFIT_RANGE_LABEL", "Deal Range")
+ZO_CreateStringId("AGS_PROFIT_RANGE_LABEL", "Profit Range")
 ZO_CreateStringId("AGS_OVERPRICED_LABEL", "Overpriced")
 ZO_CreateStringId("AGS_OKAY_LABEL", "Ok")
 ZO_CreateStringId("AGS_REASONABLE_LABEL", "Reasonable")
