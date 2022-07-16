@@ -155,8 +155,13 @@ local function GetTimeDateString(timestamp)
   local day = timeData.day
   local hour = timeData.hour
   local minute = timeData.min
-  if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and (hour > 12) then
-    hour = hour - 12
+  local postMeridiem = hour >= 12
+  local meridiemString = ""
+  local dateString = ""
+  if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and postMeridiem then
+    meridiemString = "PM"
+  elseif not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and not postMeridiem then
+    meridiemString = "AM"
   end
   if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and (hour > 12) then
     hour = hour - 12
@@ -164,7 +169,12 @@ local function GetTimeDateString(timestamp)
   if minute < 10 then
     minute = "0" .. tostring(minute)
   end
-  return string.format("%s/%s %s:%s", month, day, hour, minute)
+  if MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_MONTH_DAY_FORMAT then
+    dateString = string.format("%s/%s", month, day)
+  else
+    dateString = string.format("%s/%s", day, month)
+  end
+  return string.format("%s %s:%s%s", dateString, hour, minute, meridiemString)
 end
 
 -- Create a textual representation of a time interval

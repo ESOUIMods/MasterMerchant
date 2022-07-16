@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.11'
+MasterMerchant.version = '3.7.12'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -166,6 +166,9 @@ MM_DATERANGE_7DAY = 6
 MM_DATERANGE_10DAY = 7
 MM_DATERANGE_30DAY = 8
 MM_DATERANGE_CUSTOM = 9
+
+MM_MONTH_DAY_FORMAT = 1
+MM_DAY_MONTH_FORMAT = 2
 
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2

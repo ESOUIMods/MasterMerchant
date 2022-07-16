@@ -1917,6 +1917,17 @@ function MasterMerchant:LibAddonInit()
     default = MasterMerchant.systemDefault.useTwentyFourHourTime,
     disabled = function() return not MasterMerchant.systemSavedVariables.useFormatedTime end,
   }
+  optionsData[#optionsData + 1] = {
+    type = 'dropdown',
+    name = GetString(MM_DATE_FORMAT_NAME),
+    tooltip = GetString(MM_DATE_FORMAT_TIP),
+    choices = { GetString(MM_USE_MONTH_DAY_FORMAT), GetString(MM_USE_DAY_MONTH_FORMAT), },
+    choicesValues = { MM_MONTH_DAY_FORMAT, MM_DAY_MONTH_FORMAT, },
+    getFunc = function() return MasterMerchant.systemSavedVariables.dateFormatMonthDay end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.dateFormatMonthDay = value end,
+    default = self:SearchSounds(MasterMerchant.systemDefault.dateFormatMonthDay),
+    disabled = function() return not MasterMerchant.systemSavedVariables.useFormatedTime end,
+  }
   -- 6 Sound and Alert options
   optionsData[#optionsData + 1] = {
     type = 'submenu',
@@ -2341,6 +2352,15 @@ function MasterMerchant:LibAddonInit()
     setFunc = function(value) MasterMerchant.systemSavedVariables.showPricing = value end,
     default = MasterMerchant.systemDefault.showPricing,
   }
+  -- Whether or not to show the alternate TTC price in tooltips
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(SK_SHOW_TTC_PRICE_NAME),
+    tooltip = GetString(SK_SHOW_TTC_PRICE_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.showAltTtcTipline end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showAltTtcTipline = value end,
+    default = MasterMerchant.systemDefault.showAltTtcTipline,
+  }
   -- Whether or not to show the bonanza price in tooltips
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
@@ -2358,15 +2378,6 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix = value end,
     default = MasterMerchant.systemDefault.omitBonanzaPricingGraphLessThanSix,
-  }
-  -- Whether or not to show the alternate TTC price in tooltips
-  optionsData[#optionsData + 1] = {
-    type = 'checkbox',
-    name = GetString(SK_SHOW_TTC_PRICE_NAME),
-    tooltip = GetString(SK_SHOW_TTC_PRICE_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.showAltTtcTipline end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.showAltTtcTipline = value end,
-    default = MasterMerchant.systemDefault.showAltTtcTipline,
   }
   -- Whether or not to show tooltips on the graph points
   optionsData[#optionsData + 1] = {
@@ -3434,6 +3445,7 @@ function MasterMerchant:FirstInitialize()
     modifiedSuggestedPriceInventory = false,
     useFormatedTime = false,
     useTwentyFourHourTime = false,
+    dateFormatMonthDay = MM_MONTH_DAY_FORMAT,
     addVoucherCost = false,
     customDealCalc = false,
     customDealBuyIt = 90,
