@@ -1129,6 +1129,7 @@ function MMScrollList:FilterScrollList()
     searchText = MasterMerchantReportsWindowMenuHeaderSearchEditBox:GetText()
   end
   if searchText then searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1') end
+  local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
 
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     -- return item sales
@@ -1308,7 +1309,6 @@ function MMScrollList:FilterScrollList()
       end
     end
 
-    local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
     if searchText == nil or searchText == '' then
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
         -- my guild sales
@@ -1887,7 +1887,6 @@ function MasterMerchant:UpdateFonts()
   -- Guild Window
   MasterMerchantGuildWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
   MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, windowButtonLabel))
-  MasterMerchantGuildWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
   MasterMerchantGuildWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
   MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))

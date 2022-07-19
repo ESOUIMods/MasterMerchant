@@ -2120,6 +2120,7 @@ function MasterMerchant:LibAddonInit()
           MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
           MasterMerchant:BuildRosterTimeDropdown()
           MasterMerchant:BuildGuiTimeDropdown()
+          MasterMerchant:dm("Info", GetString(MM_CUSTOM_TIMEFRAME_REMINDER))
         end,
         default = MasterMerchant.systemDefault.customTimeframe,
       },
@@ -2135,8 +2136,13 @@ function MasterMerchant:LibAddonInit()
           MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
           MasterMerchant:BuildRosterTimeDropdown()
           MasterMerchant:BuildGuiTimeDropdown()
+          MasterMerchant:dm("Info", GetString(MM_CUSTOM_TIMEFRAME_REMINDER))
         end,
         default = MasterMerchant.systemDefault.customTimeframeType,
+      },
+      [12] = {
+        type = "description",
+        text = GetString(MM_CUSTOM_TIMEFRAME_WARN),
       },
     },
   }

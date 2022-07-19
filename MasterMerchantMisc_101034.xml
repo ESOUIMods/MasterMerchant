@@ -23,8 +23,7 @@
     <Backdrop name="MasterMerchantPrice" inherits="ZO_EditBackdrop" virtual="true">
       <Dimensions x="88" y="25"/>
       <Controls>
-        <EditBox name="$(parent)Box" font="ZoFontWinT1" textType="NUMERIC_UNSIGNED_INT"
-                 inherits="ZO_DefaultEditForBackdrop">
+        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" font="ZoFontWinT1" textType="NUMERIC_UNSIGNED_INT">
           <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
           <Anchor point="BOTTOMRIGHT"/>
         </EditBox>

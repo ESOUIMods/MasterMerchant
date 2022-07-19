@@ -496,3 +496,6 @@ ZO_CreateStringId("MM_USE_MONTH_DAY_FORMAT", "Month/Day")
 ZO_CreateStringId("MM_USE_DAY_MONTH_FORMAT", "Day/Month")
 ZO_CreateStringId("MM_DATE_FORMAT_NAME", "Select Date Format")
 ZO_CreateStringId("MM_DATE_FORMAT_TIP", "Choose between MM/DD or DD/MM format.")
+
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_WARN", "|cff0000WARNING|r: All sales have already been sorted by the Custom Timeframe at startup. After you change the Custom Timeframe, you must reload the UI. See documentation for more information.")
+ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_REMINDER", "Don't forget to reload the UI to sort the sales according to the new Custom Timeframe.")

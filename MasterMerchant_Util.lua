@@ -127,15 +127,26 @@ local function IsValueInteger(value)
 end
 
 function MasterMerchant.LocalizedNumber(amount)
+  local function comma_value(amount)
+    local formatted = amount
+    while true do
+      formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1' .. GetString(SK_THOUSANDS_SEP) .. '%2')
+      if (k == 0) then
+        break
+      end
+    end
+    return formatted
+  end
+
   if not amount then
     return tostring(0)
   end
   -- Check if amount is an integer
   if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount) then
-    return ZO_CommaDelimitNumber(zo_floor(amount))
+    return comma_value(zo_floor(amount))
   end
   -- Round to two decimal values
-  return ZO_CommaDelimitDecimalNumber(zo_roundToNearest(amount, .01))
+  return comma_value(zo_roundToNearest(amount, .01))
 end
 
 local function GetTimeAgo(timestamp)

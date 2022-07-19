@@ -151,9 +151,9 @@ internal.defaults = {
   minimalIndexing = false,
   useSalesHistory = false,
   overrideMMImport = false,
-  historyDepthSL = 60,
-  historyDepthPI = 180,
-  historyDepthCI = 180,
+  historyDepthSL = 60, -- History Depth Shopping List
+  historyDepthPI = 180, -- History Depth Posted Items
+  historyDepthCI = 180, -- History Depth Canceled Items
   libHistoireScanByTimestamp = false,
 }
 

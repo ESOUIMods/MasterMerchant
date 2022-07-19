@@ -243,9 +243,9 @@ local function SetupDefaults()
     [internal.GS_NA_FIRST_RUN_NAMESPACE] = true,
     [internal.GS_EU_FIRST_RUN_NAMESPACE] = true,
     lastReceivedEventID = {},
-    historyDepthSL = 180,
-    historyDepthPI = 180,
-    historyDepthCI = 180,
+    historyDepthSL = 180, -- History Depth Shopping List
+    historyDepthPI = 180, -- History Depth Posted Items
+    historyDepthCI = 180, -- History Depth Canceled Items
     minimalIndexing = false,
     historyDepth = 90,
     minItemCount = 20,

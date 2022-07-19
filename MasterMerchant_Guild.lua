@@ -195,16 +195,16 @@ function MMGuild:new(_name)
   o.eightStart = dayCutoff - (30 * ZO_ONE_DAY_IN_SECONDS) -- last 30 days
 
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_HOURS) then
-    o.nineStart = GetTimeStamp() - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_HOUR_IN_SECONDS) -- last x hours
-    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
+    o.nineStart = dayCutoff - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_HOUR_IN_SECONDS) -- last x hours
+    o.nineEnd = dayCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_DAYS) then
-    o.nineStart = GetTimeStamp() - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) -- last x days
-    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
+    o.nineStart = dayCutoff - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) -- last x days
+    o.nineEnd = dayCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_WEEKS) then
-    o.nineStart = GetTimeStamp() - ((MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) * 7) -- last x weeks
-    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
+    o.nineStart = dayCutoff - ((MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) * 7) -- last x weeks
+    o.nineEnd = dayCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
   if MasterMerchant.systemSavedVariables.customTimeframeType == GetString(MM_CUSTOM_TIMEFRAME_GUILD_WEEKS) then
     o.nineStart = weekCutoff - ((MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) * 7) -- last x full guild weeks
@@ -214,8 +214,8 @@ function MMGuild:new(_name)
     -- Default custom timeframe to Last 3 days if it's undefined
     MasterMerchant.systemSavedVariables.customTimeframeType = GetString(MM_CUSTOM_TIMEFRAME_DAYS)
     MasterMerchant.systemSavedVariables.customTimeframe = 3
-    o.nineStart = GetTimeStamp() - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) -- last x days
-    o.nineEnd = GetTimeStamp() + (7 * ZO_ONE_DAY_IN_SECONDS)
+    o.nineStart = dayCutoff - (MasterMerchant.systemSavedVariables.customTimeframe * ZO_ONE_DAY_IN_SECONDS) -- last x days
+    o.nineEnd = dayCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
   end
 
   if MasterMerchant.dateRanges == nil then
