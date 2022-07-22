@@ -213,7 +213,7 @@
             <!-- Button size is different then the data row for alignment only -->
             <Button name="$(parent)Buyer" mouseEnabled="true">
               <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="140" y="32"/>
+              <Dimensions x="145" y="32"/>
               <Controls>
                 <Label name="$(parent)Name" font="ZoFontGame" color="3689EF" modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
                   <Anchor point="TOPLEFT" relativeTo="$(parent)Buyer" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
@@ -233,7 +233,7 @@
             </Control>
             <Control name="$(parent)ItemName" mouseEnabled="true">
               <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="42" offsetY="0"/>
-              <Dimensions x="330" y="32"/>
+              <Dimensions x="320" y="32"/>
               <Controls>
                 <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="LEFT" verticalAlignment="CENTER" modifyTextType="NONE">
                   <Anchor point="TOPLEFT" relativeTo="$(parent)Buyer" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
@@ -249,7 +249,7 @@
             </Control>
             <Control name="$(parent)SellTime" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="105" y="32"/>
+              <Dimensions x="115" y="32"/>
             </Control>
             <Control name="$(parent)Price" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)SellTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -300,7 +300,7 @@
         </Label>
         <Button name="$(parent)Buyer" inheritAlpha="true" text="Buyer" horizontalAlignment="LEFT">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="140" y="26"/>
+          <Dimensions x="145" y="26"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" text="Guild">
@@ -316,15 +316,15 @@
           <Dimensions x="32" y="32"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)ItemName" inheritAlpha="true" text="Item Name" verticalAlignment="CENTER" linkEnabled="true" mouseEnabled="true">
+        <Label name="$(parent)ItemName" verticalAlignment="CENTER" inheritAlpha="true" text="Item Name" linkEnabled="true" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
-          <Dimensions x="330" y="26"/>
+          <Dimensions x="320" y="26"/>
           <OnLinkMouseUp>
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
-        <Label name="$(parent)SellTime" inheritAlpha="true" color="FFFFFF" text="Time">
-          <Dimensions x="105" y="26"/>
+        <Label name="$(parent)SellTime" verticalAlignment="CENTER" horizontalAlignment="CENTER" inheritAlpha="true" color="FFFFFF" text="Time">
+          <Dimensions x="115" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
         <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">

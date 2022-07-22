@@ -11,6 +11,14 @@ lib.defaults = {
   ["cancelleditemseu"] = {},
   ["pricingdatana"] = {},
   ["pricingdataeu"] = {},
+  ["currentNAGuilds"] = {
+    ["count"] = 0,
+    ["guilds"] = {},
+  },
+  ["currentEUGuilds"] = {
+    ["count"] = 0,
+    ["guilds"] = {},
+  },
 }
 
 local function Initialize()

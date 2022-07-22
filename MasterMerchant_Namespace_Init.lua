@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.13'
+MasterMerchant.version = '3.7.14'
 
 -------------------------------------------------
 ----- early helper                          -----
@@ -156,6 +156,7 @@ MasterMerchant.aaaa_test = {}
 MasterMerchant.aaaaa_test = {}
 MasterMerchant.aaaaaa_test = {}
 
+-- Date Time Ranges for API
 MasterMerchant.dateRanges = nil
 MM_DATERANGE_TODAY = 1
 MM_DATERANGE_YESTERDAY = 2
@@ -167,8 +168,36 @@ MM_DATERANGE_10DAY = 7
 MM_DATERANGE_30DAY = 8
 MM_DATERANGE_CUSTOM = 9
 
+-- Date Time String Format
 MM_MONTH_DAY_FORMAT = 1
 MM_DAY_MONTH_FORMAT = 2
+MM_MONTH_DAY_YEAR_FORMAT = 3
+MM_YEAR_MONTH_DAY_FORMAT = 4
+MM_DAY_MONTH_YEAR_FORMAT = 5
+
+-- Time Range Focuses
+MM_TIME_RANGE_NONE = 1
+MM_TIME_RANGE_ALL = 2
+MM_TIME_RANGE_FOCUS1 = 3
+MM_TIME_RANGE_FOCUS2 = 4
+MM_TIME_RANGE_FOCUS3 = 5
+
+-- Window Time Ranges
+MasterMerchant.filterDateRanges = nil
+MM_WINDOW_TIME_RANGE_DEFAULT = 1
+MM_WINDOW_TIME_RANGE_THIRTY = 2
+MM_WINDOW_TIME_RANGE_SIXTY = 3
+MM_WINDOW_TIME_RANGE_NINETY = 4
+MM_WINDOW_TIME_RANGE_CUSTOM = 5
+
+-- Deal Value Ranges
+MM_DEAL_VALUE_DONT_SHOW = -1
+MM_DEAL_VALUE_OVERPRICED = 0
+MM_DEAL_VALUE_OKAY = 1
+MM_DEAL_VALUE_REASONABLE = 2
+MM_DEAL_VALUE_GOOD = 3
+MM_DEAL_VALUE_GREAT = 4
+MM_DEAL_VALUE_BUYIT = 5
 
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2

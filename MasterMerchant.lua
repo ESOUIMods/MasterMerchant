@@ -78,6 +78,8 @@ end
 function MasterMerchant:CheckTimeframe()
   -- setup focus info
   local range = MasterMerchant.systemSavedVariables.defaultDays
+  local dayCutoff = MasterMerchant.dateRanges[MM_DATERANGE_TODAY].startTimestamp
+
   if IsControlKeyDown() and IsShiftKeyDown() then
     range = MasterMerchant.systemSavedVariables.ctrlShiftDays
   elseif IsControlKeyDown() then
@@ -94,7 +96,7 @@ function MasterMerchant:CheckTimeframe()
   if range == GetString(MM_RANGE_FOCUS2) then daysRange = MasterMerchant.systemSavedVariables.focus2 end
   if range == GetString(MM_RANGE_FOCUS3) then daysRange = MasterMerchant.systemSavedVariables.focus3 end
 
-  return GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * daysRange), daysRange
+  return dayCutoff - (daysRange * ZO_ONE_DAY_IN_SECONDS), daysRange
 end
 
 local function BuildBlacklistTable(str)
@@ -1893,7 +1895,17 @@ function MasterMerchant:LibAddonInit()
     end,
     default = MasterMerchant.systemDefault.windowFont,
   }
-  -- 10 Other Tooltips -----------------------------------
+  optionsData[#optionsData + 1] = {
+    type = 'slider',
+    name = GetString(MM_WINDOW_CUSTOM_TIMEFRAME_NAME),
+    tooltip = GetString(MM_WINDOW_CUSTOM_TIMEFRAME_TIP),
+    min = 15,
+    max = 365,
+    getFunc = function() return MasterMerchant.systemSavedVariables.customFilterDateRange end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.customFilterDateRange = value end,
+    default = MasterMerchant.systemDefault.customFilterDateRange,
+  }
+  -- Timeformat Options -----------------------------------
   optionsData[#optionsData + 1] = {
     type = "header",
     name = GetString(MASTER_MERCHANT_TIMEFORMAT_OPTIONS),
@@ -1921,8 +1933,8 @@ function MasterMerchant:LibAddonInit()
     type = 'dropdown',
     name = GetString(MM_DATE_FORMAT_NAME),
     tooltip = GetString(MM_DATE_FORMAT_TIP),
-    choices = { GetString(MM_USE_MONTH_DAY_FORMAT), GetString(MM_USE_DAY_MONTH_FORMAT), },
-    choicesValues = { MM_MONTH_DAY_FORMAT, MM_DAY_MONTH_FORMAT, },
+    choices = { GetString(MM_USE_MONTH_DAY_FORMAT), GetString(MM_USE_DAY_MONTH_FORMAT), GetString(MM_USE_MONTH_DAY_YEAR_FORMAT), GetString(MM_USE_YEAR_MONTH_DAY_FORMAT), GetString(MM_USE_DAY_MONTH_YEAR_FORMAT), },
+    choicesValues = { MM_MONTH_DAY_FORMAT, MM_DAY_MONTH_FORMAT, MM_MONTH_DAY_YEAR_FORMAT, MM_YEAR_MONTH_DAY_FORMAT, MM_DAY_MONTH_YEAR_FORMAT, },
     getFunc = function() return MasterMerchant.systemSavedVariables.dateFormatMonthDay end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.dateFormatMonthDay = value end,
     default = self:SearchSounds(MasterMerchant.systemDefault.dateFormatMonthDay),
@@ -2082,18 +2094,8 @@ function MasterMerchant:LibAddonInit()
         setFunc = function(value) MasterMerchant.systemSavedVariables.ctrlShiftDays = value end,
         default = MasterMerchant.systemDefault.ctrlShiftDays,
       },
-      [8] = {
-        type = 'slider',
-        name = GetString(MM_NO_DATA_DEAL_NAME),
-        tooltip = GetString(MM_NO_DATA_DEAL_TIP),
-        min = 0,
-        max = 5,
-        getFunc = function() return MasterMerchant.systemSavedVariables.noSalesInfoDeal end,
-        setFunc = function(value) MasterMerchant.systemSavedVariables.noSalesInfoDeal = value end,
-        default = MasterMerchant.systemDefault.noSalesInfoDeal,
-      },
       -- blacklisted players and guilds
-      [9] = {
+      [8] = {
         type = 'editbox',
         name = GetString(MM_BLACKLIST_NAME),
         tooltip = GetString(MM_BLACKLIST_TIP),
@@ -2108,7 +2110,7 @@ function MasterMerchant:LibAddonInit()
         width = "full"
       },
       -- customTimeframe
-      [10] = {
+      [9] = {
         type = 'slider',
         name = GetString(MM_CUSTOM_TIMEFRAME_NAME),
         tooltip = GetString(MM_CUSTOM_TIMEFRAME_TIP),
@@ -2120,12 +2122,13 @@ function MasterMerchant:LibAddonInit()
           MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
           MasterMerchant:BuildRosterTimeDropdown()
           MasterMerchant:BuildGuiTimeDropdown()
-          MasterMerchant:dm("Info", GetString(MM_CUSTOM_TIMEFRAME_REMINDER))
         end,
         default = MasterMerchant.systemDefault.customTimeframe,
+        warning = GetString(MM_CUSTOM_TIMEFRAME_WARN),
+        requiresReload = true,
       },
       -- shift time range
-      [11] = {
+      [10] = {
         type = 'dropdown',
         name = GetString(MM_CUSTOM_TIMEFRAME_SCALE_NAME),
         tooltip = GetString(MM_CUSTOM_TIMEFRAME_SCALE_TIP),
@@ -2136,13 +2139,10 @@ function MasterMerchant:LibAddonInit()
           MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
           MasterMerchant:BuildRosterTimeDropdown()
           MasterMerchant:BuildGuiTimeDropdown()
-          MasterMerchant:dm("Info", GetString(MM_CUSTOM_TIMEFRAME_REMINDER))
         end,
         default = MasterMerchant.systemDefault.customTimeframeType,
-      },
-      [12] = {
-        type = "description",
-        text = GetString(MM_CUSTOM_TIMEFRAME_WARN),
+        warning = GetString(MM_CUSTOM_TIMEFRAME_WARN),
+        requiresReload = true,
       },
     },
   }
@@ -2946,7 +2946,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
   if itemLink and itemLink ~= "" then
     local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
     if dealValue then
-      if dealValue > -1 then
+      if dealValue > MM_DEAL_VALUE_DONT_SHOW then
         if MasterMerchant.systemSavedVariables.saucy then
           sellingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
         else
@@ -2957,7 +2957,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
         ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON, {color: someColorDef})
         ]]--
         local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
-        if dealValue == 0 then
+        if dealValue == MM_DEAL_VALUE_OVERPRICED then
           r = 0.98;
           g = 0.01;
           b = 0.01;
@@ -3033,7 +3033,7 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
   local itemLink = GetTradingHouseSearchResultItemLink(index)
   local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
   if dealValue then
-    if dealValue > -1 then
+    if dealValue > MM_DEAL_VALUE_DONT_SHOW then
       if MasterMerchant.systemSavedVariables.saucy then
         buyingAdvice:SetText(MasterMerchant.LocalizedNumber(profit) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
       else
@@ -3041,7 +3041,7 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
       end
       -- TODO I think this colors the number in the guild store
       local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
-      if dealValue == 0 then
+      if dealValue == MM_DEAL_VALUE_OVERPRICED then
         r = 0.98;
         g = 0.01;
         b = 0.01;
@@ -3262,7 +3262,6 @@ function MasterMerchant:InitRosterChanges()
   MasterMerchant.UI_GuildTime.m_comboBox:SetSortsItems(false)
 
   MasterMerchant:BuildRosterTimeDropdown()
-
 end
 
 function MasterMerchant.SetupPendingPost(self)
@@ -3407,7 +3406,6 @@ function MasterMerchant:FirstInitialize()
     priceToChatTypeToUse = MasterMerchant.USE_DEFAULT_FORMAT,
     displaySalesDetails = false,
     displayItemAnalysisButtons = false,
-    noSalesInfoDeal = 2,
     focus1 = 10,
     focus2 = 3,
     focus3 = 30,
@@ -3459,6 +3457,8 @@ function MasterMerchant:FirstInitialize()
     customDealFifty = 50,
     customDealTwentyFive = 25,
     customDealZero = 0,
+    windowTimeRange = MM_WINDOW_TIME_RANGE_DEFAULT,
+    customFilterDateRange = 90,
   }
 
   -- Finished setting up defaults, assign to global
@@ -3594,6 +3594,7 @@ function MasterMerchant:FirstInitialize()
   self:RestoreWindowPosition()
   self:SetWindowLockIcon()
   self:SetWindowLock()
+  self:CheckFilterTimerangeState()
 
   LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, self.LinkHandler_OnLinkMouseUp)
 
@@ -3773,7 +3774,6 @@ function MasterMerchant:FirstInitialize()
     originalCall(control, slot)
     self:SwitchUnitPrice(control, slot)
   end)
-
 end
 
 function MasterMerchant:SecondInitialize()
@@ -3818,6 +3818,8 @@ function MasterMerchant:SecondInitialize()
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:Add(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
+    LEQ:Add(function() MasterMerchant:BuildDateRangeTable() end, 'BuildFilterDateRangeTable')
+    LEQ:Add(function() MasterMerchant:BuildFilterDateRangeTable() end, 'BuildFilterDateRangeTable')
     LEQ:Add(function()
       if internal:MasterMerchantDataActive() then
         MasterMerchant:dm("Info", GetString(MM_MMXXDATA_OBSOLETE))

@@ -1111,6 +1111,63 @@ function MasterMerchant.CleanupSearch(term)
   return term
 end
 
+function MasterMerchant:BuildFilterDateRangeTable()
+  MasterMerchant.filterDateRanges = { }
+  local daysRange = MasterMerchant.systemSavedVariables.customFilterDateRange
+  local dayCutoff = MasterMerchant.dateRanges[MM_DATERANGE_TODAY].startTimestamp
+  local customDayRangeStart = dayCutoff - (daysRange * ZO_ONE_DAY_IN_SECONDS)
+  local customDayRangeEnd = dayCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
+  local customThirtyDayRangeStart = dayCutoff - (30 * ZO_ONE_DAY_IN_SECONDS)
+  local customThirtyDayRangeEnd = dayCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
+  local customSixtyDayRangeStart = customThirtyDayRangeStart - (30 * ZO_ONE_DAY_IN_SECONDS)
+  local customSixtyDayRangeEnd = customThirtyDayRangeStart
+  local customNinetyDayRangeStart = customSixtyDayRangeStart - (30 * ZO_ONE_DAY_IN_SECONDS)
+  local customNinetyDayRangeEnd = customSixtyDayRangeStart
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_THIRTY] = { }
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_THIRTY].startTimestamp = customThirtyDayRangeStart
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_THIRTY].endTimestamp = customThirtyDayRangeEnd
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_SIXTY] = { }
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_SIXTY].startTimestamp = customSixtyDayRangeStart
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_SIXTY].endTimestamp = customSixtyDayRangeEnd
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_NINETY] = { }
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_NINETY].startTimestamp = customNinetyDayRangeStart
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_NINETY].endTimestamp = customNinetyDayRangeEnd
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_CUSTOM] = { }
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_CUSTOM].startTimestamp = customDayRangeStart
+  MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_CUSTOM].endTimestamp = customDayRangeEnd
+end
+
+local function CheckFilterTimeframe(timestamp)
+  local timeframeStart
+  local timeframeEnd
+  local validRange = false
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_DEFAULT then
+    timeframeStart = MasterMerchant:CheckTimeframe()
+    if (timestamp > timeframeStart) then validRange = true end
+  end
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_THIRTY then
+    timeframeStart = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_THIRTY].startTimestamp
+    timeframeEnd = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_THIRTY].endTimestamp
+    if (timestamp >= timeframeStart and timestamp < timeframeEnd) then validRange = true end
+  end
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_SIXTY then
+    timeframeStart = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_SIXTY].startTimestamp
+    timeframeEnd = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_SIXTY].endTimestamp
+    if (timestamp >= timeframeStart and timestamp < timeframeEnd) then validRange = true end
+  end
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_NINETY then
+    timeframeStart = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_NINETY].startTimestamp
+    timeframeEnd = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_NINETY].endTimestamp
+    if (timestamp >= timeframeStart and timestamp < timeframeEnd) then validRange = true end
+  end
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_CUSTOM then
+    timeframeStart = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_CUSTOM].startTimestamp
+    timeframeEnd = MasterMerchant.filterDateRanges[MM_WINDOW_TIME_RANGE_CUSTOM].endTimestamp
+    if (timestamp >= timeframeStart and timestamp < timeframeEnd) then validRange = true end
+  end
+  return validRange
+end
+
 function MMScrollList:FilterScrollList()
   -- this will error when the MM window is open and sr_index is empty
   --if internal:is_empty_or_nil(sr_index) then return end
@@ -1134,8 +1191,7 @@ function MMScrollList:FilterScrollList()
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
     -- return item sales
     if MasterMerchant.salesViewMode ~= MasterMerchant.personalSalesViewMode and (searchText == nil or searchText == '') then
-      -- everything unfiltered (filter to the default time range)
-      local timeCheck = MasterMerchant:CheckTimeframe()
+      -- everything unfiltered using CheckFilterTimeframe()
       for k, v in pairs(sales_data) do
         for j, dataList in pairs(v) do
           -- IPAIRS
@@ -1144,7 +1200,7 @@ function MMScrollList:FilterScrollList()
               --d('Bad Item:')
               --d(item)
             else
-              if (item.timestamp > timeCheck) then
+              if CheckFilterTimeframe(item.timestamp) then
                 table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
@@ -1154,8 +1210,7 @@ function MMScrollList:FilterScrollList()
     elseif internal.sr_index_count == 1 and (searchText ~= nil and searchText ~= '') then
       -- We just have player indexed and we have something to filter with
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode then
-        -- Search all data in the last 180 days
-        local timeCheck = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 90)
+        -- Search all data using CheckFilterTimeframe()
         local tconcat = table.concat
         local tinsert = table.insert
         local tolower = string.lower
@@ -1175,7 +1230,7 @@ function MMScrollList:FilterScrollList()
             --d('Bad Item:')
             --d(item)
           else
-            if (item.timestamp > timeCheck) then
+            if CheckFilterTimeframe(item.timestamp) then
               local matchesAll = true
               temp[1] = 'b' .. currentBuyer or ''
               temp[3] = 's' .. currentSeller or ''
@@ -1195,8 +1250,7 @@ function MMScrollList:FilterScrollList()
           end
         end
       else
-        -- Search all data in the last 90 days
-        local timeCheck = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * 90)
+        -- Search all data using CheckFilterTimeframe()
         local tconcat = table.concat
         local tinsert = table.insert
         local tolower = string.lower
@@ -1211,7 +1265,7 @@ function MMScrollList:FilterScrollList()
                 --d('Bad Item:')
                 --d(item)
               else
-                if (item.timestamp > timeCheck) then
+                if CheckFilterTimeframe(item.timestamp) then
                   local matchesAll = true
                   temp[1] = 'b' .. currentBuyer or ''
                   temp[3] = 's' .. currentSeller or ''
@@ -1499,7 +1553,6 @@ function MMScrollList:FilterScrollList()
     end
 
   elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
-    local timeCheck = MasterMerchant:CheckTimeframe()
     if (searchText == nil or searchText == '') then
       for k, v in pairs(purchases_data) do
         for j, dataList in pairs(v) do
@@ -1509,9 +1562,7 @@ function MMScrollList:FilterScrollList()
               --d('Bad Item:')
               --d(item)
             else
-              if (item.timestamp > timeCheck) then
-                table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
-              end
+              table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
             end
           end
         end
@@ -1721,8 +1772,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchantPurchaseWindow:ClearAnchors()
     MasterMerchantPurchaseWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.purchaseWinLeft, MasterMerchant.systemSavedVariables.purchaseWinTop)
 
-    MasterMerchantListingWindow:ClearAnchors()
-    MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
+    MasterMerchantReportsWindow:ClearAnchors()
+    MasterMerchantReportsWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
 
   elseif windowMoved == MasterMerchantGuildWindow then
     MasterMerchant.systemSavedVariables.guildWinLeft = MasterMerchantGuildWindow:GetLeft()
@@ -1746,8 +1797,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchantPurchaseWindow:ClearAnchors()
     MasterMerchantPurchaseWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.purchaseWinLeft, MasterMerchant.systemSavedVariables.purchaseWinTop)
 
-    MasterMerchantListingWindow:ClearAnchors()
-    MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
+    MasterMerchantReportsWindow:ClearAnchors()
+    MasterMerchantReportsWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
 
   elseif windowMoved == MasterMerchantListingWindow then
     MasterMerchant.systemSavedVariables.listingWinLeft = MasterMerchantListingWindow:GetLeft()
@@ -1771,8 +1822,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchantPurchaseWindow:ClearAnchors()
     MasterMerchantPurchaseWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.purchaseWinLeft, MasterMerchant.systemSavedVariables.purchaseWinTop)
 
-    MasterMerchantListingWindow:ClearAnchors()
-    MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
+    MasterMerchantReportsWindow:ClearAnchors()
+    MasterMerchantReportsWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
 
   elseif windowMoved == MasterMerchantPurchaseWindow then
     MasterMerchant.systemSavedVariables.purchaseWinLeft = MasterMerchantPurchaseWindow:GetLeft()
@@ -1796,8 +1847,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchantListingWindow:ClearAnchors()
     MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.listingWinLeft, MasterMerchant.systemSavedVariables.listingWinTop)
 
-    MasterMerchantListingWindow:ClearAnchors()
-    MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
+    MasterMerchantReportsWindow:ClearAnchors()
+    MasterMerchantReportsWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.reportsWinLeft, MasterMerchant.systemSavedVariables.reportsWinTop)
 
   elseif windowMoved == MasterMerchantReportsWindow then
     MasterMerchant.systemSavedVariables.reportsWinLeft = MasterMerchantReportsWindow:GetLeft()
@@ -1821,8 +1872,8 @@ function MasterMerchant:OnWindowMoveStop(windowMoved)
     MasterMerchantListingWindow:ClearAnchors()
     MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.listingWinLeft, MasterMerchant.systemSavedVariables.listingWinTop)
 
-    MasterMerchantListingWindow:ClearAnchors()
-    MasterMerchantListingWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.purchaseWinLeft, MasterMerchant.systemSavedVariables.purchaseWinTop)
+    MasterMerchantPurchaseWindow:ClearAnchors()
+    MasterMerchantPurchaseWindow:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, MasterMerchant.systemSavedVariables.purchaseWinLeft, MasterMerchant.systemSavedVariables.purchaseWinTop)
 
   elseif windowMoved == MasterMerchantStatsWindow then
     MasterMerchant.systemSavedVariables.statsWinLeft = MasterMerchantStatsWindow:GetLeft()
@@ -2636,6 +2687,13 @@ function MasterMerchant:HeaderToolTip(control, tipString)
   SetTooltipText(InformationTooltip, tipString)
 end
 
+-- Update Time Range for filtering the Guild Sales window
+function MasterMerchant:UpdateGuildWindowTimerange(timeRange)
+  if not timeRange or timeRange == 0 then timeRange = MM_WINDOW_TIME_RANGE_DEFAULT end
+  MasterMerchant.systemSavedVariables.windowTimeRange = timeRange
+  MasterMerchant:RefreshAlteredWindowData(true)
+end
+
 -- Update Guild Sales window to use the selected date range
 function MasterMerchant:UpdateGuildWindow(rankIndex)
   -- MasterMerchant:dm("Debug", "UpdateGuildWindow")
@@ -2883,6 +2941,7 @@ function MasterMerchant:SwitchToMasterMerchantSalesView()
   MasterMerchantFilterByNameWindow:SetHidden(true)
   MasterMerchantFilterByTypeWindow:SetHidden(true)
 
+  MasterMerchant:CheckFilterTimerangeState()
   MasterMerchant:ActiveWindow():SetHidden(false)
 end
 
@@ -3004,6 +3063,15 @@ function MasterMerchant:ToggleMasterMerchantPricingHistoryGraph()
   MasterMerchant.systemSavedVariables.showGraph = not MasterMerchant.systemSavedVariables.showGraph
 end
 
+function MasterMerchant:CheckFilterTimerangeState()
+  if self.salesViewMode == MasterMerchant.personalSalesViewMode then
+    MasterMerchantGuildWindowFilterTimerangeChooser:SetHidden(true)
+  end
+  if self.salesViewMode == MasterMerchant.guildSalesViewMode then
+    MasterMerchantGuildWindowFilterTimerangeChooser:SetHidden(false)
+  end
+end
+
 -- Switch between all sales and your sales
 function MasterMerchant:SwitchSalesViewMode()
   -- MasterMerchant:dm("Debug", "SwitchSalesViewMode")
@@ -3022,12 +3090,14 @@ function MasterMerchant:SwitchSalesViewMode()
     MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_YOUR_SALES))
     MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_GUILD_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.salesViewMode = MasterMerchant.guildSalesViewMode
+    MasterMerchant:CheckFilterTimerangeState()
   else
     MasterMerchantWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
     MasterMerchantWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_ITEM_REPORT_TITLE))
     MasterMerchantGuildWindowMenuFooterSwitchViewButton:SetText(GetString(SK_VIEW_ALL_SALES))
     MasterMerchantGuildWindowMenuHeaderTitle:SetText(GetString(SK_SELF_SALES_TITLE) .. ' - ' .. GetString(SK_SELER_REPORT_TITLE))
     self.salesViewMode = MasterMerchant.personalSalesViewMode
+    MasterMerchant:CheckFilterTimerangeState()
   end
 
   --[[ TODO Verify this
@@ -3159,8 +3229,34 @@ function MasterMerchant.OnStatsSliderMoved(self, sliderLevel, eventReason)
   MasterMerchant:UpdateStatsWindow(selectedGuild)
 end
 
+function MasterMerchant:BuildFilterTimerangeDropdown()
+  local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantGuildWindowFilterTimerangeChooser)
+  timeDropdown:ClearItems()
+  local timeEntry
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_WINDOW_TIME_RANGE_LABEL_DEFAULT), function() self:UpdateGuildWindowTimerange(MM_WINDOW_TIME_RANGE_DEFAULT) end)
+  timeDropdown:AddItem(timeEntry)
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_DEFAULT then timeDropdown:SetSelectedItem(GetString(MM_WINDOW_TIME_RANGE_LABEL_DEFAULT)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_WINDOW_TIME_RANGE_LABEL_THIRTY), function() self:UpdateGuildWindowTimerange(MM_WINDOW_TIME_RANGE_THIRTY) end)
+  timeDropdown:AddItem(timeEntry)
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_THIRTY then timeDropdown:SetSelectedItem(GetString(MM_WINDOW_TIME_RANGE_LABEL_THIRTY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_WINDOW_TIME_RANGE_LABEL_SIXTY), function() self:UpdateGuildWindowTimerange(MM_WINDOW_TIME_RANGE_SIXTY) end)
+  timeDropdown:AddItem(timeEntry)
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_SIXTY then timeDropdown:SetSelectedItem(GetString(MM_WINDOW_TIME_RANGE_LABEL_SIXTY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_WINDOW_TIME_RANGE_LABEL_NINETY), function() self:UpdateGuildWindowTimerange(MM_WINDOW_TIME_RANGE_NINETY) end)
+  timeDropdown:AddItem(timeEntry)
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_NINETY then timeDropdown:SetSelectedItem(GetString(MM_WINDOW_TIME_RANGE_LABEL_NINETY)) end
+
+  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_WINDOW_TIME_RANGE_LABEL_CUSTOM), function() self:UpdateGuildWindowTimerange(MM_WINDOW_TIME_RANGE_CUSTOM) end)
+  timeDropdown:AddItem(timeEntry)
+  if MasterMerchant.systemSavedVariables.windowTimeRange == MM_WINDOW_TIME_RANGE_CUSTOM then timeDropdown:SetSelectedItem(GetString(MM_WINDOW_TIME_RANGE_LABEL_CUSTOM)) end
+end
+
 function MasterMerchant:BuildGuiTimeDropdown()
-  local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantGuildTimeChooser)
+  local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantGuildWindowTimeframeChooser)
   timeDropdown:ClearItems()
 
   local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateGuildWindow(MM_DATERANGE_TODAY) end)
@@ -3205,14 +3301,13 @@ end
 function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchant:dm("Debug", "SetupMasterMerchantWindow")
   -- MasterMerchant button in guild store screen
-  local reopenMasterMerchant = CreateControlFromVirtual('MasterMerchantReopenButton',
-    ZO_TradingHouseBrowseItemsLeftPane, 'ZO_DefaultButton')
+  local reopenMasterMerchant = CreateControlFromVirtual('MasterMerchantReopenButton', ZO_TradingHouseBrowseItemsLeftPane, 'ZO_DefaultButton')
   reopenMasterMerchant:SetAnchor(TOP, ZO_TradingHouseBrowseItemsLeftPane, BOTTOM, 0, 10)
   reopenMasterMerchant:SetWidth(200)
   reopenMasterMerchant:SetText(GetString(MM_APP_NAME))
   reopenMasterMerchant:SetHandler('OnClicked', self.ToggleMasterMerchantWindow)
-  local skCalc = CreateControlFromVirtual('MasterMerchantPriceCalculator', ZO_TradingHousePostItemPane,
-    'MasterMerchantPriceCalc')
+
+  local skCalc = CreateControlFromVirtual('MasterMerchantPriceCalculator', ZO_TradingHousePostItemPane, 'MasterMerchantPriceCalc')
   skCalc:SetAnchor(BOTTOM, reopenMasterMerchant, TOP, 0, -4)
 
   -- MasterMerchant button in mail screen
@@ -3223,22 +3318,27 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantMail:SetHandler('OnClicked', self.ToggleMasterMerchantWindow)
 
   -- Stats dropdown choice box
-  local MasterMerchantStatsGuild = CreateControlFromVirtual('MasterMerchantStatsGuildChooser',
-    MasterMerchantStatsWindow, 'MasterMerchantStatsGuildDropdown')
+  local MasterMerchantStatsGuild = CreateControlFromVirtual('MasterMerchantStatsGuildChooser', MasterMerchantStatsWindow, 'MasterMerchantStatsGuildDropdown')
   MasterMerchantStatsGuild:SetDimensions(270, 25)
   MasterMerchantStatsGuild:SetAnchor(LEFT, MasterMerchantStatsWindowGuildChooserLabel, RIGHT, 5, 0)
   MasterMerchantStatsGuild.m_comboBox:SetSortsItems(false)
 
   -- Guild Time dropdown choice box
-  local MasterMerchantGuildTime = CreateControlFromVirtual('MasterMerchantGuildTimeChooser', MasterMerchantGuildWindow,
-    'MasterMerchantStatsGuildDropdown')
-  MasterMerchantGuildTime:SetDimensions(180, 25)
-  MasterMerchantGuildTime:SetAnchor(LEFT, MasterMerchantGuildWindowMenuFooterSwitchViewButton, RIGHT, 5, 0)
-  MasterMerchantGuildTime.m_comboBox:SetSortsItems(false)
+  local MasterMerchantGuildTimeframe = CreateControlFromVirtual('MasterMerchantGuildWindowTimeframeChooser', MasterMerchantGuildWindow, 'MasterMerchantStatsGuildDropdown')
+  MasterMerchantGuildTimeframe:SetDimensions(180, 25)
+  MasterMerchantGuildTimeframe:SetAnchor(LEFT, MasterMerchantGuildWindowMenuFooterSwitchViewButton, RIGHT, 5, 0)
+  MasterMerchantGuildTimeframe.m_comboBox:SetSortsItems(false)
+
+  -- Guild Window Filter Timeframe dropdown choice box
+  local MasterMerchantGuildFilterTimeframe = CreateControlFromVirtual('MasterMerchantGuildWindowFilterTimerangeChooser', MasterMerchantWindow, 'MasterMerchantStatsGuildDropdown')
+  MasterMerchantGuildFilterTimeframe:SetDimensions(180, 25)
+  MasterMerchantGuildFilterTimeframe:SetAnchor(LEFT, MasterMerchantGuildWindowMenuFooterLoadingIcon, RIGHT, 5, 0)
+  MasterMerchantGuildFilterTimeframe.m_comboBox:SetSortsItems(false)
 
   MasterMerchant.systemSavedVariables.rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
 
   MasterMerchant:BuildGuiTimeDropdown()
+  MasterMerchant:BuildFilterTimerangeDropdown()
 
   -- Set sort column headers and search label from translation
   local fontString = 'ZoFontGameLargeBold'

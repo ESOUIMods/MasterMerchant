@@ -160,15 +160,33 @@ local function GetTimeAgo(timestamp)
   return formatedTime
 end
 
+local function GetDateFormattedString(month, day, yearString)
+  local dateString = ""
+  if MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_MONTH_DAY_FORMAT then
+    dateString = string.format("%s/%s", month, day)
+  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_DAY_MONTH_FORMAT then
+    dateString = string.format("%s/%s", day, month)
+  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_MONTH_DAY_YEAR_FORMAT then
+    dateString = string.format("%s/%s/%s", month, day, yearString)
+  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_YEAR_MONTH_DAY_FORMAT then
+    dateString = string.format("%s/%s/%s", yearString, month, day)
+  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_DAY_MONTH_YEAR_FORMAT then
+    dateString = string.format("%s/%s/%s", day, month, yearString)
+  end
+  return dateString
+end
+
 local function GetTimeDateString(timestamp)
   local timeData = os.date("*t", timestamp)
   local month = timeData.month
   local day = timeData.day
   local hour = timeData.hour
   local minute = timeData.min
+  local year = timeData.year
   local postMeridiem = hour >= 12
+  local yearString = string.sub(tostring(year), 3, 4)
   local meridiemString = ""
-  local dateString = ""
+  local dateString = GetDateFormattedString(month, day, yearString)
   if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and postMeridiem then
     meridiemString = "PM"
   elseif not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and not postMeridiem then
@@ -179,11 +197,6 @@ local function GetTimeDateString(timestamp)
   end
   if minute < 10 then
     minute = "0" .. tostring(minute)
-  end
-  if MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_MONTH_DAY_FORMAT then
-    dateString = string.format("%s/%s", month, day)
-  else
-    dateString = string.format("%s/%s", day, month)
   end
   return string.format("%s %s:%s%s", dateString, hour, minute, meridiemString)
 end

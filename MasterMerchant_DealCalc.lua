@@ -6,7 +6,7 @@
 -- Distribution without license is prohibited!
 
 function MasterMerchant.CustomDealCalc(setPrice, salesCount, purchasePrice, stackCount)
-  local deal = -1
+  local deal = MM_DEAL_VALUE_DONT_SHOW
   local margin = 0
   local profit = -1
   if (setPrice) then
@@ -15,21 +15,20 @@ function MasterMerchant.CustomDealCalc(setPrice, salesCount, purchasePrice, stac
     margin = tonumber(string.format('%.2f', ((setPrice - unitPrice) / setPrice) * 100))
 
     if (margin >= MasterMerchant.systemSavedVariables.customDealBuyIt) then
-      deal = 5
+      deal = MM_DEAL_VALUE_BUYIT
     elseif (margin >= MasterMerchant.systemSavedVariables.customDealSeventyFive) then
-      deal = 4
+      deal = MM_DEAL_VALUE_GREAT
     elseif (margin >= MasterMerchant.systemSavedVariables.customDealFifty) then
-      deal = 3
+      deal = MM_DEAL_VALUE_GOOD
     elseif (margin >= MasterMerchant.systemSavedVariables.customDealTwentyFive) then
-      deal = 2
+      deal = MM_DEAL_VALUE_REASONABLE
     elseif (margin >= MasterMerchant.systemSavedVariables.customDealZero) then
-      deal = 1
+      deal = MM_DEAL_VALUE_OKAY
     else
-      deal = 0
+      deal = MM_DEAL_VALUE_OVERPRICED
     end
   else
     -- No sales seen
-    deal = -2
     margin = nil
   end
   return deal, margin, profit
@@ -43,7 +42,7 @@ function MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stac
     return MasterMerchant.CustomDealCalc(setPrice, salesCount, purchasePrice, stackCount)
   end
 
-  local deal = -1
+  local deal = MM_DEAL_VALUE_DONT_SHOW
   local margin = 0
   local profit = -1
   if (setPrice) then
@@ -58,64 +57,64 @@ function MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stac
     if (salesCount > 15) then
       -- high volume margins
       if (margin >= 85) then
-        deal = 5
+        deal = MM_DEAL_VALUE_BUYIT
       elseif (margin >= 65 and profit >= 1000) then
-        deal = 5
+        deal = MM_DEAL_VALUE_BUYIT
       elseif (margin >= 50 and profit >= 3000) then
-        deal = 5
+        deal = MM_DEAL_VALUE_BUYIT
       elseif (margin >= 50 and profit >= 500) then
-        deal = 4
+        deal = MM_DEAL_VALUE_GREAT
       elseif (margin >= 35 and profit >= 3000) then
-        deal = 4
+        deal = MM_DEAL_VALUE_GREAT
       elseif (margin >= 35 and profit >= 100) then
-        deal = 3
+        deal = MM_DEAL_VALUE_GOOD
       elseif (margin >= 20) then
-        deal = 2
+        deal = MM_DEAL_VALUE_REASONABLE
       elseif (margin >= -2.5) then
-        deal = 1
+        deal = MM_DEAL_VALUE_OKAY
       else
-        deal = 0
+        deal = MM_DEAL_VALUE_OVERPRICED
       end
     elseif (salesCount > 5) then
       -- mid volume margins
       if (margin >= 85) then
-        deal = 5
+        deal = MM_DEAL_VALUE_BUYIT
       elseif (margin >= 80 and profit >= 1000) then
-        deal = 5
+        deal = MM_DEAL_VALUE_BUYIT
       elseif (margin >= 65 and profit >= 3000) then
-        deal = 5
+        deal = MM_DEAL_VALUE_BUYIT
       elseif (margin >= 65 and profit >= 500) then
-        deal = 4
+        deal = MM_DEAL_VALUE_GREAT
       elseif (margin >= 50 and profit >= 3000) then
-        deal = 4
+        deal = MM_DEAL_VALUE_GREAT
       elseif (margin >= 50 and profit >= 100) then
-        deal = 3
+        deal = MM_DEAL_VALUE_GOOD
       elseif (margin >= 30) then
-        deal = 2
+        deal = MM_DEAL_VALUE_REASONABLE
       elseif (margin >= -5.0) then
-        deal = 1
+        deal = MM_DEAL_VALUE_OKAY
       else
-        deal = 0
+        deal = MM_DEAL_VALUE_OVERPRICED
       end
     else
       -- low volume margins
       if (margin >= 90 and profit >= 1000) then
-        deal = 5
+        deal = MM_DEAL_VALUE_BUYIT
       elseif (margin >= 75 and profit >= 500) then
-        deal = 4
+        deal = MM_DEAL_VALUE_GREAT
       elseif (margin >= 60 and profit >= 100) then
-        deal = 3
+        deal = MM_DEAL_VALUE_GOOD
       elseif (margin >= 30) then
-        deal = 2
+        deal = MM_DEAL_VALUE_REASONABLE
       elseif (margin >= -7.5) then
-        deal = 1
+        deal = MM_DEAL_VALUE_OKAY
       else
-        deal = 0
+        deal = MM_DEAL_VALUE_OVERPRICED
       end
     end
   else
     -- No sales seen
-    deal = MasterMerchant.systemSavedVariables.noSalesInfoDeal
+    margin = nil
   end
 
   return deal, margin, profit

@@ -214,7 +214,7 @@
             <!-- Button size is different then the data row for alignment only -->
             <Control name="$(parent)Seller" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="265" y="32"/>
+              <Dimensions x="260" y="32"/>
               <OnMouseEnter>
                 MasterMerchant:HeaderToolTip(self, GetString(SK_BUYER_TOOLTIP))
               </OnMouseEnter>
@@ -224,7 +224,7 @@
             </Control>
             <Control name="$(parent)Guild" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)Seller" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="200" y="32"/>
+              <Dimensions x="190" y="32"/>
             </Control>
             <Control name="$(parent)Rank" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -240,7 +240,7 @@
             </Control>
             <Control name="$(parent)Count" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="90" y="32"/>
+              <Dimensions x="105" y="32"/>
             </Control>
             <Control name="$(parent)Percent" mouseEnabled="true">
               <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -292,19 +292,19 @@
         </Label>
         <Button name="$(parent)Seller" inheritAlpha="true" text="Seller" horizontalAlignment="LEFT">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="265" y="26"/>
+          <Dimensions x="260" y="26"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
         <Label name="$(parent)ItemName" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Item" linkEnabled="true" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="265" y="26"/>
+          <Dimensions x="260" y="26"/>
           <OnLinkMouseUp>
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild">
-          <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="265" offsetY="0"/>
-          <Dimensions x="200" y="26"/>
+          <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="260" offsetY="0"/>
+          <Dimensions x="190" y="26"/>
         </Label>
         <Label name="$(parent)Rank" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="15">
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -320,7 +320,7 @@
         </Label>
         <Label name="$(parent)Count" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Count">
           <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="90" y="26"/>
+          <Dimensions x="105" y="26"/>
         </Label>
         <Label name="$(parent)Percent" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="10%">
           <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
