@@ -77,6 +77,7 @@ end
 
 function MasterMerchant:CheckTimeframe()
   -- setup focus info
+  if not MasterMerchant.isInitialized then return end
   local range = MasterMerchant.systemSavedVariables.defaultDays
   local dayCutoff = MasterMerchant.dateRanges[MM_DATERANGE_TODAY].startTimestamp
 
@@ -312,6 +313,7 @@ end
 -- MasterMerchant:GetTooltipStats(54484, "50:16:4:0:0", false, true)
 -- Computes the weighted moving average across available data
 function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
+  if not MasterMerchant.isInitialized then return end
   if not itemLink then return end
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
@@ -3499,6 +3501,9 @@ function MasterMerchant:FirstInitialize()
     end
   end
 
+  MasterMerchant:BuildDateRangeTable()
+  MasterMerchant:BuildFilterDateRangeTable()
+
   -- TODO Check historyDepth is only set once on first run
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     MasterMerchant:dm("Debug", "Checked Old MM Settings")
@@ -3818,8 +3823,6 @@ function MasterMerchant:SecondInitialize()
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:Add(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
-    LEQ:Add(function() MasterMerchant:BuildDateRangeTable() end, 'BuildFilterDateRangeTable')
-    LEQ:Add(function() MasterMerchant:BuildFilterDateRangeTable() end, 'BuildFilterDateRangeTable')
     LEQ:Add(function()
       if internal:MasterMerchantDataActive() then
         MasterMerchant:dm("Info", GetString(MM_MMXXDATA_OBSOLETE))

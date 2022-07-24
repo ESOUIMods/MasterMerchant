@@ -2035,6 +2035,7 @@ function MasterMerchant:remStatsItemTooltip()
 end
 
 function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
+  if not MasterMerchant.isInitialized then return end
 
   if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
 
@@ -2483,6 +2484,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
 end
 
 function MasterMerchant:addStatsProvisionerTooltip(Popup)
+  if not MasterMerchant.isInitialized then return end
 
   local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
   Popup.lastLink = GetRecipeResultItemLink(recipeListIndex, recipeIndex)
