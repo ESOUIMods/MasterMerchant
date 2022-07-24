@@ -77,9 +77,13 @@ end
 
 function MasterMerchant:CheckTimeframe()
   -- setup focus info
-  if not MasterMerchant.isInitialized then return end
+  local daysRange = 10000
+  local dayCutoff = GetTimeStamp()
+  if not MasterMerchant.isInitialized then
+    return dayCutoff - (daysRange * ZO_ONE_DAY_IN_SECONDS), daysRange
+  end
   local range = MasterMerchant.systemSavedVariables.defaultDays
-  local dayCutoff = MasterMerchant.dateRanges[MM_DATERANGE_TODAY].startTimestamp
+  dayCutoff = MasterMerchant.dateRanges[MM_DATERANGE_TODAY].startTimestamp
 
   if IsControlKeyDown() and IsShiftKeyDown() then
     range = MasterMerchant.systemSavedVariables.ctrlShiftDays
@@ -90,7 +94,6 @@ function MasterMerchant:CheckTimeframe()
   end
 
   -- 10000 for numDays is more or less like saying it is undefined
-  local daysRange = 10000
   if range == GetString(MM_RANGE_NONE) then return -1, -1 end
   if range == GetString(MM_RANGE_ALL) then daysRange = 10000 end
   if range == GetString(MM_RANGE_FOCUS1) then daysRange = MasterMerchant.systemSavedVariables.focus1 end
@@ -313,17 +316,15 @@ end
 -- MasterMerchant:GetTooltipStats(54484, "50:16:4:0:0", false, true)
 -- Computes the weighted moving average across available data
 function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
-  if not MasterMerchant.isInitialized then return end
-  if not itemLink then return end
-  local itemID = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  -- 10000 for numDays is more or less like saying it is undefined
+  -- 10000 for numDays is more or less like saying it is undefined, or all
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
   For example when you press SHIFT or CTRL then daysHistory and daysRange
   are the same. However, when you do not modify the data, then daysRange
   is 10000 and daysHistory is however many days you have.
+
+  Answer: because daysRange is 10000 the previous authors multiplied that with
+  ZO_ONE_DAY_IN_SECONDS to ensure that all the sales were displayed.
   ]]--
   -- setup early local variables
   local list = {}
@@ -357,6 +358,16 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
   local blacklistTable = nil
   local ignoreOutliers = nil
   local numVouchers = 0
+
+  local returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
+                       ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount, ['numVouchers'] = numVouchers,
+                       ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+  if not MasterMerchant.isInitialized then return returnData end
+  if not itemLink then return returnData end
+
+  local itemID = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
 
   local function IsNameInBlacklist()
     if not blacklistTable then return false end
@@ -447,10 +458,6 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
   is 10000 and daysHistory is however many days you have.
   ]]--
 
-  local returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                       ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount, ['numVouchers'] = numVouchers,
-                       ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
-  if not MasterMerchant.isInitialized then return returnData end
   clickable = MasterMerchant.systemSavedVariables.displaySalesDetails
   skipDots = not MasterMerchant.systemSavedVariables.showGraph
   ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
@@ -2928,6 +2935,7 @@ function MasterMerchant:initSellingAdvice()
 end
 
 function MasterMerchant.AddSellingAdvice(rowControl, result)
+  if not MasterMerchant.isInitialized then return end
   local sellingAdvice = rowControl:GetNamedChild('SellingAdvice')
   if (not sellingAdvice) then
     local controlName = rowControl:GetName() .. 'SellingAdvice'
@@ -3010,6 +3018,7 @@ end
 isn't any buying advice then it is blank or 0
 ]]--
 function MasterMerchant.AddBuyingAdvice(rowControl, result)
+  if not MasterMerchant.isInitialized then return end
   local buyingAdvice = rowControl:GetNamedChild('BuyingAdvice')
   if (not buyingAdvice) then
     local controlName = rowControl:GetName() .. 'BuyingAdvice'

@@ -23,6 +23,7 @@ end
 
 function internal:addPostedItem(theEvent)
   --internal:dm("Debug", "addPostedItem")
+  if not MasterMerchant.isInitialized then return end
   --[[
           local theEvent            = {
             guild = guildHash,

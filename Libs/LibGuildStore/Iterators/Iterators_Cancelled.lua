@@ -19,6 +19,7 @@ end
 
 function internal:addCancelledItem(theEvent)
   --internal:dm("Debug", "addCancelledItem")
+  if not MasterMerchant.isInitialized then return end
   --[[
           local theEvent            = {
             guild = guildHash,

@@ -516,6 +516,7 @@ end
 -- this is for vanilla to add purchace data
 function internal:onTradingHouseEvent(eventCode, slotId, isPending)
   --internal:dm("Debug", "onTradingHouseEvent")
+  if not MasterMerchant.isInitialized then return end
   if not AwesomeGuildStore then
     --internal:dm("Debug", "not AwesomeGuildStore")
     local icon, itemName, displayQuality, quantity, seller, timeRemaining, price, currencyType, itemUniqueId, purchasePricePerUnit = GetTradingHouseSearchResultItemInfo(slotId)

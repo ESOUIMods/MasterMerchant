@@ -54,6 +54,7 @@ end
 
 function internal:addPurchaseData(theEvent)
   --internal:dm("Debug", "addPurchaseData")
+  if not MasterMerchant.isInitialized then return end
   --[[
         local theEvent            = {
           guild = itemData.guildName,
