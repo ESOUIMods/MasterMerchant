@@ -6,7 +6,7 @@
 
 
 ## Title: Master Merchant 3.7.16 by Sharlikran
-## APIVersion: 101034 101035
+## APIVersion: 101035 101036
 ## Description: Tools for the Master Merchant: Sales History, Guild Sales Info, Pricing Assistance.
 ## Authors: Philgo68, Khaibit, dOpiate, Garkin, Sharlikran
 ## Version: 3.7.16
