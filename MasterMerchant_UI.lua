@@ -1096,21 +1096,6 @@ function MMScrollList:New(control)
   return skList
 end
 
-function MasterMerchant.CleanupSearch(term)
-  -- ( ) . % + - * ? [ ^ $
-  term = string.gsub(term, '%(', '%%%(')
-  term = string.gsub(term, '%)', '%%%)')
-  term = string.gsub(term, '%.', '%%%.')
-  term = string.gsub(term, '%+', '%%%+')
-  term = string.gsub(term, '%-', '%%%-')
-  term = string.gsub(term, '%*', '%%%*')
-  term = string.gsub(term, '%?', '%%%?')
-  term = string.gsub(term, '%[', '%%%[')
-  term = string.gsub(term, '%^', '%%%^')
-  term = string.gsub(term, '%$', '%%%$')
-  return term
-end
-
 function MasterMerchant:BuildFilterDateRangeTable()
   MasterMerchant.filterDateRanges = { }
   local daysRange = MasterMerchant.systemSavedVariables.customFilterDateRange
@@ -1240,7 +1225,6 @@ function MMScrollList:FilterScrollList()
               local gn = tolower(tconcat(temp, ''))
               local searchByWords = string.gmatch(searchText, '%S+')
               for searchWord in searchByWords do
-                searchWord = MasterMerchant.CleanupSearch(searchWord)
                 matchesAll = (matchesAll and string.find(gn, searchWord))
               end
               if matchesAll then
@@ -1275,7 +1259,6 @@ function MMScrollList:FilterScrollList()
                   local gn = tolower(tconcat(temp, ''))
                   local searchByWords = string.gmatch(searchText, '%S+')
                   for searchWord in searchByWords do
-                    searchWord = MasterMerchant.CleanupSearch(searchWord)
                     matchesAll = (matchesAll and string.find(gn, searchWord))
                   end
                   if matchesAll then
@@ -1300,7 +1283,6 @@ function MMScrollList:FilterScrollList()
       -- Build up a list of indexes matching each word, then compute the intersection
       -- of those sets
       for searchWord in searchByWords do
-        searchWord = MasterMerchant.CleanupSearch(searchWord)
         local addedIndexes = {}
         for key, indexes in pairs(indexToUse) do
           local findStatus, findResult = pcall(string.find, key, searchWord)
@@ -1406,7 +1388,6 @@ function MMScrollList:FilterScrollList()
           -- Break up search term into words
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
-            searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
           end
           if matchesAll then
@@ -1430,7 +1411,6 @@ function MMScrollList:FilterScrollList()
           -- Break up search term into words
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
-            searchWord = MasterMerchant.CleanupSearch(searchWord)
             matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
           end
           if matchesAll and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
@@ -1444,7 +1424,6 @@ function MMScrollList:FilterScrollList()
             -- Break up search term into words
             local searchByWords = zo_strgmatch(searchText, '%S+')
             for searchWord in searchByWords do
-              searchWord = MasterMerchant.CleanupSearch(searchWord)
               local txt
               if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'item' then
                 txt = zo_strlower(MasterMerchant.concat(gn, sellerData.searchText))
@@ -1496,7 +1475,6 @@ function MMScrollList:FilterScrollList()
       -- Build up a list of indexes matching each word, then compute the intersection
       -- of those sets
       for searchWord in searchByWords do
-        searchWord = MasterMerchant.CleanupSearch(searchWord)
         local addedIndexes = {}
         for key, indexes in pairs(indexToUse) do
           local findStatus, findResult = pcall(string.find, key, searchWord)
@@ -1575,7 +1553,6 @@ function MMScrollList:FilterScrollList()
       -- Build up a list of indexes matching each word, then compute the intersection
       -- of those sets
       for searchWord in searchByWords do
-        searchWord = MasterMerchant.CleanupSearch(searchWord)
         local addedIndexes = {}
         for key, indexes in pairs(indexToUse) do
           local findStatus, findResult = pcall(string.find, key, searchWord)
@@ -1656,7 +1633,6 @@ function MMScrollList:FilterScrollList()
       -- Build up a list of indexes matching each word, then compute the intersection
       -- of those sets
       for searchWord in searchByWords do
-        searchWord = MasterMerchant.CleanupSearch(searchWord)
         local addedIndexes = {}
         for key, indexes in pairs(indexTable) do
           local findStatus, findResult = pcall(string.find, key, searchWord)
