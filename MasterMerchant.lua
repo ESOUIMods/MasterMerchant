@@ -10,6 +10,7 @@ local internal = _G["LibGuildStore_Internal"]
 local sales_data = _G["LibGuildStore_SalesData"]
 local sr_index = _G["LibGuildStore_SalesIndex"]
 local listings_data = _G["LibGuildStore_ListingsData"]
+local purchases_data = _G["LibGuildStore_PurchaseData"]
 
 local OriginalSetupPendingPost
 
@@ -2644,7 +2645,7 @@ function MasterMerchant:SpecialMessage(force)
   end
 end
 
-function MasterMerchant:ExportLastWeek()
+function MasterMerchant:ExportSalesReport()
   local export = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, "EXPORT", {}, nil)
 
   local numGuilds = GetNumGuilds()
@@ -2695,7 +2696,7 @@ function MasterMerchant:ExportLastWeek()
 
 end
 
-function MasterMerchant:ExportSalesData()
+function MasterMerchant:ExportSalesActivity()
   local export = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, "SALES", {}, nil)
 
   local numGuilds = GetNumGuilds()
@@ -2746,6 +2747,99 @@ function MasterMerchant:ExportSalesData()
                 currentGuild .. "&" ..
                 dataList['itemDesc'] .. "&" ..
                 dataList['itemAdderText']
+            )
+          end
+        end
+      end
+    end
+  end
+
+end
+
+function MasterMerchant:ExportPersonalSales()
+  local export = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, "PERSONALSALES", {}, nil)
+  local numGuilds = GetNumGuilds()
+  local guildNum = self.guildNumber
+  local guildID = GetGuildId(guildNum)
+  local guildName = GetGuildName(guildID)
+  export[guildName] = {}
+  local list = export[guildName]
+  local playerName = zo_strlower(GetDisplayName())
+
+  local epochStart = MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].startTimestamp
+  local epochEnd = nil
+  if MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].endTimestamp then
+    epochEnd = MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].endTimestamp
+  end
+  local function ValidDaterange(timestamp)
+    if epochEnd then
+      if timestamp >= epochStart and timestamp < epochEnd then return true end
+    else
+      if timestamp >= epochStart then return true end
+    end
+    return false
+  end
+
+  for _, v in pairs(sales_data) do
+    for _, dataList in pairs(v) do
+      if dataList['sales'] then
+        for _, sale in pairs(dataList['sales']) do
+          local currentGuild = internal:GetGuildNameByIndex(sale['guild'])
+          local currentBuyer = internal:GetAccountNameByIndex(sale['buyer'])
+          local currentSeller = internal:GetAccountNameByIndex(sale['seller'])
+          local isSelfSale = playerName == zo_strlower(currentSeller)
+          if ValidDaterange(sale.timestamp) and isSelfSale and guildName == currentGuild then
+            table.insert(list,
+                currentSeller .. "&" ..
+                currentBuyer .. "&" ..
+                currentGuild .. "&" ..
+                sale.quant .. "&" ..
+                dataList['itemDesc'] .. "&" ..
+                sale.price .. "&" ..
+                sale.timestamp
+            )
+          end
+        end
+      end
+    end
+  end
+
+end
+
+function MasterMerchant:ExportShoppingList()
+  local export = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, "PURCHASES", {}, nil)
+  export["data"] = {}
+  local list = export["data"]
+  local epochStart = MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].startTimestamp
+  local epochEnd = nil
+  if MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].endTimestamp then
+    epochEnd = MasterMerchant.dateRanges[MasterMerchant.systemSavedVariables.rankIndexRoster].endTimestamp
+  end
+  local function ValidDaterange(timestamp)
+    if epochEnd then
+      if timestamp >= epochStart and timestamp < epochEnd then return true end
+    else
+      if timestamp >= epochStart then return true end
+    end
+    return false
+  end
+
+  for _, v in pairs(purchases_data) do
+    for _, dataList in pairs(v) do
+      if dataList['sales'] then
+        for _, sale in pairs(dataList['sales']) do
+          local currentGuild = internal:GetGuildNameByIndex(sale['guild'])
+          local currentSeller = internal:GetAccountNameByIndex(sale['seller'])
+          local currentBuyer = internal:GetAccountNameByIndex(sale['buyer'])
+          if ValidDaterange(sale.timestamp) then
+            table.insert(list,
+                currentSeller .. "&" ..
+                currentBuyer .. "&" ..
+                currentGuild .. "&" ..
+                sale.quant .. "&" ..
+                dataList['itemDesc'] .. "&" ..
+                sale.price .. "&" ..
+                sale.timestamp
             )
           end
         end
@@ -4128,6 +4222,8 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", GetString(MM_HELP_INVISIBLE))
     MasterMerchant:dm("Info", GetString(MM_HELP_EXPORT))
     MasterMerchant:dm("Info", GetString(MM_HELP_SALES))
+    MasterMerchant:dm("Info", GetString(MM_HELP_PERSONAL))
+    MasterMerchant:dm("Info", GetString(MM_HELP_PURCHASES))
     MasterMerchant:dm("Info", GetString(MM_HELP_DEAL))
     MasterMerchant:dm("Info", GetString(MM_HELP_TYPES))
     MasterMerchant:dm("Info", GetString(MM_HELP_TRAITS))
@@ -4144,7 +4240,7 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant.guildNumber = guildNumber
     if (MasterMerchant.guildNumber > 0) and (GetNumGuilds() > 0) then
       MasterMerchant:dm("Info", GetString(MM_EXPORT_START))
-      MasterMerchant:ExportLastWeek()
+      MasterMerchant:ExportSalesReport()
       MasterMerchant:dm("Info", GetString(MM_EXPORT_COMPLETE))
     else
       MasterMerchant:dm("Info", GetString(MM_GUILD_INDEX_INCLUDE))
@@ -4165,8 +4261,8 @@ function MasterMerchant.Slash(allArgs)
     end
     MasterMerchant.guildNumber = guildNumber
     if (MasterMerchant.guildNumber > 0) and (GetNumGuilds() > 0) then
-      MasterMerchant:dm("Info", GetString(MM_SALES_EXPORT_START))
-      MasterMerchant:ExportSalesData()
+      MasterMerchant:dm("Info", GetString(MM_SALES_ACTIVITY_EXPORT_START))
+      MasterMerchant:ExportSalesActivity()
       MasterMerchant:dm("Info", GetString(MM_EXPORT_COMPLETE))
     else
       MasterMerchant:dm("Info", GetString(MM_GUILD_INDEX_INCLUDE))
@@ -4177,6 +4273,39 @@ function MasterMerchant.Slash(allArgs)
         MasterMerchant:dm("Info", string.format(GetString(MM_GUILD_INDEX_NAME), i, guildName))
       end
     end
+    return
+  end
+
+  if args == 'personal' then
+    if not MasterMerchant.isInitialized then
+      MasterMerchant:dm("Info", GetString(MM_STILL_INITIALIZING))
+      return
+    end
+    MasterMerchant.guildNumber = guildNumber
+    if (MasterMerchant.guildNumber > 0) and (GetNumGuilds() > 0) then
+      MasterMerchant:dm("Info", GetString(MM_SALES_PERSONAL_EXPORT_START))
+      MasterMerchant:ExportPersonalSales()
+      MasterMerchant:dm("Info", GetString(MM_EXPORT_COMPLETE))
+    else
+      MasterMerchant:dm("Info", GetString(MM_GUILD_INDEX_INCLUDE))
+      MasterMerchant:dm("Info", GetString(MM_PERSONAL_SALES_EXAMPLE))
+      for i = 1, GetNumGuilds() do
+        local guildID = GetGuildId(i)
+        local guildName = GetGuildName(guildID)
+        MasterMerchant:dm("Info", string.format(GetString(MM_GUILD_INDEX_NAME), i, guildName))
+      end
+    end
+    return
+  end
+
+  if args == 'purchases' then
+    if not MasterMerchant.isInitialized then
+      MasterMerchant:dm("Info", GetString(MM_STILL_INITIALIZING))
+      return
+    end
+    MasterMerchant:dm("Info", GetString(MM_EXPORT_SHOPPING_LIST_START))
+    MasterMerchant:ExportShoppingList()
+    MasterMerchant:dm("Info", GetString(MM_EXPORT_COMPLETE))
     return
   end
 
@@ -4195,6 +4324,7 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", GetString(MM_CLEAR_SAVED_PRICES))
     return
   end
+
   if args == 'invisible' then
     MasterMerchant.systemSavedVariables.salesWinLeft = MasterMerchant.systemDefault.salesWinLeft
     MasterMerchant.systemSavedVariables.salesWinTop = MasterMerchant.systemDefault.salesWinTop
@@ -4215,11 +4345,13 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", GetString(MM_RESET_POSITION))
     return
   end
+
   if args == 'deal' or args == 'saucy' then
     MasterMerchant.systemSavedVariables.saucy = not MasterMerchant.systemSavedVariables.saucy
     MasterMerchant:dm("Info", GetString(MM_GUILD_DEAL_TYPE))
     return
   end
+
   if args == 'types' then
     local message = 'Item types: '
     for i = 0, 71 do
@@ -4228,6 +4360,7 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", message)
     return
   end
+
   if args == 'traits' then
     local message = 'Item traits: '
     for i = 0, 33 do
@@ -4236,6 +4369,7 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", message)
     return
   end
+
   if args == 'quality' then
     local message = 'Item quality: '
     for i = 0, 5 do
@@ -4244,6 +4378,7 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", message)
     return
   end
+
   if args == 'equip' then
     local message = 'Equipment types: '
     for i = 1, 15 do
