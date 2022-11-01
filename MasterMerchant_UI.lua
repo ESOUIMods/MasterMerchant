@@ -2593,6 +2593,9 @@ function MasterMerchant:GenerateStatsItemTooltip()
   elseif mocParent == 'ZO_Character' or
     mocParent == 'ZO_CompanionCharacterWindow_Keyboard_TopLevel' then
     itemLink = GetItemLink(skMoc.bagId, skMoc.slotIndex)
+    -- Furniture Catalogue
+  elseif mocParent == 'FurCGui_ListHolder' then
+    itemLink = skMoc.itemLink
     -- Loot window if autoloot is disabled
   elseif mocParent == 'ZO_LootAlphaContainerListContents' then
     if not skMoc.dataEntry then return end
@@ -2601,7 +2604,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
   elseif mocParent == 'ZO_MailInboxMessageAttachments' then itemLink = GetAttachedItemLink(MAIL_INBOX:GetOpenMailId(),
     skMoc.id, LINK_STYLE_DEFAULT)
   elseif mocParent == 'ZO_MailSendAttachments' then itemLink = GetMailQueuedAttachmentLink(skMoc.id, LINK_STYLE_DEFAULT)
-  elseif mocParent == 'IIFA_GUI_ListHolder' then itemLink = moc().itemLink
+  elseif mocParent == 'IIFA_GUI_ListHolder' then itemLink = skMoc.itemLink
   elseif mocParent == 'ZO_TradingHouseBrowseItemsRightPaneSearchResultsContents' then
     local rData = skMoc.dataEntry and skMoc.dataEntry.data or nil
     -- The only thing with 0 time remaining should be guild tabards, no
