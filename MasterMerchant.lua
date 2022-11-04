@@ -910,10 +910,10 @@ local level = GetItemLinkRequiredLevel(itemLink)
 end
 
 function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
-  local ingLink = GetItemLinkRecipeIngredientItemLink(itemLink, i)
-  if ingLink ~= '' then
+  local ingredientItemLink = GetItemLinkRecipeIngredientItemLink(itemLink, i)
+  if ingredientItemLink ~= '' then
     local _, _, numRequired = GetItemLinkRecipeIngredientInfo(itemLink, i)
-    return ingLink, numRequired
+    return ingredientItemLink, numRequired
   end
 
   local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
@@ -974,8 +974,8 @@ function MasterMerchant:itemCraftPrice(itemLink)
     end
     local level = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)
     local solvent = (itemType == ITEMTYPE_POTION and MasterMerchant.potionSolvents[level]) or MasterMerchant.poisonSolvents[level]
-    local ingLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', solvent)
-    local cost = MasterMerchant.GetItemLinePrice(ingLink)
+    local ingredientItemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', solvent)
+    local cost = MasterMerchant.GetItemLinePrice(ingredientItemLink)
 
     --for i = 1, GetMaxTraits() do
     --    local hasTraitAbility, traitAbilityDescription, traitCooldown, traitHasScaling, traitMinLevel, traitMaxLevel, traitIsChampionPoints = GetItemLinkTraitOnUseAbilityInfo(itemLink, i)
@@ -994,9 +994,9 @@ function MasterMerchant:itemCraftPrice(itemLink)
   if ((numIngredients or 0) > 0) then
     local cost = 0
     for i = 1, numIngredients do
-      local ingLink, numRequired = MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
-      if ingLink then
-        cost = cost + (MasterMerchant.GetItemLinePrice(ingLink) * numRequired)
+      local ingredientItemLink, numRequired = MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
+      if ingredientItemLink then
+        cost = cost + (MasterMerchant.GetItemLinePrice(ingredientItemLink) * numRequired)
       end
     end
 
