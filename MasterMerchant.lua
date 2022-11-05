@@ -957,20 +957,42 @@ function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
   --]]
 end
 
--- TODO fix craft cost
+-- TODO fix craft cost for potions, add LibAlchemy
+-- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 function MasterMerchant:itemCraftPrice(itemLink)
-
-  local itemType = GetItemLinkItemType(itemLink)
+  local ITEMTYPE_TO_ABILITYINDEX = {
+    [ITEMTYPE_POISON] = 4,
+    [ITEMTYPE_POTION] = 4,
+    [ITEMTYPE_FOOD] = 5,
+    [ITEMTYPE_DRINK] = 6,
+  }
+  local SPECIALIZED_ITEMTYPE_TO_ABILITYINDEX = {
+    [SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD] = 5,
+    [SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK] = 6,
+  }
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+  local itemIndex = ITEMTYPE_TO_ABILITYINDEX[itemType]
+  if (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK)) then
+    itemIndex = SPECIALIZED_ITEMTYPE_TO_ABILITYINDEX[specializedItemType]
+  end
+  local craftingType = CRAFTING_TYPE_PROVISIONING
+  if itemType == ITEMTYPE_POTION or itemType == ITEMTYPE_POISON then
+    craftingType = CRAFTING_TYPE_ALCHEMY
+  end
+  local multiplier = 1 -- you can't divide by 0
+  if itemType == ITEMTYPE_POTION or itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK)) then
+    multiplier = select(8, GetSkillAbilityInfo(SKILL_TYPE_TRADESKILL, itemIndex, craftingType)) + 1
+  end
 
   if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
 
     -- Potions/Posions aren't done yet
     if true then
-      return nil
+      return nil, nil
     end
 
     if not IsItemLinkCrafted(itemLink) then
-      return nil
+      return nil, nil
     end
     local level = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)
     local solvent = (itemType == ITEMTYPE_POTION and MasterMerchant.potionSolvents[level]) or MasterMerchant.poisonSolvents[level]
@@ -982,7 +1004,7 @@ function MasterMerchant:itemCraftPrice(itemLink)
     --    if(hasTraitAbility) then
     --    end
     --end
-    return cost / 4
+    return cost, (cost / multiplier)
   end
 
   local numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
@@ -1000,29 +1022,40 @@ function MasterMerchant:itemCraftPrice(itemLink)
       end
     end
 
-    local itemType, specializedItemType = GetItemLinkItemType(itemLink)
     -- Food or Drink or Recipe Food/Drink
     if ((itemType == ITEMTYPE_DRINK) or (itemType == ITEMTYPE_FOOD)
       or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK))) then
-      cost = cost / 4
+      return cost, (cost / multiplier)
     end
-    return cost
+    return cost, nil
   else
-    return nil
+    return nil, nil
   end
 end
 
 --[[TODO Verified Good
 ]]--
 function MasterMerchant:CraftCostPriceTip(itemLink, chatText)
-  local cost = self:itemCraftPrice(itemLink)
+  local cost, costPerItem = self:itemCraftPrice(itemLink)
+  local costTipString = ""
+  local costPerItemTipString = ""
+  local craftTip = ""
+  local craftingTooltipString = ""
   if cost then
+    costTipString = self.LocalizedNumber(cost)
     craftTip = GetString(MM_CRAFTCOST_PRICE_TIP)
-    local craftTipString = self.LocalizedNumber(cost)
-    -- chatText
     if not chatText then craftTip = craftTip .. MasterMerchant.coinIcon end
-
-    return string.format(craftTip, craftTipString)
+    craftingTooltipString = string.format(craftTip, costTipString)
+  end
+  -- if costPerItem, craftingTooltipString is overridden
+  if costPerItem then
+    costPerItemTipString = self.LocalizedNumber(costPerItem)
+    craftTip = GetString(MM_CRAFTCOSTPER_PRICE_TIP)
+    if not chatText then craftTip = craftTip .. MasterMerchant.coinIcon end
+    craftingTooltipString = string.format(craftTip, costTipString, costPerItemTipString)
+  end
+  if craftingTooltipString ~= "" then
+    return craftingTooltipString
   else
     return nil
   end
@@ -2790,7 +2823,7 @@ function MasterMerchant:ExportPersonalSales()
           local isSelfSale = playerName == zo_strlower(currentSeller)
           if ValidDaterange(sale.timestamp) and isSelfSale and guildName == currentGuild then
             table.insert(list,
-                currentSeller .. "&" ..
+              currentSeller .. "&" ..
                 currentBuyer .. "&" ..
                 currentGuild .. "&" ..
                 sale.quant .. "&" ..
@@ -2833,7 +2866,7 @@ function MasterMerchant:ExportShoppingList()
           local currentBuyer = internal:GetAccountNameByIndex(sale['buyer'])
           if ValidDaterange(sale.timestamp) then
             table.insert(list,
-                currentSeller .. "&" ..
+              currentSeller .. "&" ..
                 currentBuyer .. "&" ..
                 currentGuild .. "&" ..
                 sale.quant .. "&" ..

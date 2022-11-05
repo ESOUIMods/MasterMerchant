@@ -446,6 +446,7 @@ ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Leere Filter")
 
 ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore nicht initialisiert. Informationen werden nicht aktualisiert!")
 ZO_CreateStringId("MM_CRAFTCOST_PRICE_TIP", "Herstellungskosten: %s")
+ZO_CreateStringId("MM_CRAFTCOSTPER_PRICE_TIP", "Craft Cost: %s (%s each)")
 
 ZO_CreateStringId("SK_ALL_CALC_NAME", "Sichere übergreifende Preis Daten")
 ZO_CreateStringId("SK_ALL_CALC_TIP", "Wenn aktiviert, werden alle Preis Daten für alle Gilden identisch verwendet! Wenn deaktiviert, werden die Preis Daten für alle Gilden unterschiedlich gespeichert.")

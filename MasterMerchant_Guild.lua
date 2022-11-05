@@ -107,18 +107,18 @@ MMGuild = {
   initDateTime = GetTimeStamp(),
 }
 
-  local function guild_system_offline()
-    local weekCutoff = 1595962800 -- Tuesday, 28-Jul-20 19:00:00 UTC
+local function guild_system_offline()
+  local weekCutoff = 1595962800 -- Tuesday, 28-Jul-20 19:00:00 UTC
 
-    if GetWorldName() == 'EU Megaserver' then
-      weekCutoff = 1595941200  -- Tuesday, 28-Jul-20 13:00:00 UTC
-    end
-
-    while weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS) < GetTimeStamp() do
-      weekCutoff = weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
-    end
-    return weekCutoff
+  if GetWorldName() == 'EU Megaserver' then
+    weekCutoff = 1595941200  -- Tuesday, 28-Jul-20 13:00:00 UTC
   end
+
+  while weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS) < GetTimeStamp() do
+    weekCutoff = weekCutoff + (7 * ZO_ONE_DAY_IN_SECONDS)
+  end
+  return weekCutoff
+end
 
 function MasterMerchant:BuildDateRangeTable()
   local _, weekCutoff = GetGuildKioskCycleTimes()
