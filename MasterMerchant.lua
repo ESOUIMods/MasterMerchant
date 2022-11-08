@@ -957,7 +957,36 @@ function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
   --]]
 end
 
--- TODO fix craft cost for potions, add LibAlchemy
+function MasterMerchant:GetSolventItemLink(itemLink)
+  local itemType, _ = GetItemLinkItemType(itemLink)
+  local solventIndex = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)
+  local solventItemLink = {
+    [ITEMTYPE_POTION] = {
+      [3] = "|H1:item:883:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [10] = "|H1:item:1187:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [20] = "|H1:item:4570:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [30] = "|H1:item:23265:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [40] = "|H1:item:23266:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [60] = "|H1:item:23267:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [100] = "|H1:item:23268:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [150] = "|H1:item:64500:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [200] = "|H1:item:64501:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+    },
+    [ITEMTYPE_POISON] = {
+      [3] = "|H1:item:75357:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [10] = "|H1:item:75358:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [20] = "|H1:item:75359:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [30] = "|H1:item:75360:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [40] = "|H1:item:75361:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [60] = "|H1:item:75362:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [100] = "|H1:item:75363:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [150] = "|H1:item:75364:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+      [200] = "|H1:item:75365:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
+    },
+  }
+  return solventItemLink[itemType][solventIndex]
+end
+
 -- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 function MasterMerchant:itemCraftPrice(itemLink)
   local ITEMTYPE_TO_ABILITYINDEX = {
@@ -986,25 +1015,23 @@ function MasterMerchant:itemCraftPrice(itemLink)
 
   if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
 
-    -- Potions/Posions aren't done yet
-    if true then
-      return nil, nil
-    end
-
     if not IsItemLinkCrafted(itemLink) then
       return nil, nil
     end
-    local level = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)
-    local solvent = (itemType == ITEMTYPE_POTION and MasterMerchant.potionSolvents[level]) or MasterMerchant.poisonSolvents[level]
-    local ingredientItemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', solvent)
-    local cost = MasterMerchant.GetItemLinePrice(ingredientItemLink)
 
-    --for i = 1, GetMaxTraits() do
-    --    local hasTraitAbility, traitAbilityDescription, traitCooldown, traitHasScaling, traitMinLevel, traitMaxLevel, traitIsChampionPoints = GetItemLinkTraitOnUseAbilityInfo(itemLink, i)
-    --    if(hasTraitAbility) then
-    --    end
-    --end
-    return cost, (cost / multiplier)
+    local effect1,effect2,effect3,effect4 = LibAlchemy:GetEffectsFromItemLink(itemLink)
+    local solventItemLink = MasterMerchant:GetSolventItemLink(itemLink)
+    if effect1 ~= 0 then
+      local cost = MasterMerchant.GetItemLinePrice(solventItemLink)
+      local bestIngredients = LibAlchemy:getBestCombination({LibAlchemy.effectsByWritID[effect1],LibAlchemy.effectsByWritID[effect2],LibAlchemy.effectsByWritID[effect3],LibAlchemy.effectsByWritID[effect4]}) or {}
+      for _, itemId in pairs(bestIngredients) do
+        local ingredientItemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', itemId)
+        cost = cost + MasterMerchant.GetItemLinePrice(ingredientItemLink)
+      end
+      return cost, (cost / multiplier)
+    else
+      return nil, nil
+    end
   end
 
   local numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
