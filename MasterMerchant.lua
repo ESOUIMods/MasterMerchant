@@ -986,9 +986,12 @@ function MasterMerchant:GetSolventItemLink(itemLink)
   }
   return solventItemLink[itemType][solventIndex]
 end
-
+-- /script MasterMerchant:GetTradeSkillInformation("|H1:item:28405:3:5:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h")
 -- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
-function MasterMerchant:itemCraftPrice(itemLink)
+function MasterMerchant:GetTradeSkillInformation(itemLink)
+  local MM_TRADESKILL_ALCHEMY = 77
+  local MM_TRADESKILL_PROVISIONING = 76
+
   local ITEMTYPE_TO_ABILITYINDEX = {
     [ITEMTYPE_POISON] = 4,
     [ITEMTYPE_POTION] = 4,
@@ -1000,18 +1003,52 @@ function MasterMerchant:itemCraftPrice(itemLink)
     [SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK] = 6,
   }
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  local itemIndex = ITEMTYPE_TO_ABILITYINDEX[itemType]
+  local skillAbilityIndex = ITEMTYPE_TO_ABILITYINDEX[itemType]
   if (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK)) then
-    itemIndex = SPECIALIZED_ITEMTYPE_TO_ABILITYINDEX[specializedItemType]
+    skillAbilityIndex = SPECIALIZED_ITEMTYPE_TO_ABILITYINDEX[specializedItemType]
   end
-  local craftingType = CRAFTING_TYPE_PROVISIONING
+  local craftingType = MM_TRADESKILL_PROVISIONING
   if itemType == ITEMTYPE_POTION or itemType == ITEMTYPE_POISON then
-    craftingType = CRAFTING_TYPE_ALCHEMY
+    craftingType = MM_TRADESKILL_ALCHEMY
   end
+
+  local numSkillLines = GetNumSkillLines(SKILL_TYPE_TRADESKILL)
+  for sl = 1, numSkillLines do
+    local skillLineId = GetSkillLineId(SKILL_TYPE_TRADESKILL, sl)
+    if skillLineId == craftingType then
+      local numAbilities = GetNumSkillAbilities(SKILL_TYPE_TRADESKILL, sl)
+      for ab = 1, numAbilities do
+        if ab == skillAbilityIndex then
+          local name, _, _, _, _, purchased, _, rank = GetSkillAbilityInfo(SKILL_TYPE_TRADESKILL, sl, ab)
+          --d(name)
+          return purchased, rank
+        end
+      end
+    end --
+  end
+  return false, 0
+end
+
+-- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+function MasterMerchant:itemCraftPrice(itemLink)
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+  --d("-----")
   local multiplier = 1 -- you can't divide by 0
-  if itemType == ITEMTYPE_POTION or itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK)) then
-    multiplier = select(8, GetSkillAbilityInfo(SKILL_TYPE_TRADESKILL, itemIndex, craftingType)) + 1
+  local purchaced, skillRank = MasterMerchant:GetTradeSkillInformation(itemLink)
+  --d(purchaced)
+  --d(skillRank)
+  if purchaced then
+    -- multiplier
+    if itemType == ITEMTYPE_POTION or itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK)) then
+      multiplier = skillRank + 1
+    elseif itemType == ITEMTYPE_POISON then
+      multiplier = skillRank * 4
+    end
   end
+  if not purchaced and itemType == ITEMTYPE_POISON then
+    multiplier = 4
+  end
+  --d(multiplier)
 
   if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
 
@@ -1019,11 +1056,11 @@ function MasterMerchant:itemCraftPrice(itemLink)
       return nil, nil
     end
 
-    local effect1,effect2,effect3,effect4 = LibAlchemy:GetEffectsFromItemLink(itemLink)
+    local effect1, effect2, effect3, effect4 = LibAlchemy:GetEffectsFromItemLink(itemLink)
     local solventItemLink = MasterMerchant:GetSolventItemLink(itemLink)
     if effect1 ~= 0 then
       local cost = MasterMerchant.GetItemLinePrice(solventItemLink)
-      local bestIngredients = LibAlchemy:getBestCombination({LibAlchemy.effectsByWritID[effect1],LibAlchemy.effectsByWritID[effect2],LibAlchemy.effectsByWritID[effect3],LibAlchemy.effectsByWritID[effect4]}) or {}
+      local bestIngredients = LibAlchemy:getBestCombination({ LibAlchemy.effectsByWritID[effect1], LibAlchemy.effectsByWritID[effect2], LibAlchemy.effectsByWritID[effect3], LibAlchemy.effectsByWritID[effect4] }) or {}
       for _, itemId in pairs(bestIngredients) do
         local ingredientItemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', itemId)
         cost = cost + MasterMerchant.GetItemLinePrice(ingredientItemLink)
