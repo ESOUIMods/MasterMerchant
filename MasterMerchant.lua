@@ -897,7 +897,7 @@ function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
 
   --[[
 local itemType = GetItemLinkItemType(itemLink)
-  local equipType = GetItemLinkEquipType(itemLink)
+local equipType = GetItemLinkEquipType(itemLink)
 local weaponType = GetItemLinkWeaponType(itemLink)
 local armorType = GetItemLinkArmorType(itemLink)
 local trait = GetItemLinkTraitInfo(itemLink)
@@ -1019,8 +1019,7 @@ function MasterMerchant:GetTradeSkillInformation(itemLink)
       local numAbilities = GetNumSkillAbilities(SKILL_TYPE_TRADESKILL, sl)
       for ab = 1, numAbilities do
         if ab == skillAbilityIndex then
-          local name, _, _, _, _, purchased, _, rank = GetSkillAbilityInfo(SKILL_TYPE_TRADESKILL, sl, ab)
-          --d(name)
+          local _, _, _, _, _, purchased, _, rank = GetSkillAbilityInfo(SKILL_TYPE_TRADESKILL, sl, ab)
           return purchased, rank
         end
       end
@@ -1031,30 +1030,25 @@ end
 
 -- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 function MasterMerchant:itemCraftPrice(itemLink)
+  if not IsItemLinkCrafted(itemLink) then
+    return nil, nil
+  end
+
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  --d("-----")
   local multiplier = 1 -- you can't divide by 0
   local purchaced, skillRank = MasterMerchant:GetTradeSkillInformation(itemLink)
-  --d(purchaced)
-  --d(skillRank)
   if purchaced then
-    -- multiplier
     if itemType == ITEMTYPE_POTION or itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK)) then
       multiplier = skillRank + 1
     elseif itemType == ITEMTYPE_POISON then
-      multiplier = skillRank * 4
+      multiplier = (skillRank + 1) * 4
     end
   end
   if not purchaced and itemType == ITEMTYPE_POISON then
     multiplier = 4
   end
-  --d(multiplier)
 
   if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
-
-    if not IsItemLinkCrafted(itemLink) then
-      return nil, nil
-    end
 
     local effect1, effect2, effect3, effect4 = LibAlchemy:GetEffectsFromItemLink(itemLink)
     local solventItemLink = MasterMerchant:GetSolventItemLink(itemLink)
@@ -1077,6 +1071,7 @@ function MasterMerchant:itemCraftPrice(itemLink)
     itemLink = itemLink:gsub(":0", ":1", 1)
     numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
   end
+
   if ((numIngredients or 0) > 0) then
     local cost = 0
     for i = 1, numIngredients do
@@ -1086,7 +1081,6 @@ function MasterMerchant:itemCraftPrice(itemLink)
       end
     end
 
-    -- Food or Drink or Recipe Food/Drink
     if ((itemType == ITEMTYPE_DRINK) or (itemType == ITEMTYPE_FOOD)
       or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK))) then
       return cost, (cost / multiplier)
