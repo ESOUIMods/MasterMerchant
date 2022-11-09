@@ -2024,7 +2024,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink)
   -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- input ['graphInfo']: oldestTime, lowPrice, highPrice, salesPoints
   -- return ['graphInfo']: oldestTime, low, high, points
-  local statsInfo = self:GetTooltipStats(itemLink, false, false)
+  local statsInfo = self:GetTooltipStats(itemLink, false)
   local graphInfo = statsInfo.graphInfo
 
   local xBonanza = ""

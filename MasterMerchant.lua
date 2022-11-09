@@ -310,13 +310,17 @@ function stats.evaluateQuartileRangeTable(list, quartile1, quartile3, quartileRa
   return dataList, oldestTime, newestTime
 end
 
--- MasterMerchant:GetTooltipStats("|H0:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", false, false)
+-- /script MasterMerchant:GetTooltipStats("|H1:item:54173:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true)
+-- /script MasterMerchant:dm("Debug", MasterMerchant:GetTooltipStats("|H1:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true))
 -- GetItemLinkItemId("|H0:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 -- 54484  50:16:4:0:0
+-- |H1:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h 50 sales
+-- |H1:item:54173:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h gold mat 3000+ sales
 -- LibGuildStore_Internal.GetOrCreateIndexFromLink("|H0:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 -- MasterMerchant:GetTooltipStats(54484, "50:16:4:0:0", false, true)
 -- Computes the weighted moving average across available data
-function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
+-- /script MasterMerchant.itemInformationCache = {}
+function MasterMerchant:GetTooltipStats(itemLink, priceEval)
   -- 10000 for numDays is more or less like saying it is undefined, or all
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
@@ -344,7 +348,7 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
   local newestTime = nil
   local lowPrice = nil
   local highPrice = nil
-  local salesPoints = {}
+  local salesPoints = nil
 
   local timeInterval = nil
   local currentGuild = nil
@@ -359,10 +363,11 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
   local blacklistTable = nil
   local ignoreOutliers = nil
   local numVouchers = 0
+  local graphInfo = nil
 
   local returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                        ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount, ['numVouchers'] = numVouchers,
-                       ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+                       ['graphInfo'] = graphInfo }
   if not MasterMerchant.isInitialized then return returnData end
   if not itemLink then return returnData end
 
@@ -397,6 +402,7 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
 
   -- local function for processing the dots on the graph
   local function ProcessDots(individualSale, item)
+    salesPoints = salesPoints or {}
     local tooltip = nil
     local timeframeString = ""
     local stringPrice = self.LocalizedNumber(individualSale)
@@ -416,8 +422,7 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
       -- not clickable or detailed
       tooltip = stringPrice .. MasterMerchant.coinIcon
     end
-    table.insert(salesPoints,
-      { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller })
+    table.insert(salesPoints, { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller })
   end
 
   local function ProcessSalesInfo(item)
@@ -471,7 +476,9 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
   -- make sure we have a list of sales to work with
   local hasSales = MasterMerchant:itemIDHasSales(itemID, itemIndex)
   local hasCache = MasterMerchant:ItemCacheHasInfoById(itemID, itemIndex, daysRange)
-  if hasSales and not hasCache then
+  local hasGraph = MasterMerchant:ItemCacheHasGraphInfo(itemID, itemIndex, daysRange)
+  local createGraph = not priceEval and not hasGraph
+  if hasSales and (not hasCache or createGraph) then
     if not sales_data[itemID][itemIndex].oldestTime then internal:UpdateExtraSalesData(sales_data[itemID][itemIndex]) end
     nameString = sales_data[itemID][itemIndex].itemDesc
     oldestTime = sales_data[itemID][itemIndex].oldestTime
@@ -606,26 +613,21 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
       legitSales = itemInfo.numSales
       daysHistory = itemInfo.numDays
       countSold = itemInfo.numItems
+      bonanzaPrice = itemInfo.bonanzaPrice
+      bonanzaSales = itemInfo.bonanzaSales
+      bonanzaCount = itemInfo.bonanzaCount
+      numVouchers = itemInfo.numVouchers
       local graphInformation = itemInfo.graphInfo
-      oldestTime = graphInformation.oldestTime
-      lowPrice = graphInformation.low
-      highPrice = graphInformation.high
-      salesPoints = graphInformation.points
+      if graphInformation then
+        oldestTime = graphInformation.oldestTime
+        lowPrice = graphInformation.low
+        highPrice = graphInformation.high
+        salesPoints = graphInformation.points
+      end
     end
   end
-  if not avgOnly and not priceEval and not hasCache then
-    local itemInfo = {
-      avgPrice = avgPrice,
-      numSales = legitSales,
-      numDays = daysHistory,
-      numItems = countSold,
-      graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints },
-    }
-    if legitSales and legitSales > 1500 then
-      MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
-    end
-  end
-  if not avgOnly and MasterMerchant:itemIDHasListings(itemID, itemIndex) then
+  local hasListings = MasterMerchant:itemIDHasListings(itemID, itemIndex)
+  if hasListings and not hasCache then
     bonanzaList = listings_data[itemID][itemIndex]['sales']
     bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
     if #bonanzaList >= 6 then
@@ -670,9 +672,29 @@ function MasterMerchant:GetTooltipStats(itemLink, avgOnly, priceEval)
   if itemType == ITEMTYPE_MASTER_WRIT and MasterMerchant.systemSavedVariables.addVoucherCost then
     numVouchers = internal:GetItemLinkParseData(itemLink)
   end
+  if hasSales and (not hasCache or createGraph) then
+    local itemInfo = {
+      avgPrice = avgPrice,
+      numSales = legitSales,
+      numDays = daysHistory,
+      numItems = countSold,
+      bonanzaPrice = bonanzaPrice,
+      bonanzaSales = bonanzaSales,
+      bonanzaCount = bonanzaCount,
+      numVouchers = numVouchers,
+    }
+    local graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints }
+    if legitSales and legitSales > 1500 and salesPoints then
+      itemInfo.graphInfo = graphInfo
+    end
+    MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
+  end
+  if salesPoints then
+    graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints }
+  end
   returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                  ['bonanzaPrice'] = bonanzaPrice, ['bonanzaSales'] = bonanzaSales, ['bonanzaCount'] = bonanzaCount, ['numVouchers'] = numVouchers,
-                 ['graphInfo'] = { ['oldestTime'] = oldestTime, ['low'] = lowPrice, ['high'] = highPrice, ['points'] = salesPoints } }
+                 ['graphInfo'] = graphInfo }
   return returnData
 end
 
@@ -713,21 +735,20 @@ function MasterMerchant:ItemCacheStats(itemLink, clickable)
     local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
     return MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
   end
-  return MasterMerchant:GetTooltipStats(itemLink, true, true)
+  return MasterMerchant:GetTooltipStats(itemLink, true)
+end
+
+function MasterMerchant:ItemCacheHasGraphInfo(theIID, itemIndex, daysRange)
+  local itemInfo = MasterMerchant.itemInformationCache[theIID] and MasterMerchant.itemInformationCache[theIID][itemIndex] and MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
+  if itemInfo then
+    if MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].graphInfo then return true end
+  end
+  return false
 end
 
 function MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange)
   local itemInfo = MasterMerchant.itemInformationCache[theIID] and MasterMerchant.itemInformationCache[theIID][itemIndex] and MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
-  if itemInfo then
-    if not MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].avgPrice or
-      not MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].numSales or
-      not MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].numDays or
-      not MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].numItems or
-      not MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].graphInfo then
-      return false
-    end
-    return true
-  end
+  if itemInfo then return true end
   return false
 end
 
@@ -1336,7 +1357,7 @@ function MasterMerchant:GetTiplineInfo(itemLink)
   local itemText = string.gsub(itemLink, '|H0', '|H1')
 
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
-  local statsInfo = self:GetTooltipStats(itemLink, false, true)
+  local statsInfo = MasterMerchant:GetTooltipStats(itemLink, true)
   if statsInfo.avgPrice then
     avgPriceString = self.LocalizedNumber(statsInfo.avgPrice)
     avgPriceDays = zo_strformat(GetString(MM_TIP_DAYS_STRING), statsInfo.numDays)
@@ -4172,7 +4193,7 @@ MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount
       end
     end
     if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_BONANZA then
-      local tipStats = MasterMerchant:GetTooltipStats(itemLink, false, true)
+      local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
       if tipStats.bonanzaPrice then
         setPrice = tipStats.bonanzaPrice
         salesCount = tipStats.bonanzaSales

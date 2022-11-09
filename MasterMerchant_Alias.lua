@@ -75,7 +75,7 @@ end
 
 function MasterMerchant:itemStats(itemLink, clickable)
   GenerateLogMessage("itemStats")
-  return MasterMerchant:GetTooltipStats(itemLink, true, true)
+  return MasterMerchant:GetTooltipStats(itemLink, true)
 end
 
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)
