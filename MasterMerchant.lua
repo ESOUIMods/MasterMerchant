@@ -738,16 +738,15 @@ function MasterMerchant:ItemCacheHasInfoByItemLink(itemLink, daysRange)
 end
 
 function MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
-  if MasterMerchant.itemInformationCache[itemID] == nil then MasterMerchant.itemInformationCache[itemID] = {} end
-  if MasterMerchant.itemInformationCache[itemID][itemIndex] == nil then MasterMerchant.itemInformationCache[itemID][itemIndex] = {} end
-  if MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange] == nil then MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange] = {} end
+  MasterMerchant.itemInformationCache[itemID] = MasterMerchant.itemInformationCache[itemID] or {}
+  MasterMerchant.itemInformationCache[itemID][itemIndex] = MasterMerchant.itemInformationCache[itemID][itemIndex] or {}
   MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange] = itemInfo
 end
 
 function MasterMerchant:SetItemCacheByItemLink(itemLink, daysRange, itemInfo)
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  MasterMerchant:SetItemCacheById(itemID, itemIndex, itemInfo)
+  MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
 end
 
 function MasterMerchant:ClearItemCacheById(itemID, itemIndex)
@@ -1029,11 +1028,9 @@ function MasterMerchant:GetTradeSkillInformation(itemLink)
 end
 
 -- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+-- |H1:item:189488:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
+-- |H1:item:190086:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
 function MasterMerchant:itemCraftPrice(itemLink)
-  if not IsItemLinkCrafted(itemLink) then
-    return nil, nil
-  end
-
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   local multiplier = 1 -- you can't divide by 0
   local purchaced, skillRank = MasterMerchant:GetTradeSkillInformation(itemLink)
@@ -1049,6 +1046,9 @@ function MasterMerchant:itemCraftPrice(itemLink)
   end
 
   if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
+    if not IsItemLinkCrafted(itemLink) then
+      return nil, nil
+    end
 
     local effect1, effect2, effect3, effect4 = LibAlchemy:GetEffectsFromItemLink(itemLink)
     local solventItemLink = MasterMerchant:GetSolventItemLink(itemLink)
@@ -3541,7 +3541,7 @@ end
 function MasterMerchant:FirstInitialize()
   MasterMerchant:dm("Debug", "FirstInitialize")
   -- SavedVar defaults
-  old_defaults = {
+  local old_defaults = {
     dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
     pricingData = {}, -- added 12-31 but has always been there
     historyDepth = 30,
@@ -3631,8 +3631,10 @@ function MasterMerchant:FirstInitialize()
     showGuildInitSummary = false,
     showIndexingSummary = false,
     lastReceivedEventID = {}, -- unused, see LGS
-    --[[you can assign this as the default but it needs to be a global var
+    --[[you could assign this as the default but it needs to be a global var instead
     customTimeframeText = tostring(90) .. ' ' .. GetString(MM_CUSTOM_TIMEFRAME_DAYS),
+
+    Assigned to: MasterMerchant.customTimeframeText
     ]]--
     minimalIndexing = false,
     useSalesHistory = false,
