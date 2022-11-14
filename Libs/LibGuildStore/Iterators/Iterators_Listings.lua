@@ -123,6 +123,8 @@ function internal:addListingData(theEvent)
     internal.lr_index_count = internal.lr_index_count + 1
   end
 
+  MasterMerchant:ClearBonanzaPriceById(theIID, itemIndex)
+
   return true
 end
 
