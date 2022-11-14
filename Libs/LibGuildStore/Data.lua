@@ -1,5 +1,4 @@
 local internal = _G["LibGuildStore_Internal"]
-
 local LGH = LibHistoire
 
 --[[ can nout use MasterMerchant.itemsViewSize for example
@@ -87,17 +86,14 @@ end
 -- /script d(zo_strmatch("|H1:item:6000:30:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", '|H.-:item:.-:(%d-)|h'))
 local itemIndexCache = { }
 
-function internal:GetItemLinkParseData(itemLink, itemType)
+function internal:GetItemLinkParseData(itemLink)
   local data = select(24, ZO_LinkHandler_ParseLink(itemLink))
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  local theIID = GetItemLinkItemId(itemLink)
   if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
     return data
   end
   if itemType == ITEMTYPE_MASTER_WRIT then
-    local quotient, remainder = math.modf(data / 10000)
-    local writcount = quotient + math.floor(0.5 + remainder)
-    return writcount
+    return MasterMerchant_Internal:GetItemLinkVoucherCount(itemLink)
   end
   return 0
 end

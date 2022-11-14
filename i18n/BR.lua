@@ -447,6 +447,8 @@ ZO_CreateStringId("MM_CLEAR_FILTER_BUTTON", "Clear Filter")
 ZO_CreateStringId("MM_LGS_NOT_INITIALIZED_AGS_REFRESH", "LibGuildStore not initialized. Information will not be refreshed.")
 ZO_CreateStringId("MM_CRAFTCOST_PRICE_TIP", "Craft Cost: %s")
 ZO_CreateStringId("MM_CRAFTCOSTPER_PRICE_TIP", "Craft Cost: %s (%s each)")
+ZO_CreateStringId("MM_MATCOST_PRICE_TIP", "Mat Cost: %s")
+ZO_CreateStringId("MM_MATCOST_PLUS_WRITCOST_TIP", "Mat Cost: %s / Writ Cost: %s\nTotal Cost: %s")
 
 ZO_CreateStringId("SK_ALL_CALC_NAME", "Save Central Priceing Data")
 ZO_CreateStringId("SK_ALL_CALC_TIP", "Enabled, all pricing data is the same for all guilds. If disabled then pricing data is saved differently per guild.")
