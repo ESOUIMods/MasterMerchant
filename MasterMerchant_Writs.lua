@@ -14,8 +14,11 @@ local MM_WRIT_ITEMTYPE_POISON = 239
 local MM_WRIT_ITEMTYPE_JEWELRY_NECK = 18
 local MM_WRIT_ITEMTYPE_JEWELRY_RING = 24
 
+-- |H1:item:71059:6:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+
 -- /script d(MasterMerchant_Internal:GetItemLinkVoucherCount("|H1:item:156735:4:1:0:0:0:117956:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 -- |H1:item:156735:4:1:0:0:0:117956:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h
+-- |H1:item:156733:4:1:0:0:0:117926:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h
 function mmInternal:GetItemLinkVoucherCount(itemLink)
   local data = tonumber(select(24, ZO_LinkHandler_ParseLink(itemLink)))
   local itemType, _ = GetItemLinkItemType(itemLink)
@@ -96,6 +99,8 @@ end
 function mmInternal:MaterialCostPrice(itemLink)
   local cost = 0
   local numIngredients = 0
+  local winterWritsRequiredQty = nil
+  local flavorText = GetItemLinkFlavorText(itemLink)
   local furnatureItemLink = mmInternal:GetItemLinkFurnatureId(itemLink)
   if not furnatureItemLink then
     return nil
@@ -116,7 +121,12 @@ function mmInternal:MaterialCostPrice(itemLink)
       end
     end
 
-    return cost
+    local qtyRequired = mmInternal:GetWinterWritRequiredQty(furnatureItemLink)
+    if qtyRequired and qtyRequired > 0 then
+      return cost * qtyRequired
+    else
+      return cost
+    end
   else
     return nil
   end
@@ -129,8 +139,6 @@ function mmInternal:MaterialCostPriceTip(itemLink, writCost)
   local totalCostTipString = ""
   local materialTooltipString = ""
   local totalCost = 0
---ZO_CreateStringId("MM_MATCOST_PRICE_TIP", "Mat Cost: %s")
---ZO_CreateStringId("MM_MATCOST_PLUS_WRITCOST_TIP", "Mat Cost: %s / Writ Cost: %s / Total Cost: %s")
   if cost and not writCost then
     costTipString = MasterMerchant.LocalizedNumber(cost) .. MasterMerchant.coinIcon
     materialTooltipString = string.format(GetString(MM_MATCOST_PRICE_TIP), costTipString)
@@ -141,6 +149,10 @@ function mmInternal:MaterialCostPriceTip(itemLink, writCost)
     totalCostTipString = MasterMerchant.LocalizedNumber(totalCost) .. MasterMerchant.coinIcon
     materialTooltipString = string.format(GetString(MM_MATCOST_PLUS_WRITCOST_TIP), costTipString, writCostTipString, totalCostTipString)
   end
+  local qtyRequired = mmInternal:GetWinterWritRequiredQty(itemLink)
+  if qtyRequired and qtyRequired == 0 then
+    materialTooltipString = materialTooltipString .. "\n(qty not in database)"
+  end
   if materialTooltipString ~= "" then
     return materialTooltipString
   else
@@ -148,6 +160,36 @@ function mmInternal:MaterialCostPriceTip(itemLink, writCost)
   end
 end
 
+-- /script d(MasterMerchant_Internal:GetWinterWritRequiredQty("|H1:item:118034:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h"))
+function mmInternal:GetWinterWritRequiredQty(itemLink)
+  local itemId = GetItemLinkItemId(itemLink)
+  if mmInternal.winterWritsRequiredQty[itemId] ~= nil and mmInternal.winterWritsRequiredQty[itemId] > 0 then
+    return mmInternal.winterWritsRequiredQty[itemId]
+  elseif mmInternal.winterWritsRequiredQty[itemId] ~= nil and mmInternal.winterWritsRequiredQty[itemId] < 0 then
+    return 0
+  end
+  return nil
+end
+
+-- Deep Winter Charity Writs
+mmInternal.winterWritsRequiredQty = {
+  [117954] = 12, -- Rough Crate, Bolted
+  [117926] = 12, -- Rough Stretcher, Military
+  [117956] = 12, -- Rough Box, Boarded
+  [117942] = 12, -- Rough Knife, Butcher
+  [115153] = -1, -- Breton Bed, Bunk
+  [118036] = -1, -- Common Candle, Set
+  [118012] = -1, -- Common Washtub, Empty
+  [118048] = 1, -- Common Table, Slanted
+  [117991] = -1, -- Stool, Carved
+  [118007] = -1, -- Common Basket, Tall
+  [118034] = -1, -- Common Platter, Serving
+  [120410] = 3, -- Rough Cup, Empty
+  [117943] = 3, -- Rough Bowl, Common
+  [117929] = 12, -- Rough Crate, Reinforced
+  [117960] = 12, -- Rough Container, Cargo
+  [117940] = 12, -- Rough Hatchet, Practical
+}
 -- provisioning writ, purple, |H1:item:119693:5:1:0:0:0:71059:0:0:0:0:0:0:0:0:0:0:0:0:0:400000|h|h
 -- enchanting writ, yellow, |H1:item:121528:6:1:0:0:0:45869:225:5:0:0:0:0:0:0:0:0:0:0:0:66000|h|h
 -- alchemy writ, purple, |H1:item:119696:5:1:0:0:0:199:2:11:21:0:0:0:0:0:0:0:0:0:0:50000|h|h

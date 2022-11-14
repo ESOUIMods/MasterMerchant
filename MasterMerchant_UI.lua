@@ -2021,6 +2021,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
   local tipLineTTC = nil
   local craftCostLine = nil
   local materialCostLine = nil
+  local itemType = GetItemLinkItemType(itemLink)
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
   -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
@@ -2033,7 +2034,9 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
   if MasterMerchant.systemSavedVariables.showCraftCost then
     craftCostLine = self:CraftCostPriceTip(itemLink, false)
   end
-  materialCostLine = MasterMerchant_Internal:MaterialCostPriceTip(itemLink, writCost)
+  if itemType == ITEMTYPE_MASTER_WRIT then
+    materialCostLine = MasterMerchant_Internal:MaterialCostPriceTip(itemLink, writCost)
+  end
   if statsInfo.avgPrice then
     tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false, statsInfo.numVouchers)
   end
@@ -2117,7 +2120,6 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
     tooltip.mmSalesDataUp:SetHidden(true)
   end
 
-  local itemType = GetItemLinkItemType(itemLink)
   if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and (itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY) then
 
     local itemQuality = GetItemLinkQuality(itemLink)
