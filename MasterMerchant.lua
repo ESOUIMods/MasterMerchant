@@ -678,7 +678,7 @@ function MasterMerchant:GetTooltipStats(itemLink, priceEval)
     if bonanzaPrice then cacheBonanza = true end
   end
   if itemType == ITEMTYPE_MASTER_WRIT and MasterMerchant.systemSavedVariables.addVoucherCost then
-    numVouchers = internal:GetItemLinkParseData(itemLink)
+    numVouchers = MasterMerchant_Internal:GetVoucherCountByItemLink(itemLink)
   end
   if hasSales and (not hasCache or createGraph or cacheBonanza) then
     local itemInfo = {
@@ -1026,7 +1026,7 @@ function MasterMerchant:GetSolventItemLink(itemLink)
   }
   return solventItemLink[itemType][solventIndex]
 end
--- /script MasterMerchant:GetTradeSkillInformation("|H1:item:28405:3:5:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h")
+-- /script d(MasterMerchant:GetTradeSkillInformation("|H1:item:33825:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h"))
 -- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 function MasterMerchant:GetTradeSkillInformation(itemLink)
   local MM_TRADESKILL_ALCHEMY = 77
@@ -1068,13 +1068,13 @@ function MasterMerchant:GetTradeSkillInformation(itemLink)
   return false, 0
 end
 
--- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
--- |H1:item:189488:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
--- |H1:item:190086:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
-function MasterMerchant:itemCraftPrice(itemLink)
-  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+-- /script d(MasterMerchant:GetSkillLineProvisioningAlchemyRank("|H1:item:33825:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h"))
+--[[ input: Item link of the Provisioning or Alchemy item. For example the crafted
+Grape Preserves not the Recipe ]]--
+function MasterMerchant:GetSkillLineProvisioningAlchemyRank(itemLink)
   local multiplier = 1 -- you can't divide by 0
   local purchaced, skillRank = MasterMerchant:GetTradeSkillInformation(itemLink)
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   if purchaced then
     if itemType == ITEMTYPE_POTION or itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK or (itemType == ITEMTYPE_RECIPE and (specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_FOOD or specializedItemType == SPECIALIZED_ITEMTYPE_RECIPE_PROVISIONING_STANDARD_DRINK)) then
       multiplier = skillRank + 1
@@ -1085,6 +1085,15 @@ function MasterMerchant:itemCraftPrice(itemLink)
   if not purchaced and itemType == ITEMTYPE_POISON then
     multiplier = 4
   end
+  return multiplier
+end
+
+-- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+-- |H1:item:189488:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h
+-- |H1:item:190086:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+function MasterMerchant:itemCraftPrice(itemLink)
+  local itemType, specializedItemType = GetItemLinkItemType(itemLink)
+  local multiplier = MasterMerchant:GetSkillLineProvisioningAlchemyRank(itemLink)
 
   if (itemType == ITEMTYPE_POTION) or (itemType == ITEMTYPE_POISON) then
     if not IsItemLinkCrafted(itemLink) then

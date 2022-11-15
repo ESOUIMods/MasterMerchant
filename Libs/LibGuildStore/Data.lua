@@ -87,13 +87,12 @@ end
 local itemIndexCache = { }
 
 function internal:GetItemLinkParseData(itemLink)
-  local data = select(24, ZO_LinkHandler_ParseLink(itemLink))
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
-    return data
+    return MasterMerchant_Internal:GetPotionEffectWritRewardField(itemLink)
   end
   if itemType == ITEMTYPE_MASTER_WRIT then
-    return MasterMerchant_Internal:GetItemLinkVoucherCount(itemLink)
+    return MasterMerchant_Internal:GetVoucherCountByItemLink(itemLink)
   end
   return 0
 end

@@ -91,6 +91,8 @@ function internal:IsValidItemLink(itemLink)
   end
   if not validLink then
     internal:dm("Debug", { MasterMerchant.ItemCodeText(itemLink) })
+    internal:dm("Debug", theIID)
+    internal:dm("Debug", itemIdMatch)
   end
   return validLink
 end
