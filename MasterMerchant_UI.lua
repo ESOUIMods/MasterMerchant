@@ -489,19 +489,17 @@ function MMScrollList:SetupSalesRow(control, data)
   -- positive values.
   local dispPrice = actualItem.price
   local quantity = actualItem.quant
-  if MasterMerchant.systemSavedVariables.showFullPrice then
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then dispPrice = math.floor((dispPrice / quantity) + 0.5) end
-  else
-    local cutPrice = dispPrice * (1 - (GetTradingHouseCutPercentage() / 100))
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then cutPrice = cutPrice / quantity end
-    dispPrice = math.floor(cutPrice + 0.5)
-  end
+  local hasQuantity = quantity > 0
+  local unitPrice = 0
+  if hasQuantity then unitPrice = math.floor((dispPrice / quantity) + 0.5) end
 
   -- Insert thousands separators for the price
   local stringPrice = MasterMerchant.LocalizedNumber(dispPrice)
+  stringPrice = stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t' .. "\n"
+  stringPrice = stringPrice .. unitPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
 
   -- Finally, set the price
-  control.price:SetText(stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+  control.price:SetText(stringPrice)
 
   ZO_SortFilterList.SetupRow(self, control, data)
 end

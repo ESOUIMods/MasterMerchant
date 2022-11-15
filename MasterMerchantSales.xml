@@ -290,25 +290,25 @@
 
     <!-- Full-size Data Row (virtual) -->
     <Control name="MasterMerchantDataRow" color="CFDCBD" virtual="true">
-      <Dimensions x="940" y="36"/>
+      <Dimensions x="940" y="38"/>
       <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
       <Controls>
         <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
         <Label name="$(parent)RowId" inheritAlpha="true" color="FFFFFF" text="1">
           <Anchor point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0"/>
-          <Dimensions x="35" y="26"/>
+          <Dimensions x="35" y="38"/>
         </Label>
         <Button name="$(parent)Buyer" inheritAlpha="true" text="Buyer" horizontalAlignment="LEFT">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="145" y="26"/>
+          <Dimensions x="145" y="38"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" text="Guild">
           <Anchor point="LEFT" relativeTo="$(parent)Buyer" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="200" y="26"/>
+          <Dimensions x="200" y="38"/>
         </Label>
         <Texture name="$(parent)ItemIcon" alpha="1">
-          <Dimensions x="32" y="32"/>
+          <Dimensions x="38" y="38"/>
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <TextureCoords left="0" right="1" top="0" bottom="1"/>
         </Texture>
@@ -318,17 +318,17 @@
         </Label>
         <Label name="$(parent)ItemName" verticalAlignment="CENTER" inheritAlpha="true" text="Item Name" linkEnabled="true" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
-          <Dimensions x="320" y="26"/>
+          <Dimensions x="320" y="38"/>
           <OnLinkMouseUp>
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
         <Label name="$(parent)SellTime" verticalAlignment="CENTER" horizontalAlignment="CENTER" inheritAlpha="true" color="FFFFFF" text="Time">
-          <Dimensions x="115" y="26"/>
+          <Dimensions x="115" y="38"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
-          <Dimensions x="80" y="26"/>
+        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="CENTER" inheritAlpha="true" color="D5B526" text="Price">
+          <Dimensions x="80" y="38"/>
           <Anchor point="LEFT" relativeTo="$(parent)SellTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
       </Controls>
