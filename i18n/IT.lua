@@ -44,6 +44,8 @@ ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Mostra il Prezzo alternativo con TT
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Includi un suggeruimento sul prezzo riassuntivo con TTC")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Mostra Informazioni sui Costi per l'Artigianato")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Includi il costo dell'artiginato basato sul costo degli ingredienti nei suggerimenti degli oggetti")
+ZO_CreateStringId("SK_SHOW_MATERIAL_COST_NAME", "Show Material Cost Info")
+ZO_CreateStringId("SK_SHOW_MATERIAL_COST_TIP", "Include Master Writ material cost based on ingredient costs in item tooltips.")
 ZO_CreateStringId("SK_CALC_NAME", "Mostra il Calcolatore dei Prezzi delle Pile")
 ZO_CreateStringId("SK_CALC_TIP", "Mostra un piccolo calcolatore quando si pubblica un oggetto in un negozio di gilda")
 ZO_CreateStringId("SK_WINDOW_FONT_NAME", "Caratteri della Finestra")

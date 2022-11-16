@@ -2014,14 +2014,18 @@ end
 function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
   if not MasterMerchant.isInitialized then return end
 
-  if not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost) then return end
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
 
-  local tipLine = nil
-  local bonanzaTipline = nil
-  local tipLineTTC = nil
+  if not showTooltipInformation then return end
+
+  local masterMerchantTipline = nil
   local craftCostLine = nil
+  local bonanzaTipline = nil
+  local ttcTipline = nil
   local materialCostLine = nil
+  local hasGraphInfo = false
   local itemType = GetItemLinkItemType(itemLink)
+  local validAnalysisButtonType = itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
   -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
   -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
@@ -2029,22 +2033,25 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
   -- return ['graphInfo']: oldestTime, low, high, points
   local statsInfo = self:GetTooltipStats(itemLink, false)
   local graphInfo = statsInfo.graphInfo
+  if graphInfo and graphInfo.points ~= nil then
+    hasGraphInfo = true
+  end
 
   local xBonanza = ""
   if MasterMerchant.systemSavedVariables.showCraftCost then
     craftCostLine = self:CraftCostPriceTip(itemLink, false)
   end
-  if itemType == ITEMTYPE_MASTER_WRIT then
+  if MasterMerchant.systemSavedVariables.showMaterialCost and itemType == ITEMTYPE_MASTER_WRIT then
     materialCostLine = MasterMerchant_Internal:MaterialCostPriceTip(itemLink, writCost)
   end
   if statsInfo.avgPrice then
-    tipLine = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false, statsInfo.numVouchers)
+    masterMerchantTipline = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false, statsInfo.numVouchers)
   end
   if statsInfo.bonanzaPrice then
     bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, false, statsInfo.numVouchers)
   end
   if TamrielTradeCentre then
-    tipLineTTC = MasterMerchant:TTCPriceTip(itemLink)
+    ttcTipline = MasterMerchant:TTCPriceTip(itemLink)
   end
   if statsInfo.bonanzaSales and (statsInfo.bonanzaSales < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
     statsInfo.bonanzaPrice = nil
@@ -2056,7 +2063,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
     tooltip.textPool = ZO_ControlPool:New('MMGraphLabel', tooltip, 'Text')
   end
 
-  if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and not tooltip.mmQualityDown then
+  if validAnalysisButtonType and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and not tooltip.mmQualityDown then
     tooltip.mmQualityDown = tooltip.textPool:AcquireObject()
     tooltip:AddControl(tooltip.mmQualityDown, 1, true)
     tooltip.mmQualityDown:SetAnchor(LEFT)
@@ -2120,7 +2127,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
     tooltip.mmSalesDataUp:SetHidden(true)
   end
 
-  if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and (itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY) then
+  if validAnalysisButtonType and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons then
 
     local itemQuality = GetItemLinkQuality(itemLink)
     tooltip.mmQualityDown.mmData.nextItem = MasterMerchant.QualityDown(itemLink)
@@ -2183,237 +2190,156 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
   end
 
-  if tipLine then
+  local hasTiplineOrGraph = masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
 
-    if MasterMerchant.systemSavedVariables.showPricing then
+  if hasTiplineOrGraph then
+    tooltip:AddVerticalPadding(2)
+    ZO_Tooltip_AddDivider(tooltip)
+  end
 
-      if not tooltip.mmText then
-        tooltip:AddVerticalPadding(3)
-        ZO_Tooltip_AddDivider(tooltip)
-        tooltip:AddVerticalPadding(3)
-        tooltip.mmText = tooltip.textPool:AcquireObject()
-        tooltip:AddControl(tooltip.mmText)
-        tooltip.mmText:SetAnchor(CENTER)
+  if masterMerchantTipline and MasterMerchant.systemSavedVariables.showPricing then
+
+    if not tooltip.mmText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmText = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmText)
+      tooltip.mmText:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmText then
+      tooltip.mmText:SetText(masterMerchantTipline)
+      tooltip.mmText:SetColor(1, 1, 1, 1)
+    end
+
+  end
+
+  if bonanzaTipline and MasterMerchant.systemSavedVariables.showBonanzaPricing then
+
+    if not tooltip.mmBonanzaText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmBonanzaText = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmBonanzaText)
+      tooltip.mmBonanzaText:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmBonanzaText then
+      tooltip.mmBonanzaText:SetText(bonanzaTipline)
+      tooltip.mmBonanzaText:SetColor(1, 1, 1, 1)
+    end
+
+  end
+
+  if ttcTipline and MasterMerchant.systemSavedVariables.showAltTtcTipline then
+
+    if not tooltip.mmTTCText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmTTCText = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmTTCText)
+      tooltip.mmTTCText:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmTTCText then
+      tooltip.mmTTCText:SetText(ttcTipline)
+      tooltip.mmTTCText:SetColor(1, 1, 1, 1)
+    end
+
+  end
+
+  if craftCostLine and MasterMerchant.systemSavedVariables.showCraftCost then
+
+    if not tooltip.mmCraftText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmCraftText = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmCraftText)
+      tooltip.mmCraftText:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmCraftText then
+      tooltip.mmCraftText:SetText(craftCostLine)
+      tooltip.mmCraftText:SetColor(1, 1, 1, 1)
+    end
+
+  end
+
+  if materialCostLine and MasterMerchant.systemSavedVariables.showMaterialCost then
+
+    if not tooltip.mmMatText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmMatText = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmMatText)
+      tooltip.mmMatText:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmMatText then
+      tooltip.mmMatText:SetText(materialCostLine)
+      tooltip.mmMatText:SetColor(1, 1, 1, 1)
+    end
+
+  end
+
+  if hasGraphInfo and MasterMerchant.systemSavedVariables.showGraph then
+
+    if not tooltip.graphPool then
+      tooltip.graphPool = ZO_ControlPool:New('MasterMerchantGraph', tooltip, 'Graph')
+    end
+
+    if not tooltip.mmGraph then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmGraph = tooltip.graphPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmGraph)
+      tooltip.mmGraph:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmGraph then
+      local graph = tooltip.mmGraph
+      graph.itemLink = itemLink
+
+      if not graph.points then
+        graph.points = MM_Graph:New(graph, "MM_Point")
       end
 
-      if tooltip.mmText then
-        tooltip.mmText:SetText(tipLine)
-        tooltip.mmText:SetColor(1, 1, 1, 1)
+      if graphInfo.low == graphInfo.high then
+        graphInfo.low = statsInfo.avgPrice * 0.85
+        graphInfo.high = statsInfo.avgPrice * 1.15
+      end
+
+      if graphInfo.low < 0 then
+        graphInfo.low = 0
+      end
+      if graphInfo.high < 1 then
+        graphInfo.high = 1
+      end
+
+      if statsInfo.bonanzaPrice then
+        local lowRange = nil
+        local highRange = nil
+        lowRange = math.min(statsInfo.avgPrice, statsInfo.bonanzaPrice)
+        highRange = math.max(statsInfo.avgPrice, statsInfo.bonanzaPrice)
+        if graphInfo.low > lowRange then
+          graphInfo.low = lowRange * 0.95
+        end
+        if graphInfo.high < highRange then
+          graphInfo.high = highRange * 1.05
+        end
+        xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. MasterMerchant.coinIcon
+      else
+        xBonanza = nil
+        statsInfo.bonanzaPrice = nil
+      end
+
+      local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. MasterMerchant.coinIcon
+      local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. MasterMerchant.coinIcon
+      local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. MasterMerchant.coinIcon
+      local endTimeFrameText = GetString(MM_ENDTIMEFRAME_TEXT)
+      -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
+      -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, x_bonanzaPriceText, x_bonanzaPriceValue)
+      graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), endTimeFrameText, xLow, xHigh,
+        graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, xBonanza, statsInfo.bonanzaPrice)
+      for _, point in ipairs(graphInfo.points) do
+        graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
       end
 
     end
-
-    if MasterMerchant.systemSavedVariables.showBonanzaPricing then
-
-      if bonanzaTipline then
-        if not tooltip.mmBonanzaText then
-          tooltip:AddVerticalPadding(3)
-          tooltip.mmBonanzaText = tooltip.textPool:AcquireObject()
-          tooltip:AddControl(tooltip.mmBonanzaText)
-          tooltip.mmBonanzaText:SetAnchor(CENTER)
-        end
-
-        if tooltip.mmBonanzaText then
-          tooltip.mmBonanzaText:SetText(bonanzaTipline)
-          tooltip.mmBonanzaText:SetColor(1, 1, 1, 1)
-        end
-      end
-
-    end
-
-    if MasterMerchant.systemSavedVariables.showAltTtcTipline then
-
-      if tipLineTTC then
-        if not tooltip.mmTTCText then
-          tooltip:AddVerticalPadding(3)
-          tooltip.mmTTCText = tooltip.textPool:AcquireObject()
-          tooltip:AddControl(tooltip.mmTTCText)
-          tooltip.mmTTCText:SetAnchor(CENTER)
-        end
-
-        if tooltip.mmTTCText then
-          tooltip.mmTTCText:SetText(tipLineTTC)
-          tooltip.mmTTCText:SetColor(1, 1, 1, 1)
-        end
-      end
-
-    end
-
-    if MasterMerchant.systemSavedVariables.showCraftCost then
-
-      if craftCostLine then
-        if not tooltip.mmCraftText then
-          tooltip:AddVerticalPadding(3)
-          tooltip.mmCraftText = tooltip.textPool:AcquireObject()
-          tooltip:AddControl(tooltip.mmCraftText)
-          tooltip.mmCraftText:SetAnchor(CENTER)
-        end
-
-        if tooltip.mmCraftText then
-          tooltip.mmCraftText:SetText(craftCostLine)
-          tooltip.mmCraftText:SetColor(1, 1, 1, 1)
-        end
-      end
-
-    end
-
-    if materialCostLine then
-      if not tooltip.mmMatText then
-        tooltip:AddVerticalPadding(3)
-        tooltip.mmMatText = tooltip.textPool:AcquireObject()
-        tooltip:AddControl(tooltip.mmMatText)
-        tooltip.mmMatText:SetAnchor(CENTER)
-      end
-
-      if tooltip.mmMatText then
-        tooltip.mmMatText:SetText(materialCostLine)
-        tooltip.mmMatText:SetColor(1, 1, 1, 1)
-      end
-    end
-
-    if MasterMerchant.systemSavedVariables.showGraph then
-
-      if not tooltip.graphPool then
-        tooltip.graphPool = ZO_ControlPool:New('MasterMerchantGraph', tooltip, 'Graph')
-      end
-
-      if not tooltip.mmGraph then
-        tooltip.mmGraph = tooltip.graphPool:AcquireObject()
-        if not tooltip.mmText then
-          tooltip:AddVerticalPadding(3)
-          ZO_Tooltip_AddDivider(tooltip)
-        end
-        tooltip:AddVerticalPadding(3)
-        tooltip:AddControl(tooltip.mmGraph)
-        tooltip.mmGraph:SetAnchor(CENTER)
-      end
-
-      if tooltip.mmGraph then
-        local graph = tooltip.mmGraph
-        graph.itemLink = itemLink
-
-        if not graph.points then
-          graph.points = MM_Graph:New(graph, "MM_Point")
-        end
-
-        if graphInfo.low == graphInfo.high then
-          graphInfo.low = statsInfo.avgPrice * 0.85
-          graphInfo.high = statsInfo.avgPrice * 1.15
-        end
-
-        if graphInfo.low < 0 then
-          graphInfo.low = 0
-        end
-        if graphInfo.high < 1 then
-          graphInfo.high = 1
-        end
-
-        if statsInfo.bonanzaPrice then
-          local lowRange = nil
-          local highRange = nil
-          lowRange = math.min(statsInfo.avgPrice, statsInfo.bonanzaPrice)
-          highRange = math.max(statsInfo.avgPrice, statsInfo.bonanzaPrice)
-          if graphInfo.low > lowRange then
-            graphInfo.low = lowRange * 0.95
-          end
-          if graphInfo.high < highRange then
-            graphInfo.high = highRange * 1.05
-          end
-          xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. MasterMerchant.coinIcon
-        else
-          xBonanza = nil
-          statsInfo.bonanzaPrice = nil
-        end
-
-        local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. MasterMerchant.coinIcon
-        local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. MasterMerchant.coinIcon
-        local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. MasterMerchant.coinIcon
-        local endTimeFrameText = GetString(MM_ENDTIMEFRAME_TEXT)
-        -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
-        -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, x_bonanzaPriceText, x_bonanzaPriceValue)
-        graph.points:Initialize(MasterMerchant.TextTimeSince(graphInfo.oldestTime), endTimeFrameText, xLow, xHigh,
-          graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, xBonanza, statsInfo.bonanzaPrice)
-        for _, point in ipairs(graphInfo.points) do
-          graph.points:AddPoint(point[1], point[2], point[3], point[4], point[5])
-        end
-
-      end
-    end
-  else
-    -- No price but may have Bonanza Price
-    if MasterMerchant.systemSavedVariables.showBonanzaPricing and bonanzaTipline then
-      if not tooltip.mmBonanzaText then
-        tooltip:AddVerticalPadding(3)
-        ZO_Tooltip_AddDivider(tooltip)
-        tooltip:AddVerticalPadding(3)
-        tooltip.mmBonanzaText = tooltip.textPool:AcquireObject()
-        tooltip:AddControl(tooltip.mmBonanzaText)
-        tooltip.mmBonanzaText:SetAnchor(CENTER)
-      end
-
-      if tooltip.mmBonanzaText then
-        tooltip.mmBonanzaText:SetText(bonanzaTipline)
-        tooltip.mmBonanzaText:SetColor(1, 1, 1, 1)
-      end
-    end -- end Bonanza price
-
-    -- No price but may have TTC Price
-    if MasterMerchant.systemSavedVariables.showAltTtcTipline and tipLineTTC then
-      if not tooltip.mmTTCText then
-        if not tooltip.mmBonanzaText then
-          tooltip:AddVerticalPadding(3)
-          ZO_Tooltip_AddDivider(tooltip)
-          tooltip:AddVerticalPadding(3)
-        end
-        tooltip.mmTTCText = tooltip.textPool:AcquireObject()
-        tooltip:AddControl(tooltip.mmTTCText)
-        tooltip.mmTTCText:SetAnchor(CENTER)
-      end
-
-      if tooltip.mmTTCText then
-        tooltip.mmTTCText:SetText(tipLineTTC)
-        tooltip.mmTTCText:SetColor(1, 1, 1, 1)
-      end
-    end -- end TTC tipline
-
-    -- No price but may have craft cost
-    if MasterMerchant.systemSavedVariables.showCraftCost and craftCostLine then
-      if not tooltip.mmCraftText then
-        if not tooltip.mmBonanzaText and not tooltip.mmTTCText then
-          tooltip:AddVerticalPadding(3)
-          ZO_Tooltip_AddDivider(tooltip)
-          tooltip:AddVerticalPadding(3)
-        end
-        tooltip.mmCraftText = tooltip.textPool:AcquireObject()
-        tooltip:AddControl(tooltip.mmCraftText)
-        tooltip.mmCraftText:SetAnchor(CENTER)
-      end
-
-      if tooltip.mmCraftText then
-        tooltip.mmCraftText:SetText(craftCostLine)
-        tooltip.mmCraftText:SetColor(1, 1, 1, 1)
-      end
-    end
-
-    -- No price but may have material cost
-    if materialCostLine then
-      if not tooltip.mmMatText then
-        if not tooltip.mmBonanzaText and not tooltip.mmTTCText and not tooltip.mmCraftText  then
-          tooltip:AddVerticalPadding(3)
-          ZO_Tooltip_AddDivider(tooltip)
-          tooltip:AddVerticalPadding(3)
-        end
-        tooltip.mmMatText = tooltip.textPool:AcquireObject()
-        tooltip:AddControl(tooltip.mmMatText)
-        tooltip.mmMatText:SetAnchor(CENTER)
-      end
-
-      if tooltip.mmMatText then
-        tooltip.mmMatText:SetText(materialCostLine)
-        tooltip.mmMatText:SetColor(1, 1, 1, 1)
-      end
-    end
-
   end
 
   if MasterMerchant.systemSavedVariables.useLibDebugLogger then
@@ -2455,6 +2381,7 @@ end
 
 -- |H<style>:<type>[:<data>...]|h<text>|h
 function MasterMerchant:addStatsPopupTooltip(Popup)
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
 
   if Popup == ZO_ProvisionerTopLevelTooltip then
     local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
@@ -2468,9 +2395,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
 
   -- Make sure we don't double-add stats (or double-calculate them if they bring
   -- up the same link twice) since we have to call this on Update rather than Show
-  if (not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost))
-    or Popup.lastLink == nil
-    or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
+  if not showTooltipInformation or Popup.lastLink == nil or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
     -- thanks Garkin
     return
   end
@@ -2500,6 +2425,7 @@ end
 
 function MasterMerchant:addStatsProvisionerTooltip(Popup)
   if not MasterMerchant.isInitialized then return end
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
 
   local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
   Popup.lastLink = GetRecipeResultItemLink(recipeListIndex, recipeIndex)
@@ -2510,9 +2436,7 @@ function MasterMerchant:addStatsProvisionerTooltip(Popup)
 
   -- Make sure we don't double-add stats (or double-calculate them if they bring
   -- up the same link twice) since we have to call this on Update rather than Show
-  if (not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost))
-    or Popup.lastLink == nil
-    or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
+  if not showTooltipInformation or Popup.lastLink == nil or (Popup.mmActiveTip and Popup.mmActiveTip == Popup.lastLink and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
     -- thanks Garkin
     return
   end
@@ -2579,13 +2503,12 @@ end
 -- how to grab the item data
 function MasterMerchant:GenerateStatsItemTooltip()
   if not MasterMerchant.isInitialized then return end
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
   local skMoc = moc()
   -- Make sure we don't double-add stats or try to add them to nothing
   -- Since we call this on Update rather than Show it gets called a lot
   -- even after the tip appears
-  if (not (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost))
-    or (not skMoc or not skMoc:GetParent())
-    or (skMoc == self.tippingControl and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
+  if not showTooltipInformation or (not skMoc or not skMoc:GetParent()) or (skMoc == self.tippingControl and self.isShiftPressed == IsShiftKeyDown() and self.isCtrlPressed == IsControlKeyDown()) then
     return
   end
 

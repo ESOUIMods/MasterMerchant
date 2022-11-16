@@ -2557,6 +2557,15 @@ function MasterMerchant:LibAddonInit()
     setFunc = function(value) MasterMerchant.systemSavedVariables.showCraftCost = value end,
     default = MasterMerchant.systemDefault.showCraftCost,
   }
+  -- Whether or not to show the material cost data in tooltips
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(SK_SHOW_MATERIAL_COST_NAME),
+    tooltip = GetString(SK_SHOW_MATERIAL_COST_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.showMaterialCost end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showMaterialCost = value end,
+    default = MasterMerchant.systemDefault.showMaterialCost,
+  }
   -- Whether or not to show the quality/level adjustment buttons
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
@@ -3637,6 +3646,7 @@ function MasterMerchant:FirstInitialize()
     isWindowMovable = false,
     showAltTtcTipline = true,
     showCraftCost = true,
+    showMaterialCost = true,
     showGraph = true,
     showCalc = true,
     priceCalcAll = true,

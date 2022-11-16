@@ -44,6 +44,8 @@ ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Альтернативная цен
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Добавлять данные от TTC в сокращённом виде.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Расчётная цена изготовления")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Добавлять стоимость изготовления, полученную суммированием цен на ингредиенты из подсказки предмета.")
+ZO_CreateStringId("SK_SHOW_MATERIAL_COST_NAME", "Show Material Cost Info")
+ZO_CreateStringId("SK_SHOW_MATERIAL_COST_TIP", "Include Master Writ material cost based on ingredient costs in item tooltips.")
 ZO_CreateStringId("SK_CALC_NAME", "Показывать оптовый калькулятор")
 ZO_CreateStringId("SK_CALC_TIP", "Показывать небольшой калькулятор при выставлении предмета на продажу для расчёта оптовой цены.")
 ZO_CreateStringId("SK_WINDOW_FONT_NAME", "Шрифт окна")
