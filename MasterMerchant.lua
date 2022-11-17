@@ -322,7 +322,7 @@ end
 -- Computes the weighted moving average across available data
 -- /script MasterMerchant.itemInformationCache = {}
 -- /script d(LibPrice.MMPrice("|H1:item:54173:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
--- /script MasterMerchant:ClearItemCacheById(54173, "1:0:5:0:0")
+-- /script MasterMerchant:ClearPriceCacheById(54173, "1:0:5:0:0")
 function MasterMerchant:GetTooltipStats(itemLink, priceEval)
   -- MasterMerchant:dm("Debug", "GetTooltipStats")
   -- MasterMerchant:dm("Debug", itemLink)
@@ -481,10 +481,12 @@ function MasterMerchant:GetTooltipStats(itemLink, priceEval)
 
   -- make sure we have a list of sales to work with
   local hasSales = MasterMerchant:itemIDHasSales(itemID, itemIndex)
-  local hasCache = MasterMerchant:ItemCacheHasInfoById(itemID, itemIndex, daysRange)
-  local hasGraph = MasterMerchant:ItemCacheHasGraphInfo(itemID, itemIndex, daysRange)
+  local hasListings = MasterMerchant:itemIDHasListings(itemID, itemIndex)
+  local hasPriceInfo = MasterMerchant:ItemCacheHasPriceInfoById(itemID, itemIndex, daysRange)
+  local hasGraph = MasterMerchant:ItemCacheHasGraphInfoById(itemID, itemIndex, daysRange)
+  local hasBonanza = MasterMerchant:ItemCacheHasBonanzaInfoById(itemID, itemIndex, daysRange)
   local createGraph = not priceEval and not hasGraph
-  if hasSales and (not hasCache or createGraph) then
+  if hasSales and (not hasPriceInfo or createGraph) then
     if not sales_data[itemID][itemIndex].oldestTime then internal:UpdateExtraSalesData(sales_data[itemID][itemIndex]) end
     nameString = sales_data[itemID][itemIndex].itemDesc
     oldestTime = sales_data[itemID][itemIndex].oldestTime
@@ -613,18 +615,13 @@ function MasterMerchant:GetTooltipStats(itemLink, priceEval)
       if avgPrice < 0.01 then avgPrice = 0.01 end
     end
   end
-  if hasCache then
+  if hasPriceInfo and not createGraph then
     local itemInfo = MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
-    if not createGraph then
-      avgPrice = itemInfo.avgPrice
-      legitSales = itemInfo.numSales
-      daysHistory = itemInfo.numDays
-      countSold = itemInfo.numItems
-      numVouchers = itemInfo.numVouchers
-    end
-    bonanzaPrice = itemInfo.bonanzaPrice
-    bonanzaSales = itemInfo.bonanzaSales
-    bonanzaCount = itemInfo.bonanzaCount
+    avgPrice = itemInfo.avgPrice
+    legitSales = itemInfo.numSales
+    daysHistory = itemInfo.numDays
+    countSold = itemInfo.numItems
+    numVouchers = itemInfo.numVouchers
     local graphInformation = itemInfo.graphInfo
     if graphInformation then
       oldestTime = graphInformation.oldestTime
@@ -633,8 +630,7 @@ function MasterMerchant:GetTooltipStats(itemLink, priceEval)
       salesPoints = graphInformation.points
     end
   end
-  local hasListings = MasterMerchant:itemIDHasListings(itemID, itemIndex)
-  if hasListings and not bonanzaPrice then
+  if hasListings and not hasBonanza then
     bonanzaList = listings_data[itemID][itemIndex]['sales']
     bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
     if #bonanzaList >= 6 then
@@ -677,10 +673,16 @@ function MasterMerchant:GetTooltipStats(itemLink, priceEval)
     if bonanzaPrice and bonanzaPrice < 0.01 then bonanzaPrice = 0.01 end
     if bonanzaPrice then cacheBonanza = true end
   end
+  if hasBonanza and not cacheBonanza then
+    local itemInfo = MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
+    bonanzaPrice = itemInfo.bonanzaPrice
+    bonanzaSales = itemInfo.bonanzaSales
+    bonanzaCount = itemInfo.bonanzaCount
+  end
   if itemType == ITEMTYPE_MASTER_WRIT and MasterMerchant.systemSavedVariables.addVoucherCost then
     numVouchers = MasterMerchant_Internal:GetVoucherCountByItemLink(itemLink)
   end
-  if hasSales and (not hasCache or createGraph or cacheBonanza) then
+  if hasSales and (not hasPriceInfo or createGraph or cacheBonanza) then
     local itemInfo = {
       avgPrice = avgPrice,
       numSales = legitSales,
@@ -746,7 +748,7 @@ function MasterMerchant:ItemCacheStats(itemLink, clickable)
   return MasterMerchant:GetTooltipStats(itemLink, true)
 end
 
-function MasterMerchant:ItemCacheHasGraphInfo(theIID, itemIndex, daysRange)
+function MasterMerchant:ItemCacheHasGraphInfoById(theIID, itemIndex, daysRange)
   local itemInfo = MasterMerchant.itemInformationCache[theIID] and MasterMerchant.itemInformationCache[theIID][itemIndex] and MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
   if itemInfo then
     if MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].graphInfo then return true end
@@ -754,16 +756,26 @@ function MasterMerchant:ItemCacheHasGraphInfo(theIID, itemIndex, daysRange)
   return false
 end
 
-function MasterMerchant:ItemCacheHasInfoById(theIID, itemIndex, daysRange)
+function MasterMerchant:ItemCacheHasPriceInfoById(theIID, itemIndex, daysRange)
   local itemInfo = MasterMerchant.itemInformationCache[theIID] and MasterMerchant.itemInformationCache[theIID][itemIndex] and MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
-  if itemInfo then return true end
+  if itemInfo then
+    if MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].avgPrice then return true end
+  end
+  return false
+end
+
+function MasterMerchant:ItemCacheHasBonanzaInfoById(theIID, itemIndex, daysRange)
+  local itemInfo = MasterMerchant.itemInformationCache[theIID] and MasterMerchant.itemInformationCache[theIID][itemIndex] and MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange]
+  if itemInfo then
+    if MasterMerchant.itemInformationCache[theIID][itemIndex][daysRange].bonanzaPrice then return true end
+  end
   return false
 end
 
 function MasterMerchant:ItemCacheHasInfoByItemLink(itemLink, daysRange)
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  return MasterMerchant:ItemCacheHasInfoById(itemID, itemIndex, daysRange)
+  return MasterMerchant:ItemCacheHasPriceInfoById(itemID, itemIndex, daysRange)
 end
 
 function MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
@@ -778,29 +790,42 @@ function MasterMerchant:SetItemCacheByItemLink(itemLink, daysRange, itemInfo)
   MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
 end
 
-function MasterMerchant:ClearItemCacheById(itemID, itemIndex)
+function MasterMerchant:ClearPriceCacheById(itemID, itemIndex)
   local itemInfo = MasterMerchant.itemInformationCache[itemID] and MasterMerchant.itemInformationCache[itemID][itemIndex]
   if itemInfo then
-    MasterMerchant.itemInformationCache[itemID][itemIndex] = nil
+    for daysRange, _ in pairs(MasterMerchant.itemInformationCache[itemID][itemIndex]) do
+      MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].avgPrice = nil
+      MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].numSales = nil
+      MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].numDays = nil
+      MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].numItems = nil
+      MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].numVouchers = nil
+      MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].graphInfo = nil
+    end
   end
 end
 
 function MasterMerchant:ClearItemCacheByItemLink(itemLink)
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  MasterMerchant:ClearItemCacheById(itemID, itemIndex)
+  MasterMerchant:ClearPriceCacheById(itemID, itemIndex)
 end
 
-function MasterMerchant:ClearBonanzaPriceById(itemID, itemIndex)
+function MasterMerchant:ClearBonanzaCachePriceById(itemID, itemIndex)
   local itemInfo = MasterMerchant.itemInformationCache[itemID] and MasterMerchant.itemInformationCache[itemID][itemIndex]
   if itemInfo then
-    local dayRanges = MasterMerchant.itemInformationCache[itemID][itemIndex]
-    for daysRange, _ in pairs(dayRanges) do
+    for daysRange, _ in pairs(MasterMerchant.itemInformationCache[itemID][itemIndex]) do
       MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].bonanzaPrice = nil
       MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].bonanzaSales = nil
       MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange].bonanzaCount = nil
     end
   end
+end
+
+-- /script MasterMerchant:ClearBonanzaPriceCacheByItemLink("|H1:item:54173:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
+function MasterMerchant:ClearBonanzaPriceCacheByItemLink(itemLink)
+  local itemID = GetItemLinkItemId(itemLink)
+  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+  MasterMerchant:ClearBonanzaCachePriceById(itemID, itemIndex)
 end
 
 function MasterMerchant:ValidInfoForCache(avgPrice, numSales, numDays, numItems)
