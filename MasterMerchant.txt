@@ -20,6 +20,7 @@
 ## OptionalDependsOn: MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data MM16Data AwesomeGuildStore>=2751
 ## OptionalDependsOn: DebugLogViewer>=558 EsoPL ArkadiusTradeTools ShoppingList BeamMeUp>=300 uespLog TamrielTradeCentre
 
+
 MasterMerchantListings.xml
 MasterMerchantReports.xml
 MasterMerchantFilters.xml
@@ -28,10 +29,10 @@ MasterMerchantMisc.xml
 MasterMerchantPurchases.xml
 MasterMerchantSales.xml
 MasterMerchant_Namespace_Init.lua
+Libs\lua-bit-numberlua\lua-bit-numberlua.lua
 AGS_Integration\AGS_Setup.lua
 AGS_Integration\DealFilter.lua
 AGS_Integration\DealFilterFragment.lua
-Libs\lua-bit-numberlua.lua
 MasterMerchant_Writs.lua
 MasterMerchant_DealCalc.lua
 MasterMerchant_Util.lua
