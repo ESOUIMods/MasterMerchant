@@ -2063,131 +2063,133 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
     tooltip.textPool = ZO_ControlPool:New('MMGraphLabel', tooltip, 'Text')
   end
 
-  if validAnalysisButtonType and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and not tooltip.mmQualityDown then
-    tooltip.mmQualityDown = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmQualityDown, 1, true)
-    tooltip.mmQualityDown:SetAnchor(LEFT)
-    tooltip.mmQualityDown:SetText('<<')
-    tooltip.mmQualityDown:SetMouseEnabled(true)
-    tooltip.mmQualityDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmQualityDown.mmData = {}
-    tooltip.mmQualityDown:SetHidden(true)
-
-    tooltip.mmQualityUp = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmQualityUp, 1, true)
-    tooltip.mmQualityUp:SetAnchor(RIGHT)
-    tooltip.mmQualityUp:SetText('>>')
-    tooltip.mmQualityUp:SetMouseEnabled(true)
-    tooltip.mmQualityUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmQualityUp.mmData = {}
-    tooltip.mmQualityUp:SetHidden(true)
-
-    tooltip.mmLevelDown = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmLevelDown, 1, true)
-    tooltip.mmLevelDown:ClearAnchors()
-    tooltip.mmLevelDown:SetAnchor(TOPLEFT, tooltip.mmQualityDown, BOTTOMLEFT, 0, 0)
-    tooltip.mmLevelDown:SetText('< L')
-    tooltip.mmLevelDown:SetColor(1, 1, 1, 1)
-    tooltip.mmLevelDown:SetMouseEnabled(true)
-    tooltip.mmLevelDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmLevelDown.mmData = {}
-    tooltip.mmLevelDown:SetHidden(true)
-
-    tooltip.mmLevelUp = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmLevelUp, 1, true)
-    tooltip.mmLevelUp:ClearAnchors()
-    tooltip.mmLevelUp:SetAnchor(TOPRIGHT, tooltip.mmQualityUp, BOTTOMRIGHT, 0, 0)
-    tooltip.mmLevelUp:SetText('L >')
-    tooltip.mmLevelUp:SetColor(1, 1, 1, 1)
-    tooltip.mmLevelUp:SetMouseEnabled(true)
-    tooltip.mmLevelUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmLevelUp.mmData = {}
-    tooltip.mmLevelUp:SetHidden(true)
-
-    tooltip.mmSalesDataDown = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmSalesDataDown, 1, true)
-    tooltip.mmSalesDataDown:ClearAnchors()
-    tooltip.mmSalesDataDown:SetAnchor(BOTTOMLEFT, tooltip.mmQualityDown, TOPLEFT, 0, 0)
-    tooltip.mmSalesDataDown:SetText('<SI')
-    tooltip.mmSalesDataDown:SetColor(1, 1, 1, 1)
-    tooltip.mmSalesDataDown:SetMouseEnabled(true)
-    tooltip.mmSalesDataDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmSalesDataDown.mmData = {}
-    tooltip.mmSalesDataDown:SetHidden(true)
-
-    tooltip.mmSalesDataUp = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmSalesDataUp, 1, true)
-    tooltip.mmSalesDataUp:ClearAnchors()
-    tooltip.mmSalesDataUp:SetAnchor(BOTTOMRIGHT, tooltip.mmQualityUp, TOPRIGHT, 0, 0)
-    tooltip.mmSalesDataUp:SetText('SI>')
-    tooltip.mmSalesDataUp:SetColor(1, 1, 1, 1)
-    tooltip.mmSalesDataUp:SetMouseEnabled(true)
-    tooltip.mmSalesDataUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmSalesDataUp.mmData = {}
-    tooltip.mmSalesDataUp:SetHidden(true)
-  end
-
   if validAnalysisButtonType and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons then
-
-    local itemQuality = GetItemLinkQuality(itemLink)
-    tooltip.mmQualityDown.mmData.nextItem = MasterMerchant.QualityDown(itemLink)
-    --d(tooltip.mmQualityDown.mmData.nextItem)
-    if tooltip.mmQualityDown.mmData.nextItem then
-      local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, itemQuality - 1)
-      tooltip.mmQualityDown:SetColor(r, g, b, 1)
-      tooltip.mmQualityDown:SetHidden(false)
-    else
+    if not tooltip.mmQualityDown then
+      tooltip.mmQualityDown = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmQualityDown, 1, true)
+      tooltip.mmQualityDown:SetAnchor(LEFT)
+      tooltip.mmQualityDown:SetText('<<')
+      tooltip.mmQualityDown:SetMouseEnabled(true)
+      tooltip.mmQualityDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmQualityDown.mmData = {}
       tooltip.mmQualityDown:SetHidden(true)
-    end
 
-    tooltip.mmQualityUp.mmData.nextItem = MasterMerchant.QualityUp(itemLink)
-    --d(tooltip.mmQualityUp.mmData.nextItem)
-    if tooltip.mmQualityUp.mmData.nextItem then
-      local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, itemQuality + 1)
-      tooltip.mmQualityUp:SetColor(r, g, b, 1)
-      tooltip.mmQualityUp:SetHidden(false)
-    else
+      tooltip.mmQualityUp = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmQualityUp, 1, true)
+      tooltip.mmQualityUp:SetAnchor(RIGHT)
+      tooltip.mmQualityUp:SetText('>>')
+      tooltip.mmQualityUp:SetMouseEnabled(true)
+      tooltip.mmQualityUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmQualityUp.mmData = {}
       tooltip.mmQualityUp:SetHidden(true)
-    end
 
-    tooltip.mmLevelDown.mmData.nextItem = MasterMerchant.LevelDown(itemLink)
-    --d(tooltip.mmLevelDown.mmData.nextItem)
-    if tooltip.mmLevelDown.mmData.nextItem then
-      tooltip.mmLevelDown:SetHidden(false)
-    else
+      tooltip.mmLevelDown = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmLevelDown, 1, true)
+      tooltip.mmLevelDown:ClearAnchors()
+      tooltip.mmLevelDown:SetAnchor(TOPLEFT, tooltip.mmQualityDown, BOTTOMLEFT, 0, 0)
+      tooltip.mmLevelDown:SetText('< L')
+      tooltip.mmLevelDown:SetColor(1, 1, 1, 1)
+      tooltip.mmLevelDown:SetMouseEnabled(true)
+      tooltip.mmLevelDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmLevelDown.mmData = {}
       tooltip.mmLevelDown:SetHidden(true)
-    end
 
-    tooltip.mmLevelUp.mmData.nextItem = MasterMerchant.LevelUp(itemLink)
-    --d(tooltip.mmLevelUp.mmData.nextItem)
-    if tooltip.mmLevelUp.mmData.nextItem then
-      tooltip.mmLevelUp:SetHidden(false)
-    else
+      tooltip.mmLevelUp = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmLevelUp, 1, true)
+      tooltip.mmLevelUp:ClearAnchors()
+      tooltip.mmLevelUp:SetAnchor(TOPRIGHT, tooltip.mmQualityUp, BOTTOMRIGHT, 0, 0)
+      tooltip.mmLevelUp:SetText('L >')
+      tooltip.mmLevelUp:SetColor(1, 1, 1, 1)
+      tooltip.mmLevelUp:SetMouseEnabled(true)
+      tooltip.mmLevelUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmLevelUp.mmData = {}
       tooltip.mmLevelUp:SetHidden(true)
-    end
 
-    tooltip.mmSalesDataDown.mmData.nextItem = MasterMerchant.Down(itemLink)
-    while tooltip.mmSalesDataDown.mmData.nextItem and not self:itemLinkHasSales(tooltip.mmSalesDataDown.mmData.nextItem) do
-      tooltip.mmSalesDataDown.mmData.nextItem = MasterMerchant.Down(tooltip.mmSalesDataDown.mmData.nextItem)
-    end
-    --d(tooltip.mmSalesDataDown.mmData.nextItem)
-    if tooltip.mmSalesDataDown.mmData.nextItem then
-      tooltip.mmSalesDataDown:SetHidden(false)
-    else
+      tooltip.mmSalesDataDown = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmSalesDataDown, 1, true)
+      tooltip.mmSalesDataDown:ClearAnchors()
+      tooltip.mmSalesDataDown:SetAnchor(BOTTOMLEFT, tooltip.mmQualityDown, TOPLEFT, 0, 0)
+      tooltip.mmSalesDataDown:SetText('<SI')
+      tooltip.mmSalesDataDown:SetColor(1, 1, 1, 1)
+      tooltip.mmSalesDataDown:SetMouseEnabled(true)
+      tooltip.mmSalesDataDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmSalesDataDown.mmData = {}
       tooltip.mmSalesDataDown:SetHidden(true)
-    end
 
-    tooltip.mmSalesDataUp.mmData.nextItem = MasterMerchant.Up(itemLink)
-    while tooltip.mmSalesDataUp.mmData.nextItem and not self:itemLinkHasSales(tooltip.mmSalesDataUp.mmData.nextItem) do
-      tooltip.mmSalesDataUp.mmData.nextItem = MasterMerchant.Up(tooltip.mmSalesDataUp.mmData.nextItem)
-    end
-    --d(tooltip.mmSalesDataUp.mmData.nextItem)
-    if tooltip.mmSalesDataUp.mmData.nextItem then
-      tooltip.mmSalesDataUp:SetHidden(false)
-    else
+      tooltip.mmSalesDataUp = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmSalesDataUp, 1, true)
+      tooltip.mmSalesDataUp:ClearAnchors()
+      tooltip.mmSalesDataUp:SetAnchor(BOTTOMRIGHT, tooltip.mmQualityUp, TOPRIGHT, 0, 0)
+      tooltip.mmSalesDataUp:SetText('SI>')
+      tooltip.mmSalesDataUp:SetColor(1, 1, 1, 1)
+      tooltip.mmSalesDataUp:SetMouseEnabled(true)
+      tooltip.mmSalesDataUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmSalesDataUp.mmData = {}
       tooltip.mmSalesDataUp:SetHidden(true)
     end
 
+    if tooltip.mmQualityDown then
+
+      local itemQuality = GetItemLinkQuality(itemLink)
+      tooltip.mmQualityDown.mmData.nextItem = MasterMerchant.QualityDown(itemLink)
+      --d(tooltip.mmQualityDown.mmData.nextItem)
+      if tooltip.mmQualityDown.mmData.nextItem then
+        local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, itemQuality - 1)
+        tooltip.mmQualityDown:SetColor(r, g, b, 1)
+        tooltip.mmQualityDown:SetHidden(false)
+      else
+        tooltip.mmQualityDown:SetHidden(true)
+      end
+
+      tooltip.mmQualityUp.mmData.nextItem = MasterMerchant.QualityUp(itemLink)
+      --d(tooltip.mmQualityUp.mmData.nextItem)
+      if tooltip.mmQualityUp.mmData.nextItem then
+        local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, itemQuality + 1)
+        tooltip.mmQualityUp:SetColor(r, g, b, 1)
+        tooltip.mmQualityUp:SetHidden(false)
+      else
+        tooltip.mmQualityUp:SetHidden(true)
+      end
+
+      tooltip.mmLevelDown.mmData.nextItem = MasterMerchant.LevelDown(itemLink)
+      --d(tooltip.mmLevelDown.mmData.nextItem)
+      if tooltip.mmLevelDown.mmData.nextItem then
+        tooltip.mmLevelDown:SetHidden(false)
+      else
+        tooltip.mmLevelDown:SetHidden(true)
+      end
+
+      tooltip.mmLevelUp.mmData.nextItem = MasterMerchant.LevelUp(itemLink)
+      --d(tooltip.mmLevelUp.mmData.nextItem)
+      if tooltip.mmLevelUp.mmData.nextItem then
+        tooltip.mmLevelUp:SetHidden(false)
+      else
+        tooltip.mmLevelUp:SetHidden(true)
+      end
+
+      tooltip.mmSalesDataDown.mmData.nextItem = MasterMerchant.Down(itemLink)
+      while tooltip.mmSalesDataDown.mmData.nextItem and not self:itemLinkHasSales(tooltip.mmSalesDataDown.mmData.nextItem) do
+        tooltip.mmSalesDataDown.mmData.nextItem = MasterMerchant.Down(tooltip.mmSalesDataDown.mmData.nextItem)
+      end
+      --d(tooltip.mmSalesDataDown.mmData.nextItem)
+      if tooltip.mmSalesDataDown.mmData.nextItem then
+        tooltip.mmSalesDataDown:SetHidden(false)
+      else
+        tooltip.mmSalesDataDown:SetHidden(true)
+      end
+
+      tooltip.mmSalesDataUp.mmData.nextItem = MasterMerchant.Up(itemLink)
+      while tooltip.mmSalesDataUp.mmData.nextItem and not self:itemLinkHasSales(tooltip.mmSalesDataUp.mmData.nextItem) do
+        tooltip.mmSalesDataUp.mmData.nextItem = MasterMerchant.Up(tooltip.mmSalesDataUp.mmData.nextItem)
+      end
+      --d(tooltip.mmSalesDataUp.mmData.nextItem)
+      if tooltip.mmSalesDataUp.mmData.nextItem then
+        tooltip.mmSalesDataUp:SetHidden(false)
+      else
+        tooltip.mmSalesDataUp:SetHidden(true)
+      end
+
+    end
   end
 
   local hasTiplineOrGraph = masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
