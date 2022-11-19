@@ -2191,8 +2191,9 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
   end
 
   local hasTiplineOrGraph = masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
-
-  if hasTiplineOrGraph then
+  local hasTiplineControls = tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
+  
+  if hasTiplineOrGraph and not hasTiplineControls then
     tooltip:AddVerticalPadding(2)
     ZO_Tooltip_AddDivider(tooltip)
   end
