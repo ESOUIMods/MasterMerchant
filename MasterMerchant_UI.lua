@@ -2002,6 +2002,9 @@ function MasterMerchant:remStatsItemTooltip()
   if ItemTooltip.textPool then
     ItemTooltip.textPool:ReleaseAllObjects()
   end
+  if ItemTooltip.tooltipTextPool then
+    ItemTooltip.tooltipTextPool:ReleaseAllObjects()
+  end
   ItemTooltip.mmText = nil
   ItemTooltip.mmTTCText = nil
   ItemTooltip.mmBonanzaText = nil
@@ -2190,9 +2193,13 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
   end
 
+  if not tooltip.tooltipTextPool then
+    tooltip.tooltipTextPool = ZO_ControlPool:New("MMTooltipText", tooltip, "MMTooltipLine")
+  end
+
   local hasTiplineOrGraph = masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
   local hasTiplineControls = tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
-  
+
   if hasTiplineOrGraph and not hasTiplineControls then
     tooltip:AddVerticalPadding(2)
     ZO_Tooltip_AddDivider(tooltip)
@@ -2202,7 +2209,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
     if not tooltip.mmText then
       tooltip:AddVerticalPadding(2)
-      tooltip.mmText = tooltip.textPool:AcquireObject()
+      tooltip.mmText = tooltip.tooltipTextPool:AcquireObject()
       tooltip:AddControl(tooltip.mmText)
       tooltip.mmText:SetAnchor(CENTER)
     end
@@ -2218,7 +2225,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
     if not tooltip.mmBonanzaText then
       tooltip:AddVerticalPadding(2)
-      tooltip.mmBonanzaText = tooltip.textPool:AcquireObject()
+      tooltip.mmBonanzaText = tooltip.tooltipTextPool:AcquireObject()
       tooltip:AddControl(tooltip.mmBonanzaText)
       tooltip.mmBonanzaText:SetAnchor(CENTER)
     end
@@ -2234,7 +2241,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
     if not tooltip.mmTTCText then
       tooltip:AddVerticalPadding(2)
-      tooltip.mmTTCText = tooltip.textPool:AcquireObject()
+      tooltip.mmTTCText = tooltip.tooltipTextPool:AcquireObject()
       tooltip:AddControl(tooltip.mmTTCText)
       tooltip.mmTTCText:SetAnchor(CENTER)
     end
@@ -2250,7 +2257,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
     if not tooltip.mmCraftText then
       tooltip:AddVerticalPadding(2)
-      tooltip.mmCraftText = tooltip.textPool:AcquireObject()
+      tooltip.mmCraftText = tooltip.tooltipTextPool:AcquireObject()
       tooltip:AddControl(tooltip.mmCraftText)
       tooltip.mmCraftText:SetAnchor(CENTER)
     end
@@ -2266,7 +2273,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
     if not tooltip.mmMatText then
       tooltip:AddVerticalPadding(2)
-      tooltip.mmMatText = tooltip.textPool:AcquireObject()
+      tooltip.mmMatText = tooltip.tooltipTextPool:AcquireObject()
       tooltip:AddControl(tooltip.mmMatText)
       tooltip.mmMatText:SetAnchor(CENTER)
     end
@@ -2281,7 +2288,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
   if hasGraphInfo and MasterMerchant.systemSavedVariables.showGraph then
 
     if not tooltip.graphPool then
-      tooltip.graphPool = ZO_ControlPool:New('MasterMerchantGraph', tooltip, 'Graph')
+      tooltip.graphPool = ZO_ControlPool:New('MasterMerchantGraph', tooltip, 'MMGraph')
     end
 
     if not tooltip.mmGraph then
@@ -2345,7 +2352,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
 
   if MasterMerchant.systemSavedVariables.useLibDebugLogger then
     if not tooltip.mmTextDebug then
-      tooltip.mmTextDebug = tooltip.textPool:AcquireObject()
+      tooltip.mmTextDebug = tooltip.tooltipTextPool:AcquireObject()
       tooltip:AddControl(tooltip.mmTextDebug)
       tooltip.mmTextDebug:SetAnchor(CENTER)
     end
@@ -2409,6 +2416,9 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
     if Popup.textPool then
       Popup.textPool:ReleaseAllObjects()
     end
+    if Popup.tooltipTextPool then
+      Popup.tooltipTextPool:ReleaseAllObjects()
+    end
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
@@ -2450,6 +2460,9 @@ function MasterMerchant:addStatsProvisionerTooltip(Popup)
     if Popup.textPool then
       Popup.textPool:ReleaseAllObjects()
     end
+    if Popup.tooltipTextPool then
+      Popup.tooltipTextPool:ReleaseAllObjects()
+    end
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
@@ -2473,6 +2486,10 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
   if Popup.textPool then
     Popup.textPool:ReleaseAllObjects()
   end
+  if Popup.tooltipTextPool then
+    Popup.tooltipTextPool:ReleaseAllObjects()
+  end
+
   Popup.mmText = nil
   Popup.mmBonanzaText = nil
   Popup.mmTTCText = nil
@@ -2607,6 +2624,10 @@ function MasterMerchant:GenerateStatsItemTooltip()
       if ItemTooltip.textPool then
         ItemTooltip.textPool:ReleaseAllObjects()
       end
+      if ItemTooltip.tooltipTextPool then
+        ItemTooltip.tooltipTextPool:ReleaseAllObjects()
+      end
+
       ItemTooltip.mmText = nil
       ItemTooltip.mmBonanzaText = nil
       ItemTooltip.mmTTCText = nil

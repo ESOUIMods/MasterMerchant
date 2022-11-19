@@ -51,12 +51,17 @@
       </Controls>
     </Control>
 
-    <!-- Graph Label -->
+    <!-- MMGraphLabel was the quality buttons and the tooltip text. Now only Quality Buttons. -->
     <Label name="MMGraphLabel" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true"
            color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="XXX">
       <OnLinkMouseUp>
         ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
       </OnLinkMouseUp>
+    </Label>
+
+    <!-- For all the different tooltip text -->
+    <Label name="MMTooltipText" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true" 
+           color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="XXX">
     </Label>
 
     <Control name="MasterMerchantPriceCalc" virtual="true" hidden="true" tier="high">
@@ -92,7 +97,7 @@
     </Control>
 
     <!-- Stats Window -->
-    <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantStatsWindow" hidden="true">
+    <TopLevelControl name="MasterMerchantStatsWindow" movable="true" mouseEnabled="true" hidden="true">
       <Dimensions x="550" y="225"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)
@@ -176,7 +181,7 @@
     </Control>
 
     <!-- About Box -->
-    <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantFeedback" hidden="true">
+    <TopLevelControl name="MasterMerchantFeedback" movable="true" mouseEnabled="true" hidden="true">
       <Dimensions x="545" y="225"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)

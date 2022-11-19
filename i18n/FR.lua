@@ -475,6 +475,11 @@ ZO_CreateStringId("AGS_REASONABLE_LABEL", "Raisonnable")
 ZO_CreateStringId("AGS_GOOD_LABEL", "Bon")
 ZO_CreateStringId("AGS_GREAT_LABEL", "Super")
 ZO_CreateStringId("AGS_BUYIT_LABEL", "Achète-le!")
+ZO_CreateStringId("AGS_PERCENT_ORDER_LABEL", "Deal Percent")
+ZO_CreateStringId("AGS_PERCENT_ORDER_ASCENDING", "Ascending")
+ZO_CreateStringId("AGS_PERCENT_ORDER_DESCENDING", "Descending")
+ZO_CreateStringId("AGS_PERCENT_ORDER_NAME", "AGS Deal Percent Sort Order")
+ZO_CreateStringId("AGS_PERCENT_ORDER_DESC", "Choose between ascending or descending when sorting by Deal Percent.")
 
 -- Custom Deal Calc
 ZO_CreateStringId("MM_DEALCALC_OPTIONS_NAME", "Options du calculateur de transactions")

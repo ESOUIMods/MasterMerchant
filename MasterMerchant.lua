@@ -1951,6 +1951,15 @@ else
   }
 end
 
+MasterMerchant.agsPercentSortChoices = {
+  GetString(AGS_PERCENT_ORDER_ASCENDING),
+  GetString(AGS_PERCENT_ORDER_DESCENDING),
+}
+MasterMerchant.agsPercentSortValues = {
+  MasterMerchant.AGS_PERCENT_ASCENDING,
+  MasterMerchant.AGS_PERCENT_DESCENDING,
+}
+
 MasterMerchant.priceToChatFormats = {
   GetString(MM_CHATFORMATS_DEFAULT),
   GetString(MM_CHATFORMATS_CONDENSED),
@@ -2740,6 +2749,18 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.saucy end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.saucy = value end,
     default = MasterMerchant.systemDefault.saucy,
+  }
+  -- ascending vs descending sort order with AGS
+  optionsData[#optionsData + 1] = {
+    type = 'dropdown',
+    name = GetString(AGS_PERCENT_ORDER_NAME),
+    tooltip = GetString(AGS_PERCENT_ORDER_DESC),
+    choices = MasterMerchant.agsPercentSortChoices,
+    choicesValues = MasterMerchant.agsPercentSortValues,
+    getFunc = function() return MasterMerchant.systemSavedVariables.agsPercentSortOrderToUse end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.agsPercentSortOrderToUse = value end,
+    default = MasterMerchant.systemDefault.agsPercentSortOrderToUse,
+    disabled = function() return not MasterMerchant.AwesomeGuildStoreDetected end,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -3728,6 +3749,7 @@ function MasterMerchant:FirstInitialize()
     maxItemCount = 5000,
     disableAttWarn = false,
     dealCalcToUse = MasterMerchant.USE_MM_AVERAGE,
+    agsPercentSortOrderToUse = MasterMerchant.AGS_PERCENT_ASCENDING,
     modifiedSuggestedPriceDealCalc = false,
     modifiedSuggestedPriceInventory = false,
     useFormatedTime = false,
@@ -4243,6 +4265,8 @@ function MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
   return priceStats
 end
 
+-- /script d(MasterMerchant.GetDealInformation("|H1:item:182625:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", 10000, 2))
+-- /script d(MasterMerchant.GetDealInformation("|H1:item:191220:362:50:0:0:0:0:0:0:0:0:0:0:0:0:8:0:0:0:300:0|h|h", 1111, 1))
 MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount)
 
   local key = string.format("%s_%d_%d", itemLink, purchasePrice, stackCount)

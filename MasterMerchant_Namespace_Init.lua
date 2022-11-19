@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.34'
+MasterMerchant.version = '3.7.35'
 
 local mmInternal = {}
 _G["MasterMerchant_Internal"] = mmInternal
@@ -253,6 +253,9 @@ MasterMerchant.USE_BONANZA = 4
 MasterMerchant.USE_DEFAULT_FORMAT = 1
 MasterMerchant.USE_CONDENSED_FORMAT = 2
 MasterMerchant.USE_MM_TTC_FORMAT = 3
+
+MasterMerchant.AGS_PERCENT_ASCENDING = 1
+MasterMerchant.AGS_PERCENT_DESCENDING = 2
 
 MasterMerchant.coinIcon = "|t16:16:EsoUI/Art/currency/currency_gold.dds|t"
 
