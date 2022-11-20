@@ -106,6 +106,9 @@ ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Item Purchased")
 ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Time Purchased")
 ZO_CreateStringId("SK_PRICE_COLUMN", "価格")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "価格(1個 )")
+ZO_CreateStringId("SK_FULL_PRICE_BUTTON", "Show Full Price")
+ZO_CreateStringId("SK_YOUR_PROFIT_BUTTON", "Show Profit")
+ZO_CreateStringId("SK_REPORTS_LISTING_FEE_COLUMN", "Fee")
 
 -- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "アイテムをダブルクリックすることでチャットに表示します。")

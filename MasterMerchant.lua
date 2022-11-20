@@ -2722,6 +2722,7 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.showCalc end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.showCalc = value end,
     default = MasterMerchant.systemDefault.showCalc,
+    disabled = function() return MasterMerchant.AwesomeGuildStoreDetected end,
   }
   -- Should we use one price for all or save by guild?
   optionsData[#optionsData + 1] = {
@@ -2740,6 +2741,8 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.minProfitFilter end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.minProfitFilter = value end,
     default = MasterMerchant.systemDefault.minProfitFilter,
+    disabled = function() return not MasterMerchant.AwesomeGuildStoreDetected end,
+    warning = GetString(MM_RELOADUI_WARN),
   }
   -- should we display profit instead of margin?
   optionsData[#optionsData + 1] = {
@@ -3565,8 +3568,8 @@ function MasterMerchant:InitRosterChanges()
   MasterMerchant:BuildRosterTimeDropdown()
 end
 
-function MasterMerchant.SetupPendingPost(self)
-  --MasterMerchant:dm("Debug", "SetupPendingPost")
+function MasterMerchant.TradingHouseSetupPendingPost(self)
+  --MasterMerchant:dm("Debug", "TradingHouseSetupPendingPost")
   OriginalSetupPendingPost(self)
 
   if (self.pendingItemSlot) then
@@ -3950,20 +3953,22 @@ function MasterMerchant:FirstInitialize()
     MasterMerchantFilterByTypeWindow:SetHidden(true)
   end)
 
-  EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_PENDING_ITEM_UPDATE,
-    function(eventCode, slotId, isPending)
-      if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
-        local theLink = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
-        local postedStats = self:GetTooltipStats(theLink, true, true)
-        MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
-        local floorPrice = 0
-        if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
-        MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
-        MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1,
-          slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
-        MasterMerchantPriceCalculator:SetHidden(false)
-      else MasterMerchantPriceCalculator:SetHidden(true) end
-    end)
+  if not AwesomeGuildStore then
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_PENDING_ITEM_UPDATE,
+      function(eventCode, slotId, isPending)
+        if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
+          local theLink = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
+          local postedStats = self:GetTooltipStats(theLink, true, true)
+          MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
+          local floorPrice = 0
+          if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
+          MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
+          MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1,
+            slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+          MasterMerchantPriceCalculator:SetHidden(false)
+        else MasterMerchantPriceCalculator:SetHidden(true) end
+      end)
+  end
 
   --[[TODO see if this or something else can be used in Gamepad mode
   ]]--
@@ -4052,7 +4057,7 @@ function MasterMerchant:FirstInitialize()
   else
     if TRADING_HOUSE then
       OriginalSetupPendingPost = TRADING_HOUSE.SetupPendingPost
-      TRADING_HOUSE.SetupPendingPost = MasterMerchant.SetupPendingPost
+      TRADING_HOUSE.SetupPendingPost = MasterMerchant.TradingHouseSetupPendingPost
       ZO_PreHook(TRADING_HOUSE, 'PostPendingItem', MasterMerchant.PostPendingItem)
     end
   end

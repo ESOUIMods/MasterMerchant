@@ -8,8 +8,8 @@
 -->
 <GuiXml>
   <Controls>
-    <TopLevelControl movable="false" mouseEnabled="true" name="MasterMerchantFilterByNameWindow" hidden="true">
-      <Dimensions x="250" y="720"/>
+    <TopLevelControl movable="false" mouseEnabled="true" name="MasterMerchantFilterByNameWindow" hidden="true" tier="MEDIUM">
+      <Dimensions x="250" y="680"/>
       <Anchor point="TOPLEFT" relativeTo="MasterMerchantListingWindow" relativePoint="TOPRIGHT" offsetX="15" offsetY="0"/>
       <Controls>
         <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
@@ -61,9 +61,9 @@
       </Controls>
     </TopLevelControl>
 
-    <TopLevelControl movable="false" mouseEnabled="true" name="MasterMerchantFilterByTypeWindow" hidden="true">
+    <TopLevelControl movable="false" mouseEnabled="true" name="MasterMerchantFilterByTypeWindow" hidden="true" tier="MEDIUM">
       <Anchor point="TOPLEFT" relativeTo="MasterMerchantListingWindow" relativePoint="TOPRIGHT" offsetX="15" offsetY="0"/>
-      <Dimensions x="250" y="720"/>
+      <Dimensions x="250" y="680"/>
       <Controls>
         <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
         <Control name="$(parent)MenuHeader">

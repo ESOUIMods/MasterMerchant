@@ -107,6 +107,9 @@ ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Купленный предмет"
 ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Время покупки")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Цена")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "Цена(шт.)")
+ZO_CreateStringId("SK_FULL_PRICE_BUTTON", "Show Full Price")
+ZO_CreateStringId("SK_YOUR_PROFIT_BUTTON", "Show Profit")
+ZO_CreateStringId("SK_REPORTS_LISTING_FEE_COLUMN", "Fee")
 
 -- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Щелкните правой кнопкой на предмете для ссылки в чат.")

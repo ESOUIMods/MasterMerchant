@@ -910,6 +910,7 @@ function MMScrollList:SetupReportsRow(control, data)
   control.itemName = GetControl(control, 'ItemName')
   control.sellTime = GetControl(control, 'SellTime')
   control.price = GetControl(control, 'Price')
+  control.listingfee = GetControl(control, 'ListingFee')
 
   local dataTable
   if MasterMerchant.reportsViewMode == MasterMerchant.reportsPostedViewMode then
@@ -965,6 +966,7 @@ function MMScrollList:SetupReportsRow(control, data)
   control.quant:SetFont(string.format(fontString, 15) .. '|soft-shadow-thin')
   control.sellTime:SetFont(string.format(fontString, 15))
   control.price:SetFont(string.format(fontString, 15))
+  control.listingfee:SetFont(string.format(fontString, 15))
 
   control.rowId:SetText(data.sortIndex)
 
@@ -1021,8 +1023,12 @@ function MMScrollList:SetupReportsRow(control, data)
   -- Insert thousands separators for the price
   local stringPrice = MasterMerchant.LocalizedNumber(dispPrice)
 
-  -- Finally, set the price
+  -- set the price
   control.price:SetText(stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+
+  -- set listing fee
+  local listingFee = GetTradingHousePostPriceInfo(actualItem.price)
+  control.listingfee:SetText(listingFee .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   ZO_SortFilterList.SetupRow(self, control, data)
 end
@@ -1904,6 +1910,7 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantWindowMenuHeaderTitle:SetFont(string.format(fontString, windowTitle))
   MasterMerchantWindowMenuFooterSwitchViewButton:SetFont(string.format(fontString, windowButtonLabel))
   MasterMerchantWindowMenuFooterPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
+  MasterMerchantWindowMenuFooterFullPriceSwitchButton:SetFont(string.format(fontString, windowButtonLabel))
   MasterMerchantWindowMenuHeaderSearchEditBox:SetFont(string.format(fontString, windowEditBox))
   MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   MasterMerchantWindowHeadersGuild:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
@@ -1954,6 +1961,7 @@ function MasterMerchant:UpdateFonts()
   MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   MasterMerchantReportsWindowHeadersSellTime:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
   MasterMerchantReportsWindowHeadersPrice:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
+  MasterMerchantReportsWindowHeadersListingFee:GetNamedChild('Name'):SetFont(string.format(fontString, windowHeader))
 
   -- Stats Window
   MasterMerchantStatsWindowTitle:SetFont(string.format(fontString, windowTitle))
@@ -3151,6 +3159,42 @@ function MasterMerchant:SwitchReportsViewMode()
   end
 end
 
+-- Switch between full price mode and price after store cut
+function MasterMerchant:SwitchFullPriceMode()
+  MasterMerchant:dm("Debug", "SwitchFullPriceMode")
+  if MasterMerchant.systemSavedVariables.showFullPrice then
+    MasterMerchant.systemSavedVariables.showFullPrice = false
+    MasterMerchantWindowMenuFooterFullPriceSwitchButton:SetText(GetString(SK_FULL_PRICE_BUTTON))
+    --[[
+    MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    MasterMerchantReportsWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+    ]]--
+  else
+    MasterMerchant.systemSavedVariables.showFullPrice = true
+    MasterMerchantWindowMenuFooterFullPriceSwitchButton:SetText(GetString(SK_YOUR_PROFIT_BUTTON))
+    --[[
+    MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    MasterMerchantReportsWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
+    ]]--
+  end
+
+  if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  elseif MasterMerchant.systemSavedVariables.viewSize == REPORTS then
+    MasterMerchant:RefreshAlteredWindowData(true)
+  else
+    MasterMerchant:dm("Debug", "Shit Hit The Fan SwitchFullPriceMode")
+  end
+end
+
 -- Switch between total price mode and unit price mode
 function MasterMerchant:SwitchPriceMode()
   MasterMerchant:dm("Debug", "SwitchPriceMode")
@@ -3405,8 +3449,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
     ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- reports Guild: second column
   MasterMerchantReportsWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- reports ItemName: third column
   MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(SK_ITEM_LISTING_COLUMN))
   -- reports SellTime: fourth column
@@ -3416,11 +3459,12 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantReportsWindowHeadersPrice:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   MasterMerchantReportsWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price',
-      ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+    ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   else
     ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersPrice, GetString(SK_PRICE_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   end
+  -- reports ListingFee: sixth column
+  MasterMerchantReportsWindowHeadersListingFee:GetNamedChild('Name'):SetText(GetString(SK_REPORTS_LISTING_FEE_COLUMN))
   -- Total / unit price switch button
   if MasterMerchant.systemSavedVariables.showUnitPrice then
     MasterMerchantReportsWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
@@ -3528,6 +3572,13 @@ function MasterMerchant:SetupMasterMerchantWindow()
     MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_TOTAL))
   else
     MasterMerchantWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
+  end
+
+  -- Full Price / Price after house cut switch button
+  if MasterMerchant.systemSavedVariables.showFullPrice then
+    MasterMerchantWindowMenuFooterFullPriceSwitchButton:SetText(GetString(SK_YOUR_PROFIT_BUTTON))
+  else
+    MasterMerchantWindowMenuFooterFullPriceSwitchButton:SetText(GetString(SK_FULL_PRICE_BUTTON))
   end
 
   -- Spinny animations that display while SK is scanning

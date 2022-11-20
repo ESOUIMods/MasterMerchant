@@ -10,8 +10,8 @@
   <Controls>
     <!-- Guilds Main Window guild_vs -->
     <!-- /script MasterMerchantGuildWindow:SetHidden(false) -->
-    <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantGuildWindow" hidden="true">
-      <Dimensions x="960" y="720"/>
+    <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantGuildWindow" hidden="true" tier="MEDIUM">
+      <Dimensions x="950" y="680"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)
       </OnMoveStop>
@@ -22,7 +22,7 @@
       <Controls>
         <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
         <Control name="$(parent)MenuHeader">
-          <Dimensions x="950" y="50"/>
+          <Dimensions x="940" y="50"/>
           <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
           <Controls>
             <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" alpha="1">
@@ -124,8 +124,7 @@
                 ZO_Tooltips_HideTextTooltip()
               </OnMouseExit>
             </Button>
-            <Button name="$(parent)SalesViewButton" inheritAlpha="true" verticalAlignment="CENTER"
-                    horizontalAlignment="CENTER">
+            <Button name="$(parent)SalesViewButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
               <Anchor point="RIGHT" relativeTo="$(parent)PurchaseButton" relativePoint="LEFT" offsetX="5" offsetY="0"/>
               <Dimensions x="42" y="42"/>
               <Textures normal="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_up.dds"
@@ -140,8 +139,7 @@
                 ZO_Tooltips_HideTextTooltip()
               </OnMouseExit>
             </Button>
-            <Button name="$(parent)ViewSizeButton" inheritAlpha="true" verticalAlignment="CENTER"
-                    horizontalAlignment="CENTER">
+            <Button name="$(parent)ViewSizeButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
               <Anchor point="RIGHT" relativeTo="$(parent)SalesViewButton" relativePoint="LEFT" offsetX="5" offsetY="0"/>
               <Dimensions x="42" y="42"/>
               <Textures normal="/esoui/art/campaign/campaign_tabicon_leaderboard_up.dds"
@@ -173,7 +171,7 @@
               </OnMouseExit>
             </Button>
             <Button name="$(parent)LockButton" hidden="false" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
-              <Anchor point="RIGHT" relativeTo="$(parent)StatsButton" relativePoint="LEFT" offsetX="5" offsetY="2"/>
+              <Anchor point="RIGHT" relativeTo="$(parent)StatsButton" relativePoint="LEFT" offsetX="0" offsetY="2"/>
               <Dimensions x="32" y="32"/>
               <!-- <Textures normal="/esoui/art/miscellaneous/locked_up.dds"
                         mouseOver="/esoui/art/miscellaneous/locked_over.dds"/> 
@@ -200,13 +198,13 @@
         </Texture>
         <Control name="$(parent)Headers">
           <Anchor point="TOPLEFT" relativeTo="$(parent)MenuDivider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
-          <Dimensions x="950" y="50"/>
+          <Dimensions x="940" y="40"/>
           <Controls>
             <Button name="$(parent)NameSwitch">
-              <Anchor point="LEFT" relativeTo="$(parent)Headers" relativePoint="LEFT" offsetX="5" offsetY="0"/>
+              <Anchor point="LEFT" relativeTo="$(parent)Headers" relativePoint="LEFT" offsetX="0" offsetY="0"/>
               <Textures normal="ESOUI/art/chatwindow/chat_friendsonline_up.dds"
                         mouseOver="ESOUI/art/chatwindow/chat_friendsonline_over.dds"/>
-              <Dimensions x="35" y="35"/>
+              <Dimensions x="40" y="35"/>
               <OnClicked>
                 MasterMerchant:ToggleBuyerSeller()
               </OnClicked>
@@ -214,7 +212,7 @@
             <!-- Button size is different then the data row for alignment only -->
             <Control name="$(parent)Seller" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="260" y="32"/>
+              <Dimensions x="270" y="32"/>
               <OnMouseEnter>
                 MasterMerchant:HeaderToolTip(self, GetString(SK_BUYER_TOOLTIP))
               </OnMouseEnter>
@@ -223,16 +221,16 @@
               </OnMouseExit>
             </Control>
             <Control name="$(parent)Guild" inherits="ZO_SortHeader">
-              <Anchor point="LEFT" relativeTo="$(parent)Seller" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+              <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="270" offsetY="0"/>
               <Dimensions x="190" y="32"/>
             </Control>
             <Control name="$(parent)Rank" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="40" y="32"/>
             </Control>
-            <Control name="$(parent)Sales" inherits="ZO_SortHeader">
+            <Control name="$(parent)Sales" inherits="ZO_SortHeader" horizontalAlignment="TEXT_ALIGN_CENTER">
               <Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="110" y="32"/>
+              <Dimensions x="115" y="32"/>
             </Control>
             <Control name="$(parent)Tax" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)Sales" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -240,7 +238,7 @@
             </Control>
             <Control name="$(parent)Count" inherits="ZO_SortHeader">
               <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="105" y="32"/>
+              <Dimensions x="100" y="32"/>
             </Control>
             <Control name="$(parent)Percent" mouseEnabled="true">
               <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -257,12 +255,12 @@
           </Controls>
         </Control>
         <Control name="$(parent)List" inherits="ZO_ScrollList">
-          <Dimensions x="950" y="570"/>
+          <Dimensions x="950" y="540"/>
           <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
         </Control>
         <Control name="$(parent)MenuFooter">
           <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5"/>
-          <Dimensions x="950" y="40"/>
+          <Dimensions x="940" y="40"/>
           <Controls>
             <Button name="$(parent)SwitchViewButton" inherits="ZO_DefaultButton">
               <Anchor point="BOTTOMLEFT" relativeTo="$(parent)MenuFooter" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5"/>
@@ -292,18 +290,18 @@
         </Label>
         <Button name="$(parent)Seller" inheritAlpha="true" text="Seller" horizontalAlignment="LEFT">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="260" y="26"/>
+          <Dimensions x="270" y="26"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
         <Label name="$(parent)ItemName" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Item" linkEnabled="true" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="260" y="26"/>
+          <Dimensions x="270" y="26"/>
           <OnLinkMouseUp>
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild">
-          <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="260" offsetY="0"/>
+          <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="270" offsetY="0"/>
           <Dimensions x="190" y="26"/>
         </Label>
         <Label name="$(parent)Rank" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="15">
@@ -312,7 +310,7 @@
         </Label>
         <Label name="$(parent)Sales" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Sales">
           <Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="110" y="26"/>
+          <Dimensions x="115" y="26"/>
         </Label>
         <Label name="$(parent)Tax" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Tax">
           <Anchor point="LEFT" relativeTo="$(parent)Sales" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -320,11 +318,11 @@
         </Label>
         <Label name="$(parent)Count" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Count">
           <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="105" y="26"/>
+          <Dimensions x="100" y="26"/>
         </Label>
         <Label name="$(parent)Percent" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="10%">
           <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="75" y="26"/>
+          <Dimensions x="70" y="26"/>
         </Label>
       </Controls>
     </Control>

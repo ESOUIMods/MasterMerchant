@@ -43,8 +43,8 @@
     <Control name="MM_SortHeaderLeft" inherits="ZO_SortHeaderBehavior MM_SortHeaderLeftAppearance" virtual="true" />    
     <!-- Sales Main Window listings_vs -->
     <!-- /script MasterMerchantItemsWindow:SetHidden(false) -->
-    <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantListingWindow" hidden="true">
-      <Dimensions x="960" y="720"/>
+    <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantListingWindow" hidden="true" tier="MEDIUM">
+      <Dimensions x="950" y="680"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)
       </OnMoveStop>
@@ -55,7 +55,7 @@
       <Controls>
         <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
         <Control name="$(parent)MenuHeader">
-          <Dimensions x="950" y="50"/>
+          <Dimensions x="940" y="50"/>
           <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
           <Controls>
             <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" alpha="1">
@@ -231,12 +231,12 @@
         </Texture>
         <Control name="$(parent)Headers">
           <Anchor point="TOPLEFT" relativeTo="$(parent)MenuDivider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
-          <Dimensions x="950" y="50"/>
+          <Dimensions x="940" y="40"/>
           <Controls>
             <!-- Button size is different then the data row for alignment only -->
             <Control name="$(parent)Seller" inherits="MM_SortHeaderLeft">
               <Anchor point="LEFT" relativeTo="$(parent)Headers" relativePoint="LEFT" offsetX="35" offsetY="0"/>
-              <Dimensions x="100" y="32"/>
+              <Dimensions x="110" y="32"/>
             </Control>
             <Control name="$(parent)Location" inherits="MM_NonSortHeaderLeft">
               <Anchor point="LEFT" relativeTo="$(parent)Seller" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -244,10 +244,10 @@
             </Control>
             <Control name="$(parent)Guild" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)Location" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="150" y="32"/>
+              <Dimensions x="160" y="32"/>
             </Control>
             <Control name="$(parent)ItemName" inherits="MM_NonSortHeaderCenter">
-              <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="32" offsetY="0"/>
+              <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="37" offsetY="0"/>
               <Dimensions x="260" y="32"/>
             </Control>
             <Control name="$(parent)ListingTime" inherits="MM_SortHeaderCenter">
@@ -261,12 +261,12 @@
           </Controls>
         </Control>
         <Control name="$(parent)List" inherits="ZO_ScrollList">
-          <Dimensions x="950" y="566"/>
+          <Dimensions x="950" y="540"/>
           <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
         </Control>
         <Control name="$(parent)MenuFooter">
           <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5"/>
-          <Dimensions x="950" y="40"/>
+          <Dimensions x="940" y="40"/>
           <Controls>
             <Button name="$(parent)PriceSwitchButton" inherits="ZO_DefaultButton">
               <Anchor point="BOTTOMLEFT" relativeTo="$(parent)MenuFooter" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
@@ -326,7 +326,7 @@
         </Label>
         <Label name="$(parent)Seller" inheritAlpha="true" color="FFFFFF" text="Seller" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="100" y="26"/>
+          <Dimensions x="110" y="26"/>
         </Label>
         <Label name="$(parent)Location" inheritAlpha="true" color="FFFFFF" text="" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)Seller" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -334,7 +334,7 @@
         </Label>
         <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" text="Guild">
           <Anchor point="LEFT" relativeTo="$(parent)Location" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="150" y="26"/>
+          <Dimensions x="160" y="26"/>
         </Label>
         <Texture name="$(parent)ItemIcon" alpha="1">
           <Dimensions x="32" y="32"/>
@@ -354,7 +354,7 @@
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
         <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
-          <Dimensions x="100" y="26"/>
+          <Dimensions x="90" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ListingTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
       </Controls>

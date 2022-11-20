@@ -106,6 +106,9 @@ ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Gekaufter Gegenstand")
 ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Kaufzeitpunkt")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Preis")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "St\195\188ckpreis")
+ZO_CreateStringId("SK_FULL_PRICE_BUTTON", "Show Full Price")
+ZO_CreateStringId("SK_YOUR_PROFIT_BUTTON", "Show Profit")
+ZO_CreateStringId("SK_REPORTS_LISTING_FEE_COLUMN", "Fee")
 
 -- button tooltips
 ZO_CreateStringId("SK_ITEM_TOOLTIP", "Rechtsklick auf einen Gegenstand f\195\188gt einen Link auf diesen im Chat ein.")
