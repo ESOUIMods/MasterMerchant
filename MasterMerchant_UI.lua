@@ -2854,6 +2854,8 @@ function MasterMerchant:ToggleMasterMerchantWindow()
     return
   end
   MasterMerchant:ActiveWindow():SetHidden(not MasterMerchant:ActiveWindow():IsHidden())
+  if not MasterMerchantFilterByNameWindow:IsHidden() then MasterMerchantFilterByNameWindow:SetHidden(true) end
+  if not MasterMerchantFilterByTypeWindow:IsHidden() then MasterMerchantFilterByTypeWindow:SetHidden(true) end
 end
 
 -- /script MasterMerchant:RefreshAlteredWindowData()

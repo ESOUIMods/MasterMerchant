@@ -321,8 +321,8 @@ end
 -- MasterMerchant:GetTooltipStats(54484, "50:16:4:0:0", false, true)
 -- Computes the weighted moving average across available data
 -- /script MasterMerchant.itemInformationCache = {}
--- /script d(LibPrice.MMPrice("|H1:item:54173:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
 -- /script MasterMerchant:ClearPriceCacheById(54173, "1:0:5:0:0")
+-- /script MasterMerchant:ClearBonanzaCachePriceById(54173, "1:0:5:0:0")
 function MasterMerchant:GetTooltipStats(itemLink, priceEval)
   -- MasterMerchant:dm("Debug", "GetTooltipStats")
   -- MasterMerchant:dm("Debug", itemLink)
@@ -630,7 +630,7 @@ function MasterMerchant:GetTooltipStats(itemLink, priceEval)
       salesPoints = graphInformation.points
     end
   end
-  if hasListings and not hasBonanza then
+  if hasListings and (not hasBonanza and not priceEval) then
     bonanzaList = listings_data[itemID][itemIndex]['sales']
     bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
     if #bonanzaList >= 6 then
