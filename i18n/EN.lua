@@ -312,6 +312,7 @@ ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Detailed Information on Graph Points")
 ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Enabled will display the time, guild, buyer, seller and pricing information. Disabled will show the individual price of the graph point.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Level/Quality Selectors")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Display buttons on item popup to adjust level/quality.")
+ZO_CreateStringId("MM_SEARCH_BONANZA", "Search Bonanza")
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Minimal Indexing")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Sales History indexes are skipped to save memory, but searching on the MM screen is much slower.")

@@ -312,6 +312,7 @@ ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Подробная информация
 ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Включено: показывать время, гильдию, продавца и цену сделки. Отключено: показывать цену сделки.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Переключатели уровня/качества")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Добавлять в подсказки предметов кнопки для изменения уровня и качества.")
+ZO_CreateStringId("MM_SEARCH_BONANZA", "Search Bonanza")
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Минимальная индексация")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Индексы журнала продаж будут пропущены для экономии памяти и ускорения запуска. Поиск на экране MM при этом будет происходить намного медленнее.")

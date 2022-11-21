@@ -311,6 +311,7 @@ ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Ausführliche Informationen zu Diagramm
 ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Aktiviert zeigt Zeit, Gilde, Käufer, Verkäufer und Preisinformationen an. Deaktiviert zeigt den individuellen Preis des Diagrammpunkts an.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Level- / Qualitätswähler")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Anzeigen von Schaltflächen im Element-Popup zum Anpassen von Stufe / Qualität.")
+ZO_CreateStringId("MM_SEARCH_BONANZA", "Search Bonanza")
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Minimale Indizierung")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Verkaufsverlaufsindizes werden übersprungen, um Speicherplatz zu sparen, aber die Suche auf dem MM-Bildschirm ist viel langsamer.")

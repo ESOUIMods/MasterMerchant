@@ -311,6 +311,7 @@ ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Szczegółowe informacje na punktach wy
 ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Włącznie wyświetli informację o czasie, gildii, kupującym, sprzedającym oraz cenie. Wyłączenie wyświetli indywidualną cenę na wykresie.")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Przyciski wyboru poziomu/jakości")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Wyświetl przyciski w wyskakującym oknie przedmiotu aby wybrać poziom/jakość.")
+ZO_CreateStringId("MM_SEARCH_BONANZA", "Search Bonanza")
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Minimalne indeksowanie")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Pominięto indeksy historii sprzedaży aby zaoszczędzić pamięć, ale wyszukiwanie na ekranie MM jest znacznie wolniejsze.")

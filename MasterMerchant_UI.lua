@@ -1176,7 +1176,22 @@ function MMScrollList:FilterScrollList()
   elseif MasterMerchant.systemSavedVariables.viewSize == REPORTS then
     searchText = MasterMerchantReportsWindowMenuHeaderSearchEditBox:GetText()
   end
-  if searchText then searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1') end
+  -- pass one, set the text if Bonanza Search
+  if MasterMerchant.bonanzaSearchText then
+    searchText = MasterMerchant.bonanzaSearchText
+  end
+  -- pass two, clean up the text
+  if searchText then
+    searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1')
+    searchText = string.gsub(searchText, "'s", "")
+    searchText = string.gsub(searchText, "-", " ")
+    searchText = string.gsub(searchText, "%p", "")
+  end
+  -- pass three, set the text and clear  Bonanza Search text
+  if MasterMerchant.bonanzaSearchText then
+    MasterMerchantListingWindowMenuHeaderSearchEditBox:SetText(searchText)
+    MasterMerchant.bonanzaSearchText = nil
+  end
   local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
 
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
@@ -2955,7 +2970,9 @@ end
 
 function MasterMerchant:SwitchToMasterMerchantListingsView()
   -- MasterMerchant:dm("Debug", "SwitchToMasterMerchantListingsView")
-  if MasterMerchant.systemSavedVariables.viewSize == LISTINGS then return end
+  local listingsView = MasterMerchant.systemSavedVariables.viewSize == LISTINGS
+  local isHidden = MasterMerchantListingWindow:IsHidden()
+  if listingsView and not isHidden then return end
   local theFragment = MasterMerchant:ActiveFragment()
   MasterMerchant:ActiveWindow():SetHidden(true)
   MasterMerchant.systemSavedVariables.viewSize = LISTINGS

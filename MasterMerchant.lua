@@ -323,6 +323,8 @@ end
 -- /script MasterMerchant.itemInformationCache = {}
 -- /script MasterMerchant:ClearPriceCacheById(54173, "1:0:5:0:0")
 -- /script MasterMerchant:ClearBonanzaCachePriceById(54173, "1:0:5:0:0")
+-- Vamp Fang |H1:item:64210:177:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h -- 1 bonanza listing no price to chat
+-- hide scraps |H1:item:71239:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h -- 1 bonanza listing no price to chat
 function MasterMerchant:GetTooltipStats(itemLink, priceEval)
   -- MasterMerchant:dm("Debug", "GetTooltipStats")
   -- MasterMerchant:dm("Debug", itemLink)
@@ -1554,6 +1556,15 @@ function MasterMerchant:onItemActionLinkCCLink(itemLink)
   end
 end
 
+function MasterMerchant:OnSearchBonanzaPopupInfoLink(itemLink)
+  if not itemLink then MasterMerchant:dm("Warn", "OnSearchBonanzaPopupInfoLink has no itemLink") end
+  local searchText = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+  if not searchText or searchText == "" then return end
+  MasterMerchant.bonanzaSearchText = searchText
+  MasterMerchant:SwitchToMasterMerchantListingsView()
+  MasterMerchant.listingsScrollList:RefreshFilters()
+end
+
 function MasterMerchant:onItemActionPopupInfoLink(itemLink)
   --[[MM_Graph.itemLink was added to there is a current link
   for the graph. When adding a seller to the filter that
@@ -1763,32 +1774,33 @@ function MasterMerchant:OnTradingHouseListingClicked(itemLink, sellerName)
 end
 
 function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
-  local st = ZO_InventorySlot_GetType(inventorySlot)
+  local slotType = ZO_InventorySlot_GetType(inventorySlot)
   local guildId, guildName = GetCurrentTradingHouseGuildDetails()
-  link = nil
-  if st == SLOT_TYPE_ITEM or st == SLOT_TYPE_EQUIPMENT or st == SLOT_TYPE_BANK_ITEM or st == SLOT_TYPE_GUILD_BANK_ITEM or
-    st == SLOT_TYPE_TRADING_HOUSE_POST_ITEM or st == SLOT_TYPE_REPAIR or st == SLOT_TYPE_CRAFTING_COMPONENT or st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or
-    st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or st == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or st == SLOT_TYPE_CRAFT_BAG_ITEM then
+  local itemLink = nil
+  if slotType == SLOT_TYPE_ITEM or slotType == SLOT_TYPE_EQUIPMENT or slotType == SLOT_TYPE_BANK_ITEM or slotType == SLOT_TYPE_GUILD_BANK_ITEM or
+    slotType == SLOT_TYPE_TRADING_HOUSE_POST_ITEM or slotType == SLOT_TYPE_REPAIR or slotType == SLOT_TYPE_CRAFTING_COMPONENT or slotType == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or
+    slotType == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or slotType == SLOT_TYPE_PENDING_CRAFTING_COMPONENT or slotType == SLOT_TYPE_CRAFT_BAG_ITEM then
     local bag, index = ZO_Inventory_GetBagAndIndex(inventorySlot)
-    link = GetItemLink(bag, index)
+    itemLink = GetItemLink(bag, index)
   end
-  if st == SLOT_TYPE_TRADING_HOUSE_ITEM_RESULT then
-    link = GetTradingHouseSearchResultItemLink(ZO_Inventory_GetSlotIndex(inventorySlot))
+  if slotType == SLOT_TYPE_TRADING_HOUSE_ITEM_RESULT then
+    itemLink = GetTradingHouseSearchResultItemLink(ZO_Inventory_GetSlotIndex(inventorySlot))
   end
-  if st == SLOT_TYPE_TRADING_HOUSE_ITEM_LISTING then
-    link = GetTradingHouseListingItemLink(ZO_Inventory_GetSlotIndex(inventorySlot), linkStyle)
+  if slotType == SLOT_TYPE_TRADING_HOUSE_ITEM_LISTING then
+    itemLink = GetTradingHouseListingItemLink(ZO_Inventory_GetSlotIndex(inventorySlot), linkStyle)
   end
-  if (link and zo_strmatch(link, '|H.-:item:(.-):')) then
+  if (itemLink and zo_strmatch(itemLink, '|H.-:item:(.-):')) then
     zo_callLater(function()
-      if MasterMerchant:itemCraftPrice(link) then
-        AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(link) end, MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_SEARCH_BONANZA), function() self:OnSearchBonanzaPopupInfoLink(itemLink) end, MENU_ADD_OPTION_LABEL)
+      if MasterMerchant:itemCraftPrice(itemLink) then
+        AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(itemLink) end, MENU_ADD_OPTION_LABEL)
       end
       if inventorySlot.sellerName then
-        AddMenuItem(GetString(MM_BLACKLIST_MENU_SELLER), function() MasterMerchant:OnTradingHouseListingClicked(link, inventorySlot.sellerName) end)
-        AddMenuItem(GetString(MM_BLACKLIST_MENU_GUILD), function() MasterMerchant:OnTradingHouseListingClicked(link, guildName) end)
+        AddMenuItem(GetString(MM_BLACKLIST_MENU_SELLER), function() MasterMerchant:OnTradingHouseListingClicked(itemLink, inventorySlot.sellerName) end)
+        AddMenuItem(GetString(MM_BLACKLIST_MENU_GUILD), function() MasterMerchant:OnTradingHouseListingClicked(itemLink, guildName) end)
       end
-      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(link) end, MENU_ADD_OPTION_LABEL)
-      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:OnItemLinkAction(link) end, MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(itemLink) end, MENU_ADD_OPTION_LABEL)
+      AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:OnItemLinkAction(itemLink) end, MENU_ADD_OPTION_LABEL)
       ShowMenu(self)
     end, 50)
   end

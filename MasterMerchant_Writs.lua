@@ -19,6 +19,9 @@ local MM_WRIT_ITEMTYPE_JEWELRY_RING = 24
 -- |H1:item:156735:4:1:0:0:0:117956:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h
 -- |H1:item:156733:4:1:0:0:0:117926:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h
 -- /script d(MasterMerchant_Internal:GetVoucherCountByItemLink("|H1:item:121533:6:1:0:0:0:40:190:5:38:17:46:0:0:0:0:0:0:0:0:686400|h|h"))
+-- |H1:item:153482:4:1:0:0:0:87690:0:0:0:0:0:0:0:0:0:0:0:0:0:20000|h|h witches writ
+-- |H1:item:153482:4:1:0:0:0:87691:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h witches writ
+-- |H1:item:153482:4:1:0:0:0:87686:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h witches writ
 function mmInternal:GetVoucherCountByItemLink(itemLink)
   local data = mmInternal:GetPotionEffectWritRewardField(itemLink)
   local itemType, _ = GetItemLinkItemType(itemLink)

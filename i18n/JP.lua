@@ -311,6 +311,7 @@ ZO_CreateStringId("MM_GRAPH_INFO_NAME", "グラフポイントの詳細情報")
 ZO_CreateStringId("MM_GRAPH_INFO_TIP", "有効にすると、時間、ギルド、買い手、売り手、価格情報が表示されます。無効にすると、グラフポイントの個別の価格が表示されます。")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "レベル/品質セレクタ")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "レベル/品質を調整するボタンをアイテムポップアップに表示します。")
+ZO_CreateStringId("MM_SEARCH_BONANZA", "Search Bonanza")
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "最小限のインデックス")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "メモリを節約するために販売履歴インデックスはスキップされますが、MM画面からの検索ははるかに遅くなります。")

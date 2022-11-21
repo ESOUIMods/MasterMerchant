@@ -312,6 +312,7 @@ ZO_CreateStringId("MM_GRAPH_INFO_NAME", "Informazioni Dettagliate sui Punti del 
 ZO_CreateStringId("MM_GRAPH_INFO_TIP", "Se attivato mostrerà il tempo, la gilda, l'acquirente, il venditore e le informazioni sul prezzo. Disabilitato mostrerà il prezzo individuale sul punto del grafico")
 ZO_CreateStringId("MM_LEVEL_QUALITY_NAME", "Selettori di Livello/Qualità")
 ZO_CreateStringId("MM_LEVEL_QUALITY_TIP", "Visualizza i pulsanti sul popup dell'oggetto per regolare livello/qualità.")
+ZO_CreateStringId("MM_SEARCH_BONANZA", "Search Bonanza")
 
 ZO_CreateStringId("MM_SKIP_INDEX_NAME", "Indicizzazione minima")
 ZO_CreateStringId("MM_SKIP_INDEX_TIP", "Gli indici della cronologia delle vendite sono ridotti per risparmiare memoria, ma la ricerca nella schermata MM è molto più lenta")
