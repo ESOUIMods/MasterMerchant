@@ -176,6 +176,21 @@ local function GetDateFormattedString(month, day, yearString)
   return dateString
 end
 
+function MasterMerchant:GetFullPriceOrProfit(dispPrice, quantity)
+  local _, _, expectedProfit = GetTradingHousePostPriceInfo(dispPrice)
+  if MasterMerchant.systemSavedVariables.showFullPrice then
+    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
+      return dispPrice / (quantity or 1)
+    end
+    return dispPrice
+  else
+    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
+      return expectedProfit / (quantity or 1)
+    end
+    return expectedProfit
+  end
+end
+
 local function GetTimeDateString(timestamp)
   local timeData = os.date("*t", timestamp)
   local month = timeData.month

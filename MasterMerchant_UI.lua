@@ -485,19 +485,8 @@ function MMScrollList:SetupSalesRow(control, data)
   control.sellTime:SetText(MasterMerchant.TextTimeSince(actualItem.timestamp))
 
   -- Handle the setting of whether or not to show pre-cut sale prices
-  -- math.floor(number + 0.5) is a quick shorthand way to round for
-  -- positive values.
-  local dispPrice = actualItem.price
-  local quantity = actualItem.quant
-  if MasterMerchant.systemSavedVariables.showFullPrice then
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then dispPrice = math.floor((dispPrice / quantity) + 0.5) end
-  else
-    local cutPrice = dispPrice * (1 - (GetTradingHouseCutPercentage() / 100))
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then cutPrice = cutPrice / quantity end
-    dispPrice = math.floor(cutPrice + 0.5)
-  end
-
   -- Insert thousands separators for the price
+  local dispPrice = MasterMerchant:GetFullPriceOrProfit(actualItem.price, actualItem.quant)
   local stringPrice = MasterMerchant.LocalizedNumber(dispPrice)
 
   -- Finally, set the price
@@ -1012,12 +1001,8 @@ function MMScrollList:SetupReportsRow(control, data)
   -- positive values.
   local dispPrice = actualItem.price
   local quantity = actualItem.quant
-  if MasterMerchant.systemSavedVariables.showFullPrice then
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then dispPrice = math.floor((dispPrice / quantity) + 0.5) end
-  else
-    local cutPrice = dispPrice * (1 - (GetTradingHouseCutPercentage() / 100))
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then cutPrice = cutPrice / quantity end
-    dispPrice = math.floor(cutPrice + 0.5)
+  if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
+    dispPrice = math.floor((dispPrice / quantity) + 0.5)
   end
 
   -- Insert thousands separators for the price
@@ -2028,6 +2013,8 @@ function MasterMerchant:remStatsItemTooltip()
   if ItemTooltip.tooltipTextPool then
     ItemTooltip.tooltipTextPool:ReleaseAllObjects()
   end
+  ItemTooltip.warnText = nil
+  ItemTooltip.vendorWarnText = nil
   ItemTooltip.mmText = nil
   ItemTooltip.mmTTCText = nil
   ItemTooltip.mmBonanzaText = nil
@@ -2037,20 +2024,34 @@ function MasterMerchant:remStatsItemTooltip()
   ItemTooltip.mmQualityDown = nil
 end
 
-function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
+function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, stackCount)
   if not MasterMerchant.isInitialized then return end
+
+  local function GetVendorPricing(itemType, itemId)
+    if MasterMerchant["vendor_price_table"][itemType] then
+      if MasterMerchant["vendor_price_table"][itemType][itemId] then return MasterMerchant["vendor_price_table"][itemType][itemId] end
+    end
+    return nil
+  end
 
   local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
 
   if not showTooltipInformation then return end
 
+  local itemType = GetItemLinkItemType(itemLink)
+  local itemId = GetItemLinkItemId(itemLink)
   local masterMerchantTipline = nil
   local craftCostLine = nil
   local bonanzaTipline = nil
   local ttcTipline = nil
   local materialCostLine = nil
+  local removedWarningTipline = nil
+  local vendorWarningTipline = nil
+  local vendorWarningPricing = GetVendorPricing(itemType, itemId)
+  -- the removedItemIdTable table has only true values, no function needed
+  local showRemovedWarning = MasterMerchant.removedItemIdTable[itemId]
+  local showVendorWarning = false
   local hasGraphInfo = false
-  local itemType = GetItemLinkItemType(itemLink)
   local validAnalysisButtonType = itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
   -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
@@ -2064,11 +2065,21 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
   end
 
   local xBonanza = ""
+  if purchasePrice and stackCount and vendorWarningPricing then
+    local storeItemUnitPrice = purchasePrice / stackCount
+    if storeItemUnitPrice > vendorWarningPricing then showVendorWarning = true end
+  end
+  if showVendorWarning then
+    vendorWarningTipline = string.format(GetString(MM_VENDOR_ITEM_WARN), vendorWarningPricing) .. MasterMerchant.coinIcon
+  end
+  if showRemovedWarning ~= nil then
+    removedWarningTipline = GetString(MM_REMOVED_ITEM_WARN)
+  end
   if MasterMerchant.systemSavedVariables.showCraftCost then
     craftCostLine = self:CraftCostPriceTip(itemLink, false)
   end
   if MasterMerchant.systemSavedVariables.showMaterialCost and itemType == ITEMTYPE_MASTER_WRIT then
-    materialCostLine = MasterMerchant_Internal:MaterialCostPriceTip(itemLink, writCost)
+    materialCostLine = MasterMerchant_Internal:MaterialCostPriceTip(itemLink, purchasePrice)
   end
   if statsInfo.avgPrice then
     masterMerchantTipline = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false, statsInfo.numVouchers)
@@ -2220,12 +2231,41 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, writCost)
     tooltip.tooltipTextPool = ZO_ControlPool:New("MMTooltipText", tooltip, "MMTooltipLine")
   end
 
-  local hasTiplineOrGraph = masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
-  local hasTiplineControls = tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
+  local hasTiplineOrGraph = vendorWarningTipline or removedWarningTipline or masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
+  local hasTiplineControls = tooltip.vendorWarnText or tooltip.warnText or tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
 
   if hasTiplineOrGraph and not hasTiplineControls then
     tooltip:AddVerticalPadding(2)
     ZO_Tooltip_AddDivider(tooltip)
+  end
+
+  if removedWarningTipline then
+    if not tooltip.warnText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.warnText = tooltip.tooltipTextPool:AcquireObject()
+      tooltip:AddControl(tooltip.warnText)
+      tooltip.warnText:SetAnchor(CENTER)
+    end
+
+    if tooltip.warnText then
+      tooltip.warnText:SetText(removedWarningTipline)
+      tooltip.warnText:SetColor(0.87, 0.11, 0.14, 1)
+    end
+
+  end
+
+  if vendorWarningTipline then
+    if not tooltip.vendorWarnText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.vendorWarnText = tooltip.tooltipTextPool:AcquireObject()
+      tooltip:AddControl(tooltip.vendorWarnText)
+      tooltip.vendorWarnText:SetAnchor(CENTER)
+    end
+
+    if tooltip.vendorWarnText then
+      tooltip.vendorWarnText:SetText(vendorWarningTipline)
+    end
+
   end
 
   if masterMerchantTipline and MasterMerchant.systemSavedVariables.showPricing then
@@ -2442,6 +2482,8 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
     if Popup.tooltipTextPool then
       Popup.tooltipTextPool:ReleaseAllObjects()
     end
+    Popup.warnText = nil
+    Popup.vendorWarnText = nil
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
@@ -2486,6 +2528,8 @@ function MasterMerchant:addStatsProvisionerTooltip(Popup)
     if Popup.tooltipTextPool then
       Popup.tooltipTextPool:ReleaseAllObjects()
     end
+    Popup.warnText = nil
+    Popup.vendorWarnText = nil
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
@@ -2513,6 +2557,8 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
     Popup.tooltipTextPool:ReleaseAllObjects()
   end
 
+  Popup.warnText = nil
+  Popup.vendorWarnText = nil
   Popup.mmText = nil
   Popup.mmBonanzaText = nil
   Popup.mmTTCText = nil
@@ -2554,7 +2600,8 @@ function MasterMerchant:GenerateStatsItemTooltip()
   end
 
   local itemLink = nil
-  local writCost = nil
+  local purchasePrice = nil
+  local stackCount = nil
   local mocParent = skMoc:GetParent():GetName()
 
   -- Store screen
@@ -2568,6 +2615,8 @@ function MasterMerchant:GenerateStatsItemTooltip()
     local mocData = skMoc.dataEntry and skMoc.dataEntry.data or nil
     if not mocData then return end
     itemLink = GetTradingHouseListingItemLink(mocData.slotIndex)
+    purchasePrice = mocData.purchasePrice
+    stackCount = mocData.stackCount
     -- Guild store search
   elseif mocParent == 'ZO_TradingHouseItemPaneSearchResultsContents' then
     local rData = skMoc.dataEntry and skMoc.dataEntry.data or nil
@@ -2616,7 +2665,8 @@ function MasterMerchant:GenerateStatsItemTooltip()
     -- The only thing with 0 time remaining should be guild tabards, no
     -- stats on those!
     if not rData or rData.timeRemaining == 0 then return end
-    writCost = rData.purchasePrice
+    purchasePrice = rData.purchasePrice
+    stackCount = rData.stackCount
     itemLink = GetTradingHouseSearchResultItemLink(rData.slotIndex)
     --elseif mocParent == 'ZO_SmithingTopLevelImprovementPanelSlotContainer' then itemLink
     --d(skMoc)
@@ -2624,7 +2674,11 @@ function MasterMerchant:GenerateStatsItemTooltip()
     -- MasterMerchant windows
   else
     local mocGP = skMoc:GetParent():GetParent()
+    local mocParentControl = skMoc:GetParent()
     if mocGP and (mocGP:GetName() == 'MasterMerchantWindowListContents' or mocGP:GetName() == 'MasterMerchantWindowList' or mocGP:GetName() == 'MasterMerchantGuildWindowListContents' or mocGP:GetName() == 'MasterMerchantPurchaseWindowListContents' or mocGP:GetName() == 'MasterMerchantListingWindowListContents' or mocGP:GetName() == 'MasterMerchantFilterByNameWindowListContents' or mocGP:GetName() == 'MasterMerchantReportsWindowListContents') then
+      local rData = mocParentControl.dataEntry and mocParentControl.dataEntry.data or nil
+      if rData and rData[5] then purchasePrice = rData[5] end
+      if rData and rData[6] then stackCount = rData[6] end
       local itemLabel = skMoc --:GetLabelControl()
       if itemLabel and itemLabel.GetText then
         itemLink = itemLabel:GetText()
@@ -2651,6 +2705,8 @@ function MasterMerchant:GenerateStatsItemTooltip()
         ItemTooltip.tooltipTextPool:ReleaseAllObjects()
       end
 
+      ItemTooltip.warnText = nil
+      ItemTooltip.vendorWarnText = nil
       ItemTooltip.mmText = nil
       ItemTooltip.mmBonanzaText = nil
       ItemTooltip.mmTTCText = nil
@@ -2663,7 +2719,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
     self.tippingControl = skMoc
     self.isShiftPressed = IsShiftKeyDown()
     self.isCtrlPressed = IsControlKeyDown()
-    self:GenerateStatsAndGraph(ItemTooltip, itemLink, writCost)
+    self:GenerateStatsAndGraph(ItemTooltip, itemLink, purchasePrice, stackCount)
   end
 
 end

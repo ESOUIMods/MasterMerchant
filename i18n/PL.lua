@@ -468,6 +468,8 @@ ZO_CreateStringId("MM_BEAM_ME_UP_MISSING", "BeamMeUp is not active.")
 ZO_CreateStringId("MM_MMXXDATA_OBSOLETE", "Stare moduły MMxxData są potrzebne tylko do importu danych MM. Proszę wyłączyć wszystkie moduły MMxxData aby zwiększyć wydajność i zmniejszyć czas ładowania.")
 ZO_CreateStringId("MM_SHOPPINGLIST_OBSOLETE", "ShoppingList jest potrzebny tylko do importu starych danych. Proszę wyłączyć ShoppingList po imporcie danych.")
 ZO_CreateStringId("MM_RELOADUI_WARN", "This will force a UI reload when changed.")
+ZO_CreateStringId("MM_REMOVED_ITEM_WARN", "Removed from in game use")
+ZO_CreateStringId("MM_VENDOR_ITEM_WARN", "|cF90202Vendors sell this for:|r %d")
 
 -- AGS Integration
 ZO_CreateStringId("AGS_DEAL_RANGE_LABEL", "Deal Range")

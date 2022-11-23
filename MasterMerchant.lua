@@ -933,126 +933,6 @@ function MasterMerchant:TTCPriceTip(itemLink)
   return formatedTTCString
 end
 
-function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
-  local numIngredients = GetItemLinkRecipeNumIngredients(itemLink)
-  if numIngredients > 0 then
-    return numIngredients
-  end
-
-  -- Clear player crafted flag and switch to H0 and see if this is an item resulting from a fixed recipe.
-  local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
-  if MasterMerchant.recipeData[switchItemLink] then
-    return GetItemLinkRecipeNumIngredients(MasterMerchant.recipeData[switchItemLink])
-  end
-
-
-  --switch to MM pricing Item style
-  local mmStyleLink = zo_strmatch(switchItemLink, '|H.-:item:(.-):')
-  if mmStyleLink then
-    mmStyleLink = mmStyleLink .. ':' .. internal.GetOrCreateIndexFromLink(switchItemLink)
-    if MasterMerchant.virtualRecipe[mmStyleLink] then
-      return #MasterMerchant.virtualRecipe[mmStyleLink]
-    end
-  end
-
-  --[[
-  -- See if it's a craftable thingy: potion, armor, weapon
-  local itemType, specializedItemType = GetItemLinkItemType('itemLink')
-
-
-  --]]
-
-  --[[
-local itemType = GetItemLinkItemType(itemLink)
-local equipType = GetItemLinkEquipType(itemLink)
-local weaponType = GetItemLinkWeaponType(itemLink)
-local armorType = GetItemLinkArmorType(itemLink)
-local trait = GetItemLinkTraitInfo(itemLink)
-local quality = GetItemLinkQuality(itemLink)
-local level = GetItemLinkRequiredLevel(itemLink)
-
-
-  --]]
-  return 0
-end
-
-function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
-  local ingredientItemLink = GetItemLinkRecipeIngredientItemLink(itemLink, i)
-  if ingredientItemLink ~= '' then
-    local _, _, numRequired = GetItemLinkRecipeIngredientInfo(itemLink, i)
-    return ingredientItemLink, numRequired
-  end
-
-  local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
-  if MasterMerchant.recipeData[switchItemLink] then
-    return MasterMerchant.GetItemLinkRecipeIngredientInfo(MasterMerchant.recipeData[switchItemLink], i)
-  end
-
-  local mmStyleLink = zo_strmatch(switchItemLink, '|H.-:item:(.-):')
-  if mmStyleLink then
-    mmStyleLink = mmStyleLink .. ':' .. internal.GetOrCreateIndexFromLink(switchItemLink)
-    if MasterMerchant.virtualRecipe[mmStyleLink] then
-      return MasterMerchant.virtualRecipe[mmStyleLink][i].item, MasterMerchant.virtualRecipe[mmStyleLink][i].required
-    end
-  end
-
-  return nil, nil
-
-  --[[
-  -- See if it's something for which we've built a recipe
-  local itemType, specializedItemType = GetItemLinkItemType('itemLink')
-
-  -- script /d(GetItemLinkRequiredLevel('
-
-  -- Glyph |H1:item:5365:145:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
-  -- /script d(GetItemLinkItemType('|H1:item:5365:145:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h'))
-  if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
-      if i == 3 then
-          -- Aspect : Quality / Color
-          return MasterMerchant.AspectRunes[GetItemLinkQuality(itemLink)], 1
-      end
-      local level = GetItemLinkRequiredLevel(itemLink)
-      local cp = GetItemLinkRequiredChampionPoints(itemLink)
-
-      if i == 1 then
-          -- Potency : Level & Positive/Negative
-      end
-      if i == 2 then
-          -- Essence : Attibute
-      end
-  end
-  --]]
-end
-
-function MasterMerchant:GetSolventItemLink(itemLink)
-  local itemType, _ = GetItemLinkItemType(itemLink)
-  local solventIndex = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)
-  local solventItemLink = {
-    [ITEMTYPE_POTION] = {
-      [3] = "|H1:item:883:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [10] = "|H1:item:1187:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [20] = "|H1:item:4570:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [30] = "|H1:item:23265:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [40] = "|H1:item:23266:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [60] = "|H1:item:23267:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [100] = "|H1:item:23268:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [150] = "|H1:item:64500:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [200] = "|H1:item:64501:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-    },
-    [ITEMTYPE_POISON] = {
-      [3] = "|H1:item:75357:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [10] = "|H1:item:75358:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [20] = "|H1:item:75359:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [30] = "|H1:item:75360:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [40] = "|H1:item:75361:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [60] = "|H1:item:75362:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [100] = "|H1:item:75363:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [150] = "|H1:item:75364:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-      [200] = "|H1:item:75365:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h",
-    },
-  }
-  return solventItemLink[itemType][solventIndex]
-end
 -- /script d(MasterMerchant:GetTradeSkillInformation("|H1:item:33825:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h"))
 -- /script MasterMerchant:itemCraftPrice("|H1:item:68195:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 function MasterMerchant:GetTradeSkillInformation(itemLink)
@@ -1241,6 +1121,11 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
     if (recNumber >= endNumber) then
       MasterMerchant:dm("Info", '|cFFFF00Recipes Initialized -- Found information on ' .. MasterMerchant.recipeCount .. ' recipes.|r')
       MasterMerchant.systemSavedVariables.recipeData = MasterMerchant.recipeData
+      MasterMerchant.systemSavedVariables.essenceRunes = MasterMerchant.essenceRunes
+      MasterMerchant.systemSavedVariables.potencyRunes = MasterMerchant.potencyRunes
+      MasterMerchant.systemSavedVariables.aspectRunes = MasterMerchant.aspectRunes
+      MasterMerchant.systemSavedVariables.potionSolvents = MasterMerchant.potionSolvents
+      MasterMerchant.systemSavedVariables.poisonSolvents = MasterMerchant.poisonSolvents
       break
     end
 
@@ -4140,6 +4025,7 @@ function MasterMerchant:SecondInitialize()
   zo_callLater(function()
     local LEQ = LibExecutionQueue:new()
     LEQ:Add(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
+    LEQ:Add(function() MasterMerchant:BuildRemovedItemIdTable() end, 'BuildRemovedItemIdTable')
     LEQ:Add(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:Add(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:Add(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')

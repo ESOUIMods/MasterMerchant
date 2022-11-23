@@ -33,9 +33,9 @@
     <Control name="MasterMerchantGraph" virtual="true" hidden="true">
       <Dimensions x="372" y="150"/>
       <Controls>
-        <Texture name="$(parent)Grid" textureFile="MasterMerchant/mm_chart_grid.dds" alpha=".2"/>
-        <Texture name="$(parent)AveragePrice" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
-        <Texture name="$(parent)BonanzaPrice" textureFile="MasterMerchant/mm_chart_marker.dds" alpha=".2"/>
+        <Texture name="$(parent)Grid" textureFile="MasterMerchant/img/mm_chart_grid.dds" alpha=".2"/>
+        <Texture name="$(parent)AveragePrice" textureFile="MasterMerchant/img/mm_chart_marker.dds" alpha=".2"/>
+        <Texture name="$(parent)BonanzaPrice" textureFile="MasterMerchant/img/mm_chart_marker.dds" alpha=".2"/>
         <Label name="$(parent)HighPrice" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="HighPrice">
           <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
         </Label>
