@@ -193,7 +193,7 @@ function MM_Graph:OnGraphPointClicked(graphPointControl, mouseButton, sellerName
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
-      MasterMerchant:ClearItemCacheByItemLink(itemLink)
+      MasterMerchant:ResetItemInformationCache()
     end
   end
 end
@@ -206,7 +206,7 @@ function MM_Graph:OnSellerNameClicked(self, mouseButton, sellerName, itemLink)
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
-      MasterMerchant:ClearItemCacheByItemLink(itemLink)
+      MasterMerchant:ResetItemInformationCache()
     end
   end
 end

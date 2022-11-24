@@ -830,6 +830,10 @@ function MasterMerchant:ClearBonanzaPriceCacheByItemLink(itemLink)
   MasterMerchant:ClearBonanzaCachePriceById(itemID, itemIndex)
 end
 
+function MasterMerchant:ResetItemInformationCache()
+  MasterMerchant.itemInformationCache = { }
+end
+
 function MasterMerchant:ValidInfoForCache(avgPrice, numSales, numDays, numItems)
   if avgPrice == nil or numSales == nil or numDays == nil or numItems == nil then
     return false
@@ -1547,7 +1551,7 @@ ENCHANTING.resultTooltip:GetNamedChild("Icon"):SetHandler("OnMouseUp", MasterMer
 
 function MasterMerchant:my_NameHandler_OnLinkMouseUp(player, button, control)
   if (type(player) == 'string' and #player > 0) then
-    if (button == 2 and player ~= '') then
+    if (button == MOUSE_BUTTON_INDEX_RIGHT and player ~= '') then
       ClearMenu()
       AddMenuItem(GetString(SI_SOCIAL_LIST_SEND_MESSAGE),
         function() StartChatInput(nil, CHAT_CHANNEL_WHISPER, player) end)
@@ -1559,7 +1563,7 @@ end
 
 function MasterMerchant:my_SellerColumn_OnLinkMouseUp(player, itemLink, button, control)
   if type(player) == 'string' then
-    if (button == 2 and player ~= '') then
+    if (button == MOUSE_BUTTON_INDEX_RIGHT and player ~= '') then
       ClearMenu()
       AddMenuItem(GetString(MM_BLACKLIST_MENU_SELLER), function() MM_Graph:OnSellerNameClicked(self, button, player, itemLink) end)
       ShowMenu()
@@ -1568,7 +1572,7 @@ function MasterMerchant:my_SellerColumn_OnLinkMouseUp(player, itemLink, button, 
 end
 
 function MasterMerchant:my_AddFilterHandler_OnLinkMouseUp(itemLink, button, control)
-  if (button == 2 and itemLink ~= '') then
+  if (button == MOUSE_BUTTON_INDEX_RIGHT and itemLink ~= '') then
     ClearMenu()
     if MasterMerchant:itemCraftPrice(itemLink) then
       AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(itemLink) end,
@@ -1592,7 +1596,7 @@ function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, contro
     MasterMerchant:dm("Info", GetString(MM_BEAM_ME_UP_MISSING))
     return
   end
-  if (button == 2 and player ~= '') then
+  if (button == MOUSE_BUTTON_INDEX_RIGHT and player ~= '') then
     ClearMenu()
     AddMenuItem(GetString(MM_TRAVEL_TO_ZONE_TEXT), function() BMU.sc_porting(guildZoneId) end)
     ShowMenu(control)
@@ -1653,7 +1657,7 @@ function MasterMerchant:OnTradingHouseListingClicked(itemLink, sellerName)
   else
     if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
-      MasterMerchant:ClearItemCacheByItemLink(itemLink)
+      MasterMerchant:ResetItemInformationCache()
     end
   end
 end
@@ -2184,7 +2188,7 @@ function MasterMerchant:LibAddonInit()
         getFunc = function() return MasterMerchant.systemSavedVariables.blacklist end,
         setFunc = function(value)
           MasterMerchant.systemSavedVariables.blacklist = value
-          MasterMerchant.itemInformationCache = { }
+          MasterMerchant:ResetItemInformationCache()
         end,
         default = MasterMerchant.systemDefault.blacklist,
         isMultiline = true,
@@ -2475,7 +2479,7 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.displaySalesDetails end,
     setFunc = function(value)
       MasterMerchant.systemSavedVariables.displaySalesDetails = value
-      MasterMerchant.itemInformationCache = { }
+      MasterMerchant:ResetItemInformationCache()
     end,
     default = MasterMerchant.systemDefault.displaySalesDetails,
   }
@@ -2514,7 +2518,7 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliers end,
     setFunc = function(value)
       MasterMerchant.systemSavedVariables.trimOutliers = value
-      MasterMerchant.itemInformationCache = { }
+      MasterMerchant:ResetItemInformationCache()
     end,
     default = MasterMerchant.systemDefault.trimOutliers,
   }
