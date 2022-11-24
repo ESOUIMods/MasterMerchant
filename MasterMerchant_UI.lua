@@ -3836,3 +3836,54 @@ local function OnPlayerLeaveGuild(eventCode, guildId, guildName)
   internal.guildMemberInfo[guildId] = nil
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_LeaveGuild", EVENT_GUILD_SELF_LEFT_GUILD, OnPlayerLeaveGuild)
+
+function MasterMerchant:ToggleMarker(rowControl, slot)
+  local markerControl = rowControl:GetNamedChild(MasterMerchant.name)
+  local relativeToPoint = rowControl:GetNamedChild("SellPrice")
+  local showVendorWarning = false
+  local vendorWarningPricing = nil
+  local rData = rowControl.dataEntry and rowControl.dataEntry.data or nil
+  local itemLink = rData and rData.itemLink or nil
+  local purchasePrice = rData and rData.purchasePrice or nil
+  local stackCount = rData and rData.stackCount or nil
+  local itemType = GetItemLinkItemType(itemLink)
+  local itemId = GetItemLinkItemId(itemLink)
+
+  if MasterMerchant["vendor_price_table"][itemType] then
+    if MasterMerchant["vendor_price_table"][itemType][itemId] then vendorWarningPricing = MasterMerchant["vendor_price_table"][itemType][itemId] end
+  end
+  if purchasePrice and stackCount and vendorWarningPricing then
+    local storeItemUnitPrice = purchasePrice / stackCount
+    if storeItemUnitPrice > vendorWarningPricing then showVendorWarning = true end
+  end
+
+  if (not markerControl) then
+    if not showVendorWarning then return end
+    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name, rowControl, CT_TEXTURE)
+    markerControl:SetDimensions(22, 22)
+    markerControl:SetInheritScale(false)
+    markerControl:SetAnchor(LEFT, relativeToPoint, LEFT)
+    markerControl:SetDrawTier(DT_HIGH)
+  end
+
+  if (showVendorWarning) then
+    markerControl:SetTexture("/esoui/art/inventory/newitem_icon.dds")
+    markerControl:SetColor(0.9, 0.3, 0.2, 1)
+    markerControl:SetHidden(false)
+  else
+    markerControl:SetHidden(true)
+  end
+end
+
+do
+  SecurePostHook(TRADING_HOUSE, "OpenTradingHouse", function()
+    if (not MasterMerchant.markersHooked) then
+      local oldCallback = ZO_TradingHouseBrowseItemsRightPaneSearchResults.dataTypes[1].setupCallback
+      MasterMerchant.markersHooked = true
+      ZO_TradingHouseBrowseItemsRightPaneSearchResults.dataTypes[1].setupCallback = function(rowControl, slot)
+        oldCallback(rowControl, slot)
+        MasterMerchant:ToggleMarker(rowControl, slot)
+      end
+    end
+  end)
+end

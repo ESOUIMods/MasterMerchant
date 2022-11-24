@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.39'
+MasterMerchant.version = '3.7.40'
 
 local mmInternal = {}
 _G["MasterMerchant_Internal"] = mmInternal
@@ -143,6 +143,7 @@ MasterMerchant.purchasesViewSize = 'purchases_vs'
 MasterMerchant.reportsViewSize = 'reports_vs'
 
 -- default is self
+MasterMerchant.markersHooked = false
 MasterMerchant.salesViewMode = MasterMerchant.personalSalesViewMode
 MasterMerchant.reportsViewMode = MasterMerchant.reportsPostedViewMode
 MasterMerchant.isInitialized = false -- added 8-25 used
