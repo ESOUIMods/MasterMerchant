@@ -7,6 +7,198 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.41
+
+- Fixed bug introduced in 3.7.32 that effected the cache. It would not clear properly after adding someone to the guild and account filter. Cached values would not refresh for all items only the previously viewed item.
+
+## ChangeLog 3.7.40
+
+- Added icon to sales rows of vendor items that are above the vendor price to make it more noticeable at a glance
+
+## ChangeLog 3.7.39
+
+- Both listing fee and the auction house cut are calculated when determining the profit. Previously only the auction house cut was used.
+- More preparation for the winter festival. Vendor items now have a warning if they are listed above the vendor cost.  Example something listed for 300g each when the vendor will sell it for 98g. Includes recipes, ingredients, style materials, lock picks, repair kits, and potency runes.
+- Added warning for a few items removed from use in the game so people don't list them for 4M or 11M thinking they are rare or some nonsense.
+
+NOTE: When viewing the price each, the full price or the actual profit will be calculated first.
+
+## ChangeLog 3.7.38
+
+- Added Search Bonanza context menu option
+
+## ChangeLog 3.7.37
+
+user:/AddOns/MasterMerchant/AGS_Integration/SortOrderDealPercent.lua:3: attempt to index a nil value
+stack traceback:
+user:/AddOns/MasterMerchant/AGS_Integration/SortOrderDealPercent.lua:3: in function '(main chunk)'
+
+- Fix for error in SortOrderDealPercent.lua for those who don't use Awesome Guild Store or AGS
+
+## ChangeLog 3.7.36
+
+- Slightly reduced the height and width of the UI
+- Some options not available with Awesome Guild Store installed are now disabled in settings
+- Added a tier of medium to the top level controls so the window is not behind other windows
+- Added listing fee column to the Management view
+- Added a button to the sales window to toggle showing the full price or your profit after the guild gets their cut
+
+## ChangeLog 3.7.35
+
+- Added Awesome Guild Store sort by Deal Percent
+
+## ChangeLog 3.7.33, 3.7.34
+
+- More refinement to the tooltip generation
+- Fixed accidental drawing of divider when using focus keys
+
+## ChangeLog 3.7.32
+
+- Updated Cache Routines to clear Bonanza and Average price separately
+
+## ChangeLog 3.7.31
+
+- Updated (BETA) Winter Festival Writs to include the 3 that have a provisioning requirement.
+- Refined tooltip generation and refactored its code
+- Added toggle to disable the Material Cost for Winter Festival Writs (WritWorthy, LibLazyCrafting does not handle furniture)
+
+## ChangeLog 3.7.29, 3.7.30
+
+- Added Material Cost for Winter Festival Writs (BETA)
+- Account for writ requirements. For example when you are required to craft 12 items. (Not all requirements are known at this time)
+
+NOTE: MM currently only provides Material Cost for Winter Festival Writs. MM does not tell you if you are missing mats. (Yet) For all other writs use WritWorthy.
+
+## ChangeLog 3.7.28
+
+- Overhauled the MM cache so that any third party library (libPrice) or mod will receive the price directly from the cache
+- The price cache is cleared on a per item basis as new sales come in which could alter the average
+
+## ChangeLog 3.7.25, 3.7.26, 3.7.27
+
+- Corrected issue obtaining skill and rank information on alts that have not unlocked Chef, Brewer, or Chemistry
+- Corrected issue where MM was not calculating 4 extra Poisons per rank for Chemistry
+
+## ChangeLog 3.7.24
+
+### Concern
+
+I wasn't going to update MM just to alter dependencies again but because of LibAlchemy and LibPrice it is still an issue for some people.
+
+- People would update MM and not install LibAlchemy
+- Some people would install LibAlchemy but not update LibPrice even if another mod such as WritWorthy requires LibPrice
+
+### Fixes
+
+- Updated both the MasterMerchant and LibGuildstore manifest files to add version checks for LibPrice and added both LibAlchemy and LibPrice to them to keep them from loading if libraries are not installed or updated
+
+## ChangeLog 3.7.23
+
+- Removed LibPrice as a dependency
+
+NOTE: While testing I didn't have any Circular dependency. I would not have uploaded 3.7.22. Sorry for the inconvenience. It depends on the mods you have installed and active.
+
+## ChangeLog 3.7.22
+
+REMINDER: Until MM initializes you will not see any additional MM information on the tooltip
+
+NEW LIBRARY: LibAlchemy
+
+- Added Craft Cost for Potions and Poisons
+
+NOTE: I will be updating MM and LibPrice so that LibPrice manages a cache for prices. LibPrice sorta does that now but it does not cache the price depending on the Focus used. Such as Default, SHIFT, CTRL or both. It may not really be needed since "Default" is the most common used price for the individual user regardless of how it has been customized.
+
+## ChangeLog 3.7.21
+
+- Update Craft Cost to use Chef and Brewer rather then just dividing by 4 by default
+- Updated Craft Cost tooltip to show cost, and cost each based on Chef or Brewer
+
+## ChangeLog 3.7.20
+
+- Update Craft Cost for Galen recipes
+
+## ChangeLog 3.7.19
+
+- API bumps for all dependencies, especially LibHistoire. Make sure you update all your dependencies.
+
+## ChangeLog 3.7.18
+
+- Added support to display the MM tooltip for Furniture Catalogue
+
+## ChangeLog 3.7.17
+
+- Added export routines for personal sales and purchases. Use /mm help and documentation has been updated.
+
+## ChangeLog 3.7.15, 3.7.16
+
+- Updated French Translation
+- Changed order of when date range tables are built to prevent an odd error
+- Added a few more verifications to prevent MM routines from being used when MM is not initialized
+
+## ChangeLog 3.7.14
+
+- Resolved saving the position of the window depending on the selected view
+- Resolved issue when viewing listings in the Trader, if the item had no sales data and you were viewing the profit, the Deal Calculator would report -1 in Green unless you chose a different rank for items with no sales. This has been removed.
+- Added new time frames for viewing all guild sales. Default uses the same behavior MM has always had. Custom will use the timeframe indicated in settings.
+
+## ChangeLog 3.7.13
+
+- Updated currency formatting
+- Added note to Custom Timeframe so you know to reload the UI if you change it
+- Adjusted the X days range to use seconds from midnight prior to determining the range for consistency because all other ranges for days does the same including Today and Yesterday
+
+The ZOS currency formatting would not handle a number higher then about 3B and would return 100,020,635 instead of 4,394,987,931. This was true for the two original ways MM has always handled currency, and another way using zo_strformat() and CURT_MONEY from the wiki. So I had to use an Lua example from the web.
+
+## ChangeLog 3.7.12
+
+- Forgot to add AM/PM for 12 hour time
+- Forgot to add MM/DD or DD/MM date formats
+
+## ChangeLog 3.7.11
+
+- Updated French translation
+- Added Time Format options
+
+## ChangeLog 3.7.10
+
+- Updated French translation
+
+## ChangeLog 3.7.09
+
+- Changed menu name to Deal Calculator Options for clarity
+
+NOTE: Documentation has been updated with the new menus.
+
+## ChangeLog 3.7.08
+
+- Added Buy It! Deal Range to Custom Deal Calculator
+- Added toggle to TTC Suggested to modify the value by 25 percent like they do in their tooltip
+
+## ChangeLog 3.7.07
+
+- Added Custom Deal Calculator
+
+NOTE: A function to provide custom values for the Deal Calculator was always there but only enabled for two people. I don't know if Philgo68 or khaibit added that. A settings menu has been added and a toggle for the function to be used.
+
+WARNING: There is no function to check if you set an incorrect value or not. Meaning if one value is 25 percent and the value above it is 20 percent then nothing will tell you that's not going to work. You will need to keep the values in line yourself.
+
+## ChangeLog 3.7.06
+
+- Added new constants for mod authors for upcoming API, for testing
+- Corrected 7, 10, and 30 day totals from Guild Rank view
+- Update to Export Sales Activity, it now uses the date range selected on the guild roster rather then the last 10 days. Should you want the last ten days, then choose that from the dropdown.
+
+## ChangeLog 3.7.05
+
+- Removed dependency LibDateTime
+
+NOTE: After testing a concern that the patch caused some kind of odd timestamp issue I have confirmed it has not. The author of LibHistorie explained, "as long as the information stays on the same PC and the system clock is not modified, it is consistent with itself and you do not have to think about any conversions or whatever."
+
+## ChangeLog 3.7.03, 3.7.04
+
+- Update to ZOS GetGuildKioskCycleTimes() function for determining sales week
+- Added new dependency LibDateTime
+
 ## ChangeLog for 3.7.02
 
 ### For Authors:
