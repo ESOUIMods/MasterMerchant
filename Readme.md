@@ -7,6 +7,10 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.42
+
+- Added icon to master writs if you meet the requirements to craft the writ. (Writ Worthy required)
+
 ## ChangeLog 3.7.41
 
 - Fixed bug introduced in 3.7.32 that effected the cache. It would not clear properly after adding someone to the guild and account filter. Cached values would not refresh for all items only the previously viewed item.

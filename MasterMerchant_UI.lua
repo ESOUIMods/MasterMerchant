@@ -3837,8 +3837,60 @@ local function OnPlayerLeaveGuild(eventCode, guildId, guildName)
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_LeaveGuild", EVENT_GUILD_SELF_LEFT_GUILD, OnPlayerLeaveGuild)
 
-function MasterMerchant:ToggleMarker(rowControl, slot)
-  local markerControl = rowControl:GetNamedChild(MasterMerchant.name)
+function MasterMerchant:GetMeetsRequirements(itemLink)
+  if (not WritWorthy) then return false end
+  local meetRequirements = true
+  local parser = WritWorthy.CreateParser(itemLink)
+  if (not parser or not parser:ParseItemLink(itemLink) or not parser.ToKnowList) then
+    return false
+  end
+  local knowList = parser:ToKnowList()
+  if (knowList) then
+    for _, know in ipairs(knowList) do
+      if (not know.is_known) then
+        meetRequirements = false
+      end
+    end
+  end
+
+  local matList = parser:ToMatList()
+  if (matList) then
+    for _, mat in ipairs(matList) do
+      if (WritWorthy.Util.MatHaveCt(mat.link) < mat.ct) then
+        meetRequirements = false
+      end
+    end
+  end
+
+  return meetRequirements
+end
+
+function MasterMerchant:ToggleWritMarker(rowControl, slot)
+  local markerControl = rowControl:GetNamedChild(MasterMerchant.name.."Writ")
+  local rData = rowControl.dataEntry and rowControl.dataEntry.data or nil
+  local itemLink = rData and rData.itemLink or nil
+  local showWritWarning = MasterMerchant:GetMeetsRequirements(itemLink)
+
+  if (not markerControl) then
+    if not showWritWarning then return end
+    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name.."Writ", rowControl, CT_TEXTURE)
+    markerControl:SetDimensions(22, 22)
+    markerControl:SetInheritScale(false)
+    markerControl:SetAnchor(LEFT, rowControl, LEFT)
+    markerControl:SetDrawTier(DT_HIGH)
+  end
+
+  if (showWritWarning) then
+    markerControl:SetTexture("mastermerchant/img/does_meet.dds")
+    markerControl:SetColor(0.17, 0.93, 0.17, 1)
+    markerControl:SetHidden(false)
+  else
+    markerControl:SetHidden(true)
+  end
+end
+
+function MasterMerchant:ToggleVendorMarker(rowControl, slot)
+  local markerControl = rowControl:GetNamedChild(MasterMerchant.name.."Warn")
   local relativeToPoint = rowControl:GetNamedChild("SellPrice")
   local showVendorWarning = false
   local vendorWarningPricing = nil
@@ -3859,7 +3911,7 @@ function MasterMerchant:ToggleMarker(rowControl, slot)
 
   if (not markerControl) then
     if not showVendorWarning then return end
-    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name, rowControl, CT_TEXTURE)
+    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name.."Warn", rowControl, CT_TEXTURE)
     markerControl:SetDimensions(22, 22)
     markerControl:SetInheritScale(false)
     markerControl:SetAnchor(LEFT, relativeToPoint, LEFT)
@@ -3882,7 +3934,10 @@ do
       MasterMerchant.markersHooked = true
       ZO_TradingHouseBrowseItemsRightPaneSearchResults.dataTypes[1].setupCallback = function(rowControl, slot)
         oldCallback(rowControl, slot)
-        MasterMerchant:ToggleMarker(rowControl, slot)
+        MasterMerchant:ToggleVendorMarker(rowControl, slot)
+        if MasterMerchant.wwDetected then
+          MasterMerchant:ToggleWritMarker(rowControl, slot)
+        end
       end
     end
   end)

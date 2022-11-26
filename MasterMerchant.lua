@@ -4308,7 +4308,10 @@ local function OnAddOnLoaded(eventCode, addOnName)
   elseif addOnName == "AwesomeGuildStore" then
     -- Set up AGS integration, if it's installed
     MasterMerchant:initAGSIntegration()
+  elseif addOnName == "WritWorthy" then
+    if WritWorthy and WritWorthy.CreateParser then MasterMerchant.wwDetected = true end
   end
+  
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 
