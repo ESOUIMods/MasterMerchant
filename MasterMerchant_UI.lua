@@ -3839,7 +3839,8 @@ EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_LeaveGuild", EVENT_GUILD
 
 function MasterMerchant:GetMeetsRequirements(itemLink)
   if (not WritWorthy) then return false end
-  local meetRequirements = true
+  local hasKnowledge = true
+  local hasMaterials = true
   local parser = WritWorthy.CreateParser(itemLink)
   if (not parser or not parser:ParseItemLink(itemLink) or not parser.ToKnowList) then
     return false
@@ -3848,7 +3849,7 @@ function MasterMerchant:GetMeetsRequirements(itemLink)
   if (knowList) then
     for _, know in ipairs(knowList) do
       if (not know.is_known) then
-        meetRequirements = false
+        hasKnowledge = false
       end
     end
   end
@@ -3857,40 +3858,42 @@ function MasterMerchant:GetMeetsRequirements(itemLink)
   if (matList) then
     for _, mat in ipairs(matList) do
       if (WritWorthy.Util.MatHaveCt(mat.link) < mat.ct) then
-        meetRequirements = false
+        hasMaterials = false
       end
     end
   end
 
-  return meetRequirements
+  return hasKnowledge, hasMaterials
 end
 
 function MasterMerchant:ToggleWritMarker(rowControl, slot)
-  local markerControl = rowControl:GetNamedChild(MasterMerchant.name.."Writ")
+  local markerControl = rowControl:GetNamedChild(MasterMerchant.name .. "Writ")
   local rData = rowControl.dataEntry and rowControl.dataEntry.data or nil
   local itemLink = rData and rData.itemLink or nil
-  local showWritWarning = MasterMerchant:GetMeetsRequirements(itemLink)
+  local hasKnowledge, hasMaterials = MasterMerchant:GetMeetsRequirements(itemLink)
 
   if (not markerControl) then
-    if not showWritWarning then return end
-    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name.."Writ", rowControl, CT_TEXTURE)
+    if not hasKnowledge then return end
+    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name .. "Writ", rowControl, CT_TEXTURE)
     markerControl:SetDimensions(22, 22)
     markerControl:SetInheritScale(false)
     markerControl:SetAnchor(LEFT, rowControl, LEFT)
     markerControl:SetDrawTier(DT_HIGH)
   end
 
-  if (showWritWarning) then
+  if hasKnowledge and hasMaterials then
     markerControl:SetTexture("mastermerchant/img/does_meet.dds")
     markerControl:SetColor(0.17, 0.93, 0.17, 1)
     markerControl:SetHidden(false)
-  else
-    markerControl:SetHidden(true)
-  end
+  elseif hasKnowledge and not hasMaterials then
+    markerControl:SetTexture("esoui/art/miscellaneous/help_icon.dds")
+    markerControl:SetColor(1, 0.99, 0, 1)
+    markerControl:SetHidden(false)
+  else markerControl:SetHidden(true) end
 end
 
 function MasterMerchant:ToggleVendorMarker(rowControl, slot)
-  local markerControl = rowControl:GetNamedChild(MasterMerchant.name.."Warn")
+  local markerControl = rowControl:GetNamedChild(MasterMerchant.name .. "Warn")
   local relativeToPoint = rowControl:GetNamedChild("SellPrice")
   local showVendorWarning = false
   local vendorWarningPricing = nil
@@ -3911,7 +3914,7 @@ function MasterMerchant:ToggleVendorMarker(rowControl, slot)
 
   if (not markerControl) then
     if not showVendorWarning then return end
-    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name.."Warn", rowControl, CT_TEXTURE)
+    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name .. "Warn", rowControl, CT_TEXTURE)
     markerControl:SetDimensions(22, 22)
     markerControl:SetInheritScale(false)
     markerControl:SetAnchor(LEFT, relativeToPoint, LEFT)

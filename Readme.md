@@ -7,9 +7,15 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.44
+
+- Changed Green checkmark for Master Writs in the Guild Store to indicate that you know the Motif and have the mats
+- Adds Yellow checkmark to Master Writs in the Guild Store if you know the Motif but don't have the mats
+- Added a minimal sales interval that acts similar to the Min Item count
+
 ## ChangeLog 3.7.43
 
-- Added condition to detect the presence of MasterWritInventoryMarker to prevent duplicating markers
+- Added condition to detect the presence of MasterWritInventoryMarker to prevent duplicating markers in the guild store for Master Writs
 
 ## ChangeLog 3.7.42
 

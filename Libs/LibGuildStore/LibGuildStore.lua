@@ -250,6 +250,7 @@ local function SetupDefaults()
     historyDepth = 90,
     minItemCount = 20,
     maxItemCount = 5000,
+    minSalesInterval = 0,
     showIndexingSummary = false,
     showTruncateSummary = false,
     showGuildInitSummary = false,

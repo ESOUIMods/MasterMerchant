@@ -4313,7 +4313,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
   elseif addOnName == "MasterWritInventoryMarker" then
     if MWIM_SavedVariables then MasterMerchant.mwimDetected = true end
   end
-  
+
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 

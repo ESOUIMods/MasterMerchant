@@ -30,15 +30,28 @@ function internal:LibAddonInit()
     name = GetString(GS_DAYS_ONLY_NAME),
     tooltip = GetString(GS_DAYS_ONLY_TIP),
     getFunc = function() return LibGuildStore_SavedVariables.useSalesHistory end,
-    setFunc = function(value) LibGuildStore_SavedVariables.useSalesHistory = value end,
+    setFunc = function(value)
+      LibGuildStore_SavedVariables.useSalesHistory = value
+      if LibGuildStore_SavedVariables.useSalesHistory then LibGuildStore_SavedVariables.useSalesHistory = 0 end
+    end,
     default = internal.defaults.useSalesHistory,
+    disabled = function() return LibGuildStore_SavedVariables.minSalesInterval > 0 end,
+  }
+  -- Skip Indexing?
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(GS_SKIP_INDEX_NAME),
+    tooltip = GetString(GS_SKIP_INDEX_TIP),
+    getFunc = function() return LibGuildStore_SavedVariables.minimalIndexing end,
+    setFunc = function(value) LibGuildStore_SavedVariables.minimalIndexing = value end,
+    default = internal.defaults.minimalIndexing,
   }
   -- Size of sales history
   optionsData[#optionsData + 1] = {
     type = 'slider',
     name = GetString(GS_HISTORY_DEPTH_NAME),
     tooltip = GetString(GS_HISTORY_DEPTH_TIP),
-    min = 15,
+    min = 20,
     max = 365,
     getFunc = function() return LibGuildStore_SavedVariables.historyDepth end,
     setFunc = function(value) LibGuildStore_SavedVariables.historyDepth = value end,
@@ -50,7 +63,7 @@ function internal:LibAddonInit()
     name = GetString(GS_MIN_ITEM_COUNT_NAME),
     tooltip = GetString(GS_MIN_ITEM_COUNT_TIP),
     min = 0,
-    max = 100,
+    max = 255,
     getFunc = function() return LibGuildStore_SavedVariables.minItemCount end,
     setFunc = function(value) LibGuildStore_SavedVariables.minItemCount = value end,
     disabled = function() return LibGuildStore_SavedVariables.useSalesHistory end,
@@ -61,21 +74,31 @@ function internal:LibAddonInit()
     type = 'slider',
     name = GetString(GS_MAX_ITEM_COUNT_NAME),
     tooltip = GetString(GS_MAX_ITEM_COUNT_TIP),
-    min = 100,
+    min = 256,
     max = 10000,
     getFunc = function() return LibGuildStore_SavedVariables.maxItemCount end,
     setFunc = function(value) LibGuildStore_SavedVariables.maxItemCount = value end,
     disabled = function() return LibGuildStore_SavedVariables.useSalesHistory end,
     default = internal.defaults.maxItemCount,
   }
-  -- Skip Indexing?
+  -- Min Day Interval
   optionsData[#optionsData + 1] = {
-    type = 'checkbox',
-    name = GetString(GS_SKIP_INDEX_NAME),
-    tooltip = GetString(GS_SKIP_INDEX_TIP),
-    getFunc = function() return LibGuildStore_SavedVariables.minimalIndexing end,
-    setFunc = function(value) LibGuildStore_SavedVariables.minimalIndexing = value end,
-    default = internal.defaults.minimalIndexing,
+    type = 'slider',
+    name = GetString(GS_MIN_SALES_INTERVAL_NAME),
+    tooltip = GetString(GS_MIN_SALES_INTERVAL_TIP),
+    min = 0,
+    max = 15,
+    getFunc = function() return LibGuildStore_SavedVariables.minSalesInterval end,
+    setFunc = function(value)
+      LibGuildStore_SavedVariables.minSalesInterval = value
+      if LibGuildStore_SavedVariables.minSalesInterval > 0 then LibGuildStore_SavedVariables.useSalesHistory = false end
+    end,
+    disabled = function() return LibGuildStore_SavedVariables.useSalesHistory end,
+    default = internal.defaults.minSalesInterval,
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    text = GetString(GS_MIN_SALES_INTERVAL_DESC),
   }
   optionsData[#optionsData + 1] = {
     type = "header",

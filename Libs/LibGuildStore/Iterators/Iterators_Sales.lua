@@ -351,6 +351,11 @@ function internal:TruncateSalesHistory()
     extraData.deleteCount = 0
     extraData.epochBack = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
     extraData.wasAltered = false
+    extraData.minItemCount = LibGuildStore_SavedVariables["minItemCount"]
+    extraData.maxItemCount = LibGuildStore_SavedVariables["maxItemCount"]
+    extraData.minSalesInterval = LibGuildStore_SavedVariables["minSalesInterval"]
+    extraData.useSalesInterval = LibGuildStore_SavedVariables["minSalesInterval"] > 0
+    extraData.useSalesHistory = LibGuildStore_SavedVariables["useSalesHistory"]
 
     internal:DatabaseBusy(true)
   end
@@ -358,7 +363,7 @@ function internal:TruncateSalesHistory()
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
 
     local salesDeleted = 0
-    salesCount = versiondata.totalCount
+    local salesCount = versiondata.totalCount
     --[[TODO Determine how the salesCount can be 0 and there is an empty
     sale in the table.
     [8] = {},
@@ -370,29 +375,23 @@ function internal:TruncateSalesHistory()
     end
     local salesDataTable = internal:spairs(versiondata['sales'], function(a, b) return internal:CleanTimestamp(a) < internal:CleanTimestamp(b) end)
     for salesId, salesData in salesDataTable do
-      if LibGuildStore_SavedVariables["useSalesHistory"] then
-        if (salesData['timestamp'] < extraData.epochBack
-          or salesData['timestamp'] == nil
-          or type(salesData['timestamp']) ~= 'number'
-        ) then
-          -- Remove it by setting it to nil
-          versiondata['sales'][salesId] = nil
-          salesDeleted = salesDeleted + 1
-          extraData.wasAltered = true
-        end
+      local removeSale = false
+      local invalidTimestamp = salesData['timestamp'] == nil or type(salesData['timestamp']) ~= 'number'
+      local additionalCriteria = salesCount > extraData.maxItemCount or invalidTimestamp or salesData['timestamp'] < extraData.epochBack
+      if extraData.useSalesHistory then
+        if salesData['timestamp'] < extraData.epochBack or invalidTimestamp then removeSale = true end
+      elseif extraData.useSalesInterval then
+        local minInterval = GetTimeStamp() - (extraData.minSalesInterval * ZO_ONE_DAY_IN_SECONDS)
+        if (salesCount > extraData.minItemCount and salesData['timestamp'] < minInterval) and additionalCriteria then removeSale = true end
       else
-        if salesCount > LibGuildStore_SavedVariables["minItemCount"] and
-          (salesCount > LibGuildStore_SavedVariables["maxItemCount"]
-            or salesData['timestamp'] == nil
-            or type(salesData['timestamp']) ~= 'number'
-            or salesData['timestamp'] < extraData.epochBack
-          ) then
-          -- Remove it by setting it to nil
-          versiondata['sales'][salesId] = nil
-          salesDeleted = salesDeleted + 1
-          salesCount = salesCount - 1
-          extraData.wasAltered = true
-        end
+        if salesCount > extraData.minItemCount and additionalCriteria then removeSale = true end
+      end
+      -- Remove it by setting it to nil
+      if removeSale then
+        versiondata['sales'][salesId] = nil
+        salesDeleted = salesDeleted + 1
+        salesCount = salesCount - 1
+        extraData.wasAltered = true
       end
     end
     extraData.deleteCount = extraData.deleteCount + salesDeleted
