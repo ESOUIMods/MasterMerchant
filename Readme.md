@@ -7,6 +7,10 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.43
+
+- Added condition to detect the presence of MasterWritInventoryMarker to prevent duplicating markers
+
 ## ChangeLog 3.7.42
 
 - Added icon to master writs if you meet the requirements to craft the writ. (Writ Worthy required)

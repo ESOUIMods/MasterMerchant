@@ -3935,7 +3935,7 @@ do
       ZO_TradingHouseBrowseItemsRightPaneSearchResults.dataTypes[1].setupCallback = function(rowControl, slot)
         oldCallback(rowControl, slot)
         MasterMerchant:ToggleVendorMarker(rowControl, slot)
-        if MasterMerchant.wwDetected then
+        if MasterMerchant.wwDetected and not MasterMerchant.mwimDetected then
           MasterMerchant:ToggleWritMarker(rowControl, slot)
         end
       end

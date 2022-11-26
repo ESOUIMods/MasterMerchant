@@ -4310,6 +4310,8 @@ local function OnAddOnLoaded(eventCode, addOnName)
     MasterMerchant:initAGSIntegration()
   elseif addOnName == "WritWorthy" then
     if WritWorthy and WritWorthy.CreateParser then MasterMerchant.wwDetected = true end
+  elseif addOnName == "MasterWritInventoryMarker" then
+    if MWIM_SavedVariables then MasterMerchant.mwimDetected = true end
   end
   
 end
