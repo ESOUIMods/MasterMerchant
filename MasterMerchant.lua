@@ -4062,19 +4062,8 @@ function MasterMerchant:SecondInitialize()
   end, 10)
 end
 
-function MasterMerchant:SwitchUnitPrice(control, slot)
-  if not MasterMerchant.isInitialized then return end
-  if not MasterMerchant.systemSavedVariables.replaceInventoryValues then return end
-
-  local bagId = control.dataEntry.data.bagId
-  local slotIndex = control.dataEntry.data.slotIndex
-  local itemLink = GetItemLink(bagId, slotIndex)
-  if not itemLink then return end
+local function GetAveragePrice(itemLink)
   local averagePrice
-  local sellPrice
-  local sellPriceControl = control:GetNamedChild("SellPrice")
-  if not sellPriceControl then return end
-
   if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_MM_AVERAGE then
     local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, true)
     if tipStats.avgPrice then
@@ -4102,15 +4091,47 @@ function MasterMerchant:SwitchUnitPrice(control, slot)
       end
     end
   end
-  if not averagePrice then return end
-  sellPrice = averagePrice * control.dataEntry.data.stackCount
-  sellPrice = MasterMerchant.LocalizedNumber(sellPrice)
-  if MasterMerchant.systemSavedVariables.showUnitPrice then
-    sellPrice = '|cEEEE33' .. sellPrice .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MasterMerchant.coinIcon
-  else
-    sellPrice = '|cEEEE33' .. sellPrice .. '|r' .. MasterMerchant.coinIcon
+  return averagePrice
+end
+
+function MasterMerchant:SwitchUnitPrice(control, slot)
+  if not MasterMerchant.isInitialized then return end
+  local sellPriceControl = control:GetNamedChild("SellPrice")
+  if not sellPriceControl then return end
+  local controlData = control.dataEntry.data
+  if not MasterMerchant.systemSavedVariables.replaceInventoryValues and not controlData.hasAlteredPrice then return end
+
+  local bagId = controlData.bagId
+  local slotIndex = controlData.slotIndex
+  local itemLink = GetItemLink(bagId, slotIndex)
+  if not itemLink then return end
+
+  if not MasterMerchant.systemSavedVariables.replaceInventoryValues and controlData.hasAlteredPrice then
+    local _, sellPrice = GetItemLinkInfo(itemLink)
+    controlData.hasAlteredPrice = nil
+    controlData.sellPrice = sellPrice
+    controlData.stackSellPrice = sellPrice * controlData.stackCount
+    sellPriceControl:SetText(controlData.stackSellPrice)
+    return
   end
-  sellPriceControl:SetText(sellPrice)
+
+  local averagePrice = GetAveragePrice(itemLink)
+  local newSellPrice
+
+  if MasterMerchant.systemSavedVariables.replaceInventoryValues and averagePrice then
+    controlData.hasAlteredPrice = true
+    controlData.sellPrice = averagePrice
+    controlData.stackSellPrice = averagePrice * controlData.stackCount
+
+    newSellPrice = MasterMerchant.LocalizedNumber(controlData.stackSellPrice)
+    if MasterMerchant.systemSavedVariables.showUnitPrice then
+      newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MasterMerchant.coinIcon
+    else
+      newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon
+    end
+    sellPriceControl:SetText(newSellPrice)
+  end
+
 end
 
 function MasterMerchant:InitScrollLists()

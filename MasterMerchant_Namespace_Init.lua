@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.45'
+MasterMerchant.version = '3.7.46'
 
 local mmInternal = {}
 _G["MasterMerchant_Internal"] = mmInternal
