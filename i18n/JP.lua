@@ -298,6 +298,8 @@ ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "インベントリ価格�
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "インベントリグリッドにMM価格を表示します。")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Replacement Value Type")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Choose from the MM Average, TTC Average, TTC Suggested, and Bonanza Average prices on the inventory grid.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME", "Show Unit Price")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP", "Enable or disable showing the Unit Price of inventory items.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "販売リストに追加メッセージを表示")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "ギルドストアの販売リストに追加されたアイテム毎にチャットウィンドウにメッセージを表示します。")

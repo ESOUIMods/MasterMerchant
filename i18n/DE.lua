@@ -298,6 +298,8 @@ ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Ersetzen Sie Bestandswert
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Zeigen Sie den MM Preis im Bestandsnetz.")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Art des Ersatzwerts (Inventar)")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Wähle im Inventar aus den Preisen MM Durchschnitt, TTC Durchschnitt, TTC Vorgeschlagen und Bonanza Durchschnitt aus.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME", "Show Unit Price")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP", "Enable or disable showing the Unit Price of inventory items.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Eigene Gilden-Listung Nachricht")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Zeigt eine Meldung im Chat-Fenster für jede Gegenstandslistung, welche du im Gildenladen einstellst.")

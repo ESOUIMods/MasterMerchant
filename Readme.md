@@ -7,6 +7,11 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.45
+
+- Fixed long standing issue when replacing the inventory price that the price remained after disabling the feature
+- Added feature to show the unit price when replacing the inventory price
+
 ## ChangeLog 3.7.44
 
 - Changed Green checkmark for Master Writs in the Guild Store to indicate that you know the Motif and have the mats

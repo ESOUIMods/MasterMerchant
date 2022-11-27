@@ -299,6 +299,8 @@ ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Заменить цену
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Показывать цену от MM вместо обычной на экране инвентаря.")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Тип цены-заменителя")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Для замены цен в инвентаре доступны: средняя по MM, средняя по TTC, рекомендуемая TTC и средняя по Bonanza.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME", "Show Unit Price")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP", "Enable or disable showing the Unit Price of inventory items.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Сообщать о выставлении на продажу")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Отправлять сообщение в чат при каждом выставлении предмета на продажу.")

@@ -11,7 +11,6 @@ if AwesomeGuildStore then
   local DEAL_PERCENT_ORDER = 100
   local DEAL_PERCENT_ORDER_LABEL = GetString(AGS_PERCENT_ORDER_LABEL)
 
-
   function MasterMerchant.SortOrderDealPercent:New(...)
     return SortOrderBase.New(self, ...)
   end

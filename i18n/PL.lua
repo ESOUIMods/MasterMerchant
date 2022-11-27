@@ -298,6 +298,8 @@ ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Zastąp wartości ekwipun
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Wyświetl cenę z MM na siatce ekwipunku.")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Typ wartości zastępczej")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Wybierz z pomiędzy ceny średniej MM, średniej TTC, sugerowanej TTC i średniej Bonanza w ekwipunku.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME", "Show Unit Price")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP", "Enable or disable showing the Unit Price of inventory items.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Wyświetl wiadomość o wystawieniu")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Wyświetl wiadomość w oknie czatu dla każdego wystawienia w sklepie gildii.")

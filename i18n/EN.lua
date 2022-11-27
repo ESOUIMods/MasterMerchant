@@ -299,6 +299,8 @@ ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Replace Inventory Values"
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Display the MM price on the inventory grid.")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Replacement Value Type")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Choose from the MM Average, TTC Average, TTC Suggested, and Bonanza Average prices on the inventory grid.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME", "Show Unit Price")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP", "Enable or disable showing the Unit Price of inventory items.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Display Listing Message")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Displays a message in chat window for each guild store listing you make.")

@@ -1879,7 +1879,7 @@ local function CheckDealCalcValue()
 end
 
 local function CheckInventoryValue()
-  if MasterMerchant.systemSavedVariables.dealCalcToUse ~= MasterMerchant.USE_TTC_SUGGESTED then
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MasterMerchant.USE_TTC_SUGGESTED then
     MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = false
   end
 end
@@ -2582,7 +2582,15 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.replaceInventoryValues end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.replaceInventoryValues = value end,
     default = MasterMerchant.systemDefault.replaceInventoryValues,
-    warning = GetString(MM_RESET_LISTINGS_WARN),
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME),
+    tooltip = GetString(MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.showUnitPrice end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showUnitPrice = value end,
+    default = MasterMerchant.systemDefault.showUnitPrice,
+    disabled = function() return not MasterMerchant.systemSavedVariables.replaceInventoryValues end,
   }
   -- replace inventory value type
   optionsData[#optionsData + 1] = {
@@ -2598,7 +2606,6 @@ function MasterMerchant:LibAddonInit()
     end,
     default = MasterMerchant.systemDefault.replacementTypeToUse,
     disabled = function() return not MasterMerchant.systemSavedVariables.replaceInventoryValues end,
-    warning = GetString(MM_RESET_LISTINGS_WARN),
   }
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
@@ -2607,7 +2614,7 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = value end,
     default = MasterMerchant.systemDefault.modifiedSuggestedPriceInventory,
-    disabled = function() return not (MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED) end,
+    disabled = function() return (not MasterMerchant.systemSavedVariables.replaceInventoryValues) or (MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MasterMerchant.USE_TTC_SUGGESTED) end,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -3656,6 +3663,7 @@ function MasterMerchant:FirstInitialize()
     agsPercentSortOrderToUse = MasterMerchant.AGS_PERCENT_ASCENDING,
     modifiedSuggestedPriceDealCalc = false,
     modifiedSuggestedPriceInventory = false,
+    showUnitPrice = false,
     useFormatedTime = false,
     useTwentyFourHourTime = false,
     dateFormatMonthDay = MM_MONTH_DAY_FORMAT,
@@ -4055,70 +4063,54 @@ function MasterMerchant:SecondInitialize()
 end
 
 function MasterMerchant:SwitchUnitPrice(control, slot)
-  local averagePrice = 0
+  if not MasterMerchant.isInitialized then return end
+  if not MasterMerchant.systemSavedVariables.replaceInventoryValues then return end
+
+  local bagId = control.dataEntry.data.bagId
+  local slotIndex = control.dataEntry.data.slotIndex
+  local itemLink = GetItemLink(bagId, slotIndex)
+  if not itemLink then return end
+  local averagePrice
+  local sellPrice
   local sellPriceControl = control:GetNamedChild("SellPrice")
-  if MasterMerchant.systemSavedVariables.replaceInventoryValues then
-    local bagId = control.dataEntry.data.bagId
-    local slotIndex = control.dataEntry.data.slotIndex
-    local itemLink = bagId and GetItemLink(bagId, slotIndex) or GetItemLink(slotIndex)
+  if not sellPriceControl then return end
 
-    if itemLink then
-      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_MM_AVERAGE then
-        local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, true)
-        if tipStats.avgPrice then
-          averagePrice = tipStats.avgPrice
-        end
-      end
-      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_BONANZA then
-        local tipStats = MasterMerchant:GetTooltipStats(itemLink, false, true)
-        if tipStats.bonanzaPrice then
-          averagePrice = tipStats.bonanzaPrice
-        end
-      end
-      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
-        local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-        if priceStats and priceStats.Avg > 0 then
-          averagePrice = priceStats.Avg
-        end
-      end
-      if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
-        local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-        if priceStats and priceStats.SuggestedPrice > 0 then
-          averagePrice = priceStats.SuggestedPrice
-          if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory then
-            averagePrice = priceStats.SuggestedPrice * 1.25
-          end
-        end
-      end
-
-      if averagePrice and averagePrice > 0 then
-        if not control.dataEntry.data.mmOriginalPrice then
-          control.dataEntry.data.mmOriginalPrice = control.dataEntry.data.sellPrice
-          control.dataEntry.data.mmOriginalStackPrice = control.dataEntry.data.stackSellPrice
-        end
-
-        control.dataEntry.data.mmPrice = tonumber(string.format('%.0f', averagePrice))
-        control.dataEntry.data.stackSellPrice = tonumber(string.format('%.0f', averagePrice * control.dataEntry.data.stackCount))
-        control.dataEntry.data.sellPrice = control.dataEntry.data.mmPrice
-
-        if (sellPriceControl) then
-          sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-          sellPrice = '|cEEEE33' .. sellPrice .. '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-          sellPriceControl:SetText(sellPrice)
-        end
-      else
-        if control.dataEntry.data.mmOriginalPrice then
-          control.dataEntry.data.sellPrice = control.dataEntry.data.mmOriginalPrice
-          control.dataEntry.data.stackSellPrice = control.dataEntry.data.mmOriginalStackPrice
-        end
-        if (sellPriceControl) then
-          sellPrice = MasterMerchant.LocalizedNumber(control.dataEntry.data.stackSellPrice)
-          sellPrice = sellPrice .. MasterMerchant.coinIcon
-          sellPriceControl:SetText(sellPrice)
-        end
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_MM_AVERAGE then
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, true)
+    if tipStats.avgPrice then
+      averagePrice = tipStats.avgPrice
+    end
+  end
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_BONANZA then
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, false, true)
+    if tipStats.bonanzaPrice then
+      averagePrice = tipStats.bonanzaPrice
+    end
+  end
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
+    local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
+    if priceStats and priceStats.Avg > 0 then
+      averagePrice = priceStats.Avg
+    end
+  end
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
+    local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
+    if priceStats and priceStats.SuggestedPrice > 0 then
+      averagePrice = priceStats.SuggestedPrice
+      if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory then
+        averagePrice = priceStats.SuggestedPrice * 1.25
       end
     end
   end
+  if not averagePrice then return end
+  sellPrice = averagePrice * control.dataEntry.data.stackCount
+  sellPrice = MasterMerchant.LocalizedNumber(sellPrice)
+  if MasterMerchant.systemSavedVariables.showUnitPrice then
+    sellPrice = '|cEEEE33' .. sellPrice .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MasterMerchant.coinIcon
+  else
+    sellPrice = '|cEEEE33' .. sellPrice .. '|r' .. MasterMerchant.coinIcon
+  end
+  sellPriceControl:SetText(sellPrice)
 end
 
 function MasterMerchant:InitScrollLists()

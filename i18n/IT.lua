@@ -299,6 +299,8 @@ ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Sostituisci i Valori nell
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Visualizza il prezzo MM sulla griglia dell'inventario")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Tipo di Valore nella Sostituzione")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Scegli tra i prezzi medi di MM, TTC, suggeriti di TTC e media di Bonanza nella griglia dell'inventario")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME", "Show Unit Price")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP", "Enable or disable showing the Unit Price of inventory items.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Visualizza Messaggi degli Annunci")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Visualizza un messaggio nella finestra di chat per ogni annuncio del negozio di gilda che fai.")

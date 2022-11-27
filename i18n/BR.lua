@@ -298,6 +298,8 @@ ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_NAME", "Substituir Valores de Inv
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUES_TIP", "Mostra o preço MM na grade do inventório.")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_NAME", "Replacement Value Type")
 ZO_CreateStringId("MM_REPLACE_INVENTORY_VALUE_TYPE_TIP", "Choose from the MM Average, TTC Average, TTC Suggested, and Bonanza Average prices on the inventory grid.")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_NAME", "Show Unit Price")
+ZO_CreateStringId("MM_REPLACE_INVENTORY_SHOW_UNITPRICE_TIP", "Enable or disable showing the Unit Price of inventory items.")
 
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_NAME", "Exibir Mensagem de Listados")
 ZO_CreateStringId("MM_DISPLAY_LISTING_MESSAGE_TIP", "Exibe uma mensagem na janela de bate-papo para cada lista de vendas em guilda que você tem.")
