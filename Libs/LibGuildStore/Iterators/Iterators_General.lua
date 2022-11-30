@@ -6,7 +6,7 @@ local ASYNC = LibAsync
 ----- Helpers                      -----
 ----------------------------------------
 
--- DEBUG
+-- DEBUG CompareItemIds
 function internal:CompareItemIds(dataset)
   internal:dm("Debug", "CompareItemIds")
   local saveData = dataset[internal.dataNamespace]
@@ -63,19 +63,24 @@ function internal:spairs(t, order)
   end
 end
 
+-- /script d(LibGuildStore_Internal:IsValidItemLink("|H0:item:100042:363:50:0:0:0:0:0:0:0:0:0:0:0:0:8:0:0:0:10000:0|h|h"))
+-- /script d(GetItemLinkItemId("|H0:item:100042:363:50:0:0:0:0:0:0:0:0:0:0:0:0:8:0:0:0:10000:0|h|h"))
+-- /script d(GetItemLinkItemId("|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h"))
+-- /script d(tonumber(zo_strmatch("|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h", '|H.-:item:(.-):')))
+-- "|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h"
 function internal:IsValidItemLink(itemLink)
   -- itemLink should be the full link here
   local validLink = true
+  local itemCodeText = MasterMerchant.ItemCodeText(itemLink)
+  local theIID = GetItemLinkItemId(itemLink)
+  local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
+  local itemlinkName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
   local _, count = string.gsub(itemLink, ':', ':')
+
   if count ~= 22 then
     internal:dm("Debug", "count ~= 22")
     validLink = false
   end
-  -- /script d(GetItemLinkItemId("|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h"))
-  -- /script d(tonumber(zo_strmatch("|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h", '|H.-:item:(.-):')))
-  -- "|H0:item:69806:22:40:26582:21:35:0:0:0:0:0:0:0:0:0:1:0:0:0:10000:0|h|h"
-  local theIID = GetItemLinkItemId(itemLink)
-  local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
   if not theIID then
     internal:dm("Debug", "theIID was nil I guess?")
     validLink = false
@@ -84,17 +89,16 @@ function internal:IsValidItemLink(itemLink)
     validLink = false
     internal:dm("Debug", "theIID ~= itemIdMatch")
   end
-  local itemlinkName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
   if internal:is_empty_or_nil(itemlinkName) then
     internal:dm("Debug", "itemlinkName was empty or nil")
     validLink = false
   end
   if not validLink then
-    internal:dm("Debug", { MasterMerchant.ItemCodeText(itemLink) })
+    internal:dm("Debug", itemCodeText)
     internal:dm("Debug", theIID)
     internal:dm("Debug", itemIdMatch)
   end
-  return validLink
+  return validLink, theIID, itemIdMatch
 end
 
 ----------------------------------------
@@ -176,7 +180,100 @@ function internal:RenewExtraListingsData(otherData)
   end
 end
 
--- DEBUG
+function internal:RenewExtraPurchaseData(otherData)
+  internal:dm("Debug", "RenewExtraPurchaseData")
+  local savedVars = GS17DataSavedVariables[internal.purchasesNamespace]
+  local newestTime = nil
+  local oldestTime = nil
+  local totalCount = 0
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      if itemIndexData["wasAltered"] then
+        newestTime = nil
+        oldestTime = nil
+        totalCount = 0
+        for _, saleData in pairs(itemIndexData['sales']) do
+          totalCount = totalCount + 1
+          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+        end
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].wasAltered = false
+        else
+          --internal:dm("Warn", "Empty or nil savedVars[internal.purchasesNamespace]")
+        end
+      end
+    end
+  end
+end
+
+function internal:RenewExtraPostedData(otherData)
+  internal:dm("Debug", "RenewExtraPostedData")
+  local savedVars = GS17DataSavedVariables[internal.postedNamespace]
+  local newestTime = nil
+  local oldestTime = nil
+  local totalCount = 0
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      if itemIndexData["wasAltered"] then
+        newestTime = nil
+        oldestTime = nil
+        totalCount = 0
+        for _, saleData in pairs(itemIndexData['sales']) do
+          totalCount = totalCount + 1
+          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+        end
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].wasAltered = false
+        else
+          --internal:dm("Warn", "Empty or nil savedVars[internal.postedNamespace]")
+        end
+      end
+    end
+  end
+end
+
+function internal:RenewExtraCancelledData(otherData)
+  internal:dm("Debug", "RenewExtraCancelledData")
+  local savedVars = GS17DataSavedVariables[internal.cancelledNamespace]
+  local newestTime = nil
+  local oldestTime = nil
+  local totalCount = 0
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      if itemIndexData["wasAltered"] then
+        newestTime = nil
+        oldestTime = nil
+        totalCount = 0
+        for _, saleData in pairs(itemIndexData['sales']) do
+          totalCount = totalCount + 1
+          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+        end
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].wasAltered = false
+        else
+          --internal:dm("Warn", "Empty or nil savedVars[internal.cancelledNamespace]")
+        end
+      end
+    end
+  end
+end
+
+-- DEBUG VerifyItemLinks
 function internal:VerifyItemLinks(hash, task)
   local saveFile = _G[string.format("GS%02dDataSavedVariables", hash)]
   local fileString = string.format("GS%02dDataSavedVariables", hash)
@@ -294,25 +391,160 @@ function internal:AddExtraListingsData(otherData)
   end -- savedVars
 end
 
--- Renew extra Sales data if list was altered
-function internal:RenewExtraSalesDataAllContainers()
-  internal:dm("Debug", "RenewExtraSalesDataAllContainers")
-  internal:RenewExtraSalesData(GS00DataSavedVariables)
-  internal:RenewExtraSalesData(GS01DataSavedVariables)
-  internal:RenewExtraSalesData(GS02DataSavedVariables)
-  internal:RenewExtraSalesData(GS03DataSavedVariables)
-  internal:RenewExtraSalesData(GS04DataSavedVariables)
-  internal:RenewExtraSalesData(GS05DataSavedVariables)
-  internal:RenewExtraSalesData(GS06DataSavedVariables)
-  internal:RenewExtraSalesData(GS07DataSavedVariables)
-  internal:RenewExtraSalesData(GS08DataSavedVariables)
-  internal:RenewExtraSalesData(GS09DataSavedVariables)
-  internal:RenewExtraSalesData(GS10DataSavedVariables)
-  internal:RenewExtraSalesData(GS11DataSavedVariables)
-  internal:RenewExtraSalesData(GS12DataSavedVariables)
-  internal:RenewExtraSalesData(GS13DataSavedVariables)
-  internal:RenewExtraSalesData(GS14DataSavedVariables)
-  internal:RenewExtraSalesData(GS15DataSavedVariables)
+function internal:AddExtraPurchaseData(otherData)
+  internal:dm("Debug", "AddExtraPurchaseData")
+  local savedVars = GS17DataSavedVariables[internal.purchasesNamespace]
+  local oldestTime = nil
+  local newestTime = nil
+  local totalCount = 0
+  local firstEntry = nil
+  local salesHasEntry = false
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      oldestTime = nil
+      newestTime = nil
+      totalCount = 0
+      firstEntry = nil
+      salesHasEntry = false
+      if itemIndexData and itemIndexData['sales'] then
+        _, firstEntry = next(itemIndexData['sales'], nil)
+        if firstEntry and type(firstEntry) == 'table' then salesHasEntry = true end
+      end -- if ['sales'] has a table in it
+      if salesHasEntry then
+        for _, saleData in pairs(itemIndexData['sales']) do
+          if saleData and saleData["timestamp"] then
+            totalCount = totalCount + 1
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+            if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+          end
+        end
+
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].wasAltered = false
+        end
+      else
+        local dataInfo = {
+          lang = MasterMerchant.effective_lang,
+          itemIndexData = itemIndexData,
+          namespace = internal.dataNamespace,
+          timestamp = GetTimeStamp(),
+        }
+        if GS17DataSavedVariables["erroneous_purchases"] == nil then GS17DataSavedVariables["erroneous_purchases"] = {} end
+        if GS17DataSavedVariables["erroneous_purchases"][itemID] == nil then GS17DataSavedVariables["erroneous_purchases"][itemID] = {} end
+        table.insert(GS17DataSavedVariables["erroneous_purchases"][itemID], dataInfo)
+        savedVars[itemID][field] = nil
+      end -- salesHasEntry
+
+    end -- itemIndex
+  end -- savedVars
+end
+
+function internal:AddExtraPostedData(otherData)
+  internal:dm("Debug", "AddExtraPostedData")
+  local savedVars = GS17DataSavedVariables[internal.postedNamespace]
+  local oldestTime = nil
+  local newestTime = nil
+  local totalCount = 0
+  local firstEntry = nil
+  local salesHasEntry = false
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      oldestTime = nil
+      newestTime = nil
+      totalCount = 0
+      firstEntry = nil
+      salesHasEntry = false
+      if itemIndexData and itemIndexData['sales'] then
+        _, firstEntry = next(itemIndexData['sales'], nil)
+        if firstEntry and type(firstEntry) == 'table' then salesHasEntry = true end
+      end -- if ['sales'] has a table in it
+      if salesHasEntry then
+        for _, saleData in pairs(itemIndexData['sales']) do
+          if saleData and saleData["timestamp"] then
+            totalCount = totalCount + 1
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+            if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+          end
+        end
+
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].wasAltered = false
+        end
+      else
+        local dataInfo = {
+          lang = MasterMerchant.effective_lang,
+          itemIndexData = itemIndexData,
+          namespace = internal.dataNamespace,
+          timestamp = GetTimeStamp(),
+        }
+        if GS17DataSavedVariables["erroneous_posted_records"] == nil then GS17DataSavedVariables["erroneous_posted_records"] = {} end
+        if GS17DataSavedVariables["erroneous_posted_records"][itemID] == nil then GS17DataSavedVariables["erroneous_posted_records"][itemID] = {} end
+        table.insert(GS17DataSavedVariables["erroneous_posted_records"][itemID], dataInfo)
+        savedVars[itemID][field] = nil
+      end -- salesHasEntry
+
+    end -- itemIndex
+  end -- savedVars
+end
+
+function internal:AddExtraCancelledData(otherData)
+  internal:dm("Debug", "AddExtraCancelledData")
+  local savedVars = GS17DataSavedVariables[internal.cancelledNamespace]
+  local oldestTime = nil
+  local newestTime = nil
+  local totalCount = 0
+  local firstEntry = nil
+  local salesHasEntry = false
+
+  for itemID, itemIndex in pairs(savedVars) do
+    for field, itemIndexData in pairs(itemIndex) do
+      oldestTime = nil
+      newestTime = nil
+      totalCount = 0
+      firstEntry = nil
+      salesHasEntry = false
+      if itemIndexData and itemIndexData['sales'] then
+        _, firstEntry = next(itemIndexData['sales'], nil)
+        if firstEntry and type(firstEntry) == 'table' then salesHasEntry = true end
+      end -- if ['sales'] has a table in it
+      if salesHasEntry then
+        for _, saleData in pairs(itemIndexData['sales']) do
+          if saleData and saleData["timestamp"] then
+            totalCount = totalCount + 1
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+            if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+          end
+        end
+
+        if savedVars[itemID][field] then
+          savedVars[itemID][field].totalCount = totalCount
+          savedVars[itemID][field].oldestTime = oldestTime
+          savedVars[itemID][field].newestTime = newestTime
+          savedVars[itemID][field].wasAltered = false
+        end
+      else
+        local dataInfo = {
+          lang = MasterMerchant.effective_lang,
+          itemIndexData = itemIndexData,
+          namespace = internal.dataNamespace,
+          timestamp = GetTimeStamp(),
+        }
+        if GS17DataSavedVariables["erroneous_cancelled_records"] == nil then GS17DataSavedVariables["erroneous_cancelled_records"] = {} end
+        if GS17DataSavedVariables["erroneous_cancelled_records"][itemID] == nil then GS17DataSavedVariables["erroneous_cancelled_records"][itemID] = {} end
+        table.insert(GS17DataSavedVariables["erroneous_cancelled_records"][itemID], dataInfo)
+        savedVars[itemID][field] = nil
+      end -- salesHasEntry
+
+    end -- itemIndex
+  end -- savedVars
 end
 
 -- Add new Sales data to concatanated data array
@@ -357,6 +589,27 @@ function internal:AddExtraListingsDataAllContainers()
   internal:AddExtraListingsData(GS15DataSavedVariables)
 end
 
+-- Renew extra Sales data if list was altered
+function internal:RenewExtraSalesDataAllContainers()
+  internal:dm("Debug", "RenewExtraSalesDataAllContainers")
+  internal:RenewExtraSalesData(GS00DataSavedVariables)
+  internal:RenewExtraSalesData(GS01DataSavedVariables)
+  internal:RenewExtraSalesData(GS02DataSavedVariables)
+  internal:RenewExtraSalesData(GS03DataSavedVariables)
+  internal:RenewExtraSalesData(GS04DataSavedVariables)
+  internal:RenewExtraSalesData(GS05DataSavedVariables)
+  internal:RenewExtraSalesData(GS06DataSavedVariables)
+  internal:RenewExtraSalesData(GS07DataSavedVariables)
+  internal:RenewExtraSalesData(GS08DataSavedVariables)
+  internal:RenewExtraSalesData(GS09DataSavedVariables)
+  internal:RenewExtraSalesData(GS10DataSavedVariables)
+  internal:RenewExtraSalesData(GS11DataSavedVariables)
+  internal:RenewExtraSalesData(GS12DataSavedVariables)
+  internal:RenewExtraSalesData(GS13DataSavedVariables)
+  internal:RenewExtraSalesData(GS14DataSavedVariables)
+  internal:RenewExtraSalesData(GS15DataSavedVariables)
+end
+
 -- Renew extra Listings data if list was altered
 function internal:RenewExtraListingsDataAllContainers()
   internal:dm("Debug", "RenewExtraListingsDataAllContainers")
@@ -379,7 +632,7 @@ function internal:RenewExtraListingsDataAllContainers()
 end
 
 -- /script LibGuildStore_Internal:VerifyAllItemLinks()
--- DEBUG
+-- DEBUG VerifyAllItemLinks
 function internal:VerifyAllItemLinks()
   local task = ASYNC:Create("VerifyAllItemLinks")
   task:Call(function(task) internal:DatabaseBusy(true) end)

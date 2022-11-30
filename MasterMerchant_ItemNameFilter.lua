@@ -7,7 +7,7 @@ IFScrollList.defaults = { }
 IFScrollList.SORT_KEYS = {
   ['itemName'] = { isNumeric = false, tiebreaker = "itemName" },
 }
-ITEM_DATA = 1
+local ITEM_DATA = 1
 
 function MasterMerchant:SortByItemFilterName(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)

@@ -129,6 +129,7 @@ end
 function MasterMerchant.LocalizedNumber(amount)
   local function comma_value(amount)
     local formatted = amount
+    local k
     while true do
       formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1' .. GetString(SK_THOUSANDS_SEP) .. '%2')
       if (k == 0) then

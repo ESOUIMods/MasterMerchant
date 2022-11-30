@@ -130,11 +130,11 @@ local function SetupLibGuildStore()
   end
 end
 
+-- DEBUG RefreshLibGuildStore
 function internal:RefreshLibGuildStore()
   internal:dm("Debug", "RefreshLibGuildStore")
   internal:dm("Info", GetString(GS_REFRESH_STARTING))
   internal:DatabaseBusy(true)
-  -- DEBUG
   LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
@@ -333,25 +333,31 @@ local function SetupData()
   -- AddNewData, which adds counts
   LEQ:Add(function() internal:AddExtraSalesDataAllContainers() end, 'AddExtraSalesDataAllContainers')
   LEQ:Add(function() internal:AddExtraListingsDataAllContainers() end, 'AddExtraListingsDataAllContainers')
+  LEQ:Add(function() internal:AddExtraPurchaseData() end, 'AddExtraPurchaseData')
+  LEQ:Add(function() internal:AddExtraPostedData() end, 'AddExtraPostedData')
+  LEQ:Add(function() internal:AddExtraCancelledData() end, 'AddExtraCancelledData')
   -- Truncate
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
     LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_TRUNCATE)) end, "LibGuildStoreReferenceTables")
   end
   LEQ:Add(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
-  LEQ:Add(function() internal:TruncatePurchaseHistory() end, 'TruncatePurchaseHistory')
   LEQ:Add(function() internal:TruncateListingsHistory() end, 'TruncateListingsHistory')
+  LEQ:Add(function() internal:TruncatePurchaseHistory() end, 'TruncatePurchaseHistory')
   LEQ:Add(function() internal:TruncatePostedItemsHistory() end, 'TruncatePostedItemsHistory')
   LEQ:Add(function() internal:TruncateCancelledItemHistory() end, 'TruncateCancelledItemHistory')
   -- RenewExtraData, if was altered
   LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
   LEQ:Add(function() internal:RenewExtraListingsDataAllContainers() end, 'RenewExtraListingsDataAllContainers')
+  LEQ:Add(function() internal:RenewExtraPurchaseData() end, 'RenewExtraPurchaseData')
+  LEQ:Add(function() internal:RenewExtraPostedData() end, 'RenewExtraPostedData')
+  LEQ:Add(function() internal:RenewExtraCancelledData() end, 'RenewExtraCancelledData')
   -- and...
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
     LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_HISTORY_INIT)) end, "LibGuildStoreReferenceTables")
   end
-  LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
-  LEQ:Add(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
+  LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
   LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
+  LEQ:Add(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
   LEQ:Add(function() internal:InitPostedItemsHistory() end, 'InitPostedItemsHistory')
   LEQ:Add(function() internal:InitCancelledItemsHistory() end, 'InitCancelledItemsHistory')
   -- Index Data, like sr_index

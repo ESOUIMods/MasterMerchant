@@ -143,7 +143,9 @@ MasterMerchant.purchasesViewSize = 'purchases_vs'
 MasterMerchant.reportsViewSize = 'reports_vs'
 
 -- default is self
-MasterMerchant.markersHooked = false
+MasterMerchant.tradingHouseBrowseMarkerHooked = false
+MasterMerchant.inventoryMarkersHooked = false
+MasterMerchant.tradingHouseOpened = false
 MasterMerchant.wwDetected = false
 MasterMerchant.mwimDetected = false
 MasterMerchant.salesViewMode = MasterMerchant.personalSalesViewMode

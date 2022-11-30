@@ -30,7 +30,7 @@ end
 -- And here we add a new item
 function internal:addSalesData(theEvent)
   -- DEBUG  Stop Adding
-  --do return end
+  -- if true then return false end
 
   --[[
   local theEvent = {
@@ -218,6 +218,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
 
   local checkTime = GetGameTimeMilliseconds()
   local versionlist
+  local itemLink
   if itemid == nil then
     itemid, versionlist = next(sales_data, itemid)
     extraData.versionRemoved = false
@@ -234,6 +235,8 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
     else
       versiondata = versionlist[versionid]
     end
+    itemLink = nil
+    --[[ begin loop over ['x:x:x:x:x'] ]]--
     while (versionid ~= nil) do
       if versiondata['sales'] then
         local saledata
@@ -242,7 +245,17 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
         else
           saledata = versiondata['sales'][saleid]
         end
+        if not itemLink and saledata and saledata["itemLink"] then itemLink = internal:GetItemLinkByIndex(saledata["itemLink"]) end
+        --[[ begin loop over ['sales'] ]]--
         while (saleid ~= nil) do
+          --[[skipTheRest is true here from Truncate Sales because in that function
+          you are looping over all the sales. Normally you are not and only processing
+          a single sale. Therefore when skipTheRest is false you use:
+
+          saleid, saledata = next(versiondata['sales'], saleid)
+
+          to get the next sale and process it
+          ]]--
           local skipTheRest = loopfunc(itemid, versionid, versiondata, saleid, saledata, extraData)
           extraData.saleRemoved = extraData.saleRemoved or (versiondata['sales'][saleid] == nil)
           if skipTheRest then
@@ -257,49 +270,53 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
             return
           end
         end
+        --[[ end of loop over ['sales'] ]]--
 
         if extraData.saleRemoved then
           local sales = {}
+          local salesCount = 0
+          extraData.newSalesCount = nil
           for _, sd in pairs(versiondata['sales']) do
             if (sd ~= nil) and (type(sd) == 'table') then
               table.insert(sales, sd)
+              salesCount = salesCount + 1
             end
           end
           versiondata['sales'] = sales
+          versiondata["totalCount"] = salesCount
+        end
+
+        if extraData.newSalesCount then
+          versiondata["totalCount"] = extraData.newSalesCount
         end
       end
 
+      -- /script sales = {}; versiondata = {}; versiondata['sales'] = {}; versiondata['sales'] = sales; if versiondata['sales'] == nil then d("it is nil") end; if #versiondata['sales'] == 0 then d("it is zero") end
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (versiondata["totalCount"] < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount = (extraData.versionCount or 0) + 1
         versionlist[versionid] = nil
         extraData.versionRemoved = true
       end
 
-      if LibGuildStore_SavedVariables["updateAdditionalText"] then
-        local itemData = nil
-        for _, sd in pairs(versiondata['sales']) do
-          if (sd ~= nil) and (type(sd) == 'table') then
-            itemData = sd
-            break
-          end
-        end
-
-        if itemData then
-          itemLink = internal:GetItemLinkByIndex(itemData["itemLink"])
-          if itemLink then
-            versiondata['itemAdderText'] = internal:AddSearchToItem(itemLink)
-            versiondata['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-          end
+      -- Sharlikran
+      if LibGuildStore_SavedVariables["updateAdditionalText"] and not extraData.saleRemoved then
+        if itemLink then
+          versiondata['itemAdderText'] = internal:AddSearchToItem(itemLink)
+          versiondata['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
         end
       end
-      if extraData.wasAltered then
+
+      -- Sharlikran
+      if extraData.wasAltered and not extraData.saleRemoved then
         versiondata["wasAltered"] = true
         extraData.wasAltered = false
       end
+
       -- Go onto the next Version
       versionid, versiondata = next(versionlist, versionid)
       extraData.saleRemoved = false
+      extraData.newSalesCount = nil
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
@@ -307,6 +324,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
         return
       end
     end
+    --[[ end loop over ['x:x:x:x:x'] ]]--
 
     if extraData.versionRemoved then
       local versions = {}
@@ -318,6 +336,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
       sales_data[itemid] = versions
     end
 
+    -- If we just deleted everything, clear the bucket out
     if (sales_data[itemid] ~= nil and ((internal:NonContiguousNonNilCount(versionlist) < 1) or (type(itemid) ~= 'number'))) then
       extraData.idCount = (extraData.idCount or 0) + 1
       sales_data[itemid] = nil
@@ -340,6 +359,7 @@ end
 
 -- TODO is salesData important here
 -- Yes it does not use SavedVars but the global table
+-- /script LibGuildStore_Internal:TruncateSalesHistory()
 function internal:TruncateSalesHistory()
   internal:dm("Debug", "TruncateSalesHistory")
 
@@ -351,6 +371,7 @@ function internal:TruncateSalesHistory()
     extraData.deleteCount = 0
     extraData.epochBack = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
     extraData.wasAltered = false
+    extraData.newSalesCount = 0
     extraData.minItemCount = LibGuildStore_SavedVariables["minItemCount"]
     extraData.maxItemCount = LibGuildStore_SavedVariables["maxItemCount"]
     extraData.minSalesInterval = LibGuildStore_SavedVariables["minSalesInterval"]
@@ -371,7 +392,8 @@ function internal:TruncateSalesHistory()
     if salesCount == 0 then
       versiondata['sales'] = {}
       extraData.saleRemoved = false
-      return true
+      extraData.newSalesCount = 0
+      return true -- value true for return
     end
     local salesDataTable = internal:spairs(versiondata['sales'], function(a, b) return internal:CleanTimestamp(a) < internal:CleanTimestamp(b) end)
     for salesId, salesData in salesDataTable do
@@ -395,6 +417,7 @@ function internal:TruncateSalesHistory()
       end
     end
     extraData.deleteCount = extraData.deleteCount + salesDeleted
+    extraData.newSalesCount = salesCount
     --[[ `for saleid, saledata in salesDataTable do` is not a loop
     to Lua so we can not get the oldest time of the first element
     and break. Mark the list altered and clean up in RenewExtraData.
@@ -402,7 +425,7 @@ function internal:TruncateSalesHistory()
     Also since we have to get the new oldest time, renew the totalCount
     with RenewExtraData also.
     ]]--
-    return true
+    return true -- value true for return
   end
 
   local postfunc = function(extraData)
@@ -483,7 +506,7 @@ function internal:IndexSalesData()
       table.insert(sr_index[i], wordData)
       internal.sr_index_count = internal.sr_index_count + 1
     end
-
+    -- no return
   end
 
   local postfunc = function(extraData)
@@ -499,8 +522,8 @@ function internal:IndexSalesData()
 
 end
 
-function internal:InitItemHistory()
-  internal:dm("Debug", "InitItemHistory")
+function internal:InitSalesHistory()
+  internal:dm("Debug", "InitSalesHistory")
 
   local extradata = {}
 
@@ -583,7 +606,7 @@ function internal:InitItemHistory()
           guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
         end
       end
-      return false
+      return false  -- value false for return
     end
 
     local postfunc = function(extraData)
@@ -683,24 +706,28 @@ function internal:CleanOutBad()
       versiondata['sales'][saleid] = nil
       extraData.wasAltered = true
       extraData.deleteCount = extraData.deleteCount + 1
-      return
+      return -- no value for return
     end
-    if not internal:IsValidItemLink(currentItemLink) then
+    local validLink, theIID, itemIdMatch = internal:IsValidItemLink(currentItemLink)
+    if not validLink then
       local dataInfo = {
         lang = MasterMerchant.effective_lang,
         individualSale = versiondata['sales'][saleid],
         namespace = internal.dataNamespace,
         timestamp = GetTimeStamp(),
-        itemLink = currentItemLink
+        itemLink = currentItemLink,
+        theIID = theIID,
+        itemIdMatch = itemIdMatch,
+        itemLinkLookupValue = saledata['itemLink']
       }
-      if GS17DataSavedVariables["erroneous_links"] == nil then GS17DataSavedVariables["erroneous_links"] = {} end
-      if GS17DataSavedVariables["erroneous_links"][itemid] == nil then GS17DataSavedVariables["erroneous_links"][itemid] = {} end
+      GS17DataSavedVariables["erroneous_links"] = GS17DataSavedVariables["erroneous_links"] or {}
+      GS17DataSavedVariables["erroneous_links"][itemid] = GS17DataSavedVariables["erroneous_links"][itemid] or {}
       table.insert(GS17DataSavedVariables["erroneous_links"][itemid], dataInfo)
       -- Remove sale
       versiondata['sales'][saleid] = nil
       extraData.wasAltered = true
       extraData.badItemLinkCount = extraData.badItemLinkCount + 1
-      return
+      return -- no value for return
     end
     local newid = GetItemLinkItemId(currentItemLink)
     local newversion = internal.GetOrCreateIndexFromLink(currentItemLink)
@@ -763,7 +790,7 @@ function internal:CleanOutBad()
       versiondata['sales'][saleid] = nil
       extraData.wasAltered = true
       extraData.deleteCount = extraData.deleteCount + 1
-      return
+      return -- no value for return
     end
   end
 
@@ -791,7 +818,7 @@ function internal:CleanOutBad()
       internal.guildItems = {}
       internal.myItems = {}
       LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
+      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
@@ -822,7 +849,7 @@ local function FinalizePurge(count)
     internal.guildSales = {}
     internal.guildItems = {}
     internal.myItems = {}
-    LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
+    LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
     LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
   end
   LEQ:Add(function()
@@ -921,6 +948,7 @@ function internal:SlideSales(goback)
       saledata['seller'] = extraData.newName
       extraData.moveCount = extraData.moveCount + 1
     end
+    -- no return
   end
 
   local postfunc = function(extraData)
@@ -1076,7 +1104,7 @@ function internal:Expected(eventID)
 end
 
 -- TODO not updated
--- DEBUG
+-- DEBUG checkForDoubles
 function internal:checkForDoubles()
 
   local dataList = {

@@ -97,7 +97,7 @@ function internal:ImportMasterMerchantSales()
       internal.guildItems = {}
       internal.myItems = {}
       LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
+      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
@@ -154,7 +154,7 @@ function internal:ImportATTSales()
       internal.guildItems = {}
       internal.myItems = {}
       LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
+      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
@@ -563,7 +563,7 @@ end
 
 -- /script LibGuildStore_Internal:CompareItemIds(GS00DataSavedVariables)
 -- loops over item IDs and reports duplicates
--- DEBUG
+-- DEBUG CompareSalesIds
 function internal:CompareSalesIds()
   internal:dm("Debug", "CompareSalesIds")
   local itemIds = {}

@@ -4,12 +4,11 @@
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
 local internal = _G["LibGuildStore_Internal"]
-specialDWCount = 0
 
 local mfloor = math.floor
 local taxFactor = GetTradingHouseCutPercentage() / 200
 
-MMSeller = {
+local MMSeller = {
   guild = {},
   sellerName = '',
   sales = {},
@@ -22,7 +21,7 @@ MMSeller = {
 }
 
 function MMSeller:new(_guild, _name, _outsideBuyer, _searchText)
-  o = {}   -- create object if user does not provide one
+  local o = {}   -- create object if user does not provide one
   setmetatable(o, self)
   self.__index = self
 
@@ -205,7 +204,7 @@ function MasterMerchant:BuildDateRangeTable()
 end
 
 function MMGuild:new(_name)
-  o = {}   -- create object if user does not provide one
+  local o = {}   -- create object if user does not provide one
   setmetatable(o, self)
   self.__index = self
 
