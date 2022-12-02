@@ -23,11 +23,12 @@ local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
 local REPORTS = 'reports_vs'
 
-CSA_EVENT_SMALL_TEXT = 1
-CSA_EVENT_LARGE_TEXT = 2
-CSA_EVENT_COMBINED_TEXT = 3
-CSA_EVENT_NO_TEXT = 4
-CSA_EVENT_RAID_COMPLETE_TEXT = 5
+local CSA_EVENT_SMALL_TEXT = 1
+local CSA_EVENT_LARGE_TEXT = 2
+local CSA_EVENT_COMBINED_TEXT = 3
+local CSA_EVENT_NO_TEXT = 4
+local CSA_EVENT_RAID_COMPLETE_TEXT = 5
+
 --[[
 used to temporarily ignore sales that are so new
 the ammount of time in seconds causes the UI to say
@@ -278,6 +279,7 @@ middleIndex will be rounded up when odd
 function stats.interquartileRange(t)
   local sortedSales = stats.GetSortedSales(t)
   local middleIndex, evenNumber = stats.getMiddleIndex(#sortedSales)
+  local quartile1, quartile3
   -- 1,2,3,4
   if evenNumber then
     quartile1 = stats.median(sortedSales, 1, middleIndex)
@@ -856,6 +858,7 @@ graphInfo
 function MasterMerchant:AvgPricePriceTip(avgPrice, numSales, numItems, numDays, chatText, numVouchers)
   -- TODO add Bonanza price
   local formatedPriceString = nil
+  local tipFormat
   if numVouchers == 0 then
     tipFormat = GetString(MM_GRAPHTIP_FORMAT_MULTI)
     -- change only when needed
@@ -1117,7 +1120,7 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
       if (resultLink ~= "") then
         MasterMerchant.recipeData[resultLink] = itemLink
         MasterMerchant.recipeCount = MasterMerchant.recipeCount + 1
-        --DEBUG
+        --debug
         --d(MasterMerchant.recipeCount .. ') ' .. itemLink .. ' --> ' .. resultLink  .. ' ('  .. recNumber .. ')')
       end
     end
@@ -1251,7 +1254,7 @@ function MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect)
       }
     end
 
-    --DEBUG
+    --debug
     --d(glyph)
     --d(MasterMerchant.virtualRecipe[glyph])
 
@@ -1723,7 +1726,7 @@ function MasterMerchant:SalesStats(statsDays)
   -- Loop through the player's sales and create the stats as appropriate
   -- (everything or everything with a timestamp after statsDaysEpoch)
 
-  indexes = sr_index[internal.PlayerSpecialText]
+  local indexes = sr_index[internal.PlayerSpecialText]
   if indexes then
     for i = 1, #indexes do
       local itemID = indexes[i][1]
@@ -3512,7 +3515,7 @@ end
 
 local function CompleteMasterMerchantSetup()
   MasterMerchant:dm("Debug", "CompleteMasterMerchantSetup")
-
+  local theFragment
   -- Add the MasterMerchant window to the mail and trading house scenes if the
   -- player's settings indicate they want that behavior
   MasterMerchant.salesUiFragment = ZO_FadeSceneFragment:New(MasterMerchantWindow)
@@ -3799,6 +3802,14 @@ function MasterMerchant:FirstInitialize()
     self.savedVariables.blacklist = nil
   end
 
+  TRADING_HOUSE_SCENE:RegisterCallback("StateChange", function(oldState, newState)
+    if newState == SCENE_SHOWING then
+      MasterMerchant.tradingHouseOpened = true
+    elseif newState == SCENE_HIDDEN then
+      MasterMerchant.tradingHouseOpened = false
+    end
+  end)
+
   -- MoveFromOldAcctSavedVariables STEP Removed
   -- AdjustItemsAllContainers() STEP Removed
   -- ReIndexSalesAllContainers() STEP Removed
@@ -3977,24 +3988,53 @@ function MasterMerchant:FirstInitialize()
   -- Set up purchase tracking, if also installed
   self:initPurchaseTracking()
 
+  -- Hook for Writ and Vendor icons
+  MasterMerchant:InitializeHooks()
+
+  -- Item List Sort management
   --Watch inventory listings
   for _, i in pairs(PLAYER_INVENTORY.inventories) do
     local listView = i.listView
     if listView and listView.dataTypes and listView.dataTypes[1] then
       local originalCall = listView.dataTypes[1].setupCallback
 
-      listView.dataTypes[1].setupCallback = function(control, slot)
-        originalCall(control, slot)
-        self:SwitchUnitPrice(control, slot)
+      listView.dataTypes[1].setupCallback = function(rowControl, slot)
+        originalCall(rowControl, slot)
+        self:SetInventorySellPriceText(rowControl, slot)
       end
     end
   end
 
   -- Watch Decon list
   local originalCall = ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback
-  SecurePostHook(ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1], "setupCallback", function(control, slot)
-    originalCall(control, slot)
-    self:SwitchUnitPrice(control, slot)
+  SecurePostHook(ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1], "setupCallback", function(rowControl, slot)
+    originalCall(rowControl, slot)
+    self:SetInventorySellPriceText(rowControl, slot)
+  end)
+
+  SecurePostHook(ZO_SharedInventoryManager, "CreateOrUpdateSlotData", function(sharedInventoryPointer, existingSlotData, bagId, slotIndex, isNewItem)
+    if existingSlotData then
+      existingSlotData = MasterMerchant:ReplaceInventorySellPrice(existingSlotData)
+    end
+  end)
+  SecurePostHook(ZO_SharedInventoryManager, "HandleSlotCreationOrUpdate", function(sharedInventoryPointer, bagCache, bagId, slotIndex, isNewItem, isLastUpdateForMessage)
+    local slot = bagCache[slotIndex]
+    if slot then
+      slot = MasterMerchant:ReplaceInventorySellPrice(slot)
+      bagCache[slotIndex] = slot
+    end
+  end)
+  ZO_PreHook(ZO_SharedInventoryManager, "CreateOrUpdateSlotData", function(sharedInventoryPointer, existingSlotData, bagId, slotIndex, isNewItem)
+    if existingSlotData then
+      existingSlotData = MasterMerchant:ReplaceInventorySellPrice(existingSlotData)
+    end
+  end)
+  ZO_PreHook(ZO_SharedInventoryManager, "HandleSlotCreationOrUpdate", function(sharedInventoryPointer, bagCache, bagId, slotIndex, isNewItem, isLastUpdateForMessage)
+    local slot = bagCache[slotIndex]
+    if slot then
+      slot = MasterMerchant:ReplaceInventorySellPrice(slot)
+      bagCache[slotIndex] = slot
+    end
   end)
 end
 
@@ -4023,8 +4063,8 @@ function MasterMerchant:SecondInitialize()
   BuildGuildNameLookup Removed
   TruncateHistory Removed
   TruncateHistory iterateOverSalesData Removed
-  InitItemHistory Removed
-  InitItemHistory iterateOverSalesData Removed
+  InitSalesHistory Removed
+  InitSalesHistory iterateOverSalesData Removed
   indexHistoryTables Removed
   indexHistoryTables iterateOverSalesData Removed
   InitScrollLists
@@ -4094,44 +4134,69 @@ local function GetAveragePrice(itemLink)
   return averagePrice
 end
 
-function MasterMerchant:SwitchUnitPrice(control, slot)
-  if not MasterMerchant.isInitialized then return end
-  local sellPriceControl = control:GetNamedChild("SellPrice")
-  if not sellPriceControl then return end
-  local controlData = control.dataEntry.data
-  if not MasterMerchant.systemSavedVariables.replaceInventoryValues and not controlData.hasAlteredPrice then return end
+function MasterMerchant:ReplaceInventorySellPrice(slot)
+  if not MasterMerchant.isInitialized then return slot end
 
-  local bagId = controlData.bagId
-  local slotIndex = controlData.slotIndex
-  local itemLink = GetItemLink(bagId, slotIndex)
-  if not itemLink then return end
-
-  if not MasterMerchant.systemSavedVariables.replaceInventoryValues and controlData.hasAlteredPrice then
-    local _, sellPrice = GetItemLinkInfo(itemLink)
-    controlData.hasAlteredPrice = nil
-    controlData.sellPrice = sellPrice
-    controlData.stackSellPrice = sellPrice * controlData.stackCount
-    sellPriceControl:SetText(controlData.stackSellPrice)
-    return
+  if not MasterMerchant.systemSavedVariables.replaceInventoryValues then
+    local _, sellPrice = GetItemLinkInfo(slot.lnk)
+    slot.hasAlteredPrice = nil
+    slot.sellPrice = sellPrice
+    slot.stackSellPrice = sellPrice * slot.stackCount
+    return slot
   end
 
-  local averagePrice = GetAveragePrice(itemLink)
-  local newSellPrice
+  local averagePrice = GetAveragePrice(slot.lnk)
 
   if MasterMerchant.systemSavedVariables.replaceInventoryValues and averagePrice then
-    controlData.hasAlteredPrice = true
-    controlData.sellPrice = averagePrice
-    controlData.stackSellPrice = averagePrice * controlData.stackCount
+    slot.hasAlteredPrice = true
+    slot.sellPrice = averagePrice
+    slot.stackSellPrice = averagePrice * slot.stackCount
+    return slot
+  end
+  -- item had no averagePrice
+  return slot
+end
 
-    newSellPrice = MasterMerchant.LocalizedNumber(controlData.stackSellPrice)
+function MasterMerchant:SetInventorySellPriceText(rowControl, slot)
+  if not MasterMerchant.isInitialized then return end
+  local sellPriceControl = rowControl:GetNamedChild("SellPrice")
+  if not sellPriceControl then return end
+
+  --[[ This is here because when MasterMerchant is not Initialized
+  none of the rows will have hasAlteredPrice. Even after
+  MasterMerchant is Initialized and you open the inventory
+  for the first time hasAlteredPrice will not be present.
+
+  This is also where because if you have it enabled and you disable it
+  then all the rows are set with the altered price still.
+
+  The only thing I think I could do is refresh all the inventory
+  lists but that could cause lag at startup
+  ]]--
+  if MasterMerchant.systemSavedVariables.replaceInventoryValues and not slot.hasAlteredPrice then
+    slot = MasterMerchant:ReplaceInventorySellPrice(slot)
+  end
+  if not MasterMerchant.systemSavedVariables.replaceInventoryValues and slot.hasAlteredPrice then
+    local _, sellPrice = GetItemLinkInfo(slot.lnk)
+    slot.hasAlteredPrice = nil
+    slot.sellPrice = sellPrice
+    slot.stackSellPrice = sellPrice * slot.stackCount
+  end
+
+  local newSellPrice
+  if not slot.hasAlteredPrice then
+    local _, sellPrice = GetItemLinkInfo(slot.lnk)
+    newSellPrice = sellPrice * slot.stackCount
+    sellPriceControl:SetText(newSellPrice)
+  elseif slot.hasAlteredPrice then
+    newSellPrice = MasterMerchant.LocalizedNumber(slot.sellPrice * slot.stackCount)
     if MasterMerchant.systemSavedVariables.showUnitPrice then
-      newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MasterMerchant.coinIcon
+      newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(slot.sellPrice) .. '|r' .. MasterMerchant.coinIcon
     else
       newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon
     end
     sellPriceControl:SetText(newSellPrice)
   end
-
 end
 
 function MasterMerchant:InitScrollLists()

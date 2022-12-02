@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.46'
+MasterMerchant.version = '3.7.47'
 
 local mmInternal = {}
 _G["MasterMerchant_Internal"] = mmInternal
@@ -143,7 +143,9 @@ MasterMerchant.purchasesViewSize = 'purchases_vs'
 MasterMerchant.reportsViewSize = 'reports_vs'
 
 -- default is self
-MasterMerchant.markersHooked = false
+MasterMerchant.tradingHouseBrowseMarkerHooked = false
+MasterMerchant.inventoryMarkersHooked = false
+MasterMerchant.tradingHouseOpened = false
 MasterMerchant.wwDetected = false
 MasterMerchant.mwimDetected = false
 MasterMerchant.salesViewMode = MasterMerchant.personalSalesViewMode
@@ -198,6 +200,14 @@ MM_DEAL_VALUE_REASONABLE = 2
 MM_DEAL_VALUE_GOOD = 3
 MM_DEAL_VALUE_GREAT = 4
 MM_DEAL_VALUE_BUYIT = 5
+
+-- LibExecutionQueue wait times
+MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT = 20
+MM_WAIT_TIME_IN_MILLISECONDS_SHORT = 50 -- longer then 50 seems to increase load times
+MM_WAIT_TIME_IN_MILLISECONDS_MEDIUM = 60
+MM_WAIT_TIME_IN_MILLISECONDS_LONG = 120
+MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE = 1000
+MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP = 500
 
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2

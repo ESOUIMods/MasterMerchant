@@ -21,7 +21,6 @@ function internal:ImportShoppingList()
     return
   end
   internal:dm("Debug", "ImportShoppingList")
-  shoppingList = {}
 
   --[[
   ["Buyer"] = 1,
@@ -61,7 +60,7 @@ function internal:ImportMasterMerchantSales()
 
   local prefunc = function(extraData)
     extraData.start = GetTimeStamp()
-    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
+    extraData.checkMilliseconds = MM_WAIT_TIME_IN_MILLISECONDS_MEDIUM
     extraData.eventIdIsNumber = 0
     extraData.badItemLinkCount = 0
     extraData.wasAltered = false
@@ -97,7 +96,7 @@ function internal:ImportMasterMerchantSales()
       internal.guildItems = {}
       internal.myItems = {}
       LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
+      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
@@ -118,7 +117,7 @@ end
 function internal:ImportATTSales()
   local prefunc = function(extraData)
     extraData.start = GetTimeStamp()
-    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
+    extraData.checkMilliseconds = MM_WAIT_TIME_IN_MILLISECONDS_MEDIUM
     extraData.eventIdIsNumber = 0
     extraData.badItemLinkCount = 0
     extraData.wasAltered = false
@@ -154,7 +153,7 @@ function internal:ImportATTSales()
       internal.guildItems = {}
       internal.myItems = {}
       LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitItemHistory() end, 'InitItemHistory')
+      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
       LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
@@ -178,7 +177,7 @@ end
 function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
   extraData.versionCount = (extraData.versionCount or 0)
   extraData.idCount = (extraData.idCount or 0)
-  extraData.checkMilliseconds = (extraData.checkMilliseconds or 20)
+  extraData.checkMilliseconds = (extraData.checkMilliseconds or MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT)
 
   if prefunc then
     prefunc(extraData)
@@ -293,7 +292,7 @@ end
 function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
   extraData.versionCount = (extraData.versionCount or 0)
   extraData.idCount = (extraData.idCount or 0)
-  extraData.checkMilliseconds = (extraData.checkMilliseconds or 20)
+  extraData.checkMilliseconds = (extraData.checkMilliseconds or MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT)
 
   if prefunc then
     prefunc(extraData)
@@ -563,7 +562,7 @@ end
 
 -- /script LibGuildStore_Internal:CompareItemIds(GS00DataSavedVariables)
 -- loops over item IDs and reports duplicates
--- DEBUG
+-- DEBUG CompareSalesIds
 function internal:CompareSalesIds()
   internal:dm("Debug", "CompareSalesIds")
   local itemIds = {}

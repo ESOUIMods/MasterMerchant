@@ -72,6 +72,12 @@ function internal:addPostedItem(theEvent)
       sales = { newEvent } }
     --internal:dm("Debug", newEvent)
   end
+  posted_items_data[theIID][itemIndex].wasAltered = true
+  if posted_items_data[theIID][itemIndex] and posted_items_data[theIID][itemIndex].totalCount then
+    posted_items_data[theIID][itemIndex].totalCount = posted_items_data[theIID][itemIndex].totalCount + 1
+  else
+    posted_items_data[theIID][itemIndex].totalCount = 1
+  end
 
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
@@ -114,7 +120,7 @@ end
 function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
   extraData.versionCount = (extraData.versionCount or 0)
   extraData.idCount = (extraData.idCount or 0)
-  extraData.checkMilliseconds = (extraData.checkMilliseconds or 20)
+  extraData.checkMilliseconds = (extraData.checkMilliseconds or MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT)
 
   if prefunc then
     prefunc(extraData)
@@ -122,6 +128,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
 
   local checkTime = GetGameTimeMilliseconds()
   local versionlist
+  local itemLink
   if itemid == nil then
     itemid, versionlist = next(posted_items_data, itemid)
     extraData.versionRemoved = false
@@ -138,6 +145,8 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
     else
       versiondata = versionlist[versionid]
     end
+    itemLink = nil
+    --[[ begin loop over ['x:x:x:x:x'] ]]--
     while (versionid ~= nil) do
       if versiondata['sales'] then
         local saledata
@@ -146,7 +155,17 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
         else
           saledata = versiondata['sales'][saleid]
         end
+        if not itemLink and saledata and saledata["itemLink"] then itemLink = internal:GetItemLinkByIndex(saledata["itemLink"]) end
+        --[[ begin loop over ['sales'] ]]--
         while (saleid ~= nil) do
+          --[[skipTheRest is true here from Truncate Sales because in that function
+          you are looping over all the sales. Normally you are not and only processing
+          a single sale. Therefore when skipTheRest is false you use:
+
+          saleid, saledata = next(versiondata['sales'], saleid)
+
+          to get the next sale and process it
+          ]]--
           local skipTheRest = loopfunc(itemid, versionid, versiondata, saleid, saledata, extraData)
           extraData.saleRemoved = extraData.saleRemoved or (versiondata['sales'][saleid] == nil)
           if skipTheRest then
@@ -161,49 +180,52 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
             return
           end
         end
+        --[[ end of loop over ['sales'] ]]--
 
         if extraData.saleRemoved then
           local sales = {}
+          local salesCount = 0
+          extraData.newSalesCount = nil
           for _, sd in pairs(versiondata['sales']) do
             if (sd ~= nil) and (type(sd) == 'table') then
               table.insert(sales, sd)
+              salesCount = salesCount + 1
             end
           end
           versiondata['sales'] = sales
+          versiondata["totalCount"] = salesCount
+        end
+
+        if extraData.newSalesCount then
+          versiondata["totalCount"] = extraData.newSalesCount
         end
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (internal:NonContiguousNonNilCount(versiondata['sales']) < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
+      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (versiondata["totalCount"] < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount = (extraData.versionCount or 0) + 1
         versionlist[versionid] = nil
         extraData.versionRemoved = true
       end
 
-      if LibGuildStore_SavedVariables["updateAdditionalText"] then
-        local itemData = nil
-        for _, sd in pairs(versiondata['sales']) do
-          if (sd ~= nil) and (type(sd) == 'table') then
-            itemData = sd
-            break
-          end
-        end
-
-        if itemData then
-          itemLink = internal:GetItemLinkByIndex(itemData["itemLink"])
-          if itemLink then
-            versiondata['itemAdderText'] = internal:AddSearchToItem(itemLink)
-            versiondata['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-          end
+      -- Sharlikran
+      if LibGuildStore_SavedVariables["updateAdditionalText"] and not extraData.saleRemoved then
+        if itemLink then
+          versiondata['itemAdderText'] = internal:AddSearchToItem(itemLink)
+          versiondata['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
         end
       end
-      if extraData.wasAltered then
+
+      -- Sharlikran
+      if extraData.wasAltered and not extraData.saleRemoved then
         versiondata["wasAltered"] = true
         extraData.wasAltered = false
       end
+
       -- Go onto the next Version
       versionid, versiondata = next(versionlist, versionid)
       extraData.saleRemoved = false
+      extraData.newSalesCount = nil
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
@@ -211,6 +233,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
         return
       end
     end
+    --[[ end loop over ['x:x:x:x:x'] ]]--
 
     if extraData.versionRemoved then
       local versions = {}
@@ -222,6 +245,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
       posted_items_data[itemid] = versions
     end
 
+    -- If we just deleted everything, clear the bucket out
     if (posted_items_data[itemid] ~= nil and ((internal:NonContiguousNonNilCount(versionlist) < 1) or (type(itemid) ~= 'number'))) then
       extraData.idCount = (extraData.idCount or 0) + 1
       posted_items_data[itemid] = nil
@@ -247,6 +271,7 @@ function internal:TruncatePostedItemsHistory()
   local prefunc = function(extraData)
     extraData.start = GetTimeStamp()
     extraData.deleteCount = 0
+    extraData.newSalesCount = 0
     extraData.epochBack = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepthPI"])
     extraData.wasAltered = false
 
@@ -256,7 +281,7 @@ function internal:TruncatePostedItemsHistory()
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
 
     local salesDeleted = 0
-    salesCount = versiondata.totalCount
+    local salesCount = versiondata.totalCount
     if salesCount == 0 then
       versiondata['sales'] = {}
       extraData.saleRemoved = false
@@ -272,9 +297,11 @@ function internal:TruncatePostedItemsHistory()
         versiondata['sales'][salesId] = nil
         salesDeleted = salesDeleted + 1
         extraData.wasAltered = true
+        salesCount = salesCount - 1
       end
     end
     extraData.deleteCount = extraData.deleteCount + salesDeleted
+    extraData.newSalesCount = salesCount
     --[[ `for saleid, saledata in salesDataTable do` is not a loop
     to Lua so we can not get the oldest time of the first element
     and break. Mark the list altered and clean up in RenewExtraData.
@@ -306,7 +333,7 @@ function internal:IndexPostedItemsData()
 
   local prefunc = function(extraData)
     extraData.start = GetTimeStamp()
-    extraData.checkMilliseconds = ZO_ONE_MINUTE_IN_SECONDS
+    extraData.checkMilliseconds = MM_WAIT_TIME_IN_MILLISECONDS_SHORT
     extraData.indexCount = 0
     extraData.wordsIndexCount = 0
     extraData.wasAltered = false

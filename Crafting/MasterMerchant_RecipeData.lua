@@ -3228,8 +3228,8 @@ function MasterMerchant:parseTable()
   for k, v in pairs(linkTable) do
     local leftValue = GetItemLinkItemId(k)
     local rightValue = GetItemLinkItemId(v)
-    result = rightValue - leftValue
-    stringResult = string.format("[%s] = %s,", leftValue, result)
+    local result = rightValue - leftValue
+    local stringResult = string.format("[%s] = %s,", leftValue, result)
     table.insert(MasterMerchant.systemSavedVariables.parseTable, stringResult)
   end
 end

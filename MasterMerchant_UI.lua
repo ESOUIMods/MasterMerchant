@@ -570,6 +570,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   end
 
   -- Guild cell
+  local guildString = ""
   if data[9] then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. data[1] else guildString = '     ' .. data[1] end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
@@ -3866,7 +3867,7 @@ function MasterMerchant:GetMeetsRequirements(itemLink)
   return hasKnowledge, hasMaterials
 end
 
-function MasterMerchant:ToggleWritMarker(rowControl, slot)
+function MasterMerchant:ToggleWritMarkerBrowseResults(rowControl, slot)
   local markerControl = rowControl:GetNamedChild(MasterMerchant.name .. "Writ")
   local rData = rowControl.dataEntry and rowControl.dataEntry.data or nil
   local itemLink = rData and rData.itemLink or nil
@@ -3892,6 +3893,34 @@ function MasterMerchant:ToggleWritMarker(rowControl, slot)
   else markerControl:SetHidden(true) end
 end
 
+function MasterMerchant:ToggleWritMarkerInventoryList(rowControl, slot)
+  local markerControl = rowControl:GetNamedChild(MasterMerchant.name .. "Writ")
+  local relativeToPoint = rowControl:GetNamedChild("Button")
+  local bagId = rowControl.dataEntry.data.bagId
+  local slotIndex = rowControl.dataEntry.data.slotIndex
+  local itemLink = GetItemLink(bagId, slotIndex)
+  local hasKnowledge, hasMaterials = MasterMerchant:GetMeetsRequirements(itemLink)
+
+  if (not markerControl) then
+    if not hasKnowledge then return end
+    markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name .. "Writ", rowControl, CT_TEXTURE)
+    markerControl:SetDimensions(22, 22)
+    markerControl:SetInheritScale(false)
+    markerControl:SetAnchor(LEFT, relativeToPoint, LEFT)
+    markerControl:SetDrawTier(DT_HIGH)
+  end
+
+  if hasKnowledge and hasMaterials and MasterMerchant.tradingHouseOpened then
+    markerControl:SetTexture("MasterMerchant/img/does_meet.dds")
+    markerControl:SetColor(0.17, 0.93, 0.17, 1)
+    markerControl:SetHidden(false)
+  elseif hasKnowledge and not hasMaterials and MasterMerchant.tradingHouseOpened then
+    markerControl:SetTexture("esoui/art/miscellaneous/help_icon.dds")
+    markerControl:SetColor(1, 0.99, 0, 1)
+    markerControl:SetHidden(false)
+  else markerControl:SetHidden(true) end
+end
+
 function MasterMerchant:ToggleVendorMarker(rowControl, slot)
   local markerControl = rowControl:GetNamedChild(MasterMerchant.name .. "Warn")
   local relativeToPoint = rowControl:GetNamedChild("SellPrice")
@@ -3899,6 +3928,9 @@ function MasterMerchant:ToggleVendorMarker(rowControl, slot)
   local vendorWarningPricing = nil
   local rData = rowControl.dataEntry and rowControl.dataEntry.data or nil
   local itemLink = rData and rData.itemLink or nil
+  if not itemLink and rowControl.slotIndex then
+    itemLink = GetItemLink(rowControl.bagId, rowControl.slotIndex)
+  end
   local purchasePrice = rData and rData.purchasePrice or nil
   local stackCount = rData and rData.stackCount or nil
   local itemType = GetItemLinkItemType(itemLink)
@@ -3930,18 +3962,28 @@ function MasterMerchant:ToggleVendorMarker(rowControl, slot)
   end
 end
 
-do
-  SecurePostHook(TRADING_HOUSE, "OpenTradingHouse", function()
-    if (not MasterMerchant.markersHooked) then
+function MasterMerchant:InitializeHooks()
+  if (not MasterMerchant.tradingHouseBrowseMarkerHooked) then
+    SecurePostHook(TRADING_HOUSE, "OpenTradingHouse", function()
       local oldCallback = ZO_TradingHouseBrowseItemsRightPaneSearchResults.dataTypes[1].setupCallback
-      MasterMerchant.markersHooked = true
       ZO_TradingHouseBrowseItemsRightPaneSearchResults.dataTypes[1].setupCallback = function(rowControl, slot)
         oldCallback(rowControl, slot)
         MasterMerchant:ToggleVendorMarker(rowControl, slot)
         if MasterMerchant.wwDetected and not MasterMerchant.mwimDetected then
-          MasterMerchant:ToggleWritMarker(rowControl, slot)
+          MasterMerchant:ToggleWritMarkerBrowseResults(rowControl, slot)
         end
       end
-    end
-  end)
+    end)
+  end
+  if (not MasterMerchant.inventoryMarkersHooked) then
+    local originalCall = ZO_PlayerInventoryList.dataTypes[1].setupCallback
+    SecurePostHook(ZO_PlayerInventoryList.dataTypes[1], "setupCallback", function(rowControl, slot)
+      originalCall(rowControl, slot)
+      if MasterMerchant.wwDetected and not MasterMerchant.mwimDetected then
+        MasterMerchant:ToggleWritMarkerInventoryList(rowControl, slot)
+      end
+    end)
+  end
+  MasterMerchant.tradingHouseBrowseMarkerHooked = true
+  MasterMerchant.inventoryMarkersHooked = true
 end

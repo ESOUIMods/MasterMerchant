@@ -100,5 +100,10 @@ end
 
 function MasterMerchant:SwitchPrice(control, slot)
   GenerateLogMessage("SwitchPrice")
-  MasterMerchant:SwitchUnitPrice(control, slot)
+  return
+end
+
+function MasterMerchant:SwitchUnitPrice(control, slot)
+  GenerateLogMessage("SwitchUnitPrice")
+  return
 end

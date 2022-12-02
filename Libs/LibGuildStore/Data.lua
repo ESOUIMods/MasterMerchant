@@ -356,13 +356,13 @@ function internal:AddSalesTableData(key, value)
   end
 end
 
-function internal:QueueGuildHistoryListener(guildId)
+function internal:QueueGuildHistoryListener(guildId, guildIndex)
   internal:SetupGuildHistoryListener(guildId)
   if not internal.LibHistoireListenerReady[guildId] then
     internal:dm("Debug", "LibHistoireListener not ready")
-    zo_callLater(function() internal:QueueGuildHistoryListener(guildId) end, 1000)
+    zo_callLater(function() internal:QueueGuildHistoryListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE * guildIndex))
   else
-    internal:SetupListener(guildId)
+    zo_callLater(function() internal:SetupListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP * guildIndex))
   end
 end
 
@@ -584,7 +584,7 @@ function internal:processGuildStore()
     internal:addTraderInfo(guildId, guildName)
     local duplicate = internal:CheckForDuplicateListings(theEvent.itemLink, theEvent.id, theEvent.timestamp)
     if not duplicate then
-      added = internal:addListingData(theEvent)
+      local added = internal:addListingData(theEvent)
       MasterMerchant.listIsDirty[LISTINGS] = true
     end
   end
