@@ -7,6 +7,29 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.49
+
+- Updated replace inventory pricing routines and restored displaying the unit price
+- Updates Include previous changes
+
+NOTE: Still researching how to refresh the inventory so you don't have to scroll prior to sorting
+
+## ChangeLog 3.7.48
+
+- Reverted to 3.7.44
+- Removes all previous changes to altering inventory prices including showing Unit Price
+
+## ChangeLog 3.7.47
+
+- Minor update to replacing prices in inventory. It should behave slightly better but may affect performance.
+- Updated Truncation routines and the iterate over records routines in general
+
+## ChangeLog 3.7.46
+
+- Restored ability to sort inventory by value when altering the inventory price
+
+NOTE: Previously to sort the inventory or the craft bag properly you would have to scroll through the entire list. 3.7.45 inadvertently removed that functionality. While the sorting is restored it will behave the same as before. I am investigating a better way to resolve both sorting and removing the altered inventory prices.
+
 ## ChangeLog 3.7.45
 
 - Fixed long standing issue when replacing the inventory price that the price remained after disabling the feature

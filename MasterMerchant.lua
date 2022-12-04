@@ -920,18 +920,28 @@ function MasterMerchant:BonanzaPriceTip(bonanzaPrice, bonanzaSales, bonanzaCount
   return formatedBonanzaString
 end
 
+--[[
+	priceInfo.Avg = avg
+	priceInfo.Max = max
+	priceInfo.Min = min
+	priceInfo.EntryCount = entryCount -- listings
+	priceInfo.AmountCount = amountCount -- items
+	priceInfo.SuggestedPrice = suggestedPrice
+
+]]--
 function MasterMerchant:TTCPriceTip(itemLink)
   local formatedTTCString = nil
-  local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
+  local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+  local suggestedPrice = 0
+  local averagePrice = 0
   if priceStats then
-    local suggestedPriceValue = priceStats.SuggestedPrice
+    if priceStats and priceStats.Avg then averagePrice = priceStats.Avg end
+    if priceStats and priceStats.SuggestedPrice then suggestedPrice = priceStats.SuggestedPrice end
     if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
-      suggestedPriceValue = priceStats.SuggestedPrice * 1.25
+      suggestedPrice = suggestedPrice * 1.25
     end
-    local suggestedPriceString = self.LocalizedNumber(suggestedPriceValue)
-    local avgPriceString = self.LocalizedNumber(priceStats.Avg)
-    suggestedPriceString = suggestedPriceString .. MasterMerchant.coinIcon
-    avgPriceString = avgPriceString .. MasterMerchant.coinIcon
+    local suggestedPriceString = self.LocalizedNumber(suggestedPrice) .. MasterMerchant.coinIcon
+    local avgPriceString = self.LocalizedNumber(averagePrice) .. MasterMerchant.coinIcon
     formatedTTCString = string.format(GetString(MM_TTC_ALT_TIP), priceStats.EntryCount, suggestedPriceString, avgPriceString)
   else
     formatedTTCString = GetString(MM_NO_TTC_PRICE)
@@ -1296,6 +1306,7 @@ function MasterMerchant:GetTiplineInfo(itemLink)
   local bonanzaPriceNumListingsString = 0 -- statsInfo.bonanzaSales
   local bonanzaPriceNumItems = 0 -- statsInfo.bonanzaCount
 
+  local ttcPriceInfo = nil
   local ttcSuggestedPriceString = nil
   local ttcAvgPriceString = nil
 
@@ -1335,13 +1346,14 @@ function MasterMerchant:GetTiplineInfo(itemLink)
   --MasterMerchant:dm("Debug", bonanzaPriceNumListingsString)
   --MasterMerchant:dm("Debug", bonanzaPriceNumItems)
 
-  local ttcPriceInfo = nil
   if TamrielTradeCentre then
-    ttcPriceInfo = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
+    ttcPriceInfo = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
   end
-  if ttcPriceInfo then
-    ttcSuggestedPriceString = self.LocalizedNumber(ttcPriceInfo.SuggestedPrice)
+  if ttcPriceInfo.Avg then
     ttcAvgPriceString = self.LocalizedNumber(ttcPriceInfo.Avg)
+  end
+  if ttcPriceInfo.SuggestedPrice then
+    ttcSuggestedPriceString = self.LocalizedNumber(ttcPriceInfo.SuggestedPrice)
   end
   --MasterMerchant:dm("Debug", ttcSuggestedPriceString)
   --MasterMerchant:dm("Debug", ttcAvgPriceString)
@@ -3810,6 +3822,17 @@ function MasterMerchant:FirstInitialize()
     end
   end)
 
+  --[[
+  GAMEPAD_VENDOR_SCENE:RegisterCallback("StateChange", function(oldState, newState)
+  MasterMerchant.a1_test = "Vendor Scene"
+  MasterMerchant.a2_test = newState
+  MasterMerchant.a3_test = oldState
+    if newState == SCENE_SHOWING then
+      ZO_SharedInventoryManager:PerformFullUpdateOnBagCache(BAG_BACKPACK)
+    end
+  end)
+  ]]--
+
   -- MoveFromOldAcctSavedVariables STEP Removed
   -- AdjustItemsAllContainers() STEP Removed
   -- ReIndexSalesAllContainers() STEP Removed
@@ -3876,15 +3899,15 @@ function MasterMerchant:FirstInitialize()
   if not AwesomeGuildStore then
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_TRADING_HOUSE_PENDING_ITEM_UPDATE,
       function(eventCode, slotId, isPending)
-        if MasterMerchant.systemSavedVariables.showCalc and isPending and GetSlotStackSize(1, slotId) > 1 then
-          local theLink = GetItemLink(1, slotId, LINK_STYLE_DEFAULT)
-          local postedStats = self:GetTooltipStats(theLink, true, true)
-          MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. GetSlotStackSize(1, slotId))
+        local stackSize = GetSlotStackSize(BAG_BACKPACK, slotId)
+        if MasterMerchant.systemSavedVariables.showCalc and isPending and stackSize > 1 then
+          local theLink = GetItemLink(BAG_BACKPACK, slotId, LINK_STYLE_DEFAULT)
+          local postedStats = self:GetTooltipStats(theLink, true)
           local floorPrice = 0
           if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
+          MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. stackSize)
           MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
-          MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * GetSlotStackSize(1,
-            slotId))) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+          MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * stackSize)) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
           MasterMerchantPriceCalculator:SetHidden(false)
         else MasterMerchantPriceCalculator:SetHidden(true) end
       end)
@@ -3992,6 +4015,7 @@ function MasterMerchant:FirstInitialize()
   MasterMerchant:InitializeHooks()
 
   -- Item List Sort management
+  ZO_SharedInventoryManager.CreateOrUpdateSlotData = MasterMerchant.CreateOrUpdateSlotData
   --Watch inventory listings
   for _, i in pairs(PLAYER_INVENTORY.inventories) do
     local listView = i.listView
@@ -4000,7 +4024,7 @@ function MasterMerchant:FirstInitialize()
 
       listView.dataTypes[1].setupCallback = function(rowControl, slot)
         originalCall(rowControl, slot)
-        self:SetInventorySellPriceText(rowControl, slot)
+        MasterMerchant:SetInventorySellPriceText(rowControl, slot)
       end
     end
   end
@@ -4009,33 +4033,45 @@ function MasterMerchant:FirstInitialize()
   local originalCall = ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback
   SecurePostHook(ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1], "setupCallback", function(rowControl, slot)
     originalCall(rowControl, slot)
-    self:SetInventorySellPriceText(rowControl, slot)
+    MasterMerchant:SetInventorySellPriceText(rowControl, slot)
   end)
 
-  SecurePostHook(ZO_SharedInventoryManager, "CreateOrUpdateSlotData", function(sharedInventoryPointer, existingSlotData, bagId, slotIndex, isNewItem)
-    if existingSlotData then
-      existingSlotData = MasterMerchant:ReplaceInventorySellPrice(existingSlotData)
+  -- With nothing only the item removed from teh craft bag updates, with the call above - not slot and hasItemInSlotNow
+  --[[
+  -- this one updated the entire inventory once I removed something from the craft bag, but not the new iten in the inventory
+  -- Stowing it did not update the craft bag
+  ZO_PreHook(ZO_SharedInventoryManager, "CreateOrUpdateSlotData", function(sharedInventoryPointer, existingSlotData, bagId, slotIndex, isNewItem)
+    local canReplacePrice = MasterMerchant.isInitialized and MasterMerchant.systemSavedVariables.replaceInventoryValues and existingSlotData and not existingSlotData.hasAlteredPrice
+    if canReplacePrice then
+      existingSlotData = MasterMerchant:ReplaceInventorySellPriceFromHookOrCallback(existingSlotData)
     end
   end)
+
+  -- this one updated the item in the inventory
   SecurePostHook(ZO_SharedInventoryManager, "HandleSlotCreationOrUpdate", function(sharedInventoryPointer, bagCache, bagId, slotIndex, isNewItem, isLastUpdateForMessage)
     local slot = bagCache[slotIndex]
-    if slot then
-      slot = MasterMerchant:ReplaceInventorySellPrice(slot)
+    local canReplacePrice = MasterMerchant.isInitialized and MasterMerchant.systemSavedVariables.replaceInventoryValues and slot and not slot.hasAlteredPrice
+    if canReplacePrice then
+      slot = MasterMerchant:ReplaceInventorySellPriceFromHookOrCallback(slot)
       bagCache[slotIndex] = slot
     end
   end)
-  ZO_PreHook(ZO_SharedInventoryManager, "CreateOrUpdateSlotData", function(sharedInventoryPointer, existingSlotData, bagId, slotIndex, isNewItem)
-    if existingSlotData then
+
+  ZO_PreHook(ZO_SharedInventoryManager, "HandleSlotCreationOrUpdate", function(sharedInventoryPointer, bagCache, bagId, slotIndex, isNewItem, isLastUpdateForMessage)
+    local slot = bagCache[slotIndex]
+    local canReplacePrice = MasterMerchant.isInitialized and MasterMerchant.systemSavedVariables.replaceInventoryValues and existingSlotData and not existingSlotData.hasAlteredPrice
+    if canReplacePrice then
+      slot = MasterMerchant:ReplaceInventorySellPriceFromHookOrCallback(slot)
+      bagCache[slotIndex] = slot
+    end
+  end)
+  SecurePostHook(ZO_SharedInventoryManager, "CreateOrUpdateSlotData", function(sharedInventoryPointer, existingSlotData, bagId, slotIndex, isNewItem)
+    local canReplacePrice = MasterMerchant.isInitialized and MasterMerchant.systemSavedVariables.replaceInventoryValues and existingSlotData and not existingSlotData.hasAlteredPrice
+    if canReplacePrice then
       existingSlotData = MasterMerchant:ReplaceInventorySellPrice(existingSlotData)
     end
   end)
-  ZO_PreHook(ZO_SharedInventoryManager, "HandleSlotCreationOrUpdate", function(sharedInventoryPointer, bagCache, bagId, slotIndex, isNewItem, isLastUpdateForMessage)
-    local slot = bagCache[slotIndex]
-    if slot then
-      slot = MasterMerchant:ReplaceInventorySellPrice(slot)
-      bagCache[slotIndex] = slot
-    end
-  end)
+  ]]--
 end
 
 function MasterMerchant:SecondInitialize()
@@ -4102,103 +4138,6 @@ function MasterMerchant:SecondInitialize()
   end, 10)
 end
 
-local function GetAveragePrice(itemLink)
-  local averagePrice
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_MM_AVERAGE then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, true)
-    if tipStats.avgPrice then
-      averagePrice = tipStats.avgPrice
-    end
-  end
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_BONANZA then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, false, true)
-    if tipStats.bonanzaPrice then
-      averagePrice = tipStats.bonanzaPrice
-    end
-  end
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
-    local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-    if priceStats and priceStats.Avg > 0 then
-      averagePrice = priceStats.Avg
-    end
-  end
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
-    local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-    if priceStats and priceStats.SuggestedPrice > 0 then
-      averagePrice = priceStats.SuggestedPrice
-      if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory then
-        averagePrice = priceStats.SuggestedPrice * 1.25
-      end
-    end
-  end
-  return averagePrice
-end
-
-function MasterMerchant:ReplaceInventorySellPrice(slot)
-  if not MasterMerchant.isInitialized then return slot end
-
-  if not MasterMerchant.systemSavedVariables.replaceInventoryValues then
-    local _, sellPrice = GetItemLinkInfo(slot.lnk)
-    slot.hasAlteredPrice = nil
-    slot.sellPrice = sellPrice
-    slot.stackSellPrice = sellPrice * slot.stackCount
-    return slot
-  end
-
-  local averagePrice = GetAveragePrice(slot.lnk)
-
-  if MasterMerchant.systemSavedVariables.replaceInventoryValues and averagePrice then
-    slot.hasAlteredPrice = true
-    slot.sellPrice = averagePrice
-    slot.stackSellPrice = averagePrice * slot.stackCount
-    return slot
-  end
-  -- item had no averagePrice
-  return slot
-end
-
-function MasterMerchant:SetInventorySellPriceText(rowControl, slot)
-  if not MasterMerchant.isInitialized then return end
-  local sellPriceControl = rowControl:GetNamedChild("SellPrice")
-  if not sellPriceControl then return end
-
-  --[[ This is here because when MasterMerchant is not Initialized
-  none of the rows will have hasAlteredPrice. Even after
-  MasterMerchant is Initialized and you open the inventory
-  for the first time hasAlteredPrice will not be present.
-
-  This is also where because if you have it enabled and you disable it
-  then all the rows are set with the altered price still.
-
-  The only thing I think I could do is refresh all the inventory
-  lists but that could cause lag at startup
-  ]]--
-  if MasterMerchant.systemSavedVariables.replaceInventoryValues and not slot.hasAlteredPrice then
-    slot = MasterMerchant:ReplaceInventorySellPrice(slot)
-  end
-  if not MasterMerchant.systemSavedVariables.replaceInventoryValues and slot.hasAlteredPrice then
-    local _, sellPrice = GetItemLinkInfo(slot.lnk)
-    slot.hasAlteredPrice = nil
-    slot.sellPrice = sellPrice
-    slot.stackSellPrice = sellPrice * slot.stackCount
-  end
-
-  local newSellPrice
-  if not slot.hasAlteredPrice then
-    local _, sellPrice = GetItemLinkInfo(slot.lnk)
-    newSellPrice = sellPrice * slot.stackCount
-    sellPriceControl:SetText(newSellPrice)
-  elseif slot.hasAlteredPrice then
-    newSellPrice = MasterMerchant.LocalizedNumber(slot.sellPrice * slot.stackCount)
-    if MasterMerchant.systemSavedVariables.showUnitPrice then
-      newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(slot.sellPrice) .. '|r' .. MasterMerchant.coinIcon
-    else
-      newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon
-    end
-    sellPriceControl:SetText(newSellPrice)
-  end
-end
-
 function MasterMerchant:InitScrollLists()
   MasterMerchant:dm("Debug", "InitScrollLists")
 
@@ -4234,21 +4173,6 @@ local dealInfoCache = {}
 MasterMerchant.ClearDealInfoCache = function()
   ZO_ClearTable(dealInfoCache)
 end
---/script d({TamrielTradeCentrePrice:GetPriceInfo("|H0:item:100393:27:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")})
---/script d({MasterMerchant:GetTamrielTradeCentrePrice("|H0:item:100393:27:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")})
---[[
-  MasterMerchant.USE_TTC_SUGGESTED,
-  MasterMerchant.USE_TTC_AVERAGE,
-  MasterMerchant.USE_MM_AVERAGE,
-  MasterMerchant.USE_BONANZA,
-]]--
-function MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-  local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-  if priceStats then priceStats.Avg = priceStats.Avg or 0 end
-  if priceStats then priceStats.SuggestedPrice = priceStats.SuggestedPrice or 0 end
-  if priceStats then priceStats.EntryCount = priceStats.EntryCount or 1 end
-  return priceStats
-end
 
 -- /script d(MasterMerchant.GetDealInformation("|H1:item:182625:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", 10000, 2))
 -- /script d(MasterMerchant.GetDealInformation("|H1:item:191220:362:50:0:0:0:0:0:0:0:0:0:0:0:0:8:0:0:0:300:0|h|h", 1111, 1))
@@ -4259,34 +4183,30 @@ MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount
     local setPrice = nil
     local salesCount = 0
     if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_MM_AVERAGE then
-      local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, true)
+      local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
       if tipStats.avgPrice then
         setPrice = tipStats['avgPrice']
         salesCount = tipStats['numSales']
       end
     end
     if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_BONANZA then
-      local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
+      local tipStats = MasterMerchant:GetTooltipStats(itemLink, false)
       if tipStats.bonanzaPrice then
         setPrice = tipStats.bonanzaPrice
         salesCount = tipStats.bonanzaSales
       end
     end
     if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
-      local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-      if priceStats and priceStats.Avg > 0 then
-        setPrice = priceStats.Avg
-        salesCount = priceStats.EntryCount
-      end
+      local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+      if priceStats and priceStats.Avg and priceStats.Avg > 0 then setPrice = priceStats.Avg end
+      if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end
     end
     if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
-      local priceStats = MasterMerchant:GetTamrielTradeCentrePrice(itemLink)
-      if priceStats and priceStats.SuggestedPrice > 0 then
-        setPrice = priceStats.SuggestedPrice
-        if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
-          setPrice = priceStats.SuggestedPrice * 1.25
-        end
-        salesCount = priceStats.EntryCount
+      local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+      if priceStats and priceStats.SuggestedPrice and priceStats.SuggestedPrice > 0 then setPrice = priceStats.SuggestedPrice end
+      if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end
+      if setPrice and MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
+        setPrice = setPrice * 1.25
       end
     end
     dealInfoCache[key] = { MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stackCount) }

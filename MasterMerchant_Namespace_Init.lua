@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.47'
+MasterMerchant.version = '3.7.49'
 
 local mmInternal = {}
 _G["MasterMerchant_Internal"] = mmInternal
@@ -143,6 +143,7 @@ MasterMerchant.purchasesViewSize = 'purchases_vs'
 MasterMerchant.reportsViewSize = 'reports_vs'
 
 -- default is self
+MasterMerchant.gamepadVendorSceneRefreshed = false
 MasterMerchant.tradingHouseBrowseMarkerHooked = false
 MasterMerchant.inventoryMarkersHooked = false
 MasterMerchant.tradingHouseOpened = false

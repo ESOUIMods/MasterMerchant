@@ -1,5 +1,8 @@
-local function GetAveragePrice(itemLink)
+local function GetAveragePrice(bagId, slotIndex)
+  if not MasterMerchant.isInitialized then return end
   local averagePrice
+  if IsInGamepadPreferredMode() then return averagePrice end
+  local itemLink = GetItemLink(bagId, slotIndex, LINK_STYLE_DEFAULT)
   if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_MM_AVERAGE then
     local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
     if tipStats.avgPrice then
@@ -14,11 +17,11 @@ local function GetAveragePrice(itemLink)
   end
   if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-    averagePrice = (priceStats and priceStats.Avg and priceStats.Avg > 0) or nil
+    if priceStats and priceStats.Avg and priceStats.Avg > 0 then averagePrice = priceStats.Avg end
   end
   if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-    averagePrice = (priceStats and priceStats.SuggestedPrice and priceStats.SuggestedPrice > 0) or nil
+    if priceStats and priceStats.SuggestedPrice and priceStats.SuggestedPrice > 0 then averagePrice = priceStats.SuggestedPrice end
     if averagePrice and MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory then
       averagePrice = averagePrice * 1.25
     end
@@ -26,24 +29,36 @@ local function GetAveragePrice(itemLink)
   return averagePrice
 end
 
-function MasterMerchant:ReplaceInventorySellPrice(slot)
-  local averagePrice = GetAveragePrice(slot.lnk)
+local function GetCleanPrice(price)
+  if IsInGamepadPreferredMode() or MasterMerchant.systemSavedVariables.trimDecimals then
+    return tonumber(string.format('%.0f', price))
+  else
+    return tonumber(string.format('%.2f', price))
+  end
+end
+
+local function AddAlteredInventorySellPrice(slot, forceUpdatePrice)
+  local updatePrice = forceUpdatePrice or not slot.hasAlteredPrice or slot.alteredPriceType ~= MasterMerchant.systemSavedVariables.replacementTypeToUse
+  if not updatePrice then return slot end
+  local averagePrice = GetAveragePrice(slot.bagId, slot.slotIndex)
   if averagePrice then
+    slot.originalSellPrice = slot.sellPrice
+    slot.originalStackSellPrice = slot.stackSellPrice
+    slot.alteredSellPrice = GetCleanPrice(averagePrice)
+    slot.alteredStackSellPrice = GetCleanPrice(averagePrice * slot.stackCount)
+    slot.alteredPriceType = MasterMerchant.systemSavedVariables.replacementTypeToUse
     slot.hasAlteredPrice = true
-    slot.sellPrice = averagePrice
-    slot.stackSellPrice = averagePrice * slot.stackCount
-    return slot
   end
   -- item had no averagePrice
   return slot
 end
 
 local function GetInventoryPriceText(averagePrice, stackSellPrice)
-  local newSellPrice = MasterMerchant.LocalizedNumber(stackSellPrice)
+  local newSellPrice = ""
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MasterMerchant.coinIcon
+    newSellPrice = '|cEEEE33' .. MasterMerchant.LocalizedNumber(stackSellPrice) .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MasterMerchant.coinIcon
   else
-    newSellPrice = '|cEEEE33' .. newSellPrice .. '|r' .. MasterMerchant.coinIcon
+    newSellPrice = '|cEEEE33' .. MasterMerchant.LocalizedNumber(stackSellPrice) .. '|r' .. MasterMerchant.coinIcon
   end
   return newSellPrice
 end
@@ -52,9 +67,17 @@ function MasterMerchant:SetInventorySellPriceText(rowControl, slot)
   if not MasterMerchant.isInitialized then return end
   local sellPriceControl = rowControl:GetNamedChild("SellPrice")
   if not sellPriceControl then return end
+  slot = AddAlteredInventorySellPrice(slot)
 
-  if slot.hasAlteredPrice then
+  if slot.hasAlteredPrice and MasterMerchant.systemSavedVariables.replaceInventoryValues then
+    slot.sellPrice = slot.alteredSellPrice
+    slot.stackSellPrice = slot.alteredStackSellPrice
     local newSellPrice = GetInventoryPriceText(slot.sellPrice, slot.stackSellPrice)
+    sellPriceControl:SetText(newSellPrice)
+  elseif slot.hasAlteredPrice and not MasterMerchant.systemSavedVariables.replaceInventoryValues then
+    slot.sellPrice = slot.originalSellPrice
+    slot.stackSellPrice = slot.originalStackSellPrice
+    local newSellPrice = slot.stackSellPrice .. MasterMerchant.coinIcon
     sellPriceControl:SetText(newSellPrice)
   end
 end
@@ -64,7 +87,7 @@ local SHARED_INVENTORY_SLOT_RESULT_ADDED = 2
 local SHARED_INVENTORY_SLOT_RESULT_UPDATED = 3
 local SHARED_INVENTORY_SLOT_RESULT_NO_CHANGE = 4
 local SHARED_INVENTORY_SLOT_RESULT_REMOVE_AND_ADD = 5
-
+-- SCENE_MANAGER:GetCurrentScene().callbackRegistry.tester = function() d("hudui") end
 function MasterMerchant:CreateOrUpdateSlotData(existingSlotData, bagId, slotIndex, isNewItem)
   local icon, stackCount, sellPrice, meetsUsageRequirement, locked, equipType, _, functionalQuality, displayQuality = GetItemInfo(bagId, slotIndex)
   local launderPrice = GetItemLaunderPrice(bagId, slotIndex)
@@ -103,15 +126,6 @@ function MasterMerchant:CreateOrUpdateSlotData(existingSlotData, bagId, slotInde
   if not wasSameItemInSlotBefore then
     slot.itemType, slot.specializedItemType = GetItemType(bagId, slotIndex)
     slot.uniqueId = GetItemUniqueId(bagId, slotIndex)
-  end
-
-  local canReplacePrice = MasterMerchant.isInitialized and MasterMerchant.systemSavedVariables.replaceInventoryValues and not slot.hasAlteredPrice
-  if canReplacePrice then
-    local averagePrice = GetAveragePrice(itemLink)
-    if averagePrice then
-      sellPrice = averagePrice
-      slot.hasAlteredPrice = true
-    end
   end
 
   slot.iconFile = icon
@@ -180,6 +194,15 @@ function MasterMerchant:CreateOrUpdateSlotData(existingSlotData, bagId, slotInde
     slot.age = GetFrameTimeSeconds()
   else
     slot.age = 0
+  end
+
+  slot = AddAlteredInventorySellPrice(slot, true)
+  if slot.hasAlteredPrice and MasterMerchant.systemSavedVariables.replaceInventoryValues then
+    slot.sellPrice = slot.alteredSellPrice
+    slot.stackSellPrice = slot.alteredStackSellPrice
+  elseif slot.hasAlteredPrice and not MasterMerchant.systemSavedVariables.replaceInventoryValues then
+    slot.sellPrice = slot.originalSellPrice
+    slot.stackSellPrice = slot.originalStackSellPrice
   end
 
   ZO_SharedInventoryManager:RefreshStatusSortOrder(slot)

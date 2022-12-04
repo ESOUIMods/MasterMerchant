@@ -143,7 +143,7 @@ function MasterMerchant.LocalizedNumber(amount)
     return tostring(0)
   end
   -- Check if amount is an integer
-  if MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount) then
+  if (IsInGamepadPreferredMode() or MasterMerchant.systemSavedVariables.trimDecimals) or amount > 100 or IsValueInteger(amount) then
     return comma_value(zo_floor(amount))
   end
   -- Round to two decimal values

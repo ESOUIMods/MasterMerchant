@@ -43,6 +43,7 @@ function MasterMerchant:CheckTime()
   ]]--
 end
 
+-- /script d(MasterMerchant:itemPriceTip("|H1:item:42867:25:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", true, false))
 function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
   GenerateLogMessage("itemPriceTip")
 
