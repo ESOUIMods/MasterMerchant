@@ -670,7 +670,8 @@ function internal.Slash(allArgs)
     internal:SlashImportATTSales()
     return
   end
-  args = ""
+  --[[TODO Why is there the need for an empty space here? ]]--
+  args = MM_STRING_EMPTY
 end
 
 local function OnAddOnLoaded(eventCode, addonName)

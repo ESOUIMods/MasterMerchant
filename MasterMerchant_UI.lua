@@ -1169,9 +1169,9 @@ function MMScrollList:FilterScrollList()
   -- pass two, clean up the text
   if searchText then
     searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1')
-    searchText = string.gsub(searchText, "'s", "")
+    searchText = string.gsub(searchText, "'s", MM_STRING_EMPTY)
     searchText = string.gsub(searchText, "-", " ")
-    searchText = string.gsub(searchText, "%p", "")
+    searchText = string.gsub(searchText, "%p", MM_STRING_EMPTY)
   end
   -- pass three, set the text and clear  Bonanza Search text
   if MasterMerchant.bonanzaSearchText then
@@ -2071,7 +2071,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     if storeItemUnitPrice > vendorWarningPricing then showVendorWarning = true end
   end
   if showVendorWarning then
-    vendorWarningTipline = string.format(GetString(MM_VENDOR_ITEM_WARN), vendorWarningPricing) .. MasterMerchant.coinIcon
+    vendorWarningTipline = string.format(GetString(MM_VENDOR_ITEM_WARN), vendorWarningPricing) .. MM_COIN_ICON_NO_SPACE
   end
   if showRemovedWarning ~= nil then
     removedWarningTipline = GetString(MM_REMOVED_ITEM_WARN)
@@ -2393,15 +2393,15 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
         if graphInfo.high < highRange then
           graphInfo.high = highRange * 1.05
         end
-        xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. MasterMerchant.coinIcon
+        xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. MM_COIN_ICON_NO_SPACE
       else
         xBonanza = nil
         statsInfo.bonanzaPrice = nil
       end
 
-      local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. MasterMerchant.coinIcon
-      local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. MasterMerchant.coinIcon
-      local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. MasterMerchant.coinIcon
+      local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. MM_COIN_ICON_NO_SPACE
+      local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. MM_COIN_ICON_NO_SPACE
+      local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. MM_COIN_ICON_NO_SPACE
       local endTimeFrameText = GetString(MM_ENDTIMEFRAME_TEXT)
       -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
       -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, x_bonanzaPriceText, x_bonanzaPriceValue)

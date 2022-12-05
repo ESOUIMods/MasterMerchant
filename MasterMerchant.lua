@@ -68,7 +68,7 @@ function MasterMerchant:setupGuildColors()
     nextGuild = nextGuild + 1
     local nextGuildID = GetGuildId(nextGuild)
     local nextGuildName = GetGuildName(nextGuildID)
-    if nextGuildName ~= "" or nextGuildName ~= nil then
+    if nextGuildName ~= MM_STRING_EMPTY or nextGuildName ~= nil then
       local r, g, b = GetChatCategoryColor(CHAT_CHANNEL_GUILD_1 - 3 + nextGuild)
       self.guildColor[nextGuildName] = { r, g, b };
     else
@@ -108,10 +108,10 @@ end
 local function BuildBlacklistTable(str)
   local t = {}
   local function helper(line)
-    if line ~= "" then
+    if line ~= MM_STRING_EMPTY then
       t[line] = true
     end
-    return ""
+    return MM_STRING_EMPTY
   end
   helper((str:gsub("(.-)\r?\n", helper)))
   if next(t) then return t end
@@ -430,7 +430,7 @@ function MasterMerchant:GetTooltipStats(itemLink, priceEval)
       end
     else
       -- not clickable or detailed
-      tooltip = stringPrice .. MasterMerchant.coinIcon
+      tooltip = stringPrice .. MM_COIN_ICON_NO_SPACE
     end
     table.insert(salesPoints, { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller })
   end
@@ -874,13 +874,13 @@ function MasterMerchant:AvgPricePriceTip(avgPrice, numSales, numItems, numDays, 
   end
 
   local avePriceString = self.LocalizedNumber(avgPrice)
-  local aveVoucherString = ""
+  local aveVoucherString = MM_STRING_EMPTY
   if numVouchers > 0 then
     aveVoucherString = self.LocalizedNumber(avgPrice / numVouchers)
   end
   -- chatText
-  if not chatText then avePriceString = avePriceString .. MasterMerchant.coinIcon end
-  if not chatText then aveVoucherString = aveVoucherString .. MasterMerchant.coinIcon end
+  if not chatText then avePriceString = avePriceString .. MM_COIN_ICON_NO_SPACE end
+  if not chatText then aveVoucherString = aveVoucherString .. MM_COIN_ICON_NO_SPACE end
   if numVouchers == 0 then
     formatedPriceString = string.format(tipFormat, numSales, numItems, numDays, avePriceString)
   else
@@ -908,10 +908,10 @@ function MasterMerchant:BonanzaPriceTip(bonanzaPrice, bonanzaSales, bonanzaCount
   local formatedBonanzaString = nil
   local bonanzaPriceString = self.LocalizedNumber(bonanzaPrice)
   -- chatText
-  if not chatText then bonanzaPriceString = bonanzaPriceString .. MasterMerchant.coinIcon end
+  if not chatText then bonanzaPriceString = bonanzaPriceString .. MM_COIN_ICON_NO_SPACE end
   if numVouchers > 0 then
     local costPerVoucher = self.LocalizedNumber(bonanzaPrice / numVouchers)
-    if not chatText then costPerVoucher = costPerVoucher .. MasterMerchant.coinIcon end
+    if not chatText then costPerVoucher = costPerVoucher .. MM_COIN_ICON_NO_SPACE end
     formatedBonanzaString = string.format(GetString(MM_BONANZA_WRIT_GRAPHTIP), bonanzaSales, bonanzaCount, bonanzaPriceString, costPerVoucher)
   else
     formatedBonanzaString = string.format(GetString(MM_BONANZA_GRAPHTIP), bonanzaSales, bonanzaCount, bonanzaPriceString)
@@ -940,8 +940,8 @@ function MasterMerchant:TTCPriceTip(itemLink)
     if MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
       suggestedPrice = suggestedPrice * 1.25
     end
-    local suggestedPriceString = self.LocalizedNumber(suggestedPrice) .. MasterMerchant.coinIcon
-    local avgPriceString = self.LocalizedNumber(averagePrice) .. MasterMerchant.coinIcon
+    local suggestedPriceString = self.LocalizedNumber(suggestedPrice) .. MM_COIN_ICON_NO_SPACE
+    local avgPriceString = self.LocalizedNumber(averagePrice) .. MM_COIN_ICON_NO_SPACE
     formatedTTCString = string.format(GetString(MM_TTC_ALT_TIP), priceStats.EntryCount, suggestedPriceString, avgPriceString)
   else
     formatedTTCString = GetString(MM_NO_TTC_PRICE)
@@ -1076,17 +1076,17 @@ function MasterMerchant:CraftCostPriceTip(itemLink, chatText)
   if cost then
     costTipString = self.LocalizedNumber(cost)
     craftTip = GetString(MM_CRAFTCOST_PRICE_TIP)
-    if not chatText then craftTip = craftTip .. MasterMerchant.coinIcon end
+    if not chatText then craftTip = craftTip .. MM_COIN_ICON_NO_SPACE end
     craftingTooltipString = string.format(craftTip, costTipString)
   end
   -- if costPerItem, craftingTooltipString is overridden
   if costPerItem then
     costPerItemTipString = self.LocalizedNumber(costPerItem)
     craftTip = GetString(MM_CRAFTCOSTPER_PRICE_TIP)
-    if not chatText then craftTip = craftTip .. MasterMerchant.coinIcon end
+    if not chatText then craftTip = craftTip .. MM_COIN_ICON_NO_SPACE end
     craftingTooltipString = string.format(craftTip, costTipString, costPerItemTipString)
   end
-  if craftingTooltipString ~= "" then
+  if craftingTooltipString ~= MM_STRING_EMPTY then
     return craftingTooltipString
   else
     return nil
@@ -1127,7 +1127,7 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
     elseif itemType == ITEMTYPE_RECIPE then
       resultLink = GetItemLinkRecipeResultItemLink(itemLink)
 
-      if (resultLink ~= "") then
+      if (resultLink ~= MM_STRING_EMPTY) then
         MasterMerchant.recipeData[resultLink] = itemLink
         MasterMerchant.recipeCount = MasterMerchant.recipeCount + 1
         --debug
@@ -1375,31 +1375,31 @@ function MasterMerchant:GetTiplineInfo(itemLink)
 end
 
 function MasterMerchant:GetAvgPriceString(avgPriceString, avgPriceDays, avgPriceNumItems, avgPriceNumSales)
-  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_DEFAULT_FORMAT then
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MM_PTC_DEFAULT_FORMAT then
     return string.format(GetString(MM_MMPTC_DEFAULT_FORMAT), avgPriceNumSales, avgPriceNumItems, avgPriceDays, avgPriceString)
   end
-  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_CONDENSED_FORMAT then
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MM_PTC_CONDENSED_FORMAT then
     return string.format(GetString(MM_MMPTC_CONDENSED_FORMAT), avgPriceNumSales, avgPriceDays, avgPriceString)
   end
-  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_MM_TTC_FORMAT then
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MM_PTC_MM_TTC_FORMAT then
     return string.format(GetString(MM_MMPTC_MM_TTC_FORMAT), avgPriceString)
   end
 end
 
 function MasterMerchant:GetBonanzaPriceString(bonanzaPriceString, bonanzaPriceNumListingsString, bonanzaPriceNumItems)
-  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_DEFAULT_FORMAT then
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MM_PTC_DEFAULT_FORMAT then
     return string.format(GetString(MM_BONANZAPTC_DEFAULT_FORMAT), bonanzaPriceNumListingsString, bonanzaPriceNumItems, bonanzaPriceString)
   end
-  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_CONDENSED_FORMAT then
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MM_PTC_CONDENSED_FORMAT then
     return string.format(GetString(MM_BONANZAPTC_CONDENSED_FORMAT), bonanzaPriceNumListingsString, bonanzaPriceString)
   end
-  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_MM_TTC_FORMAT then
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MM_PTC_MM_TTC_FORMAT then
     return string.format(GetString(MM_BONANZAPTC_MM_TTC_FORMAT), bonanzaPriceString)
   end
 end
 
 function MasterMerchant:GetTtcPriceString(ttcSuggestedPriceString, ttcAvgPriceString)
-  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MasterMerchant.USE_MM_TTC_FORMAT then
+  if MasterMerchant.systemSavedVariables.priceToChatTypeToUse == MM_PTC_MM_TTC_FORMAT then
     return string.format(GetString(MM_TTCPTC_MM_TTC_FORMAT), ttcSuggestedPriceString, ttcAvgPriceString)
   end
 end
@@ -1463,7 +1463,7 @@ end
 function MasterMerchant:OnSearchBonanzaPopupInfoLink(itemLink)
   if not itemLink then MasterMerchant:dm("Warn", "OnSearchBonanzaPopupInfoLink has no itemLink") end
   local searchText = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-  if not searchText or searchText == "" then return end
+  if not searchText or searchText == MM_STRING_EMPTY then return end
   MasterMerchant.bonanzaSearchText = searchText
   MasterMerchant:SwitchToMasterMerchantListingsView()
   MasterMerchant.listingsScrollList:RefreshFilters()
@@ -1505,7 +1505,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
 
     local link = linkFunction()
 
-    if (link ~= "" and string.match(link, '|H.-:item:(.-):')) then
+    if (link ~= MM_STRING_EMPTY and string.match(link, '|H.-:item:(.-):')) then
       ClearMenu()
 
       AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
@@ -1851,10 +1851,10 @@ if TamrielTradeCentre then
     GetString(GS_DEAL_CALC_BONANZA_PRICE),
   }
   MasterMerchant.dealCalcValues = {
-    MasterMerchant.USE_TTC_SUGGESTED,
-    MasterMerchant.USE_TTC_AVERAGE,
-    MasterMerchant.USE_MM_AVERAGE,
-    MasterMerchant.USE_BONANZA,
+    MM_PRICE_TTC_SUGGESTED,
+    MM_PRICE_TTC_AVERAGE,
+    MM_PRICE_MM_AVERAGE,
+    MM_PRICE_BONANZA,
   }
 else
   MasterMerchant.dealCalcChoices = {
@@ -1862,8 +1862,8 @@ else
     GetString(GS_DEAL_CALC_BONANZA_PRICE),
   }
   MasterMerchant.dealCalcValues = {
-    MasterMerchant.USE_MM_AVERAGE,
-    MasterMerchant.USE_BONANZA,
+    MM_PRICE_MM_AVERAGE,
+    MM_PRICE_BONANZA,
   }
 end
 
@@ -1872,8 +1872,8 @@ MasterMerchant.agsPercentSortChoices = {
   GetString(AGS_PERCENT_ORDER_DESCENDING),
 }
 MasterMerchant.agsPercentSortValues = {
-  MasterMerchant.AGS_PERCENT_ASCENDING,
-  MasterMerchant.AGS_PERCENT_DESCENDING,
+  MM_AGS_SORT_PERCENT_ASCENDING,
+  MM_AGS_SORT_PERCENT_DESCENDING,
 }
 
 MasterMerchant.priceToChatFormats = {
@@ -1882,19 +1882,19 @@ MasterMerchant.priceToChatFormats = {
   GetString(MM_CHATFORMATS_MM_TTC),
 }
 MasterMerchant.priceToChatValues = {
-  MasterMerchant.USE_DEFAULT_FORMAT,
-  MasterMerchant.USE_CONDENSED_FORMAT,
-  MasterMerchant.USE_MM_TTC_FORMAT,
+  MM_PTC_DEFAULT_FORMAT,
+  MM_PTC_CONDENSED_FORMAT,
+  MM_PTC_MM_TTC_FORMAT,
 }
 
 local function CheckDealCalcValue()
-  if MasterMerchant.systemSavedVariables.dealCalcToUse ~= MasterMerchant.USE_TTC_SUGGESTED then
+  if MasterMerchant.systemSavedVariables.dealCalcToUse ~= MM_PRICE_TTC_SUGGESTED then
     MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc = false
   end
 end
 
 local function CheckInventoryValue()
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MasterMerchant.USE_TTC_SUGGESTED then
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MM_PRICE_TTC_SUGGESTED then
     MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = false
   end
 end
@@ -2348,7 +2348,7 @@ function MasterMerchant:LibAddonInit()
         getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc end,
         setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc = value end,
         default = MasterMerchant.systemDefault.modifiedSuggestedPriceDealCalc,
-        disabled = function() return not (MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED) end,
+        disabled = function() return not (MasterMerchant.systemSavedVariables.dealCalcToUse == MM_PRICE_TTC_SUGGESTED) end,
       },
     },
   }
@@ -2629,7 +2629,7 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = value end,
     default = MasterMerchant.systemDefault.modifiedSuggestedPriceInventory,
-    disabled = function() return (not MasterMerchant.systemSavedVariables.replaceInventoryValues) or (MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MasterMerchant.USE_TTC_SUGGESTED) end,
+    disabled = function() return (not MasterMerchant.systemSavedVariables.replaceInventoryValues) or (MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MM_PRICE_TTC_SUGGESTED) end,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -3049,7 +3049,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
         if i == 1 then
           MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT)))
         end
-        MasterMerchant:dm("Info", zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. ' -- ' .. stringPrice .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t -- ' .. theEvent.guild)
+        MasterMerchant:dm("Info", zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. MM_STRING_SEPARATOR_DASHES .. stringPrice .. MM_COIN_ICON_LEADING_SPACE .. MM_STRING_SEPARATOR_DASHES .. theEvent.guild)
         if i == numAlerts then
           -- Total of offline sales
           MasterMerchant:dm("Info", string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
@@ -3169,7 +3169,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
   --[[TODO make sure that the itemLink is not an empty string by mistake
   ]]--
   local itemLink = GetTradingHouseListingItemLink(result.slotIndex)
-  if itemLink and itemLink ~= "" then
+  if itemLink and itemLink ~= MM_STRING_EMPTY then
     local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
     if dealValue then
       if dealValue > MM_DEAL_VALUE_DONT_SHOW then
@@ -3630,8 +3630,8 @@ function MasterMerchant:FirstInitialize()
     trimOutliers = false,
     trimDecimals = false,
     replaceInventoryValues = false,
-    replacementTypeToUse = MasterMerchant.USE_MM_AVERAGE,
-    priceToChatTypeToUse = MasterMerchant.USE_DEFAULT_FORMAT,
+    replacementTypeToUse = MM_PRICE_MM_AVERAGE,
+    priceToChatTypeToUse = MM_PTC_DEFAULT_FORMAT,
     displaySalesDetails = false,
     displayItemAnalysisButtons = false,
     focus1 = 10,
@@ -3674,8 +3674,8 @@ function MasterMerchant:FirstInitialize()
     minItemCount = 20,
     maxItemCount = 5000,
     disableAttWarn = false,
-    dealCalcToUse = MasterMerchant.USE_MM_AVERAGE,
-    agsPercentSortOrderToUse = MasterMerchant.AGS_PERCENT_ASCENDING,
+    dealCalcToUse = MM_PRICE_MM_AVERAGE,
+    agsPercentSortOrderToUse = MM_AGS_SORT_PERCENT_ASCENDING,
     modifiedSuggestedPriceDealCalc = false,
     modifiedSuggestedPriceInventory = false,
     showUnitPrice = false,
@@ -4182,26 +4182,26 @@ function MasterMerchant:GetAveragePriceAndCount(itemLink, priceType)
   if priceType == MM_GETPRICE_TYPE_DEALCALC then evalType = MasterMerchant.systemSavedVariables.dealCalcToUse
   elseif priceType == MM_GETPRICE_TYPE_INV_REPLACEMENT then evalType = MasterMerchant.systemSavedVariables.replacementTypeToUse end
 
-  if evalType == MasterMerchant.USE_MM_AVERAGE then
+  if evalType == MM_PRICE_MM_AVERAGE then
     local priceStats = MasterMerchant:GetTooltipStats(itemLink, true)
     if priceStats and priceStats.avgPrice then
       averagePrice = priceStats['avgPrice']
       salesCount = priceStats['numSales']
     end
   end
-  if evalType == MasterMerchant.USE_BONANZA then
+  if evalType == MM_PRICE_BONANZA then
     local priceStats = MasterMerchant:GetTooltipStats(itemLink, false)
     if priceStats and priceStats.bonanzaPrice then
       averagePrice = priceStats.bonanzaPrice
       salesCount = priceStats.bonanzaSales
     end
   end
-  if evalType == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
+  if evalType == MM_PRICE_TTC_AVERAGE and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
     if priceStats and priceStats.Avg and priceStats.Avg > 0 then averagePrice = priceStats.Avg end
     if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end
   end
-  if evalType == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
+  if evalType == MM_PRICE_TTC_SUGGESTED and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
     if priceStats and priceStats.SuggestedPrice and priceStats.SuggestedPrice > 0 then averagePrice = priceStats.SuggestedPrice end
     if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end

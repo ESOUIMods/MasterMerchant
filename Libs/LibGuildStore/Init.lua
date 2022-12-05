@@ -64,7 +64,7 @@ local function create_log(log_type, log_content)
 end
 
 local function emit_message(log_type, text)
-  if (text == "") then
+  if (text == MM_STRING_EMPTY) then
     text = "[Empty String]"
   end
   create_log(log_type, text)
@@ -130,7 +130,7 @@ end
 internal.supported_lang = internal.client_lang == internal.effective_lang
 
 function internal:is_empty_or_nil(t)
-  if t == nil or t == "" then return true end
+  if t == nil or t == MM_STRING_EMPTY then return true end
   return type(t) == "table" and ZO_IsTableEmpty(t) or false
 end
 

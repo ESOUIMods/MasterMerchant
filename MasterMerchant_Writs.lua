@@ -197,20 +197,20 @@ function mmInternal:MaterialCostPriceTip(itemLink, writCost)
   local materialTooltipString = ""
   local totalCost = 0
   if cost and not writCost then
-    costTipString = MasterMerchant.LocalizedNumber(cost) .. MasterMerchant.coinIcon
+    costTipString = MasterMerchant.LocalizedNumber(cost) .. MM_COIN_ICON_NO_SPACE
     materialTooltipString = string.format(GetString(MM_MATCOST_PRICE_TIP), costTipString)
   elseif cost and writCost then
     totalCost = cost + writCost
-    costTipString = MasterMerchant.LocalizedNumber(cost) .. MasterMerchant.coinIcon
-    writCostTipString = MasterMerchant.LocalizedNumber(writCost) .. MasterMerchant.coinIcon
-    totalCostTipString = MasterMerchant.LocalizedNumber(totalCost) .. MasterMerchant.coinIcon
+    costTipString = MasterMerchant.LocalizedNumber(cost) .. MM_COIN_ICON_NO_SPACE
+    writCostTipString = MasterMerchant.LocalizedNumber(writCost) .. MM_COIN_ICON_NO_SPACE
+    totalCostTipString = MasterMerchant.LocalizedNumber(totalCost) .. MM_COIN_ICON_NO_SPACE
     materialTooltipString = string.format(GetString(MM_MATCOST_PLUS_WRITCOST_TIP), costTipString, writCostTipString, totalCostTipString)
   end
   local qtyRequired = mmInternal:GetWinterWritRequiredQty(itemLink)
-  if materialTooltipString ~= "" and not qtyRequired then
+  if materialTooltipString ~= MM_STRING_EMPTY and not qtyRequired then
     materialTooltipString = materialTooltipString .. "\n(qty not in database)"
   end
-  if materialTooltipString ~= "" then
+  if materialTooltipString ~= MM_STRING_EMPTY then
     return materialTooltipString
   else
     return nil

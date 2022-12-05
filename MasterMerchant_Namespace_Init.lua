@@ -27,12 +27,173 @@ MMScrollList.SORT_KEYS = {
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
 MasterMerchant.version = '3.7.50'
+MM_STRING_EMPTY = ""
+MM_STRING_SEPARATOR_SPACE = " "
+MM_STRING_SEPARATOR_DASHES = " -- "
 
 local mmInternal = {}
 _G["MasterMerchant_Internal"] = mmInternal
 
 -------------------------------------------------
------ early helper                          -----
+----- MasterMerchant Constants              -----
+-------------------------------------------------
+MM_COIN_ICON_NO_SPACE = "|t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+MM_COIN_ICON_LEADING_SPACE = " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+
+MM_GETPRICE_TYPE_DEALCALC = 1
+MM_GETPRICE_TYPE_INV_REPLACEMENT = 2
+
+-- Date Time Ranges for API
+MM_DATERANGE_TODAY = 1
+MM_DATERANGE_YESTERDAY = 2
+MM_DATERANGE_THISWEEK = 3
+MM_DATERANGE_LASTWEEK = 4
+MM_DATERANGE_PRIORWEEK = 5
+MM_DATERANGE_7DAY = 6
+MM_DATERANGE_10DAY = 7
+MM_DATERANGE_30DAY = 8
+MM_DATERANGE_CUSTOM = 9
+
+-- Date Time String Format
+MM_MONTH_DAY_FORMAT = 1
+MM_DAY_MONTH_FORMAT = 2
+MM_MONTH_DAY_YEAR_FORMAT = 3
+MM_YEAR_MONTH_DAY_FORMAT = 4
+MM_DAY_MONTH_YEAR_FORMAT = 5
+
+-- Window Time Ranges
+MM_WINDOW_TIME_RANGE_DEFAULT = 1
+MM_WINDOW_TIME_RANGE_THIRTY = 2
+MM_WINDOW_TIME_RANGE_SIXTY = 3
+MM_WINDOW_TIME_RANGE_NINETY = 4
+MM_WINDOW_TIME_RANGE_CUSTOM = 5
+
+-- Deal Value Ranges
+MM_DEAL_VALUE_DONT_SHOW = -1
+MM_DEAL_VALUE_OVERPRICED = 0
+MM_DEAL_VALUE_OKAY = 1
+MM_DEAL_VALUE_REASONABLE = 2
+MM_DEAL_VALUE_GOOD = 3
+MM_DEAL_VALUE_GREAT = 4
+MM_DEAL_VALUE_BUYIT = 5
+
+-- LibExecutionQueue wait times
+MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT = 20
+MM_WAIT_TIME_IN_MILLISECONDS_SHORT = 50 -- longer then 50 seems to increase load times
+MM_WAIT_TIME_IN_MILLISECONDS_MEDIUM = 60
+MM_WAIT_TIME_IN_MILLISECONDS_LONG = 120
+MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE = 1000
+MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP = 500
+
+MM_PRICE_TTC_SUGGESTED = 1
+MM_PRICE_TTC_AVERAGE = 2
+MM_PRICE_MM_AVERAGE = 3
+MM_PRICE_BONANZA = 4
+
+MM_PTC_DEFAULT_FORMAT = 1
+MM_PTC_CONDENSED_FORMAT = 2
+MM_PTC_MM_TTC_FORMAT = 3
+
+MM_AGS_SORT_PERCENT_ASCENDING = 1
+MM_AGS_SORT_PERCENT_DESCENDING = 2
+
+-------------------------------------------------
+----- MasterMerchant Assignments            -----
+-------------------------------------------------
+
+MasterMerchant.personalSalesViewMode = 'self_vm'
+MasterMerchant.guildSalesViewMode = 'guild_vm'
+MasterMerchant.reportsPostedViewMode = 'posted_vm'
+MasterMerchant.reportsCanceledViewMode = 'canceled_vm'
+-- TODO currently unused?
+MasterMerchant.listingsViewMode = 'listings_vm'
+MasterMerchant.purchasesViewMode = 'purchases_vm'
+
+MasterMerchant.itemsViewSize = 'items_vs'
+MasterMerchant.guildsViewSize = 'guild_vs'
+MasterMerchant.listingsViewSize = 'listings_vs'
+MasterMerchant.purchasesViewSize = 'purchases_vs'
+MasterMerchant.reportsViewSize = 'reports_vs'
+
+-- default is self
+MasterMerchant.gamepadVendorSceneRefreshed = false
+MasterMerchant.tradingHouseBrowseMarkerHooked = false
+MasterMerchant.inventoryMarkersHooked = false
+MasterMerchant.tradingHouseOpened = false
+MasterMerchant.wwDetected = false
+MasterMerchant.mwimDetected = false
+MasterMerchant.salesViewMode = MasterMerchant.personalSalesViewMode
+MasterMerchant.reportsViewMode = MasterMerchant.reportsPostedViewMode
+MasterMerchant.isInitialized = false -- added 8-25 used
+MasterMerchant.guildMemberInfo = { } -- added 10-17 used as lookup
+MasterMerchant.customTimeframeText = MM_STRING_EMPTY -- added 11-21 used as lookup for tooltips
+MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
+MasterMerchant.fontListChoices = {} -- added 12-16 but always there
+MasterMerchant.isFirstScan = false -- added again 5-14-2021 but used previously
+MasterMerchant.removedItemIdTable = {} -- added 11-21-2022
+MasterMerchant.guildList = {}
+MasterMerchant.filterDateRanges = nil
+MasterMerchant.dateRanges = nil
+
+MasterMerchant.a_test = {}
+MasterMerchant.aa_test = {}
+MasterMerchant.aaa_test = {}
+MasterMerchant.aaaa_test = {}
+MasterMerchant.aaaaa_test = {}
+MasterMerchant.aaaaaa_test = {}
+
+if AwesomeGuildStore then
+  MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
+else
+  MasterMerchant.AwesomeGuildStoreDetected = false -- added 12-2
+end
+
+-- We do 'lazy' updates on the scroll lists, this is used to
+-- mark whether we need to RefreshData() before showing
+-- ITEMS, GUILDS, LISTINGS, PURCHASES, REPORTS
+MasterMerchant.listIsDirty = {
+  [MasterMerchant.itemsViewSize] = false,
+  [MasterMerchant.guildsViewSize] = false,
+  [MasterMerchant.listingsViewSize] = false,
+  [MasterMerchant.purchasesViewSize] = false,
+  [MasterMerchant.reportsViewSize] = false,
+}
+
+MasterMerchant.scrollList = nil
+MasterMerchant.guildScrollList = nil
+MasterMerchant.listingsScrollList = nil
+MasterMerchant.purchasesScrollList = nil
+MasterMerchant.reportsScrollList = nil
+MasterMerchant.calcInput = nil
+MasterMerchant.nameFilterScrollList = nil
+
+MasterMerchant.guildSales = nil
+MasterMerchant.guildPurchases = nil
+MasterMerchant.guildColor = { }
+
+MasterMerchant.curSort = { 'time', 'desc' }
+MasterMerchant.curGuildSort = { 'rank', 'asc' }
+MasterMerchant.curFilterSort = { 'name', 'asc' }
+MasterMerchant.salesUiFragment = { }
+MasterMerchant.guildUiFragment = { }
+MasterMerchant.listingUiFragment = { }
+MasterMerchant.purchaseUiFragment = { }
+MasterMerchant.reportsUiFragment = { }
+MasterMerchant.statsFragment = { }
+MasterMerchant.activeTip = nil
+MasterMerchant.tippingControl = nil
+MasterMerchant.isShiftPressed = nil
+MasterMerchant.isCtrlPressed = nil
+
+MasterMerchant.originalSetupCallback = nil
+MasterMerchant.originalSellingSetupCallback = nil
+MasterMerchant.originalRosterStatsCallback = nil
+MasterMerchant.originalRosterBuildMasterList = nil
+
+MasterMerchant.itemInformationCache = { }
+
+-------------------------------------------------
+----- helpers                               -----
 -------------------------------------------------
 
 function MasterMerchant:is_in(search_value, search_table)
@@ -87,7 +248,7 @@ local function create_log(log_type, log_content)
 end
 
 local function emit_message(log_type, text)
-  if (text == "") then
+  if (text == MM_STRING_EMPTY) then
     text = "[Empty String]"
   end
   create_log(log_type, text)
@@ -124,162 +285,6 @@ function MasterMerchant:dm(log_type, ...)
   end
 end
 
--------------------------------------------------
------ MasterMerchant Constants              -----
--------------------------------------------------
-
-MasterMerchant.personalSalesViewMode = 'self_vm'
-MasterMerchant.guildSalesViewMode = 'guild_vm'
-MasterMerchant.reportsPostedViewMode = 'posted_vm'
-MasterMerchant.reportsCanceledViewMode = 'canceled_vm'
--- TODO currently unused?
-MasterMerchant.listingsViewMode = 'listings_vm'
-MasterMerchant.purchasesViewMode = 'purchases_vm'
-
-MasterMerchant.itemsViewSize = 'items_vs'
-MasterMerchant.guildsViewSize = 'guild_vs'
-MasterMerchant.listingsViewSize = 'listings_vs'
-MasterMerchant.purchasesViewSize = 'purchases_vs'
-MasterMerchant.reportsViewSize = 'reports_vs'
-
--- default is self
-MasterMerchant.gamepadVendorSceneRefreshed = false
-MasterMerchant.tradingHouseBrowseMarkerHooked = false
-MasterMerchant.inventoryMarkersHooked = false
-MasterMerchant.tradingHouseOpened = false
-MasterMerchant.wwDetected = false
-MasterMerchant.mwimDetected = false
-MasterMerchant.salesViewMode = MasterMerchant.personalSalesViewMode
-MasterMerchant.reportsViewMode = MasterMerchant.reportsPostedViewMode
-MasterMerchant.isInitialized = false -- added 8-25 used
-MasterMerchant.guildMemberInfo = { } -- added 10-17 used as lookup
-MasterMerchant.customTimeframeText = "" -- added 11-21 used as lookup for tooltips
-MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
-MasterMerchant.fontListChoices = {} -- added 12-16 but always there
-MasterMerchant.isFirstScan = false -- added again 5-14-2021 but used previously
-MasterMerchant.removedItemIdTable = {} -- added 11-21-2022
-MasterMerchant.guildList = {}
-MasterMerchant.a_test = {}
-MasterMerchant.aa_test = {}
-MasterMerchant.aaa_test = {}
-MasterMerchant.aaaa_test = {}
-MasterMerchant.aaaaa_test = {}
-MasterMerchant.aaaaaa_test = {}
-
-MM_STRING_EMPTY = ""
-MM_STRING_SEPARATOR = " "
-
-MM_GETPRICE_TYPE_DEALCALC = 1
-MM_GETPRICE_TYPE_INV_REPLACEMENT = 2
-
--- Date Time Ranges for API
-MasterMerchant.dateRanges = nil
-MM_DATERANGE_TODAY = 1
-MM_DATERANGE_YESTERDAY = 2
-MM_DATERANGE_THISWEEK = 3
-MM_DATERANGE_LASTWEEK = 4
-MM_DATERANGE_PRIORWEEK = 5
-MM_DATERANGE_7DAY = 6
-MM_DATERANGE_10DAY = 7
-MM_DATERANGE_30DAY = 8
-MM_DATERANGE_CUSTOM = 9
-
--- Date Time String Format
-MM_MONTH_DAY_FORMAT = 1
-MM_DAY_MONTH_FORMAT = 2
-MM_MONTH_DAY_YEAR_FORMAT = 3
-MM_YEAR_MONTH_DAY_FORMAT = 4
-MM_DAY_MONTH_YEAR_FORMAT = 5
-
--- Window Time Ranges
-MasterMerchant.filterDateRanges = nil
-MM_WINDOW_TIME_RANGE_DEFAULT = 1
-MM_WINDOW_TIME_RANGE_THIRTY = 2
-MM_WINDOW_TIME_RANGE_SIXTY = 3
-MM_WINDOW_TIME_RANGE_NINETY = 4
-MM_WINDOW_TIME_RANGE_CUSTOM = 5
-
--- Deal Value Ranges
-MM_DEAL_VALUE_DONT_SHOW = -1
-MM_DEAL_VALUE_OVERPRICED = 0
-MM_DEAL_VALUE_OKAY = 1
-MM_DEAL_VALUE_REASONABLE = 2
-MM_DEAL_VALUE_GOOD = 3
-MM_DEAL_VALUE_GREAT = 4
-MM_DEAL_VALUE_BUYIT = 5
-
--- LibExecutionQueue wait times
-MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT = 20
-MM_WAIT_TIME_IN_MILLISECONDS_SHORT = 50 -- longer then 50 seems to increase load times
-MM_WAIT_TIME_IN_MILLISECONDS_MEDIUM = 60
-MM_WAIT_TIME_IN_MILLISECONDS_LONG = 120
-MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE = 1000
-MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP = 500
-
-if AwesomeGuildStore then
-  MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2
-else
-  MasterMerchant.AwesomeGuildStoreDetected = false -- added 12-2
-end
-
--- We do 'lazy' updates on the scroll lists, this is used to
--- mark whether we need to RefreshData() before showing
--- ITEMS, GUILDS, LISTINGS, PURCHASES, REPORTS
-MasterMerchant.listIsDirty = {
-  [MasterMerchant.itemsViewSize] = false,
-  [MasterMerchant.guildsViewSize] = false,
-  [MasterMerchant.listingsViewSize] = false,
-  [MasterMerchant.purchasesViewSize] = false,
-  [MasterMerchant.reportsViewSize] = false,
-}
-
-MasterMerchant.scrollList = nil
-MasterMerchant.guildScrollList = nil
-MasterMerchant.listingsScrollList = nil
-MasterMerchant.purchasesScrollList = nil
-MasterMerchant.reportsScrollList = nil
-MasterMerchant.calcInput = nil
-MasterMerchant.nameFilterScrollList = nil
-
-MasterMerchant.guildSales = nil
-MasterMerchant.guildPurchases = nil
-MasterMerchant.guildColor = { }
-
-MasterMerchant.curSort = { 'time', 'desc' }
-MasterMerchant.curGuildSort = { 'rank', 'asc' }
-MasterMerchant.curFilterSort = { 'name', 'asc' }
-MasterMerchant.salesUiFragment = { }
-MasterMerchant.guildUiFragment = { }
-MasterMerchant.listingUiFragment = { }
-MasterMerchant.purchaseUiFragment = { }
-MasterMerchant.reportsUiFragment = { }
-MasterMerchant.statsFragment = { }
-MasterMerchant.activeTip = nil
-MasterMerchant.tippingControl = nil
-MasterMerchant.isShiftPressed = nil
-MasterMerchant.isCtrlPressed = nil
-
-MasterMerchant.originalSetupCallback = nil
-MasterMerchant.originalSellingSetupCallback = nil
-MasterMerchant.originalRosterStatsCallback = nil
-MasterMerchant.originalRosterBuildMasterList = nil
-
-MasterMerchant.itemInformationCache = { }
-
-MasterMerchant.USE_TTC_SUGGESTED = 1
-MasterMerchant.USE_TTC_AVERAGE = 2
-MasterMerchant.USE_MM_AVERAGE = 3
-MasterMerchant.USE_BONANZA = 4
-
-MasterMerchant.USE_DEFAULT_FORMAT = 1
-MasterMerchant.USE_CONDENSED_FORMAT = 2
-MasterMerchant.USE_MM_TTC_FORMAT = 3
-
-MasterMerchant.AGS_PERCENT_ASCENDING = 1
-MasterMerchant.AGS_PERCENT_DESCENDING = 2
-
-MasterMerchant.coinIcon = "|t16:16:EsoUI/Art/currency/currency_gold.dds|t"
-
 ----------------------------------------
 ----- Gamepad                      -----
 ----------------------------------------
@@ -288,18 +293,13 @@ MasterMerchant.coinIcon = "|t16:16:EsoUI/Art/currency/currency_gold.dds|t"
 ----- Setup                        -----
 ----------------------------------------
 
---[[TODO
+--[[TODO change color for deals with zo formatting
 local currencyFormatDealOptions = {
     [0] = { color = ZO_ColorDef:New(0.98, 0.01, 0.01) },
     [ITEM_DISPLAY_QUALITY_NORMAL] = { color = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, ITEM_DISPLAY_QUALITY_NORMAL)) },
 --- the other qualities
 }
 ]]--
-
--- Gap values for Shell sort
-MasterMerchant.shellGaps = {
-  1391376, 463792, 198768, 86961, 33936, 13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1
-}
 
 -- Sound table for mapping readable names to sound names
 MasterMerchant.alertSounds = {

@@ -669,7 +669,7 @@ function internal:addTraderInfo(guildId, guildName)
   local local_x, local_y = GetMapPlayerPosition("player")
   local zoneIndex = GetCurrentMapZoneIndex()
   local zoneId = GetZoneId(zoneIndex)
-  if subzoneName == "" then subzoneName = zoneName end
+  if subzoneName == MM_STRING_EMPTY then subzoneName = zoneName end
   local theInfo = {
     guildName = guildName,
     local_x = local_x,

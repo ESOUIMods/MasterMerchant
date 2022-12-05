@@ -8,6 +8,11 @@
 --  |H0:item:69359:96:50:26848:96:50:0:0:0:0:0:0:0:0:0:19:0:0:0:0:0|h|h  AUTGuild 1058 days
 local internal = _G["LibGuildStore_Internal"]
 
+-- Gap values for Shell sort
+MasterMerchant.shellGaps = {
+  1391376, 463792, 198768, 86961, 33936, 13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1
+}
+
 function MasterMerchant:ssup(inputTable, numElements)
   for _, gapVal in ipairs(MasterMerchant.shellGaps) do
     for i = gapVal + 1, numElements do
@@ -69,7 +74,7 @@ function MasterMerchant.concat(a, ...)
     elseif a == nil or a == MM_STRING_EMPTY then
       return concatenate(...)
     else
-      return tostring(a) .. MM_STRING_SEPARATOR .. concatenate(...)
+      return tostring(a) .. MM_STRING_SEPARATOR_SPACE .. concatenate(...)
     end
   end
 
