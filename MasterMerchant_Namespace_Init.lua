@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.49'
+MasterMerchant.version = '3.7.50'
 
 local mmInternal = {}
 _G["MasterMerchant_Internal"] = mmInternal
@@ -165,6 +165,10 @@ MasterMerchant.aaa_test = {}
 MasterMerchant.aaaa_test = {}
 MasterMerchant.aaaaa_test = {}
 MasterMerchant.aaaaaa_test = {}
+
+
+MM_GETPRICE_TYPE_DEALCALC = 1
+MM_GETPRICE_TYPE_INV_REPLACEMENT = 2
 
 -- Date Time Ranges for API
 MasterMerchant.dateRanges = nil

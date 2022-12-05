@@ -1349,10 +1349,10 @@ function MasterMerchant:GetTiplineInfo(itemLink)
   if TamrielTradeCentre then
     ttcPriceInfo = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
   end
-  if ttcPriceInfo.Avg then
+  if ttcPriceInfo and ttcPriceInfo.Avg then
     ttcAvgPriceString = self.LocalizedNumber(ttcPriceInfo.Avg)
   end
-  if ttcPriceInfo.SuggestedPrice then
+  if ttcPriceInfo and ttcPriceInfo.SuggestedPrice then
     ttcSuggestedPriceString = self.LocalizedNumber(ttcPriceInfo.SuggestedPrice)
   end
   --MasterMerchant:dm("Debug", ttcSuggestedPriceString)
@@ -4174,41 +4174,50 @@ MasterMerchant.ClearDealInfoCache = function()
   ZO_ClearTable(dealInfoCache)
 end
 
+function MasterMerchant:GetAveragePriceAndCount(itemLink, priceType)
+  if not MasterMerchant.isInitialized then return end
+  local averagePrice
+  local salesCount = 0
+  local evalType
+  if priceType == MM_GETPRICE_TYPE_DEALCALC then evalType = MasterMerchant.systemSavedVariables.dealCalcToUse
+  elseif priceType == MM_GETPRICE_TYPE_INV_REPLACEMENT then evalType = MasterMerchant.systemSavedVariables.replacementTypeToUse end
+
+  if evalType == MasterMerchant.USE_MM_AVERAGE then
+    local priceStats = MasterMerchant:GetTooltipStats(itemLink, true)
+    if priceStats and priceStats.avgPrice then
+      averagePrice = priceStats['avgPrice']
+      salesCount = priceStats['numSales']
+    end
+  end
+  if evalType == MasterMerchant.USE_BONANZA then
+    local priceStats = MasterMerchant:GetTooltipStats(itemLink, false)
+    if priceStats and priceStats.bonanzaPrice then
+      averagePrice = priceStats.bonanzaPrice
+      salesCount = priceStats.bonanzaSales
+    end
+  end
+  if evalType == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
+    local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+    if priceStats and priceStats.Avg and priceStats.Avg > 0 then averagePrice = priceStats.Avg end
+    if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end
+  end
+  if evalType == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
+    local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+    if priceStats and priceStats.SuggestedPrice and priceStats.SuggestedPrice > 0 then averagePrice = priceStats.SuggestedPrice end
+    if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end
+    if averagePrice and MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
+      averagePrice = averagePrice * 1.25
+    end
+  end
+  return averagePrice, salesCount
+end
 -- /script d(MasterMerchant.GetDealInformation("|H1:item:182625:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", 10000, 2))
 -- /script d(MasterMerchant.GetDealInformation("|H1:item:191220:362:50:0:0:0:0:0:0:0:0:0:0:0:0:8:0:0:0:300:0|h|h", 1111, 1))
 MasterMerchant.GetDealInformation = function(itemLink, purchasePrice, stackCount)
 
   local key = string.format("%s_%d_%d", itemLink, purchasePrice, stackCount)
   if (not dealInfoCache[key]) then
-    local setPrice = nil
-    local salesCount = 0
-    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_MM_AVERAGE then
-      local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
-      if tipStats.avgPrice then
-        setPrice = tipStats['avgPrice']
-        salesCount = tipStats['numSales']
-      end
-    end
-    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_BONANZA then
-      local tipStats = MasterMerchant:GetTooltipStats(itemLink, false)
-      if tipStats.bonanzaPrice then
-        setPrice = tipStats.bonanzaPrice
-        salesCount = tipStats.bonanzaSales
-      end
-    end
-    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
-      local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-      if priceStats and priceStats.Avg and priceStats.Avg > 0 then setPrice = priceStats.Avg end
-      if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end
-    end
-    if MasterMerchant.systemSavedVariables.dealCalcToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
-      local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
-      if priceStats and priceStats.SuggestedPrice and priceStats.SuggestedPrice > 0 then setPrice = priceStats.SuggestedPrice end
-      if priceStats and priceStats.EntryCount then salesCount = priceStats.EntryCount end
-      if setPrice and MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc then
-        setPrice = setPrice * 1.25
-      end
-    end
+    local setPrice, salesCount = MasterMerchant:GetAveragePriceAndCount(itemLink, MM_GETPRICE_TYPE_DEALCALC)
     dealInfoCache[key] = { MasterMerchant.DealCalculator(setPrice, salesCount, purchasePrice, stackCount) }
   end
   return unpack(dealInfoCache[key])

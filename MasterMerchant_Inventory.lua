@@ -38,7 +38,8 @@ local function GetCleanPrice(price)
 end
 
 local function AddAlteredInventorySellPrice(slot, forceUpdatePrice)
-  local updatePrice = forceUpdatePrice or not slot.hasAlteredPrice or slot.alteredPriceType ~= MasterMerchant.systemSavedVariables.replacementTypeToUse
+  local typeChanged = slot.alteredPriceType ~= MasterMerchant.systemSavedVariables.replacementTypeToUse
+  local updatePrice = forceUpdatePrice or not slot.hasAlteredPrice or typeChanged
   if not updatePrice then return slot end
   local averagePrice = GetAveragePrice(slot.bagId, slot.slotIndex)
   if averagePrice then
@@ -48,6 +49,15 @@ local function AddAlteredInventorySellPrice(slot, forceUpdatePrice)
     slot.alteredStackSellPrice = GetCleanPrice(averagePrice * slot.stackCount)
     slot.alteredPriceType = MasterMerchant.systemSavedVariables.replacementTypeToUse
     slot.hasAlteredPrice = true
+  elseif slot.hasAlteredPrice and not averagePrice and typeChanged then
+    slot.sellPrice = slot.originalSellPrice
+    slot.stackSellPrice = slot.originalStackSellPrice
+    slot.originalSellPrice = nil
+    slot.originalStackSellPrice = nil
+    slot.alteredSellPrice = nil
+    slot.alteredStackSellPrice = nil
+    slot.alteredPriceType = nil
+    slot.hasAlteredPrice = nil
   end
   -- item had no averagePrice
   return slot
