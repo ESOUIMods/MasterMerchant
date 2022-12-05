@@ -61,17 +61,21 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
 end
 
 -- MM has no data   for |H1:item:86987:363:50:0:0:0:0:0:0:0:0:0:0:0:1:3:0:1:0:400:0|h|h
+
 function MasterMerchant.concat(a, ...)
-  if a == nil and ... == nil then
-    return ''
-  elseif a == nil then
-    return MasterMerchant.concat(...)
-  else
-    if type(a) == 'boolean' then
-      --d(tostring(a) .. ' ' .. MasterMerchant.concat(...))
+  local function concatenate(a, ...)
+    if a == nil and ... == nil then
+      return MM_STRING_EMPTY
+    elseif a == nil or a == MM_STRING_EMPTY then
+      return concatenate(...)
+    else
+      return tostring(a) .. MM_STRING_SEPARATOR .. concatenate(...)
     end
-    return tostring(a) .. ' ' .. MasterMerchant.concat(...)
   end
+
+  local concatenatedString = concatenate(a, ...)
+  concatenatedString = string.gsub(concatenatedString, '^%s*(.-)%s*$', '%1')
+  return concatenatedString
 end
 
 function MasterMerchant.ShowChildren(control, startNum, endNum)

@@ -197,6 +197,9 @@ ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza price (%s): %s")
 ZO_CreateStringId("MM_BONANZAPTC_MM_TTC_FORMAT", "Bonanza price: %s")
 
 ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_PRICE_FORMAT", "TTC Price: ")
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_SUG_FORMAT", "Sug: %s")
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_AVG_FORMAT", "Avg: %s")
 
 -- New values
 ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s")

@@ -166,6 +166,8 @@ MasterMerchant.aaaa_test = {}
 MasterMerchant.aaaaa_test = {}
 MasterMerchant.aaaaaa_test = {}
 
+MM_STRING_EMPTY = ""
+MM_STRING_SEPARATOR = " "
 
 MM_GETPRICE_TYPE_DEALCALC = 1
 MM_GETPRICE_TYPE_INV_REPLACEMENT = 2
