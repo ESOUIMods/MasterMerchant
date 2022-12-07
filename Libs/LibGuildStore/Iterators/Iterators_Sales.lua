@@ -30,7 +30,7 @@ end
 -- And here we add a new item
 function internal:addSalesData(theEvent)
   -- DEBUG  Stop Adding
-  -- if true then return false end
+  if true then return false end
 
   --[[
   local theEvent = {
@@ -208,6 +208,7 @@ that word.
 ----------------------------------------
 
 function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
+  internal:dm("Debug", "iterateOverSalesData")
   extraData.versionCount = (extraData.versionCount or 0)
   extraData.idCount = (extraData.idCount or 0)
   extraData.checkMilliseconds = (extraData.checkMilliseconds or MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT)
@@ -223,8 +224,13 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
     itemid, versionlist = next(sales_data, itemid)
     extraData.versionRemoved = false
     versionid = nil
+    if itemid == nil then internal:dm("Debug", "itemid nil check : nil")
+    else internal:dm("Debug", string.format("itemid nil check : %s", itemid)) end
+    --internal:dm("Debug", versionlist)
   else
     versionlist = sales_data[itemid]
+    internal:dm("Debug", string.format("itemid else: %s", itemid))
+    --internal:dm("Debug", versionlist)
   end
   while (itemid ~= nil) do
     local versiondata
@@ -232,22 +238,40 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
       versionid, versiondata = next(versionlist, versionid)
       extraData.saleRemoved = false
       saleid = nil
+      if versionid == nil then internal:dm("Debug", "versionid nil check : nil")
+      else internal:dm("Debug", string.format("versionid nil check : %s", versionid)) end
+      --internal:dm("Debug", versiondata)
     else
       versiondata = versionlist[versionid]
+      internal:dm("Debug", string.format("versionid else: %s", versionid))
+      --internal:dm("Debug", versiondata)
     end
     itemLink = nil
     --[[ begin loop over ['x:x:x:x:x'] ]]--
     while (versionid ~= nil) do
+      internal:dm("Debug", string.format("begin while versionid: %s", versionid))
       if versiondata['sales'] then
+        internal:dm("Debug", "versiondata has sales")
         local saledata
         if saleid == nil then
           saleid, saledata = next(versiondata['sales'], saleid)
+          if saleid == nil then internal:dm("Debug", "saleid nil check : nil")
+          else internal:dm("Debug", string.format("saleid nil check : %s", saleid)) end
+          --internal:dm("Debug", saledata)
         else
           saledata = versiondata['sales'][saleid]
+          internal:dm("Debug", string.format("saleid else: %s", saleid))
+          --internal:dm("Debug", saledata)
         end
         if not itemLink and saledata and saledata["itemLink"] then itemLink = internal:GetItemLinkByIndex(saledata["itemLink"]) end
+        internal:dm("Debug", itemLink)
+        local totalCount = versiondata and versiondata.totalCount
+        if totalCount then internal:dm("Debug", string.format("versiondata['totalCount'] before while saleid: %s", totalCount))
+        else internal:dm("Debug", "Total Count before while was nil?") end
+        internal:dm("Debug", "saleRemoved before while saleid: " .. tostring(extraData.saleRemoved))
         --[[ begin loop over ['sales'] ]]--
         while (saleid ~= nil) do
+          internal:dm("Debug", string.format("begin while saleid: %s", saleid))
           --[[skipTheRest is true here from Truncate Sales because in that function
           you are looping over all the sales. Normally you are not and only processing
           a single sale. Therefore when skipTheRest is false you use:
@@ -258,10 +282,14 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
           ]]--
           local skipTheRest = loopfunc(itemid, versionid, versiondata, saleid, saledata, extraData)
           extraData.saleRemoved = extraData.saleRemoved or (versiondata['sales'][saleid] == nil)
+          internal:dm("Debug", "saleRemoved after skipTheRest loopfunc: " .. tostring(extraData.saleRemoved))
           if skipTheRest then
             saleid = nil
           else
             saleid, saledata = next(versiondata['sales'], saleid)
+            if saleid == nil then internal:dm("Debug", "skipTheRest saleid else: nil")
+            else internal:dm("Debug", string.format("skipTheRest saleid else: %s", saleid)) end
+            --internal:dm("Debug", saledata)
           end
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
@@ -271,8 +299,14 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
           end
         end
         --[[ end of loop over ['sales'] ]]--
+        internal:dm("Debug", "saleRemoved after while: " .. tostring(extraData.saleRemoved))
+
+        local totalCount = versiondata and versiondata.totalCount
+        if totalCount then internal:dm("Debug", string.format("versiondata['totalCount'] after while: %s", totalCount))
+        else internal:dm("Debug", "versiondata.totalCount after count was nil?") end
 
         if extraData.saleRemoved then
+          internal:dm("Debug", "saleRemoved using versiondata['sales'] for loop")
           local sales = {}
           local salesCount = 0
           extraData.newSalesCount = nil
@@ -290,9 +324,14 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
           versiondata["totalCount"] = extraData.newSalesCount
         end
       end
+      if versiondata["totalCount"] == nil then internal:dm("Debug", "versiondata['totalCount']: nil : before NonContiguousNonNilCount")
+      else internal:dm("Debug", string.format("versiondata['totalCount']: %s : before NonContiguousNonNilCount", versiondata["totalCount"])) end
 
+      -- /script sales = {}; versiondata = {}; versiondata['sales'] = {}; versiondata['sales'] = sales; if versiondata['sales'] == nil then d("it is nil") end; if #versiondata['sales'] == 0 then d("it is zero") end
       -- If we just deleted all the sales, clear the bucket out
       if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (versiondata["totalCount"] < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
+        if versionid == nil then internal:dm("Debug", "clear versionlist[versionid]: versionid nil")
+        else internal:dm("Debug", string.format("clear versionlist[%s] ", versionid)) end
         extraData.versionCount = (extraData.versionCount or 0) + 1
         versionlist[versionid] = nil
         extraData.versionRemoved = true
@@ -300,6 +339,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
 
       -- Sharlikran
       if LibGuildStore_SavedVariables["updateAdditionalText"] and not extraData.saleRemoved then
+        internal:dm("Debug", "Update Additional Text within the ['x:x:x:x:x']")
         if itemLink then
           versiondata['itemAdderText'] = internal:AddSearchToItem(itemLink)
           versiondata['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
@@ -308,12 +348,16 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
 
       -- Sharlikran
       if extraData.wasAltered and not extraData.saleRemoved then
+        internal:dm("Debug", "Reset wasAltered within the ['x:x:x:x:x']")
         versiondata["wasAltered"] = true
         extraData.wasAltered = false
       end
 
       -- Go onto the next Version
       versionid, versiondata = next(versionlist, versionid)
+      if versionid == nil then internal:dm("Debug", "Go onto the next Version versionid: nil")
+      else internal:dm("Debug", string.format("Go onto the next Version versionid: %s", versionid)) end
+      --internal:dm("Debug", versiondata)
       extraData.saleRemoved = false
       extraData.newSalesCount = nil
       saleid = nil
@@ -326,6 +370,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
     --[[ end loop over ['x:x:x:x:x'] ]]--
 
     if extraData.versionRemoved then
+      internal:dm("Debug", "versionRemoved using sales_data[itemid] for loop")
       local versions = {}
       for vid, vd in pairs(sales_data[itemid]) do
         if (vd ~= nil) and (type(vd) == 'table') then
@@ -337,12 +382,17 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
 
     -- If we just deleted everything, clear the bucket out
     if (sales_data[itemid] ~= nil and ((internal:NonContiguousNonNilCount(versionlist) < 1) or (type(itemid) ~= 'number'))) then
+      if itemid == nil then internal:dm("Debug", "clear sales_data[itemid]: itemid nil")
+      else internal:dm("Debug", string.format("clear sales_data[%s] ", itemid)) end
       extraData.idCount = (extraData.idCount or 0) + 1
       sales_data[itemid] = nil
     end
 
     -- Go on to the next Item
     itemid, versionlist = next(sales_data, itemid)
+    if itemid == nil then internal:dm("Debug", "Go on to the next Item itemid: nil")
+    else internal:dm("Debug", string.format("Go on to the next Item itemid: %s", itemid)) end
+    --internal:dm("Debug", versionlist)
     extraData.versionRemoved = false
     versionid = nil
   end

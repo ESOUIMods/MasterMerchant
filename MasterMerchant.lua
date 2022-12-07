@@ -318,8 +318,10 @@ end
 -- Vamp Fang |H1:item:64210:177:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h -- 1 bonanza listing no price to chat
 -- hide scraps |H1:item:71239:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h -- 1 bonanza listing no price to chat
 function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
-  -- MasterMerchant:dm("Debug", "GetTooltipStats")
-  -- MasterMerchant:dm("Debug", itemLink)
+  MasterMerchant:dm("Debug", "GetTooltipStats")
+  MasterMerchant:dm("Debug", itemLink)
+  MasterMerchant:dm("Debug", "averageOnly: " .. tostring(averageOnly))
+  MasterMerchant:dm("Debug", "generateGraph: " .. tostring(generateGraph))
   -- 10000 for numDays is more or less like saying it is undefined, or all
   --[[TODO why is there a days range of 10000. I get that it kinda means
   all days but the daysHistory seems to be the actual number to be using.
@@ -371,6 +373,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   if not MasterMerchant.isInitialized then return returnData end
   if not itemLink then return returnData end
 
+  MasterMerchant:dm("Debug", "SavedVariables showGraph: " .. tostring(MasterMerchant.systemSavedVariables.showGraph))
   if not MasterMerchant.systemSavedVariables.showGraph then
     generateGraph = false
   end
@@ -479,7 +482,14 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   local hasGraph = MasterMerchant:ItemCacheHasGraphInfoById(itemID, itemIndex, daysRange)
   local hasBonanza = MasterMerchant:ItemCacheHasBonanzaInfoById(itemID, itemIndex, daysRange)
   local createGraph = not hasGraph and generateGraph
+  MasterMerchant:dm("Debug", "hasSales: " .. tostring(hasSales))
+  MasterMerchant:dm("Debug", "hasListings: " .. tostring(hasListings))
+  MasterMerchant:dm("Debug", "hasPriceInfo: " .. tostring(hasPriceInfo))
+  MasterMerchant:dm("Debug", "hasGraph: " .. tostring(hasGraph))
+  MasterMerchant:dm("Debug", "hasBonanza: " .. tostring(hasBonanza))
+  MasterMerchant:dm("Debug", "createGraph: " .. tostring(createGraph))
   if hasSales and (not hasPriceInfo or createGraph) then
+    MasterMerchant:dm("Debug", "Generate Price Info and Graph")
     versionData = sales_data[itemID][itemIndex]
     salesData = versionData['sales']
     nameString = versionData.itemDesc
@@ -608,6 +618,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     end
   end
   if hasPriceInfo and not createGraph then
+    MasterMerchant:dm("Debug", "Retrieve PriceInfo!")
     local itemInfo = MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
     avgPrice = itemInfo.avgPrice
     legitSales = itemInfo.numSales
@@ -623,6 +634,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     end
   end
   if hasListings and (not hasBonanza and not averageOnly) then
+    MasterMerchant:dm("Debug", "Generate Bonanza!")
     bonanzaList = listings_data[itemID][itemIndex]['sales']
     bonanzaList = RemoveListingsPerBlacklist(bonanzaList)
     if #bonanzaList >= 6 then
@@ -666,6 +678,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     if bonanzaPrice then cacheBonanza = true end
   end
   if hasBonanza and not cacheBonanza then
+    MasterMerchant:dm("Debug", "Retrieve Bonanza!")
     local itemInfo = MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
     bonanzaPrice = itemInfo.bonanzaPrice
     bonanzaListings = itemInfo.bonanzaListings
@@ -674,7 +687,9 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   if itemType == ITEMTYPE_MASTER_WRIT and MasterMerchant.systemSavedVariables.includeVoucherAverage then
     numVouchers = MasterMerchant_Internal:GetVoucherCountByItemLink(itemLink)
   end
+  MasterMerchant:dm("Debug", "cacheBonanza: " .. tostring(cacheBonanza))
   if hasSales and (not hasPriceInfo or createGraph or cacheBonanza) then
+    MasterMerchant:dm("Debug", "Adding to cache")
     local itemInfo = {
       avgPrice = avgPrice,
       numSales = legitSales,
@@ -687,11 +702,13 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     }
     graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints }
     if legitSales and legitSales > 1500 and salesPoints then
+      MasterMerchant:dm("Debug", "Adding Graph to cache")
       itemInfo.graphInfo = graphInfo
     end
     MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
   end
   if salesPoints then
+    MasterMerchant:dm("Debug", "Has Sales Points!")
     graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints }
   end
   returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
@@ -4122,6 +4139,43 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", GetString(MM_HELP_TRAITS))
     MasterMerchant:dm("Info", GetString(MM_HELP_QUALITY))
     MasterMerchant:dm("Info", GetString(MM_HELP_EQUIP))
+    return
+  end
+
+  if args == 'test' then
+    internal.dataToReset = internal.GS_NA_NAMESPACE
+    GS00DataSavedVariables[internal.dataToReset] = {}
+    GS01DataSavedVariables[internal.dataToReset] = {}
+    GS02DataSavedVariables[internal.dataToReset] = {}
+    GS03DataSavedVariables[internal.dataToReset] = MasterMerchant.testSales
+    GS04DataSavedVariables[internal.dataToReset] = {}
+    GS05DataSavedVariables[internal.dataToReset] = {}
+    GS06DataSavedVariables[internal.dataToReset] = {}
+    GS07DataSavedVariables[internal.dataToReset] = {}
+    GS08DataSavedVariables[internal.dataToReset] = {}
+    GS09DataSavedVariables[internal.dataToReset] = {}
+    GS10DataSavedVariables[internal.dataToReset] = {}
+    GS11DataSavedVariables[internal.dataToReset] = {}
+    GS12DataSavedVariables[internal.dataToReset] = {}
+    GS13DataSavedVariables[internal.dataToReset] = {}
+    GS14DataSavedVariables[internal.dataToReset] = {}
+    GS15DataSavedVariables[internal.dataToReset] = {}
+    GS15DataSavedVariables[internal.dataToReset] = {}
+    GS16DataSavedVariables["itemLink"] = MasterMerchant.testItemLinks
+    GS16DataSavedVariables["guildNames"] = MasterMerchant.testGuilds
+    GS16DataSavedVariables["accountNames"] = MasterMerchant.testAccountNames
+    internal.guildPurchases = {}
+    internal.guildSales = {}
+    internal.guildItems = {}
+    internal.myItems = {}
+    sales_data = {}
+    sr_index = {}
+    local LEQ = LibExecutionQueue:new()
+    LEQ:Add(function() internal:ReferenceSalesDataContainer() end, 'ReferenceSalesDataContainer')
+    LEQ:Add(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
+    LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
+    LEQ:Add(function() internal:IndexSalesData() end, 'IndexSalesData')
+    LEQ:Start()
     return
   end
 
