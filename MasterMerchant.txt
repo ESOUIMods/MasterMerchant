@@ -42,6 +42,7 @@ AGS_Integration\SortOrderDealPercent.lua
 MasterMerchant_Writs.lua
 MasterMerchant_DealCalc.lua
 MasterMerchant_Util.lua
+MasterMerchant_Tooltip.lua
 MasterMerchant_UI.lua
 MasterMerchant_Guild.lua
 MasterMerchant_Graph.lua

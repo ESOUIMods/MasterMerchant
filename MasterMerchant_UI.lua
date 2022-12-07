@@ -1280,6 +1280,8 @@ function MMScrollList:FilterScrollList()
     else
       -- We have the indexes to search
       -- Break up search term into words
+      --[[TODO: look into ways to display personal sales without simply
+      adding the player special text to the list of search words. ]]--
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode then
         searchText = MasterMerchant.concat(searchText, internal.PlayerSpecialText)
       end
@@ -2017,8 +2019,9 @@ function MasterMerchant:remStatsItemTooltip()
   ItemTooltip.warnText = nil
   ItemTooltip.vendorWarnText = nil
   ItemTooltip.mmText = nil
-  ItemTooltip.mmTTCText = nil
   ItemTooltip.mmBonanzaText = nil
+  ItemTooltip.mmTTCText = nil
+  ItemTooltip.mmVoucherText = nil
   ItemTooltip.mmCraftText = nil
   ItemTooltip.mmMatText = nil
   ItemTooltip.mmTextDebug = nil
@@ -2045,6 +2048,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   local craftCostLine = nil
   local bonanzaTipline = nil
   local ttcTipline = nil
+  local voucherTipline = nil
   local materialCostLine = nil
   local removedWarningTipline = nil
   local vendorWarningTipline = nil
@@ -2055,11 +2059,16 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   local hasGraphInfo = false
   local validAnalysisButtonType = itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
-  -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
-  -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
+  -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaListings, bonanzaItemCount, graphInfo
+  -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaListings, bonanzaItemCount, graphInfo
   -- input ['graphInfo']: oldestTime, lowPrice, highPrice, salesPoints
   -- return ['graphInfo']: oldestTime, low, high, points
-  local statsInfo = self:GetTooltipStats(itemLink, false)
+  local statsInfo = self:GetTooltipStats(itemLink, false, true)
+  local priceStats
+  local useTTCPrice = MasterMerchant.systemSavedVariables.showAltTtcTipline or (MasterMerchant.systemSavedVariables.includeVoucherAverage and (MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_SUGGESTED or MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_AVERAGE))
+  if TamrielTradeCentre and useTTCPrice then
+    priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+  end
   local graphInfo = statsInfo.graphInfo
   if graphInfo and graphInfo.points ~= nil then
     hasGraphInfo = true
@@ -2080,21 +2089,25 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     craftCostLine = self:CraftCostPriceTip(itemLink, false)
   end
   if MasterMerchant.systemSavedVariables.showMaterialCost and itemType == ITEMTYPE_MASTER_WRIT then
-    materialCostLine = MasterMerchant_Internal:MaterialCostPriceTip(itemLink, purchasePrice)
+    materialCostLine = MasterMerchant:MaterialCostPriceTip(itemLink, purchasePrice)
   end
   if statsInfo.avgPrice then
     masterMerchantTipline = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false, statsInfo.numVouchers)
   end
   if statsInfo.bonanzaPrice then
-    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, false, statsInfo.numVouchers)
+    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaListings, statsInfo.bonanzaItemCount, false, statsInfo.numVouchers)
   end
-  if TamrielTradeCentre then
-    ttcTipline = MasterMerchant:TTCPriceTip(itemLink)
+  if MasterMerchant.systemSavedVariables.showAltTtcTipline and TamrielTradeCentre then
+    ttcTipline = MasterMerchant:TTCPriceTip(priceStats)
   end
-  if statsInfo.bonanzaSales and (statsInfo.bonanzaSales < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
+  if statsInfo.bonanzaListings and (statsInfo.bonanzaListings < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
     statsInfo.bonanzaPrice = nil
-    statsInfo.bonanzaSales = nil
-    statsInfo.bonanzaCount = nil
+    statsInfo.bonanzaListings = nil
+    statsInfo.bonanzaItemCount = nil
+  end
+  local useVoucherCount = statsInfo and statsInfo.numVouchers and statsInfo.numVouchers > 0 and MasterMerchant.systemSavedVariables.includeVoucherAverage
+  if useVoucherCount then
+    voucherTipline = MasterMerchant:VoucherAveragePriceTip(statsInfo, priceStats, false)
   end
 
   if not tooltip.textPool then
@@ -2232,8 +2245,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     tooltip.tooltipTextPool = ZO_ControlPool:New("MMTooltipText", tooltip, "MMTooltipLine")
   end
 
-  local hasTiplineOrGraph = vendorWarningTipline or removedWarningTipline or masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
-  local hasTiplineControls = tooltip.vendorWarnText or tooltip.warnText or tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
+  local hasTiplineOrGraph = vendorWarningTipline or removedWarningTipline or masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or voucherTipline or materialCostLine
+  local hasTiplineControls = tooltip.vendorWarnText or tooltip.warnText or tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmVoucherText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
 
   if hasTiplineOrGraph and not hasTiplineControls then
     tooltip:AddVerticalPadding(2)
@@ -2313,6 +2326,22 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     if tooltip.mmTTCText then
       tooltip.mmTTCText:SetText(ttcTipline)
       tooltip.mmTTCText:SetColor(1, 1, 1, 1)
+    end
+
+  end
+
+  if voucherTipline and MasterMerchant.systemSavedVariables.includeVoucherAverage then
+
+    if not tooltip.mmVoucherText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmVoucherText = tooltip.tooltipTextPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmVoucherText)
+      tooltip.mmVoucherText:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmVoucherText then
+      tooltip.mmVoucherText:SetText(voucherTipline)
+      tooltip.mmVoucherText:SetColor(1, 1, 1, 1)
     end
 
   end
@@ -2488,6 +2517,7 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
+    Popup.mmVoucherText = nil
     Popup.mmCraftText = nil
     Popup.mmMatText = nil
     Popup.mmTextDebug = nil
@@ -2534,6 +2564,7 @@ function MasterMerchant:addStatsProvisionerTooltip(Popup)
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
+    Popup.mmVoucherText = nil
     Popup.mmCraftText = nil
     Popup.mmMatText = nil
     Popup.mmTextDebug = nil
@@ -2563,6 +2594,7 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
   Popup.mmText = nil
   Popup.mmBonanzaText = nil
   Popup.mmTTCText = nil
+  Popup.mmVoucherText = nil
   Popup.mmCraftText = nil
   Popup.mmMatText = nil
   Popup.mmTextDebug = nil
@@ -2711,6 +2743,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
       ItemTooltip.mmText = nil
       ItemTooltip.mmBonanzaText = nil
       ItemTooltip.mmTTCText = nil
+      ItemTooltip.mmVoucherText = nil
       ItemTooltip.mmCraftText = nil
       ItemTooltip.mmMatText = nil
       ItemTooltip.mmTextDebug = nil

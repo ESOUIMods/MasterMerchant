@@ -4,13 +4,13 @@ local function GetAveragePrice(bagId, slotIndex)
   if IsInGamepadPreferredMode() then return averagePrice end
   local itemLink = GetItemLink(bagId, slotIndex, LINK_STYLE_DEFAULT)
   if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_MM_AVERAGE then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, false)
     if tipStats.avgPrice then
       averagePrice = tipStats.avgPrice
     end
   end
   if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_BONANZA then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, false)
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, false, false)
     if tipStats.bonanzaPrice then
       averagePrice = tipStats.bonanzaPrice
     end

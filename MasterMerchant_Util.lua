@@ -67,20 +67,16 @@ end
 
 -- MM has no data   for |H1:item:86987:363:50:0:0:0:0:0:0:0:0:0:0:0:1:3:0:1:0:400:0|h|h
 
-function MasterMerchant.concat(a, ...)
-  local function concatenate(a, ...)
-    if a == nil and ... == nil then
-      return MM_STRING_EMPTY
-    elseif a == nil or a == MM_STRING_EMPTY then
-      return concatenate(...)
-    else
-      return tostring(a) .. MM_STRING_SEPARATOR_SPACE .. concatenate(...)
+function MasterMerchant.concat(...)
+  local theString = MM_STRING_EMPTY
+  for i = 1, select('#', ...) do
+    local option = select(i, ...)
+    if option ~= nil and option ~= MM_STRING_EMPTY then
+      theString = theString .. tostring(option) .. MM_STRING_SEPARATOR_SPACE
     end
   end
-
-  local concatenatedString = concatenate(a, ...)
-  concatenatedString = string.gsub(concatenatedString, '^%s*(.-)%s*$', '%1')
-  return concatenatedString
+  theString = string.gsub(theString, '^%s*(.-)%s*$', '%1')
+  return theString
 end
 
 function MasterMerchant.ShowChildren(control, startNum, endNum)
@@ -104,7 +100,7 @@ end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
   if itemLink then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, false)
     if tipStats.avgPrice then
       return tipStats.avgPrice
     end
@@ -233,6 +229,18 @@ function MasterMerchant.TextTimeSince(timestamp)
   else
     return GetTimeAgo(timestamp)
   end
+end
+
+function MasterMerchant:BuildTableFromString(str)
+  local t = {}
+  local function helper(line)
+    if line ~= MM_STRING_EMPTY then
+      t[line] = true
+    end
+    return MM_STRING_EMPTY
+  end
+  helper((str:gsub("(.-)\r?\n", helper)))
+  if next(t) then return t end
 end
 
 -- A utility function to grab all the keys of the sound table

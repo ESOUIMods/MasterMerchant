@@ -188,35 +188,6 @@ function mmInternal:MaterialCostPrice(itemLink)
   end
 end
 
--- /script d(MasterMerchant_Internal:MaterialCostPriceTip("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
-function mmInternal:MaterialCostPriceTip(itemLink, writCost)
-  local cost = mmInternal:MaterialCostPrice(itemLink)
-  local costTipString = ""
-  local writCostTipString = ""
-  local totalCostTipString = ""
-  local materialTooltipString = ""
-  local totalCost = 0
-  if cost and not writCost then
-    costTipString = MasterMerchant.LocalizedNumber(cost) .. MM_COIN_ICON_NO_SPACE
-    materialTooltipString = string.format(GetString(MM_MATCOST_PRICE_TIP), costTipString)
-  elseif cost and writCost then
-    totalCost = cost + writCost
-    costTipString = MasterMerchant.LocalizedNumber(cost) .. MM_COIN_ICON_NO_SPACE
-    writCostTipString = MasterMerchant.LocalizedNumber(writCost) .. MM_COIN_ICON_NO_SPACE
-    totalCostTipString = MasterMerchant.LocalizedNumber(totalCost) .. MM_COIN_ICON_NO_SPACE
-    materialTooltipString = string.format(GetString(MM_MATCOST_PLUS_WRITCOST_TIP), costTipString, writCostTipString, totalCostTipString)
-  end
-  local qtyRequired = mmInternal:GetWinterWritRequiredQty(itemLink)
-  if materialTooltipString ~= MM_STRING_EMPTY and not qtyRequired then
-    materialTooltipString = materialTooltipString .. "\n(qty not in database)"
-  end
-  if materialTooltipString ~= MM_STRING_EMPTY then
-    return materialTooltipString
-  else
-    return nil
-  end
-end
-
 -- /script d(MasterMerchant_Internal:GetWinterWritRequiredQty("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 -- /script d(MasterMerchant_Internal:GetWritFields("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 -- /script d(MasterMerchant_Internal.winterWritsRequiredQty[118034])

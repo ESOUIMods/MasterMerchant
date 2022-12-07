@@ -191,9 +191,10 @@ function MM_Graph:OnGraphPointClicked(graphPointControl, mouseButton, sellerName
   if lengthBlacklist + lengthSellerName > 2000 then
     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
-    if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
+    if not MasterMerchant:IsInBlackList(sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
       MasterMerchant:ResetItemInformationCache()
+      MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
     end
   end
 end
@@ -204,9 +205,10 @@ function MM_Graph:OnSellerNameClicked(self, mouseButton, sellerName, itemLink)
   if lengthBlacklist + lengthSellerName > 2000 then
     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
-    if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
+    if not MasterMerchant:IsInBlackList(sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
       MasterMerchant:ResetItemInformationCache()
+      MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
     end
   end
 end

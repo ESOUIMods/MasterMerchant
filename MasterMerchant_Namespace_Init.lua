@@ -90,10 +90,6 @@ MM_PRICE_TTC_AVERAGE = 2
 MM_PRICE_MM_AVERAGE = 3
 MM_PRICE_BONANZA = 4
 
-MM_PTC_DEFAULT_FORMAT = 1
-MM_PTC_CONDENSED_FORMAT = 2
-MM_PTC_MM_TTC_FORMAT = 3
-
 MM_AGS_SORT_PERCENT_ASCENDING = 1
 MM_AGS_SORT_PERCENT_DESCENDING = 2
 
@@ -132,6 +128,7 @@ MasterMerchant.fontListChoices = {} -- added 12-16 but always there
 MasterMerchant.isFirstScan = false -- added again 5-14-2021 but used previously
 MasterMerchant.removedItemIdTable = {} -- added 11-21-2022
 MasterMerchant.guildList = {}
+MasterMerchant.blacklistTable = {}
 MasterMerchant.filterDateRanges = nil
 MasterMerchant.dateRanges = nil
 
@@ -191,6 +188,14 @@ MasterMerchant.originalRosterStatsCallback = nil
 MasterMerchant.originalRosterBuildMasterList = nil
 
 MasterMerchant.itemInformationCache = { }
+
+-- Price formatters
+MasterMerchant.formatterNumSalesSingle = nil
+MasterMerchant.formatterNumSalesPlural = nil
+MasterMerchant.formatterNumItemsSingle = nil
+MasterMerchant.formatterNumItemsPlural = nil
+MasterMerchant.formatterNumListingsSingle = nil
+MasterMerchant.formatterNumListingsPlural = nil
 
 -------------------------------------------------
 ----- helpers                               -----
