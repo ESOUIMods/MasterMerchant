@@ -195,7 +195,7 @@ function MasterMerchant:GetTiplineInfo(itemLink)
   if statsInfo and not statsInfo.avgPrice then masterMerchantPTC = MasterMerchant.concatTooltip(GetString(MM_PTC_NO_DATA_HEADER), avgPriceDays)
   else masterMerchantPTC = MasterMerchant.concatTooltip(GetString(MM_PTC_MM_HEADER), avgPriceNumSales, avgPriceNumItems, avgPriceDays, avgPriceString) end
 
-  bonanzaPTC = MasterMerchant.concatTooltip(GetString(MM_PTC_BONANZA_HEADER), bonanzaNumListingsString, bonanzaNumItemsString, GetString(MM_PTC_CLOSING_SEPERATOR), bonanzaPriceString)
+  if bonanzaPriceString then bonanzaPTC = MasterMerchant.concatTooltip(GetString(MM_PTC_BONANZA_HEADER), bonanzaNumListingsString, bonanzaNumItemsString, GetString(MM_PTC_CLOSING_SEPERATOR), bonanzaPriceString) end
 
   ttcPTC = MasterMerchant.concatTooltip(GetString(MM_PTC_TTC_HEADER), ttcNumListingsString, ttcNumItemsString, GetString(MM_PTC_CLOSING_SEPERATOR), GetString(MM_PTC_COLON_SPACE_SEPERATOR), ttcSuggestedPriceString, ttcAvgPriceString)
 
