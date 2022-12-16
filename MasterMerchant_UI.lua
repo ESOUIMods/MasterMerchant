@@ -2096,9 +2096,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   if MasterMerchant.systemSavedVariables.showMaterialCost and itemType == ITEMTYPE_MASTER_WRIT then
     materialCostLine = MasterMerchant:MaterialCostPriceTip(itemLink, purchasePrice)
   end
-  if statsInfo.avgPrice then
-    masterMerchantTipline = MasterMerchant:AvgPricePriceTip(statsInfo, false)
-  end
+  masterMerchantTipline = MasterMerchant:AvgPricePriceTip(statsInfo, false)
   if statsInfo.bonanzaPrice then
     bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo, false)
   end

@@ -179,25 +179,35 @@ ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. prix (%s, %d jours): %.2f")
 ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d vendre/%d Ventes]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d article/%d articles]>>")
 
---[[TODO Eliminate these in favor of new formatting
+--[[TODO verify used strings
 ]]--
+ZO_CreateStringId("MM_MMPTC_CONDENSED_FORMAT", "MM price (S:%s, D:%s): %s") -- sales and days
+ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza price (L:%s): %s") -- listings
+ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
+
 -- New Price Formatting Strings
 ZO_CreateStringId("MM_PTC_VOUCHER_VALUE_TYPE_NAME", "Average Voucher Cost Type")
 ZO_CreateStringId("MM_PTC_VOUCHER_VALUE_TYPE_TIP", "Calculate the average voucher cost based on the MM Average, TTC Average, TTC Suggested, and Bonanza Average prices.")
 
 ZO_CreateStringId("MM_PTC_MM_HEADER", "MM price (")
-ZO_CreateStringId("MM_PTC_NO_DATA_HEADER", "MM has no data")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "MM has no data in the last %d days")
-
 ZO_CreateStringId("MM_PTC_BONANZA_HEADER", "Bonanza price (")
 ZO_CreateStringId("MM_PTC_TTC_HEADER", "TTC price (")
-ZO_CreateStringId("MM_PTC_PER_VOUCHER", "%s :per voucher")
+
+ZO_CreateStringId("MM_TIP_MM_HEADER", "MM (")
+ZO_CreateStringId("MM_TIP_BONANZA_HEADER", "Bonanza (")
+ZO_CreateStringId("MM_TIP_TTC_HEADER", "TTC (")
+
+ZO_CreateStringId("MM_NO_DATA_FORMAT", "no sales data")
+ZO_CreateStringId("MM_NO_DATA_RANGE_FORMAT", "no sales data in last %d days")
+
+ZO_CreateStringId("MM_PTC_PER_VOUCHER", "Per Voucher Average: %s")
 
 ZO_CreateStringId("MM_PTC_CLOSING_SEPERATOR", ")")
+ZO_CreateStringId("MM_PTC_CLOSING_SEPERATOR_SPACE", ") ")
 ZO_CreateStringId("MM_PTC_SLASH_SEPERATOR", "/")
 ZO_CreateStringId("MM_PTC_COLON_SPACE_SEPERATOR", ": ")
+ZO_CreateStringId("MM_PTC_COMMA_SPACE_SEPERATOR", ", ")
 ZO_CreateStringId("MM_PTC_COLON_SEPERATOR", ":")
-ZO_CreateStringId("MM_PTC_COMMA_SEPERATOR", ", ")
 ZO_CreateStringId("MM_PTC_PRICE_FORMATER", ": %s")
 
 ZO_CreateStringId("MM_PTC_SINGULAR_SALE", "%s sale")
@@ -371,7 +381,9 @@ ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "ShoppingList")
 ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 
 -- New Price To Chat Options
-ZO_CreateStringId("MM_FORMAT_OPTIONS_NAME", "Price To Chat Options")
+ZO_CreateStringId("MM_PTC_OPTIONS_HEADER", "Price To Chat Options")
+ZO_CreateStringId("MM_PTC_CONDENSED_FORMAT_NAME", "Use Condensed Format")
+ZO_CreateStringId("MM_PTC_CONDENSED_FORMAT_TIP", "Use a condensed Price To Chat format. TTC Pricing data will be included if installed.")
 ZO_CreateStringId("MM_PTC_ITEM_COUNT_NAME", "Include Item Count")
 ZO_CreateStringId("MM_PTC_ITEM_COUNT_TIP", "Include Item Count with Price formatting.")
 

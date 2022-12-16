@@ -137,22 +137,6 @@ local function RemoveListingsPerBlacklist(list)
   return dataList, statsData
 end
 
-function UseSalesByTimestamp(list, timeCheck)
-  local dataList = { }
-  local count = 0
-  local oldestTime = nil
-  local newestTime = nil
-  for _, item in pairs(list) do
-    if item.timestamp > timeCheck then
-      if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
-      if newestTime == nil or newestTime < item.timestamp then newestTime = item.timestamp end
-      count = count + 1
-      table.insert(dataList, item)
-    end
-  end
-  return dataList, count, oldestTime, newestTime
-end
-
 local stats = {}
 
 function stats.CleanUnitPrice(salesRecord)
@@ -398,9 +382,14 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   local graphInfo = nil
   local cacheBonanza = false
 
+  -- set timeCheck and daysRange for cache and tooltips
+  local timeCheck, daysRange = self:CheckTimeframe()
+  if daysRange ~= 10000 then daysHistory = daysRange end
+
   local returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                        ['bonanzaPrice'] = bonanzaPrice, ['bonanzaListings'] = bonanzaListings, ['bonanzaItemCount'] = bonanzaItemCount, ['numVouchers'] = numVouchers,
                        ['graphInfo'] = graphInfo }
+
   if not MasterMerchant.isInitialized then return returnData end
   if not itemLink then return returnData end
 
@@ -517,9 +506,6 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   salesDetails = MasterMerchant.systemSavedVariables.displaySalesDetails
   ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
 
-  -- set time for cache
-  local timeCheck, daysRange = self:CheckTimeframe()
-
   -- make sure we have a list of sales to work with
   local hasSales = MasterMerchant:itemIDHasSales(itemID, itemIndex)
   local hasListings = MasterMerchant:itemIDHasListings(itemID, itemIndex)
@@ -533,12 +519,6 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     nameString = versionData.itemDesc
     oldestTime = versionData.oldestTime
     newestTime = versionData.newestTime
-
-    --[[
-    if daysRange ~= 10000 then
-      list, initCount, oldestTime, newestTime = UseSalesByTimestamp(list, timeCheck)
-    end
-    ]]--
 
     --[[1-2-2021 Our sales data is now ready to be trimmed if
     trim outliers is active.
@@ -555,12 +535,12 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     1-2-2021 Needs updated
 
     local lookupDataFound = dataPresent(itemID, itemIndex, daysRange)
+
+    12-11-2022 Old 'daysHistory = daysRange' moved above for tooltips
     ]]--
     if (daysRange == 10000) then
       local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS)
       daysHistory = quotient + math.floor(0.5 + remainder)
-    else
-      daysHistory = daysRange
     end
 
     local useDaysRange = daysRange ~= 10000
@@ -986,34 +966,6 @@ function MasterMerchant:itemCraftPrice(itemLink)
   end
 end
 
---[[TODO Verified Good
-]]--
-function MasterMerchant:CraftCostPriceTip(itemLink, chatText)
-  local cost, costPerItem = self:itemCraftPrice(itemLink)
-  local costTipString = ""
-  local costPerItemTipString = ""
-  local craftTip = ""
-  local craftingTooltipString = ""
-  if cost then
-    costTipString = self.LocalizedNumber(cost)
-    craftTip = GetString(MM_CRAFTCOST_PRICE_TIP)
-    if not chatText then craftTip = craftTip .. MM_COIN_ICON_NO_SPACE end
-    craftingTooltipString = string.format(craftTip, costTipString)
-  end
-  -- if costPerItem, craftingTooltipString is overridden
-  if costPerItem then
-    costPerItemTipString = self.LocalizedNumber(costPerItem)
-    craftTip = GetString(MM_CRAFTCOSTPER_PRICE_TIP)
-    if not chatText then craftTip = craftTip .. MM_COIN_ICON_NO_SPACE end
-    craftingTooltipString = string.format(craftTip, costTipString, costPerItemTipString)
-  end
-  if craftingTooltipString ~= MM_STRING_EMPTY then
-    return craftingTooltipString
-  else
-    return nil
-  end
-end
-
 function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
   local checkTime = GetGameTimeMilliseconds()
   local recNumber = startNumber - 1
@@ -1231,8 +1183,8 @@ end
 -- included in all copies or substantial portions of the Software.
 
 function MasterMerchant:OnItemLinkAction(itemLink)
-  local tipLine = MasterMerchant:GetTiplineInfo(itemLink)
-  -- no MM data handeled in GetTiplineInfo
+  local tipLine = MasterMerchant:GetPriceToChatText(itemLink)
+  -- no MM data handled in GetPriceToChatText
   if tipLine then
     local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
     if (not ChatEditControl:HasFocus()) then StartChatInput() end
@@ -2340,22 +2292,18 @@ function MasterMerchant:LibAddonInit()
   -- Section: Price To Chat and Graphtip Options
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(MM_FORMAT_OPTIONS_NAME),
+    name = GetString(MM_PTC_OPTIONS_HEADER),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#PriceToChatOptions",
-  }
-  optionsData[#optionsData + 1] = {
-    type = "description",
-    text = GetString(MM_FORMAT_OPTIONS_DESC),
   }
   -- Whether or not to show individual item count
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
-    name = GetString(MM_PTC_ITEM_COUNT_NAME),
-    tooltip = GetString(MM_PTC_ITEM_COUNT_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.includeItemCountPriceToChat end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.includeItemCountPriceToChat = value end,
-    default = MasterMerchant.systemDefault.includeItemCountPriceToChat,
+    name = GetString(MM_PTC_CONDENSED_FORMAT_NAME),
+    tooltip = GetString(MM_PTC_CONDENSED_FORMAT_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.useCondensedPriceToChat end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.useCondensedPriceToChat = value end,
+    default = MasterMerchant.systemDefault.useCondensedPriceToChat,
   }
   -- Whether or not to show ttc info
   optionsData[#optionsData + 1] = {
@@ -2365,6 +2313,15 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.includeTTCDataPriceToChat end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.includeTTCDataPriceToChat = value end,
     default = MasterMerchant.systemDefault.includeTTCDataPriceToChat,
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_PTC_ITEM_COUNT_NAME),
+    tooltip = GetString(MM_PTC_ITEM_COUNT_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.includeItemCountPriceToChat end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.includeItemCountPriceToChat = value end,
+    default = MasterMerchant.systemDefault.includeItemCountPriceToChat,
+    disabled = function() return MasterMerchant.systemSavedVariables.useCondensedPriceToChat end,
   }
   -- Whether or not to show the bonanza price if less then 6 listings
   optionsData[#optionsData + 1] = {
@@ -3442,6 +3399,7 @@ function MasterMerchant:FirstInitialize()
     offlineSales = true,
     showPricing = true,
     showBonanzaPricing = true,
+    useCondensedPriceToChat = false,
     omitBonanzaPricingGraphLessThanSix = false,
     omitBonanzaPricingChatLessThanSix = false,
     includeItemCountPriceToChat = false,
