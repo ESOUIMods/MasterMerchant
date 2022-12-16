@@ -183,4 +183,17 @@ MasterMerchant["vendor_price_table"] = {
   [ITEMTYPE_LURE] = {
     [42877] = 15,
   },
+  [ITEMTYPE_AVA_REPAIR] = {
+    [142133] = 90,
+    [27962] = 90,
+    [27138] = 90,
+    [27112] = 90,
+  },
+  [ITEMTYPE_SIEGE] = {
+    [27114] = 450,
+    [27971] = 450,
+  },
+  [ITEMTYPE_SOUL_GEM] = {
+    [27114] = 156,
+  },
 }

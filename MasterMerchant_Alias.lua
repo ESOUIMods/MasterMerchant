@@ -61,7 +61,7 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     tipFormat = string.gsub(tipFormat, '.2f', 's')
     tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
     -- chatText
-    if not chatText then tipFormat = tipFormat .. MasterMerchant.coinIcon end
+    if not chatText then tipFormat = tipFormat .. MM_COIN_ICON_NO_SPACE end
     local salesString = zo_strformat(GetString(SK_OLD_PRICETIP_SALES), tipStats['numSales'])
     if tipStats['numSales'] ~= tipStats['numItems'] then
       salesString = salesString .. zo_strformat(GetString(MM_OLD_PRICETIP_ITEMS), tipStats['numItems'])
@@ -76,7 +76,7 @@ end
 
 function MasterMerchant:itemStats(itemLink, clickable)
   GenerateLogMessage("itemStats")
-  return MasterMerchant:GetTooltipStats(itemLink, true)
+  return MasterMerchant:GetTooltipStats(itemLink, true, false)
 end
 
 function MasterMerchant:toolTipStats(theIID, itemIndex, skipDots, goBack, clickable)

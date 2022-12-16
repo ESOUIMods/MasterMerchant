@@ -19,7 +19,7 @@
         MM_Graph:MyGraphPointClickHandler(self, button, upInside, self.sellerName)
       </OnMouseUp>
     </Label>
-  
+
     <Backdrop name="MasterMerchantPrice" inherits="ZO_EditBackdrop" virtual="true">
       <Dimensions x="88" y="25"/>
       <Controls>
@@ -34,8 +34,14 @@
       <Dimensions x="372" y="150"/>
       <Controls>
         <Texture name="$(parent)Grid" textureFile="MasterMerchant/img/mm_chart_grid.dds" alpha=".2"/>
-        <Texture name="$(parent)AveragePrice" textureFile="MasterMerchant/img/mm_chart_marker.dds" alpha=".2"/>
-        <Texture name="$(parent)BonanzaPrice" textureFile="MasterMerchant/img/mm_chart_marker.dds" alpha=".2"/>
+        <Texture name="$(parent)AveragePriceMarker" textureFile="MasterMerchant/img/mm_chart_marker.dds" alpha=".2"/>
+        <Texture name="$(parent)BonanzaPriceMarker" textureFile="MasterMerchant/img/mm_chart_marker.dds" alpha=".2"/>
+        <Label name="$(parent)AveragePriceLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="AveragePrice">
+          <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+        </Label>
+        <Label name="$(parent)BonanzaPriceLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="BonanzaPrice">
+          <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+        </Label>
         <Label name="$(parent)HighPrice" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="HighPrice">
           <Anchor point="RIGHT" relativeTo="$(parent)Grid" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
         </Label>
@@ -51,8 +57,8 @@
       </Controls>
     </Control>
 
-    <!-- MMGraphLabel was the quality buttons and the tooltip text. Now only Quality Buttons. -->
-    <Label name="MMGraphLabel" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true"
+    <!-- MMGraphLabel was the quality buttons and the tooltip text. Renamed MMQualityLabel -->
+    <Label name="MMQualityLabel" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true"
            color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="XXX">
       <OnLinkMouseUp>
         ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
@@ -60,9 +66,38 @@
     </Label>
 
     <!-- For all the different tooltip text -->
-    <Label name="MMTooltipText" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true" 
+    <Label name="MMTooltipText" virtual="true" font="ZoFontGame" linkEnabled="true" mouseEnabled="true"
            color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="XXX">
     </Label>
+
+    <Control name="MasterMerchantTooltipText" virtual="true" hidden="true">
+      <Controls>
+        <Label name="$(parent)WarnText" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)VendorWarn" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)WarnText" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)VoucherAverage" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)VendorWarn" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)MasterMerchant" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)VoucherAverage" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)Bonanza" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)MasterMerchant" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)TTC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)Bonanza" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)CraftCost" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)TTC" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)MaterialCost" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" text="5 Days Ago">
+          <Anchor point="TOP" relativeTo="$(parent)CraftCost" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+        </Label>
+      </Controls>
+    </Control>
 
     <Control name="MasterMerchantPriceCalc" virtual="true" hidden="true" tier="high">
       <Dimensions x="170" y="95"/>

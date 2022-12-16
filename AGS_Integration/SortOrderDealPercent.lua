@@ -29,7 +29,7 @@ if AwesomeGuildStore then
       margin_b = margin_b or 0.0001
       if (margin_a == margin_b) then return 0 end
 
-      if MasterMerchant.systemSavedVariables.agsPercentSortOrderToUse == MasterMerchant.AGS_PERCENT_ASCENDING then
+      if MasterMerchant.systemSavedVariables.agsPercentSortOrderToUse == MM_AGS_SORT_PERCENT_ASCENDING then
         return margin_a < margin_b and 1 or -1
       else
         return margin_a > margin_b and 1 or -1

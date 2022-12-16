@@ -7,17 +7,16 @@ because that will not be available this early.
 local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
 
-function internal:concat(a, ...)
-  if a == nil and ... == nil then
-    return ''
-  elseif a == nil then
-    return internal:concat(...)
-  else
-    if type(a) == 'boolean' then
-      --d(tostring(a) .. ' ' .. internal:concat(...))
+function internal:concat(...)
+  local theString = MM_STRING_EMPTY
+  for i = 1, select('#', ...) do
+    local option = select(i, ...)
+    if option ~= nil and option ~= MM_STRING_EMPTY then
+      theString = theString .. tostring(option) .. MM_STRING_SEPARATOR_SPACE
     end
-    return tostring(a) .. ' ' .. internal:concat(...)
   end
+  theString = string.gsub(theString, '^%s*(.-)%s*$', '%1')
+  return theString
 end
 
 function internal:concatHash(a, ...)
@@ -669,7 +668,7 @@ function internal:addTraderInfo(guildId, guildName)
   local local_x, local_y = GetMapPlayerPosition("player")
   local zoneIndex = GetCurrentMapZoneIndex()
   local zoneId = GetZoneId(zoneIndex)
-  if subzoneName == "" then subzoneName = zoneName end
+  if subzoneName == MM_STRING_EMPTY then subzoneName = zoneName end
   local theInfo = {
     guildName = guildName,
     local_x = local_x,

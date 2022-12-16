@@ -8,6 +8,11 @@
 --  |H0:item:69359:96:50:26848:96:50:0:0:0:0:0:0:0:0:0:19:0:0:0:0:0|h|h  AUTGuild 1058 days
 local internal = _G["LibGuildStore_Internal"]
 
+-- Gap values for Shell sort
+MasterMerchant.shellGaps = {
+  1391376, 463792, 198768, 86961, 33936, 13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1
+}
+
 function MasterMerchant:ssup(inputTable, numElements)
   for _, gapVal in ipairs(MasterMerchant.shellGaps) do
     for i = gapVal + 1, numElements do
@@ -61,17 +66,28 @@ function MasterMerchant.shellSort(inputTable, comparison, numElements)
 end
 
 -- MM has no data   for |H1:item:86987:363:50:0:0:0:0:0:0:0:0:0:0:0:1:3:0:1:0:400:0|h|h
-function MasterMerchant.concat(a, ...)
-  if a == nil and ... == nil then
-    return ''
-  elseif a == nil then
-    return MasterMerchant.concat(...)
-  else
-    if type(a) == 'boolean' then
-      --d(tostring(a) .. ' ' .. MasterMerchant.concat(...))
+
+function MasterMerchant.concat(...)
+  local theString = MM_STRING_EMPTY
+  for i = 1, select('#', ...) do
+    local option = select(i, ...)
+    if option ~= nil and option ~= MM_STRING_EMPTY then
+      theString = theString .. tostring(option) .. MM_STRING_SEPARATOR_SPACE
     end
-    return tostring(a) .. ' ' .. MasterMerchant.concat(...)
   end
+  theString = string.gsub(theString, '^%s*(.-)%s*$', '%1')
+  return theString
+end
+
+function MasterMerchant.concatTooltip(...)
+  local theString = MM_STRING_EMPTY
+  for i = 1, select('#', ...) do
+    local option = select(i, ...)
+    if option ~= nil and option ~= MM_STRING_EMPTY then
+      theString = theString .. tostring(option)
+    end
+  end
+  return theString
 end
 
 function MasterMerchant.ShowChildren(control, startNum, endNum)
@@ -95,7 +111,7 @@ end
 
 function MasterMerchant.GetItemLinePrice(itemLink)
   if itemLink then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, false)
     if tipStats.avgPrice then
       return tipStats.avgPrice
     end
@@ -150,6 +166,21 @@ function MasterMerchant.LocalizedNumber(amount)
   return comma_value(zo_roundToNearest(amount, .01))
 end
 
+function MasterMerchant:GetFullPriceOrProfit(dispPrice, quantity)
+  local _, _, expectedProfit = GetTradingHousePostPriceInfo(dispPrice)
+  if MasterMerchant.systemSavedVariables.showFullPrice then
+    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
+      return dispPrice / (quantity or 1)
+    end
+    return dispPrice
+  else
+    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
+      return expectedProfit / (quantity or 1)
+    end
+    return expectedProfit
+  end
+end
+
 local function GetTimeAgo(timestamp)
   local secsSince = GetTimeStamp() - timestamp
   local formatedTime = nil
@@ -175,21 +206,6 @@ local function GetDateFormattedString(month, day, yearString)
     dateString = string.format("%s/%s/%s", day, month, yearString)
   end
   return dateString
-end
-
-function MasterMerchant:GetFullPriceOrProfit(dispPrice, quantity)
-  local _, _, expectedProfit = GetTradingHousePostPriceInfo(dispPrice)
-  if MasterMerchant.systemSavedVariables.showFullPrice then
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
-      return dispPrice / (quantity or 1)
-    end
-    return dispPrice
-  else
-    if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
-      return expectedProfit / (quantity or 1)
-    end
-    return expectedProfit
-  end
 end
 
 local function GetTimeDateString(timestamp)
@@ -224,6 +240,18 @@ function MasterMerchant.TextTimeSince(timestamp)
   else
     return GetTimeAgo(timestamp)
   end
+end
+
+function MasterMerchant:BuildTableFromString(str)
+  local t = {}
+  local function helper(line)
+    if line ~= MM_STRING_EMPTY then
+      t[line] = true
+    end
+    return MM_STRING_EMPTY
+  end
+  helper((str:gsub("(.-)\r?\n", helper)))
+  if next(t) then return t end
 end
 
 -- A utility function to grab all the keys of the sound table

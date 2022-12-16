@@ -1,15 +1,22 @@
 MM_Graph = ZO_Object:Subclass()
 
-function MM_Graph:New(control, pointTemplate, labelTemplate)
+function MM_Graph:New(control, pointTemplate)
   local graph = ZO_Object.New(self)
   graph.control = control
 
   pointTemplate = pointTemplate or "MM_Point"
-  labelTemplate = labelTemplate or "MMGraphLabel"
 
   graph.pointPool = ZO_ControlPool:New(pointTemplate, control, "Point")
-  graph.labelPool = ZO_ControlPool:New(labelTemplate, control, "Label")
 
+  graph.grid = control:GetNamedChild('Grid')
+  graph.x_averagePriceMarker = control:GetNamedChild('AveragePriceMarker')
+  graph.x_bonanzaPriceMarker = control:GetNamedChild('BonanzaPriceMarker')
+  graph.x_averagePriceLabel = control:GetNamedChild('AveragePriceLabel')
+  graph.x_bonanzaPriceLabel = control:GetNamedChild('BonanzaPriceLabel')
+  graph.x_startLabelMarker = control:GetNamedChild('StartTimeframe')
+  graph.x_endLabelMarker = control:GetNamedChild('EndTimeframe')
+  graph.y_highestPriceLabelMarker = control:GetNamedChild('HighPrice')
+  graph.y_lowestPriceLabelMarker = control:GetNamedChild('LowPrice')
   return graph
 end
 
@@ -65,25 +72,27 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   -- self.x_endLabel   = self.labelPool:AcquireObject()
   -- self.y_lowestPriceLabel = self.labelPool:AcquireObject()
   -- self.y_highestPriceLabel   = self.labelPool:AcquireObject()
-  self.x_averagePriceLabel = self.labelPool:AcquireObject()
-  self.x_averagePriceLabel:SetHidden(true)
-  self.x_bonanzaPriceLabel = self.labelPool:AcquireObject()
-  self.x_bonanzaPriceLabel:SetHidden(true)
 
-  self.x_averagePriceMarker = self.control:GetNamedChild('AveragePrice')
+  local tooltipControl = self.control
+  local grid = self.grid
+  local averagePriceLabel = self.x_averagePriceLabel -- average price text
+  local bonanzaPriceLabel = self.x_bonanzaPriceLabel -- bonanza price text
+  local averagePriceMarker = self.x_averagePriceMarker -- xml, the line
+  local bonanzaPriceMarker = self.x_bonanzaPriceMarker -- xml, the line
+
+  -- self.x_averagePriceLabel = self.labelPool:AcquireObject() -- average price text
+  self.x_averagePriceLabel:SetHidden(true) -- average price text
+  -- self.x_bonanzaPriceLabel = self.labelPool:AcquireObject() -- bonanza price text
+  self.x_bonanzaPriceLabel:SetHidden(true) -- bonanza price text
+
   self.x_averagePriceMarker:SetHidden(true)
-  self.x_bonanzaPriceMarker = self.control:GetNamedChild('BonanzaPrice')
   self.x_bonanzaPriceMarker:SetHidden(true)
 
   -- x days and now
-  self.x_startLabelMarker = self.control:GetNamedChild('StartTimeframe')
-  self.x_startLabelMarker:SetHidden(true)
-  self.x_endLabelMarker = self.control:GetNamedChild('EndTimeframe')
-  self.x_endLabelMarker:SetHidden(true)
+  self.x_startLabelMarker:SetHidden(true) -- xml, the line
+  self.x_endLabelMarker:SetHidden(true) -- xml, the line
 
-  self.y_highestPriceLabelMarker = self.control:GetNamedChild('HighPrice')
   self.y_highestPriceLabelMarker:SetHidden(true)
-  self.y_lowestPriceLabelMarker = self.control:GetNamedChild('LowPrice')
   self.y_lowestPriceLabelMarker:SetHidden(true)
 
   -- self.x_startLabel:ClearAnchors()
@@ -95,7 +104,7 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   self.x_averagePriceMarker:ClearAnchors()
   self.x_bonanzaPriceMarker:ClearAnchors()
 
-  local x, y = self.control:GetDimensions()
+  local x, y = tooltipControl:GetDimensions()
   local top = self.paddingY
   local bottom = self.x_startLabelMarker:GetFontHeight() * 1.25 + self.paddingY
 
@@ -133,11 +142,9 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   self.xStart = left
   self.yStart = bottom
 
-  self.grid = self.control:GetNamedChild('Grid')
-  local grid = self.grid
   grid:ClearAnchors()
-  grid:SetAnchor(BOTTOMLEFT, self.control, BOTTOMLEFT, left, -bottom)
-  grid:SetAnchor(TOPRIGHT, self.control, BOTTOMLEFT, left + self.xSize, -(bottom + self.ySize))
+  grid:SetAnchor(BOTTOMLEFT, tooltipControl, BOTTOMLEFT, left, -bottom)
+  grid:SetAnchor(TOPRIGHT, tooltipControl, BOTTOMLEFT, left + self.xSize, -(bottom + self.ySize))
 
   -- local _, point, relTo, relPoint, offsX, offsY = self.x_averagePriceLabel:GetAnchor(0)
   -- MasterMerchant
@@ -191,9 +198,10 @@ function MM_Graph:OnGraphPointClicked(graphPointControl, mouseButton, sellerName
   if lengthBlacklist + lengthSellerName > 2000 then
     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
-    if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
+    if not MasterMerchant:IsInBlackList(sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
       MasterMerchant:ResetItemInformationCache()
+      MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
     end
   end
 end
@@ -204,9 +212,10 @@ function MM_Graph:OnSellerNameClicked(self, mouseButton, sellerName, itemLink)
   if lengthBlacklist + lengthSellerName > 2000 then
     MasterMerchant:dm("Info", GetString(MM_BLACKLIST_EXCEEDS))
   else
-    if not string.find(MasterMerchant.systemSavedVariables.blacklist, sellerName) then
+    if not MasterMerchant:IsInBlackList(sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
       MasterMerchant:ResetItemInformationCache()
+      MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
     end
   end
 end
@@ -243,30 +252,6 @@ function MM_Graph:AddPoint(x, y, color, tipText, sellerName)
 
 end
 
-function MM_Graph:AddYLabel(text, y)
-  --[[TODO This errors when I try to use it. In GenerateStatsAndGraph
-  MasterMerchantGraph is assigned to tooltip.graphPool and looks
-  for the control 'Graph' which is defined in the XML.
-  ]]--
-
-  local label = self.labelPool:AcquireObject()
-
-  label:SetText('|cFFFFFF' .. text .. '|r')
-  label:ClearAnchors()
-
-  y = ((y - self.y_lowestPriceValue) / (self.y_highestPriceValue - self.y_lowestPriceValue)) * self.ySize
-
-  label:SetAnchor(RIGHT, self.grid, BOTTOMLEFT, -5, -y)
-  label:SetHidden(false)
-
-  local marker = self.x_averagePriceMarker
-  marker:ClearAnchors()
-  marker:SetAnchor(BOTTOMLEFT, self.grid, BOTTOMLEFT, 0, -(y - 1))
-  marker:SetAnchor(TOPRIGHT, self.grid, BOTTOMRIGHT, 0, -y)
-  marker:SetHidden(false)
-end
-
 function MM_Graph:Clear()
   self.pointPool:ReleaseAllObjects()
-  self.labelPool:ReleaseAllObjects()
 end

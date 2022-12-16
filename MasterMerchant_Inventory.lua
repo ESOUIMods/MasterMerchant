@@ -3,23 +3,23 @@ local function GetAveragePrice(bagId, slotIndex)
   local averagePrice
   if IsInGamepadPreferredMode() then return averagePrice end
   local itemLink = GetItemLink(bagId, slotIndex, LINK_STYLE_DEFAULT)
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_MM_AVERAGE then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true)
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_MM_AVERAGE then
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, true, false)
     if tipStats.avgPrice then
       averagePrice = tipStats.avgPrice
     end
   end
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_BONANZA then
-    local tipStats = MasterMerchant:GetTooltipStats(itemLink, false)
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_BONANZA then
+    local tipStats = MasterMerchant:GetTooltipStats(itemLink, false, false)
     if tipStats.bonanzaPrice then
       averagePrice = tipStats.bonanzaPrice
     end
   end
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_AVERAGE and TamrielTradeCentre then
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_TTC_AVERAGE and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
     if priceStats and priceStats.Avg and priceStats.Avg > 0 then averagePrice = priceStats.Avg end
   end
-  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MasterMerchant.USE_TTC_SUGGESTED and TamrielTradeCentre then
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_TTC_SUGGESTED and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
     if priceStats and priceStats.SuggestedPrice and priceStats.SuggestedPrice > 0 then averagePrice = priceStats.SuggestedPrice end
     if averagePrice and MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory then
@@ -66,9 +66,9 @@ end
 local function GetInventoryPriceText(averagePrice, stackSellPrice)
   local newSellPrice = ""
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    newSellPrice = '|cEEEE33' .. MasterMerchant.LocalizedNumber(stackSellPrice) .. '|r' .. MasterMerchant.coinIcon .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MasterMerchant.coinIcon
+    newSellPrice = '|cEEEE33' .. MasterMerchant.LocalizedNumber(stackSellPrice) .. '|r' .. MM_COIN_ICON_NO_SPACE .. "\n" .. '|c1E7CFF' .. MasterMerchant.LocalizedNumber(averagePrice) .. '|r' .. MM_COIN_ICON_NO_SPACE
   else
-    newSellPrice = '|cEEEE33' .. MasterMerchant.LocalizedNumber(stackSellPrice) .. '|r' .. MasterMerchant.coinIcon
+    newSellPrice = '|cEEEE33' .. MasterMerchant.LocalizedNumber(stackSellPrice) .. '|r' .. MM_COIN_ICON_NO_SPACE
   end
   return newSellPrice
 end
@@ -87,7 +87,7 @@ function MasterMerchant:SetInventorySellPriceText(rowControl, slot)
   elseif slot.hasAlteredPrice and not MasterMerchant.systemSavedVariables.replaceInventoryValues then
     slot.sellPrice = slot.originalSellPrice
     slot.stackSellPrice = slot.originalStackSellPrice
-    local newSellPrice = slot.stackSellPrice .. MasterMerchant.coinIcon
+    local newSellPrice = slot.stackSellPrice .. MM_COIN_ICON_NO_SPACE
     sellPriceControl:SetText(newSellPrice)
   end
 end

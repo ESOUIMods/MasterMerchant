@@ -1169,9 +1169,9 @@ function MMScrollList:FilterScrollList()
   -- pass two, clean up the text
   if searchText then
     searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1')
-    searchText = string.gsub(searchText, "'s", "")
+    searchText = string.gsub(searchText, "'s", MM_STRING_EMPTY)
     searchText = string.gsub(searchText, "-", " ")
-    searchText = string.gsub(searchText, "%p", "")
+    searchText = string.gsub(searchText, "%p", MM_STRING_EMPTY)
   end
   -- pass three, set the text and clear  Bonanza Search text
   if MasterMerchant.bonanzaSearchText then
@@ -1280,6 +1280,8 @@ function MMScrollList:FilterScrollList()
     else
       -- We have the indexes to search
       -- Break up search term into words
+      --[[TODO: look into ways to display personal sales without simply
+      adding the player special text to the list of search words. ]]--
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode then
         searchText = MasterMerchant.concat(searchText, internal.PlayerSpecialText)
       end
@@ -2017,12 +2019,18 @@ function MasterMerchant:remStatsItemTooltip()
   ItemTooltip.warnText = nil
   ItemTooltip.vendorWarnText = nil
   ItemTooltip.mmText = nil
-  ItemTooltip.mmTTCText = nil
   ItemTooltip.mmBonanzaText = nil
+  ItemTooltip.mmTTCText = nil
+  ItemTooltip.mmVoucherText = nil
   ItemTooltip.mmCraftText = nil
   ItemTooltip.mmMatText = nil
   ItemTooltip.mmTextDebug = nil
   ItemTooltip.mmQualityDown = nil
+  ItemTooltip.mmQualityUp = nil
+  ItemTooltip.mmLevelDown = nil
+  ItemTooltip.mmLevelUp = nil
+  ItemTooltip.mmSalesDataDown = nil
+  ItemTooltip.mmSalesDataUp = nil
 end
 
 function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, stackCount)
@@ -2045,6 +2053,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   local craftCostLine = nil
   local bonanzaTipline = nil
   local ttcTipline = nil
+  local voucherTipline = nil
   local materialCostLine = nil
   local removedWarningTipline = nil
   local vendorWarningTipline = nil
@@ -2055,11 +2064,16 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   local hasGraphInfo = false
   local validAnalysisButtonType = itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR or itemType == ITEMTYPE_GLYPH_WEAPON or itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY
   -- old values: tipLine, bonanzaTipline, numDays, avgPrice, bonanzaPrice, graphInfo
-  -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
-  -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaSales, bonanzaCount, graphInfo
+  -- input: avgPrice, legitSales, daysHistory, countSold, bonanzaPrice, bonanzaListings, bonanzaItemCount, graphInfo
+  -- return: avgPrice, numSales, numDays, numItems, bonanzaPrice, bonanzaListings, bonanzaItemCount, graphInfo
   -- input ['graphInfo']: oldestTime, lowPrice, highPrice, salesPoints
   -- return ['graphInfo']: oldestTime, low, high, points
-  local statsInfo = self:GetTooltipStats(itemLink, false)
+  local statsInfo = self:GetTooltipStats(itemLink, false, true)
+  local priceStats
+  local useTTCPrice = MasterMerchant.systemSavedVariables.showAltTtcTipline or (MasterMerchant.systemSavedVariables.includeVoucherAverage and (MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_SUGGESTED or MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_AVERAGE))
+  if TamrielTradeCentre and useTTCPrice then
+    priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+  end
   local graphInfo = statsInfo.graphInfo
   if graphInfo and graphInfo.points ~= nil then
     hasGraphInfo = true
@@ -2071,7 +2085,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     if storeItemUnitPrice > vendorWarningPricing then showVendorWarning = true end
   end
   if showVendorWarning then
-    vendorWarningTipline = string.format(GetString(MM_VENDOR_ITEM_WARN), vendorWarningPricing) .. MasterMerchant.coinIcon
+    vendorWarningTipline = string.format(GetString(MM_VENDOR_ITEM_WARN), vendorWarningPricing) .. MM_COIN_ICON_NO_SPACE
   end
   if showRemovedWarning ~= nil then
     removedWarningTipline = GetString(MM_REMOVED_ITEM_WARN)
@@ -2080,92 +2094,98 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     craftCostLine = self:CraftCostPriceTip(itemLink, false)
   end
   if MasterMerchant.systemSavedVariables.showMaterialCost and itemType == ITEMTYPE_MASTER_WRIT then
-    materialCostLine = MasterMerchant_Internal:MaterialCostPriceTip(itemLink, purchasePrice)
+    materialCostLine = MasterMerchant:MaterialCostPriceTip(itemLink, purchasePrice)
   end
   if statsInfo.avgPrice then
-    masterMerchantTipline = MasterMerchant:AvgPricePriceTip(statsInfo.avgPrice, statsInfo.numSales, statsInfo.numItems, statsInfo.numDays, false, statsInfo.numVouchers)
+    masterMerchantTipline = MasterMerchant:AvgPricePriceTip(statsInfo, false)
   end
   if statsInfo.bonanzaPrice then
-    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo.bonanzaPrice, statsInfo.bonanzaSales, statsInfo.bonanzaCount, false, statsInfo.numVouchers)
+    bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo, false)
   end
-  if TamrielTradeCentre then
-    ttcTipline = MasterMerchant:TTCPriceTip(itemLink)
+  if MasterMerchant.systemSavedVariables.showAltTtcTipline and TamrielTradeCentre then
+    ttcTipline = MasterMerchant:TTCPriceTip(priceStats, false)
   end
-  if statsInfo.bonanzaSales and (statsInfo.bonanzaSales < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
+  if statsInfo.bonanzaListings and (statsInfo.bonanzaListings < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
     statsInfo.bonanzaPrice = nil
-    statsInfo.bonanzaSales = nil
-    statsInfo.bonanzaCount = nil
+    statsInfo.bonanzaListings = nil
+    statsInfo.bonanzaItemCount = nil
+  end
+  local useVoucherCount = statsInfo and statsInfo.numVouchers and statsInfo.numVouchers > 0 and MasterMerchant.systemSavedVariables.includeVoucherAverage
+  if useVoucherCount then
+    voucherTipline = MasterMerchant:VoucherAveragePriceTip(statsInfo, priceStats, false)
   end
 
-  if not tooltip.textPool then
-    tooltip.textPool = ZO_ControlPool:New('MMGraphLabel', tooltip, 'Text')
+  if validAnalysisButtonType and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons then
+    if not tooltip.textPool then
+      tooltip.textPool = ZO_ControlPool:New('MMQualityLabel', tooltip, 'Text')
+    end
+
+    if not tooltip.mmQualityDown then
+      tooltip.mmQualityDown = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmQualityDown, 1, true)
+      tooltip.mmQualityDown:SetText('<<')
+      tooltip.mmQualityDown:SetMouseEnabled(true)
+      tooltip.mmQualityDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmQualityDown.mmData = {}
+      tooltip.mmQualityDown:SetHidden(true)
+    end
+
+    if not tooltip.mmQualityUp then
+      tooltip.mmQualityUp = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmQualityUp, 1, true)
+      tooltip.mmQualityUp:SetText('>>')
+      tooltip.mmQualityUp:SetMouseEnabled(true)
+      tooltip.mmQualityUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmQualityUp.mmData = {}
+      tooltip.mmQualityUp:SetHidden(true)
+    end
+
+    if not tooltip.mmLevelDown then
+      tooltip.mmLevelDown = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmLevelDown, 1, true)
+      tooltip.mmLevelDown:SetText('< L')
+      tooltip.mmLevelDown:SetColor(1, 1, 1, 1)
+      tooltip.mmLevelDown:SetMouseEnabled(true)
+      tooltip.mmLevelDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmLevelDown.mmData = {}
+      tooltip.mmLevelDown:SetHidden(true)
+    end
+
+    if not tooltip.mmLevelUp then
+      tooltip.mmLevelUp = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmLevelUp, 1, true)
+      tooltip.mmLevelUp:SetText('L >')
+      tooltip.mmLevelUp:SetColor(1, 1, 1, 1)
+      tooltip.mmLevelUp:SetMouseEnabled(true)
+      tooltip.mmLevelUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmLevelUp.mmData = {}
+      tooltip.mmLevelUp:SetHidden(true)
+    end
+
+    if not tooltip.mmSalesDataDown then
+      tooltip.mmSalesDataDown = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmSalesDataDown, 1, true)
+      tooltip.mmSalesDataDown:SetText('<SI')
+      tooltip.mmSalesDataDown:SetColor(1, 1, 1, 1)
+      tooltip.mmSalesDataDown:SetMouseEnabled(true)
+      tooltip.mmSalesDataDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmSalesDataDown.mmData = {}
+      tooltip.mmSalesDataDown:SetHidden(true)
+    end
+
+    if not tooltip.mmSalesDataUp then
+      tooltip.mmSalesDataUp = tooltip.textPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmSalesDataUp, 1, true)
+      tooltip.mmSalesDataUp:SetText('SI>')
+      tooltip.mmSalesDataUp:SetColor(1, 1, 1, 1)
+      tooltip.mmSalesDataUp:SetMouseEnabled(true)
+      tooltip.mmSalesDataUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
+      tooltip.mmSalesDataUp.mmData = {}
+      tooltip.mmSalesDataUp:SetHidden(true)
+    end
   end
 
-  if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and not tooltip.mmQualityDown then
-    tooltip.mmQualityDown = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmQualityDown, 1, true)
-    tooltip.mmQualityDown:SetAnchor(LEFT)
-    tooltip.mmQualityDown:SetText('<<')
-    tooltip.mmQualityDown:SetMouseEnabled(true)
-    tooltip.mmQualityDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmQualityDown.mmData = {}
-    tooltip.mmQualityDown:SetHidden(true)
-
-    tooltip.mmQualityUp = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmQualityUp, 1, true)
-    tooltip.mmQualityUp:SetAnchor(RIGHT)
-    tooltip.mmQualityUp:SetText('>>')
-    tooltip.mmQualityUp:SetMouseEnabled(true)
-    tooltip.mmQualityUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmQualityUp.mmData = {}
-    tooltip.mmQualityUp:SetHidden(true)
-
-    tooltip.mmLevelDown = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmLevelDown, 1, true)
-    tooltip.mmLevelDown:ClearAnchors()
-    tooltip.mmLevelDown:SetAnchor(TOPLEFT, tooltip.mmQualityDown, BOTTOMLEFT, 0, 0)
-    tooltip.mmLevelDown:SetText('< L')
-    tooltip.mmLevelDown:SetColor(1, 1, 1, 1)
-    tooltip.mmLevelDown:SetMouseEnabled(true)
-    tooltip.mmLevelDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmLevelDown.mmData = {}
-    tooltip.mmLevelDown:SetHidden(true)
-
-    tooltip.mmLevelUp = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmLevelUp, 1, true)
-    tooltip.mmLevelUp:ClearAnchors()
-    tooltip.mmLevelUp:SetAnchor(TOPRIGHT, tooltip.mmQualityUp, BOTTOMRIGHT, 0, 0)
-    tooltip.mmLevelUp:SetText('L >')
-    tooltip.mmLevelUp:SetColor(1, 1, 1, 1)
-    tooltip.mmLevelUp:SetMouseEnabled(true)
-    tooltip.mmLevelUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmLevelUp.mmData = {}
-    tooltip.mmLevelUp:SetHidden(true)
-
-    tooltip.mmSalesDataDown = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmSalesDataDown, 1, true)
-    tooltip.mmSalesDataDown:ClearAnchors()
-    tooltip.mmSalesDataDown:SetAnchor(BOTTOMLEFT, tooltip.mmQualityDown, TOPLEFT, 0, 0)
-    tooltip.mmSalesDataDown:SetText('<SI')
-    tooltip.mmSalesDataDown:SetColor(1, 1, 1, 1)
-    tooltip.mmSalesDataDown:SetMouseEnabled(true)
-    tooltip.mmSalesDataDown:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmSalesDataDown.mmData = {}
-    tooltip.mmSalesDataDown:SetHidden(true)
-
-    tooltip.mmSalesDataUp = tooltip.textPool:AcquireObject()
-    tooltip:AddControl(tooltip.mmSalesDataUp, 1, true)
-    tooltip.mmSalesDataUp:ClearAnchors()
-    tooltip.mmSalesDataUp:SetAnchor(BOTTOMRIGHT, tooltip.mmQualityUp, TOPRIGHT, 0, 0)
-    tooltip.mmSalesDataUp:SetText('SI>')
-    tooltip.mmSalesDataUp:SetColor(1, 1, 1, 1)
-    tooltip.mmSalesDataUp:SetMouseEnabled(true)
-    tooltip.mmSalesDataUp:SetHandler("OnMouseUp", MasterMerchant.NextItem)
-    tooltip.mmSalesDataUp.mmData = {}
-    tooltip.mmSalesDataUp:SetHidden(true)
-  end
-
-  if MasterMerchant.systemSavedVariables.displayItemAnalysisButtons and validAnalysisButtonType then
+  if validAnalysisButtonType and MasterMerchant.systemSavedVariables.displayItemAnalysisButtons then
 
     local itemQuality = GetItemLinkQuality(itemLink)
     tooltip.mmQualityDown.mmData.nextItem = MasterMerchant.QualityDown(itemLink)
@@ -2173,6 +2193,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     if tooltip.mmQualityDown.mmData.nextItem then
       local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, itemQuality - 1)
       tooltip.mmQualityDown:SetColor(r, g, b, 1)
+      tooltip.mmQualityDown:ClearAnchors()
+      tooltip.mmQualityDown:SetAnchor(LEFT, tooltip, LEFT)
       tooltip.mmQualityDown:SetHidden(false)
     else
       tooltip.mmQualityDown:SetHidden(true)
@@ -2183,6 +2205,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     if tooltip.mmQualityUp.mmData.nextItem then
       local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, itemQuality + 1)
       tooltip.mmQualityUp:SetColor(r, g, b, 1)
+      tooltip.mmQualityUp:ClearAnchors()
+      tooltip.mmQualityUp:SetAnchor(RIGHT, tooltip, RIGHT)
       tooltip.mmQualityUp:SetHidden(false)
     else
       tooltip.mmQualityUp:SetHidden(true)
@@ -2191,6 +2215,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     tooltip.mmLevelDown.mmData.nextItem = MasterMerchant.LevelDown(itemLink)
     --d(tooltip.mmLevelDown.mmData.nextItem)
     if tooltip.mmLevelDown.mmData.nextItem then
+      tooltip.mmLevelDown:ClearAnchors()
+      tooltip.mmLevelDown:SetAnchor(LEFT, tooltip, LEFT, 0, 25)
       tooltip.mmLevelDown:SetHidden(false)
     else
       tooltip.mmLevelDown:SetHidden(true)
@@ -2199,6 +2225,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     tooltip.mmLevelUp.mmData.nextItem = MasterMerchant.LevelUp(itemLink)
     --d(tooltip.mmLevelUp.mmData.nextItem)
     if tooltip.mmLevelUp.mmData.nextItem then
+      tooltip.mmLevelUp:ClearAnchors()
+      tooltip.mmLevelUp:SetAnchor(RIGHT, tooltip, RIGHT, 0, 25)
       tooltip.mmLevelUp:SetHidden(false)
     else
       tooltip.mmLevelUp:SetHidden(true)
@@ -2210,6 +2238,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     end
     --d(tooltip.mmSalesDataDown.mmData.nextItem)
     if tooltip.mmSalesDataDown.mmData.nextItem then
+      tooltip.mmSalesDataDown:ClearAnchors()
+      tooltip.mmSalesDataDown:SetAnchor(LEFT, tooltip, LEFT, 0, -25)
       tooltip.mmSalesDataDown:SetHidden(false)
     else
       tooltip.mmSalesDataDown:SetHidden(true)
@@ -2221,6 +2251,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     end
     --d(tooltip.mmSalesDataUp.mmData.nextItem)
     if tooltip.mmSalesDataUp.mmData.nextItem then
+      tooltip.mmSalesDataUp:ClearAnchors()
+      tooltip.mmSalesDataUp:SetAnchor(RIGHT, tooltip, RIGHT, 0, -25)
       tooltip.mmSalesDataUp:SetHidden(false)
     else
       tooltip.mmSalesDataUp:SetHidden(true)
@@ -2232,8 +2264,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     tooltip.tooltipTextPool = ZO_ControlPool:New("MMTooltipText", tooltip, "MMTooltipLine")
   end
 
-  local hasTiplineOrGraph = vendorWarningTipline or removedWarningTipline or masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or materialCostLine
-  local hasTiplineControls = tooltip.vendorWarnText or tooltip.warnText or tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
+  local hasTiplineOrGraph = vendorWarningTipline or removedWarningTipline or masterMerchantTipline or hasGraphInfo or craftCostLine or bonanzaTipline or ttcTipline or voucherTipline or materialCostLine
+  local hasTiplineControls = tooltip.vendorWarnText or tooltip.warnText or tooltip.mmText or tooltip.mmBonanzaText or tooltip.mmTTCText or tooltip.mmVoucherText or tooltip.mmCraftText or tooltip.mmMatText or tooltip.mmGraph or tooltip.mmTextDebug
 
   if hasTiplineOrGraph and not hasTiplineControls then
     tooltip:AddVerticalPadding(2)
@@ -2317,6 +2349,22 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
 
   end
 
+  if voucherTipline and MasterMerchant.systemSavedVariables.includeVoucherAverage then
+
+    if not tooltip.mmVoucherText then
+      tooltip:AddVerticalPadding(2)
+      tooltip.mmVoucherText = tooltip.tooltipTextPool:AcquireObject()
+      tooltip:AddControl(tooltip.mmVoucherText)
+      tooltip.mmVoucherText:SetAnchor(CENTER)
+    end
+
+    if tooltip.mmVoucherText then
+      tooltip.mmVoucherText:SetText(voucherTipline)
+      tooltip.mmVoucherText:SetColor(1, 1, 1, 1)
+    end
+
+  end
+
   if craftCostLine and MasterMerchant.systemSavedVariables.showCraftCost then
 
     if not tooltip.mmCraftText then
@@ -2367,7 +2415,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
       graph.itemLink = itemLink
 
       if not graph.points then
-        graph.points = MM_Graph:New(graph, "MM_Point")
+        graph.points = MM_Graph:New(graph, "MM_Point", "MMGraphLabel")
       end
 
       if graphInfo.low == graphInfo.high then
@@ -2393,15 +2441,15 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
         if graphInfo.high < highRange then
           graphInfo.high = highRange * 1.05
         end
-        xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. MasterMerchant.coinIcon
+        xBonanza = MasterMerchant.LocalizedNumber(statsInfo.bonanzaPrice) .. MM_COIN_ICON_NO_SPACE
       else
         xBonanza = nil
         statsInfo.bonanzaPrice = nil
       end
 
-      local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. MasterMerchant.coinIcon
-      local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. MasterMerchant.coinIcon
-      local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. MasterMerchant.coinIcon
+      local xLow = MasterMerchant.LocalizedNumber(graphInfo.low) .. MM_COIN_ICON_NO_SPACE
+      local xHigh = MasterMerchant.LocalizedNumber(graphInfo.high) .. MM_COIN_ICON_NO_SPACE
+      local xPrice = MasterMerchant.LocalizedNumber(statsInfo.avgPrice) .. MM_COIN_ICON_NO_SPACE
       local endTimeFrameText = GetString(MM_ENDTIMEFRAME_TEXT)
       -- (x_startTimeFrame, x_endTimeFrame, y_highestPriceText, y_highestPriceLabelText, x_oldestTimestamp, x_currentTimestamp, y_lowestPriceValue, y_highestPriceValue, x_averagePriceText, x_averagePriceValue, x_bonanzaPriceText, x_bonanzaPriceValue)
       -- (MasterMerchant.TextTimeSince(graphInfo.oldestTime), "Now", xLow, xHigh, graphInfo.oldestTime, GetTimeStamp(), graphInfo.low, graphInfo.high, xPrice, statsInfo.avgPrice, x_bonanzaPriceText, x_bonanzaPriceValue)
@@ -2488,10 +2536,16 @@ function MasterMerchant:addStatsPopupTooltip(Popup)
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
+    Popup.mmVoucherText = nil
     Popup.mmCraftText = nil
     Popup.mmMatText = nil
     Popup.mmTextDebug = nil
     Popup.mmQualityDown = nil
+    Popup.mmQualityUp = nil
+    Popup.mmLevelDown = nil
+    Popup.mmLevelUp = nil
+    Popup.mmSalesDataDown = nil
+    Popup.mmSalesDataUp = nil
   end
   Popup.mmActiveTip = Popup.lastLink
   self.isShiftPressed = IsShiftKeyDown()
@@ -2534,10 +2588,16 @@ function MasterMerchant:addStatsProvisionerTooltip(Popup)
     Popup.mmText = nil
     Popup.mmBonanzaText = nil
     Popup.mmTTCText = nil
+    Popup.mmVoucherText = nil
     Popup.mmCraftText = nil
     Popup.mmMatText = nil
     Popup.mmTextDebug = nil
     Popup.mmQualityDown = nil
+    Popup.mmQualityUp = nil
+    Popup.mmLevelDown = nil
+    Popup.mmLevelUp = nil
+    Popup.mmSalesDataDown = nil
+    Popup.mmSalesDataUp = nil
   end
   Popup.mmActiveTip = Popup.lastLink
   self.isShiftPressed = IsShiftKeyDown()
@@ -2563,10 +2623,16 @@ function MasterMerchant:remStatsPopupTooltip(Popup)
   Popup.mmText = nil
   Popup.mmBonanzaText = nil
   Popup.mmTTCText = nil
+  Popup.mmVoucherText = nil
   Popup.mmCraftText = nil
   Popup.mmMatText = nil
   Popup.mmTextDebug = nil
   Popup.mmQualityDown = nil
+  Popup.mmQualityUp = nil
+  Popup.mmLevelDown = nil
+  Popup.mmLevelUp = nil
+  Popup.mmSalesDataDown = nil
+  Popup.mmSalesDataUp = nil
   Popup.mmActiveTip = nil
 end
 
@@ -2711,10 +2777,16 @@ function MasterMerchant:GenerateStatsItemTooltip()
       ItemTooltip.mmText = nil
       ItemTooltip.mmBonanzaText = nil
       ItemTooltip.mmTTCText = nil
+      ItemTooltip.mmVoucherText = nil
       ItemTooltip.mmCraftText = nil
       ItemTooltip.mmMatText = nil
       ItemTooltip.mmTextDebug = nil
       ItemTooltip.mmQualityDown = nil
+      ItemTooltip.mmQualityUp = nil
+      ItemTooltip.mmLevelDown = nil
+      ItemTooltip.mmLevelUp = nil
+      ItemTooltip.mmSalesDataDown = nil
+      ItemTooltip.mmSalesDataUp = nil
     end
 
     self.tippingControl = skMoc

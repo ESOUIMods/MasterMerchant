@@ -13,6 +13,7 @@ NE PAS traduire ces chaînes
 НЕ переводите эти строки
 これらの文字列を翻訳しないでください
 NO traduzca estas cadenas
+|cC5C29E|r
 ]]--
 ZO_CreateStringId("MM_APP_TEXT_TIMES", " x ")
 
@@ -76,9 +77,6 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Show Purchase and Sales totals on the G
 
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Show Pricing History Graph")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Include a graph of the sales history in item tooltips.")
-
-ZO_CreateStringId("SK_ADD_VOUCHER_NAME", "Add cost per voucher for Writs")
-ZO_CreateStringId("SK_ADD_VOUCHER_TIP", "Adds cost per voucher for Writs based on the average price of the Writ. Writ Worthy adds cost per voucher based on the materials needed to craft the requirement.")
 
 -- Main window
 -- buttons to toggle personal and guild sales
@@ -182,35 +180,51 @@ ZO_CreateStringId("MM_OLD_TIP_FORMAT_MULTI", "M.M. price (%s, %d days): %.2f")
 ZO_CreateStringId("SK_OLD_PRICETIP_SALES", "<<1[%d sale/%d sales]>>")
 ZO_CreateStringId("MM_OLD_PRICETIP_ITEMS", "/<<1[%d item/%d items]>>")
 
--- New Price To Chat Strings
-ZO_CreateStringId("MM_TIP_DAYS_STRING", "<<1[%d day/%d days]>>")
-ZO_CreateStringId("MM_TIP_SALES_STRING", "<<1[%d sale/%d sales]>>")
-ZO_CreateStringId("MM_TIP_LISTINGS_STRING", "<<1[%d listing/%d listings]>>")
-ZO_CreateStringId("MM_TIP_ITEMS_STRING", "<<1[%d item/%d items]>>")
+--[[TODO Eliminate these in favor of new formatting
+]]--
+-- New Price Formatting Strings
+ZO_CreateStringId("MM_PTC_VOUCHER_VALUE_TYPE_NAME", "Average Voucher Cost Type")
+ZO_CreateStringId("MM_PTC_VOUCHER_VALUE_TYPE_TIP", "Calculate the average voucher cost based on the MM Average, TTC Average, TTC Suggested, and Bonanza Average prices.")
 
-ZO_CreateStringId("MM_MMPTC_DEFAULT_FORMAT", "MM price (%s/%s, %s): %s")
-ZO_CreateStringId("MM_MMPTC_CONDENSED_FORMAT", "MM price (%s, %s): %s")
-ZO_CreateStringId("MM_MMPTC_MM_TTC_FORMAT", "MM price: %s")
+ZO_CreateStringId("MM_PTC_MM_HEADER", "MM price (")
+ZO_CreateStringId("MM_PTC_NO_DATA_HEADER", "MM has no data")
+ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "MM has no data in the last %d days")
 
-ZO_CreateStringId("MM_BONANZAPTC_DEFAULT_FORMAT", "Bonanza price (%s/%s): %s")
-ZO_CreateStringId("MM_BONANZAPTC_CONDENSED_FORMAT", "Bonanza price (%s): %s")
-ZO_CreateStringId("MM_BONANZAPTC_MM_TTC_FORMAT", "Bonanza price: %s")
+ZO_CreateStringId("MM_PTC_BONANZA_HEADER", "Bonanza price (")
+ZO_CreateStringId("MM_PTC_TTC_HEADER", "TTC price (")
+ZO_CreateStringId("MM_PTC_PER_VOUCHER", "%s :per voucher")
 
-ZO_CreateStringId("MM_TTCPTC_MM_TTC_FORMAT", "TTC Price: Sug: %s/Avg: %s")
+ZO_CreateStringId("MM_PTC_CLOSING_SEPERATOR", ")")
+ZO_CreateStringId("MM_PTC_SLASH_SEPERATOR", "/")
+ZO_CreateStringId("MM_PTC_COLON_SPACE_SEPERATOR", ": ")
+ZO_CreateStringId("MM_PTC_COLON_SEPERATOR", ":")
+ZO_CreateStringId("MM_PTC_COMMA_SEPERATOR", ", ")
+ZO_CreateStringId("MM_PTC_PRICE_FORMATER", ": %s")
+
+ZO_CreateStringId("MM_PTC_SINGULAR_SALE", "%s sale")
+ZO_CreateStringId("MM_PTC_PLURAL_SALES", "%s sales")
+
+ZO_CreateStringId("MM_PTC_SINGULAR_ITEM", "%s item")
+ZO_CreateStringId("MM_PTC_PLURAL_ITEMS", "%s items")
+
+ZO_CreateStringId("MM_PTC_SINGULAR_LISTING", "%s listing")
+ZO_CreateStringId("MM_PTC_PLURAL_LISTINGS", "%s listings")
+
+ZO_CreateStringId("MM_PTC_SINGULAR_DAY", ", %s day)")
+ZO_CreateStringId("MM_PTC_PLURAL_DAYS", ", %s days)")
+
+ZO_CreateStringId("MM_PTC_TTC_SUGGESTED", "Sug: %s")
+ZO_CreateStringId("MM_PTC_TTC_AVERAGE", "Avg: %s")
 
 -- New values
-ZO_CreateStringId("MM_GRAPHTIP_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s")
-ZO_CreateStringId("MM_GRAPHTIP_FORMAT_MULTI", "MM price (%s sales/%s items, %s days): %s")
-ZO_CreateStringId("MM_BONANZA_GRAPHTIP", "Bonanza price (%s listings/%s items): %s")
-ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_SINGLE", "MM price (%s sales/%s items, %s day): %s\n%s per voucher (of average)")
-ZO_CreateStringId("MM_GRAPHTIP_WRIT_FORMAT_MULTI", "MM price (%s sales/%s items, %s days): %s\n%s per voucher (of average)")
-ZO_CreateStringId("MM_BONANZA_WRIT_GRAPHTIP", "Bonanza price (%s listings/%s items): %s\n%s per voucher (of average)")
-ZO_CreateStringId("MM_TO_CHAT_PER_VOUCHER", " / %s : per voucher")
-
-ZO_CreateStringId("MM_TTC_ALT_TIP", "TTC [%s listings] Sug: %s, Avg: %s")
+ZO_CreateStringId("MM_GRAPHTIP_BONANZA", "Bonanza price (%s listings/%s items): %s")
+ZO_CreateStringId("MM_GRAPHTIP_TTC", "TTC [%s listings] Sug: %s, Avg: %s")
+ZO_CreateStringId("MM_GRAPHTIP_MM_FORMAT_SINGULAR", "MM price (%s sales/%s items, %s day): %s")
+ZO_CreateStringId("MM_GRAPHTIP_MM_FORMAT_PLURAL", "MM price (%s sales/%s items, %s days): %s")
+ZO_CreateStringId("MM_GRAPHTIP_BONANZA_PRICE", "Bonanza price (%s listings/%s items): %s")
+ZO_CreateStringId("MM_GRAPHTIP_TTC_PRICE", "TTC [%s listings] Sug: %s, Avg: %s")
+ZO_CreateStringId("MM_GRAPHTIP_PER_VOUCHER", "%s per voucher (of average)")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE", "MM has no data")
-ZO_CreateStringId("MM_TIP_FORMAT_NONE_RANGE", "MM has no data in the last %d days")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "for")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Link in Chat")
@@ -285,8 +299,8 @@ ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_DAYS", "Days")
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_WEEKS", "Weeks")
 ZO_CreateStringId("MM_CUSTOM_TIMEFRAME_GUILD_WEEKS", "Full Guild Weeks")
 
-ZO_CreateStringId("MM_SAUCY_NAME", "Display profit instead of margin")
-ZO_CreateStringId("MM_SAUCY_TIP", "In the Guild Store, display potential profit instead of margin percent.")
+ZO_CreateStringId("MM_DISPLAY_PROFIT_NAME", "Display profit instead of margin")
+ZO_CreateStringId("MM_DISPLAY_PROFIT_TIP", "In the Guild Store, display potential profit instead of margin percent.")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_NAME", "Display Profit Filter")
 ZO_CreateStringId("MM_MIN_PROFIT_FILTER_TIP", "Adds an additional filter to AGS based on profit.")
 
@@ -358,14 +372,20 @@ ZO_CreateStringId("MM_EXTENSION_SHOPPINGLIST_NAME", "Shopping List")
 ZO_CreateStringId("MM_EXTENSION_BONANZA_NAME", "Bonanza")
 
 -- New Price To Chat Options
-ZO_CreateStringId("MASTER_MERCHANT_PRICETOCHAT_OPTIONS", "Price To Chat Options")
-ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_NAME", "Omit Bonanza Price if less than 6 listings")
-ZO_CreateStringId("MM_BONANZA_PRICETOCHAT_TIP", "Omit Bonanza Price from Price To Chat when there are less than 6 listings from Bonanza data.")
-ZO_CreateStringId("MM_CHATFORMATS_DEFAULT", "Default")
-ZO_CreateStringId("MM_CHATFORMATS_CONDENSED", "Without Item Count")
-ZO_CreateStringId("MM_CHATFORMATS_MM_TTC", "MM plus TTC")
-ZO_CreateStringId("MM_CHATFORMAT_NAME", "Price To Chat Format")
-ZO_CreateStringId("MM_CHATFORMAT_TIP", "Sellect the Price To Chat Format. The Bonanza Price will be included depending on the toggle setting for less then 6 listings in the Bonanza data.")
+ZO_CreateStringId("MM_FORMAT_OPTIONS_NAME", "Price To Chat Options")
+ZO_CreateStringId("MM_PTC_ITEM_COUNT_NAME", "Include Item Count")
+ZO_CreateStringId("MM_PTC_ITEM_COUNT_TIP", "Include Item Count with Price formatting.")
+
+ZO_CreateStringId("MM_PTC_LISTINGS_COUNT_NAME", "Include Listings Count")
+ZO_CreateStringId("MM_PTC_LISTINGS_COUNT_TIP", "Include Listings Count with Price formatting for either Bonanza and TTC.")
+
+ZO_CreateStringId("MM_PTC_TTC_DATA_NAME", "Include TTC Pricing Data")
+ZO_CreateStringId("MM_PTC_TTC_DATA_TIP", "Include condensed TTC Pricing Data with Price formatting.")
+ZO_CreateStringId("MM_PTC_BONANZA_NAME", "Omit Bonanza Price if less than 6 listings")
+ZO_CreateStringId("MM_PTC_BONANZA_TIP", "Omit Bonanza Price from Price formatting when there are less than 6 listings of Bonanza data.")
+
+ZO_CreateStringId("MM_PTC_ADD_VOUCHER_NAME", "Add cost per voucher for Writs")
+ZO_CreateStringId("MM_PTC_ADD_VOUCHER_TIP", "Adds cost per voucher for Writs based on the average price of the Writ. Writ Worthy adds cost per voucher based on the materials needed to craft the requirement.")
 
 -- new notification messages
 ZO_CreateStringId("MM_INITIALIZING", "Master Merchant Initializing...")
@@ -505,8 +525,8 @@ ZO_CreateStringId("MM_DEALCALC_TWENTYFIVE_TIP", "Reasonable Deal Range, the Gree
 ZO_CreateStringId("MM_DEALCALC_ZERO_NAME", "|cFFFFFFOkay Deal Range|r")
 ZO_CreateStringId("MM_DEALCALC_ZERO_TIP", "Okay Deal Range, the White color.")
 ZO_CreateStringId("MM_DEALCALC_OKAY_TEXT", "|cC2B280Anything below the|r |cFFFFFFOkay Deal Range|r |cC2B280value will be considered overpriced and appear in|r |cF90202Red|r.")
-ZO_CreateStringId("MM_DEALCALC_MODIFIEDTTC_NAME", "Modify TTC Suggested Price by 25 percent")
-ZO_CreateStringId("MM_DEALCALC_MODIFIEDTTC_TIP", "When enabled the TTC Suggested Price will be modified by 25 percent.")
+ZO_CreateStringId("MM_MODIFIED_TTC_SUGGESTED_NAME", "Modify TTC Suggested Price by 25 percent")
+ZO_CreateStringId("MM_MODIFIED_TTC_SUGGESTED_TIP", "When enabled the TTC Suggested Price will be modified by 25 percent.")
 
 ZO_CreateStringId("MASTER_MERCHANT_TIMEFORMAT_OPTIONS", "Time Format Options")
 ZO_CreateStringId("MM_SHOW_TIME_NAME", "Toggle time ago vs hours and minutes")
@@ -530,4 +550,3 @@ ZO_CreateStringId("MM_WINDOW_TIME_RANGE_LABEL_NINETY", "60-90 Days")
 ZO_CreateStringId("MM_WINDOW_TIME_RANGE_LABEL_CUSTOM", "Custom")
 ZO_CreateStringId("MM_WINDOW_CUSTOM_TIMEFRAME_NAME", "Custom Filter Timeframe")
 ZO_CreateStringId("MM_WINDOW_CUSTOM_TIMEFRAME_TIP", "Number of days for the Custom filter timeframe.")
-
