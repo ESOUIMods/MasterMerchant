@@ -2704,6 +2704,8 @@ function MasterMerchant:GenerateStatsItemTooltip()
   if mouseOverControlGrandparent then mocGPName = mouseOverControlGrandparent:GetName() end
   if mocOwner then mocOwnerName = mocOwner:GetName() end
 
+  local hasDataEntryData = mouseOverControl and mouseOverControl.dataEntry and mouseOverControl.dataEntry.data
+
   if mocParentName == 'ZO_CraftBagListContents' or
     mocParentName == 'ZO_PlayerInventoryListContents' or
     mocParentName == 'ZO_EnchantingTopLevelInventoryBackpackContents' or
@@ -2766,6 +2768,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
     itemLink = MasterMerchant:SetLevelAndQuality(mouseOverControl.itemLink)
 
   elseif mocParentName == "ZO_TradingHouseBrowseItemsRightPaneSearchResultsContents" then
+    if not hasDataEntryData then return end
     local rowData = mouseOverControl.dataEntry.data
     if not rowData or rowData.timeRemaining == 0 then return end
     purchasePrice = rowData.purchasePrice
@@ -2773,6 +2776,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
     itemLink = GetTradingHouseSearchResultItemLink(rowData.slotIndex)
 
   elseif mocParentName == "ZO_TradingHousePostedItemsListContents" then
+    if not hasDataEntryData then return end
     local rowData = mouseOverControl.dataEntry.data
     if not rowData or rowData.timeRemaining == 0 then return end
     purchasePrice = rowData.purchasePrice
