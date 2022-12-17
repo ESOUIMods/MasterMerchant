@@ -2650,6 +2650,25 @@ local function GetTopControl(control)
   end
 end
 
+function MasterMerchant:SetCrafted(itemLink)
+  local linkParse = { ZO_LinkHandler_ParseLink(itemLink) }
+  local craftedlink = string.format("|H1:item:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s|h|h", linkParse[4],
+    linkParse[5], linkParse[6], linkParse[7], linkParse[8], linkParse[9], linkParse[10], linkParse[11],
+    linkParse[12], linkParse[13], linkParse[14], linkParse[15], linkParse[16], linkParse[17], linkParse[18],
+    linkParse[19], "1", linkParse[21], linkParse[22], linkParse[23], linkParse[24])
+  return craftedlink
+end
+
+function MasterMerchant:SetLevelAndQuality(itemLink)
+  local linkParse = { ZO_LinkHandler_ParseLink(itemLink) }
+  local itemLevel = GetItemLinkDisplayQuality(itemLink) + 1
+  local craftedlink = string.format("|H1:item:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s|h|h", linkParse[4],
+    itemLevel, "1", linkParse[7], linkParse[8], linkParse[9], linkParse[10], linkParse[11],
+    linkParse[12], linkParse[13], linkParse[14], linkParse[15], linkParse[16], linkParse[17], linkParse[18],
+    linkParse[19], linkParse[20], linkParse[21], linkParse[22], linkParse[23], linkParse[24])
+  return craftedlink
+end
+
 -- ItemTooltips get used all over the place, we have to figure out
 -- who the control generating the tooltip is so we know
 -- how to grab the item data
@@ -2744,16 +2763,20 @@ function MasterMerchant:GenerateStatsItemTooltip()
     itemLink = mouseOverControl.itemLink
 
   elseif mocOwnerName == "FurCGui" then
-    itemLink = IIfA:SetLevelAndQuality(mouseOverControl.itemLink)
+    itemLink = MasterMerchant:SetLevelAndQuality(mouseOverControl.itemLink)
 
   elseif mocParentName == "ZO_TradingHouseBrowseItemsRightPaneSearchResultsContents" then
     local rowData = mouseOverControl.dataEntry.data
     if not rowData or rowData.timeRemaining == 0 then return end
+    purchasePrice = rowData.purchasePrice
+    stackCount = rowData.stackCount
     itemLink = GetTradingHouseSearchResultItemLink(rowData.slotIndex)
 
   elseif mocParentName == "ZO_TradingHousePostedItemsListContents" then
     local rowData = mouseOverControl.dataEntry.data
     if not rowData or rowData.timeRemaining == 0 then return end
+    purchasePrice = rowData.purchasePrice
+    stackCount = rowData.stackCount
     itemLink = GetTradingHouseListingItemLink(rowData.slotIndex)
 
   elseif mocParentName == 'DolgubonSetCrafterWindowMaterialListListContents' then
@@ -2764,7 +2787,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
   elseif mocGPName == "CraftingQueueScrollListContents" then
     local rowData = mouseOverControlParent.data[1]
     if not rowData then return end
-    itemLink = IIfA:SetCrafted(rowData.Link)
+    itemLink = MasterMerchant:SetCrafted(rowData.Link)
 
   elseif mocParentName == "ZO_InteractWindowRewardArea" then
     -- is reward item
