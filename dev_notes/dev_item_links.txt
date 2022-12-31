@@ -1,3 +1,91 @@
+|H1:item:121533:6:1:0:0:0:38:190:5:74:17:103:0:0:0:0:0:0:0:0:844800|h|h
+
+|H1:item:121533:6:1:0:0:0:38:190:5:74:17:103:0:0:0:0:0:0:0:0:844800|h|h
+
+MM price (49 sales, 625 days): 6,723 
+Bonanza price (6 listings): 10,307 
+TTC price (435 listings): Sug: 3,167/Avg: 8,082: for The Thing
+
+MM price (40 sales, 852 days): 11,300 
+Bonanza price (2 listings): 7,702 
+TTC price (6 listings): Avg: 12,314: 143 :per voucher: for The Thing
+
+MM price (164 sales, 59 days): 6,948 
+Bonanza price (17 listings): 15,951 
+TTC price (777 listings): Sug: 3,625/Avg: 16,300: 173 :per voucher: for The Thing
+
+\(?(.*)(GetString\(.*\))(.*)\)?
+
+/script d(GetCompanionName(GetActiveCompanionDefId()))
+zo_strformat(SI_UNIT_NAME, charName)
+HasActiveCompanion()
+
+/script d(IIfA.companion.CharNameToId["Ember"])
+
+IIfA.companion.CharIdToName["1321436487"]
+IIfA.companion.CharNameToId["Ember"]
+
+/script d(GetItemLinkDisplayQuality("|H1:item:139223:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
+
+
+EFBFBD
+
+ZO_TradingHousePostedItemsList2Row1
+ZO_PlayerInventoryList1Row1
+
+https://www.esoui.com/downloads/addcomment.php?action=addcomment&fileid=928&quote=79749
+
+|H1:item:54339:308:50:0:0:0:0:0:0:0:0:0:0:0:0:36:1:0:0:0:8454917|h|h
+
+|H1:item:33265:30:1:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:0|h|h
+|H1:item:33265:30:9:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:0|h|h
+
+|H1:item:125596:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+
+table: ZO_NORMAL_TEXT
+
+includeVoucherCostPriceToChat includeVoucherAverage
+
+/script d(zo_plainstrfind(MasterMerchant.systemSavedVariables.blacklist, "@Dovahsky"))
+
+/script if MasterMerchant.systemSavedVariables.blacklist == "" then d("Empty") else d("Hmmmm") end
+/script d(type(MasterMerchant.systemSavedVariables.blacklist))
+
+local z = (individualSale - initMean) / standardDeviation
+
+-- check these with different SD settings
+|H1:item:167946:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+|H1:item:167969:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+|H1:item:167280:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+
+|H1:item:126163:5:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
+
+|H1:item:43542:366:50:0:0:0:0:0:0:0:0:0:0:0:0:5:0:0:0:10000:0|h|h
+|H1:item:43542:366:50:0:0:0:0:0:0:0:0:0:0:0:0:5:1:0:0:10000:0|h|h
+
+ZO_LinkHandler_ParseLink(itemLink)
+
+
+"50:16:4:3:0"
+
+  local clearGraph = tooltip.graphPool ~= nil and tooltip.mmGraph ~= nil and not hasGraphInfo and MasterMerchant.systemSavedVariables.showGraph
+  if clearGraph then
+    tooltip.mmGraph:ClearAnchors()
+    tooltip.mmGraph = nil
+    tooltip.graphPool:ReleaseAllObjects()
+  end
+  
+        if salesHasEntry then
+        local itemLink = internal:GetItemLinkByIndex(firstEntry.itemLink)
+        if itemLink then
+          itemIndexData.itemAdderText = internal:AddSearchToItem(itemLink)
+          itemIndexData.itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+        end
+      end
+
+
+
+
 |H1:item:181554:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Recipe
 |H1:item:181500:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h Item
 

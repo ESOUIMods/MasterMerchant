@@ -2044,8 +2044,10 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   end
 
   local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
+  local bindType = GetItemLinkBindType(itemLink)
+  local bindOnPickup = bindType == BIND_TYPE_ON_PICKUP or bindType == BIND_TYPE_ON_PICKUP_BACKPACK
 
-  if not showTooltipInformation then return end
+  if not showTooltipInformation or bindOnPickup then return end
 
   local itemType = GetItemLinkItemType(itemLink)
   local itemId = GetItemLinkItemId(itemLink)
@@ -2717,8 +2719,8 @@ function MasterMerchant:GenerateStatsItemTooltip()
     mocParentName == 'ZO_GuildBankBackpackContents' or
     mocParentName == 'ZO_HouseBankBackpackContents' or
     mocParentName == "ZO_CompanionEquipment_Panel_KeyboardListContents" then
+    if not hasDataEntryData then return end
     local rowData = mouseOverControl.dataEntry.data
-    if not rowData then return end
     itemLink = GetItemLink(rowData.bagId, rowData.slotIndex, LINK_STYLE_BRACKETS)
 
   elseif mocParentName == "ZO_Character" then
@@ -2731,8 +2733,8 @@ function MasterMerchant:GenerateStatsItemTooltip()
 
   elseif mocParentName == "ZO_LootAlphaContainerListContents" then
     -- is loot item
+    if not hasDataEntryData then return end
     local rowData = mouseOverControl.dataEntry.data
-    if not rowData then return end
     itemLink = GetLootItemLink(rowData.lootId, LINK_STYLE_BRACKETS)
 
   elseif mocParentName == "ZO_BuyBackListContents" then
