@@ -1442,7 +1442,7 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
   end
   if (itemLink and zo_strmatch(itemLink, '|H.-:item:(.-):')) then
     zo_callLater(function()
-      AddMenuItem(GetString(MM_SEARCH_BONANZA), function() self:OnSearchBonanzaPopupInfoLink(itemLink) end, MENU_ADD_OPTION_LABEL)
+      if MasterMerchant.systemSavedVariables.showSearchBonanza then AddMenuItem(GetString(MM_SEARCH_BONANZA), function() self:OnSearchBonanzaPopupInfoLink(itemLink) end, MENU_ADD_OPTION_LABEL) end
       if MasterMerchant:itemCraftPrice(itemLink) then
         AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() self:onItemActionLinkCCLink(itemLink) end, MENU_ADD_OPTION_LABEL)
       end
@@ -2413,6 +2413,15 @@ function MasterMerchant:LibAddonInit()
     setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = value end,
     default = MasterMerchant.systemDefault.modifiedSuggestedPriceInventory,
     disabled = function() return (not MasterMerchant.systemSavedVariables.replaceInventoryValues) or (MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MM_PRICE_TTC_SUGGESTED) end,
+  }
+  -- hide Bonanza context menu
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_SHOW_SEARCH_BONANZA_NAME),
+    tooltip = GetString(MM_SHOW_SEARCH_BONANZA_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.showSearchBonanza end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showSearchBonanza = value end,
+    default = MasterMerchant.systemDefault.showSearchBonanza,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -3470,6 +3479,7 @@ function MasterMerchant:FirstInitialize()
     modifiedSuggestedPriceInventory = false,
     modifiedSuggestedPriceVoucher = false,
     showUnitPrice = false,
+    showSearchBonanza = true,
     useFormatedTime = false,
     useTwentyFourHourTime = false,
     dateFormatMonthDay = MM_MONTH_DAY_FORMAT,

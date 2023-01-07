@@ -7,40 +7,40 @@
       Distribution without license is prohibited!
 -->
 <GuiXml>
-  <Font name="MM_FontGameLargeBold" font="$(BOLD_FONT)|$(KB_19)|soft-shadow-thick" />
+  <Font name="MM_FontGameLargeBold" font="$(BOLD_FONT)|$(KB_19)|soft-shadow-thick"/>
   <Controls>
     <!-- Attempt to make a control for headers that you can't sort and have it look like the sort header -->
     <Control name="MM_NonSortHeaderCenter" virtual="true">
-        <Controls>
-            <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-                <AnchorFill />
-            </Label>
-        </Controls>
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
     </Control>
     <Control name="MM_NonSortHeaderLeft" virtual="true">
-        <Controls>
-            <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-                <AnchorFill />
-            </Label>
-        </Controls>
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
     </Control>
     <Control name="MM_SortHeaderCenterAppearance" virtual="true">
-        <Controls>
-            <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-                <AnchorFill />
-            </Label>
-        </Controls>
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
     </Control>
     <Control name="MM_SortHeaderLeftAppearance" virtual="true">
-        <Controls>
-            <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-                <AnchorFill />
-            </Label>
-        </Controls>
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
     </Control>
 
-    <Control name="MM_SortHeaderCenter" inherits="ZO_SortHeaderBehavior MM_SortHeaderCenterAppearance" virtual="true" />    
-    <Control name="MM_SortHeaderLeft" inherits="ZO_SortHeaderBehavior MM_SortHeaderLeftAppearance" virtual="true" />    
+    <Control name="MM_SortHeaderCenter" inherits="ZO_SortHeaderBehavior MM_SortHeaderCenterAppearance" virtual="true"/>
+    <Control name="MM_SortHeaderLeft" inherits="ZO_SortHeaderBehavior MM_SortHeaderLeftAppearance" virtual="true"/>
     <!-- Sales Main Window listings_vs -->
     <!-- /script MasterMerchantItemsWindow:SetHidden(false) -->
     <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantListingWindow" hidden="true" tier="MEDIUM">
@@ -63,14 +63,14 @@
               <Anchor point="TOPLEFT" relativeTo="$(parent)MenuHeader" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
               <TextureCoords left="0" right="1" top="0" bottom="1"/>
             </Texture>
-            <Backdrop name="$(parent)Search" inherits="ZO_EditBackdrop">
+            <Backdrop name="$(parent)Search" inherits="ZO_SingleLineEditBackdrop_Keyboard">
               <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="230" y="30"/>
               <Controls>
                 <EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" defaultText="SI_SEARCH_FILTER_BY">
                   <OnEnter>
                     self:LoseFocus()
-                    MasterMerchant.listingsScrollList:RefreshFilters()
+                    MasterMerchant.listingsScrollList:RefreshFilters() 
                   </OnEnter>
                 </EditBox>
               </Controls>
@@ -341,7 +341,7 @@
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <TextureCoords left="0" right="1" top="0" bottom="1"/>
         </Texture>
-        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" color="FFFFFF"  text="1">
+        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" color="FFFFFF" text="1">
           <Dimensions x="32" y="32"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
         </Label>

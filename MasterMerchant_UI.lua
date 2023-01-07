@@ -1145,6 +1145,16 @@ local function CheckFilterTimeframe(timestamp)
   return validRange
 end
 
+local function CleanTextEnglish(searchText)
+  -- pass two, clean up the text
+  if searchText then
+    searchText = string.gsub(searchText, "'s", MM_STRING_EMPTY)
+    searchText = string.gsub(searchText, "-", " ")
+    searchText = string.gsub(searchText, "%p", MM_STRING_EMPTY)
+  end
+  return searchText
+end
+
 function MMScrollList:FilterScrollList()
   -- this will error when the MM window is open and sr_index is empty
   --if internal:is_empty_or_nil(sr_index) then return end
@@ -1162,22 +1172,13 @@ function MMScrollList:FilterScrollList()
   elseif MasterMerchant.systemSavedVariables.viewSize == REPORTS then
     searchText = MasterMerchantReportsWindowMenuHeaderSearchEditBox:GetText()
   end
-  -- pass one, set the text if Bonanza Search
   if MasterMerchant.bonanzaSearchText then
     searchText = MasterMerchant.bonanzaSearchText
-  end
-  -- pass two, clean up the text
-  if searchText then
-    searchText = string.gsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1')
-    searchText = string.gsub(searchText, "'s", MM_STRING_EMPTY)
-    searchText = string.gsub(searchText, "-", " ")
-    searchText = string.gsub(searchText, "%p", MM_STRING_EMPTY)
-  end
-  -- pass three, set the text and clear  Bonanza Search text
-  if MasterMerchant.bonanzaSearchText then
-    MasterMerchantListingWindowMenuHeaderSearchEditBox:SetText(searchText)
     MasterMerchant.bonanzaSearchText = nil
+    if MasterMerchant.effective_lang == "en" then searchText = CleanTextEnglish(searchText) end
+    MasterMerchantListingWindowMenuHeaderSearchEditBox:SetText(searchText)
   end
+  if searchText then searchText = string.gsub(string.lower(searchText), '^%s*(.-)%s*$', '%1') end
   local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
 
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
@@ -2707,6 +2708,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
   if mocOwner then mocOwnerName = mocOwner:GetName() end
 
   local hasDataEntryData = mouseOverControl and mouseOverControl.dataEntry and mouseOverControl.dataEntry.data
+  local hasMocData = mouseOverControl and mouseOverControl.data
 
   if mocParentName == 'ZO_CraftBagListContents' or
     mocParentName == 'ZO_PlayerInventoryListContents' or
@@ -2743,6 +2745,9 @@ function MasterMerchant:GenerateStatsItemTooltip()
 
   elseif mocParentName == "ZO_StoreWindowListContents" then
     -- is store item
+    local collectibleId = GetStoreCollectibleInfo(mouseOverControl.index)
+    local isCollectible = collectibleId and collectibleId > 0
+    if isCollectible then return end
     itemLink = GetStoreItemLink(mouseOverControl.index, LINK_STYLE_BRACKETS)
 
   elseif mocParentName == 'ZO_MailInboxMessageAttachments' then
@@ -2786,6 +2791,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
     itemLink = GetTradingHouseListingItemLink(rowData.slotIndex)
 
   elseif mocParentName == 'DolgubonSetCrafterWindowMaterialListListContents' then
+    if not hasMocData then return end
     local rowData = mouseOverControl.data[1]
     if not rowData then return end
     itemLink = rowData.Name
@@ -2802,13 +2808,13 @@ function MasterMerchant:GenerateStatsItemTooltip()
   elseif mocOwnerName == 'CraftStoreFixed_Cook' or
     mocOwnerName == 'CraftStoreFixed_Rune' or
     mocOwnerName == 'CraftStoreFixed_Blueprint_Window' then
+    if not hasMocData then return end
     local rowData = mouseOverControl.data
-    if not rowData then return end
     itemLink = rowData.link
 
   elseif mocOwnerName == 'ZO_ClaimLevelUpRewardsScreen_Keyboard' then
+    if not hasMocData then return end
     local rowData = mouseOverControl.data
-    if not rowData then return end
     itemLink = rowData.itemLink
   end
 

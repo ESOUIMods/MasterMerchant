@@ -816,6 +816,7 @@ function internal:CleanOutBad()
       internal.guildSales = {}
       internal.guildItems = {}
       internal.myItems = {}
+      LibGuildStore_SavedVariables["updateAdditionalText"] = false
       LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
       LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
@@ -832,8 +833,6 @@ function internal:CleanOutBad()
   if not internal.isDatabaseBusy then
     internal:iterateOverSalesData(nil, nil, nil, prefunc, loopfunc, postfunc, {})
   end
-
-  LibGuildStore_SavedVariables["updateAdditionalText"] = false
 end
 
 local function FinalizePurge(count)

@@ -48,6 +48,14 @@ function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
 
 end
 
+--[[
+GetItemLinkRequiredLevel("|H1:item:30357:175:1:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:0|h|h")
+GetItemLinkRequiredChampionPoints("|H1:item:30357:175:1:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:0|h|h")
+GetItemLinkDisplayQuality("|H1:item:30357:175:1:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:0|h|h")
+1
+0
+1
+]]--
 function MasterMerchant:GetSolventItemLink(itemLink)
   local itemType, _ = GetItemLinkItemType(itemLink)
   local solventIndex = GetItemLinkRequiredLevel(itemLink) + GetItemLinkRequiredChampionPoints(itemLink)

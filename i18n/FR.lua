@@ -538,6 +538,8 @@ ZO_CreateStringId("MM_DEALCALC_ZERO_TIP", "Éventail de transaction approuvé, l
 ZO_CreateStringId("MM_DEALCALC_OKAY_TEXT", "|cC2B280Tout ce qui est en dessous de |r |cFFFFFFl'Éventail de transaction approuvé|r |cC2B280la valeur sera considérée comme trop chère et apparaîtra en|r |cF90202Rouge|r.")
 ZO_CreateStringId("MM_MODIFIED_TTC_SUGGESTED_NAME", "Modifie le Prix TTC suggéré de 25 %")
 ZO_CreateStringId("MM_MODIFIED_TTC_SUGGESTED_TIP", "Lorsqu'il est activé, le prix TTC suggéré sera modifié de 25 %..")
+ZO_CreateStringId("MM_SHOW_SEARCH_BONANZA_NAME", "Show Search Bonanza Menu")
+ZO_CreateStringId("MM_SHOW_SEARCH_BONANZA_TIP", "Show Search Bonanza menu from various inventory views.")
 
 ZO_CreateStringId("MASTER_MERCHANT_TIMEFORMAT_OPTIONS", "Options de format d'heure")
 ZO_CreateStringId("MM_SHOW_TIME_NAME", "Basculer le temps passé contre Heure et Minute")

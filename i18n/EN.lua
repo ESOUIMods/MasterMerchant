@@ -539,6 +539,8 @@ ZO_CreateStringId("MM_DEALCALC_ZERO_TIP", "Okay Deal Range, the White color.")
 ZO_CreateStringId("MM_DEALCALC_OKAY_TEXT", "|cC2B280Anything below the|r |cFFFFFFOkay Deal Range|r |cC2B280value will be considered overpriced and appear in|r |cF90202Red|r.")
 ZO_CreateStringId("MM_MODIFIED_TTC_SUGGESTED_NAME", "Modify TTC Suggested Price by 25 percent")
 ZO_CreateStringId("MM_MODIFIED_TTC_SUGGESTED_TIP", "When enabled the TTC Suggested Price will be modified by 25 percent.")
+ZO_CreateStringId("MM_SHOW_SEARCH_BONANZA_NAME", "Show Search Bonanza Menu")
+ZO_CreateStringId("MM_SHOW_SEARCH_BONANZA_TIP", "Show Search Bonanza menu from various inventory views.")
 
 ZO_CreateStringId("MASTER_MERCHANT_TIMEFORMAT_OPTIONS", "Time Format Options")
 ZO_CreateStringId("MM_SHOW_TIME_NAME", "Toggle time ago vs hours and minutes")
