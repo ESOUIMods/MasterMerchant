@@ -2708,6 +2708,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
   if mocOwner then mocOwnerName = mocOwner:GetName() end
 
   local hasDataEntryData = mouseOverControl and mouseOverControl.dataEntry and mouseOverControl.dataEntry.data
+  local hasParentData = mouseOverControlParent and mouseOverControlParent.data
   local hasMocData = mouseOverControl and mouseOverControl.data
 
   if mocParentName == 'ZO_CraftBagListContents' or
@@ -2720,6 +2721,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
     mocParentName == 'ZO_PlayerBankBackpackContents' or
     mocParentName == 'ZO_GuildBankBackpackContents' or
     mocParentName == 'ZO_HouseBankBackpackContents' or
+    mocParentName == 'ZO_UniversalDeconstructionTopLevel_KeyboardPanelInventoryBackpackContents' or
     mocParentName == "ZO_CompanionEquipment_Panel_KeyboardListContents" then
     if not hasDataEntryData then return end
     local rowData = mouseOverControl.dataEntry.data
@@ -2797,9 +2799,11 @@ function MasterMerchant:GenerateStatsItemTooltip()
     itemLink = rowData.Name
 
   elseif mocGPName == "CraftingQueueScrollListContents" then
+    if not hasParentData then return end
     local rowData = mouseOverControlParent.data[1]
-    if not rowData then return end
-    itemLink = MasterMerchant:SetCrafted(rowData.Link)
+    local rowDataLink = rowData.Link
+    if not rowDataLink then return end
+    itemLink = MasterMerchant:SetCrafted(rowDataLink)
 
   elseif mocParentName == "ZO_InteractWindowRewardArea" then
     -- is reward item
