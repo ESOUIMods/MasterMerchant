@@ -235,8 +235,6 @@ internal.GS_CHECK_ACCOUNTNAME = "accountNames"
 internal.GS_CHECK_ITEMLINK = "itemLink"
 internal.GS_CHECK_GUILDNAME = "guildNames"
 internal.PlayerSpecialText = 'hfdkkdfunlajjamdhsiwsuwj'
-internal.dataToReset = ""
-internal.listingsToReset = ""
 
 internal.dataNamespace = ""
 internal.libHistoireNamespace = ""

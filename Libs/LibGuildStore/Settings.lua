@@ -242,13 +242,12 @@ function internal:LibAddonInit()
   end
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(GS_REFRESH_BUTTON),
+    name = GetString(GS_REFRESH_LIBHISTOIRE_DATA),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#RefreshLibHistoire",
   }
   optionsData[#optionsData + 1] = {
     type = "description",
-    title = GetString(GS_REFRESH_LIBHISTOIRE_DATA),
     text = GetString(GS_REFRESH_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -257,6 +256,7 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_REFRESH_LIBHISTOIRE_TIP),
     func = function()
       LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
+      LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
       internal:RefreshLibGuildStore()
       internal:SetupListenerLibHistoire()
       internal:StartQueue()
@@ -292,7 +292,7 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "description",
-    title = GetString(GS_IMPORT_MM_PRICING),
+    title = GetString(GS_IMPORT_PD_TITLE),
     text = GetString(GS_IMPORT_PD_DESC),
   }
   optionsData[#optionsData + 1] = {
@@ -305,43 +305,22 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(GS_RESET_NA_BUTTON),
+    name = GetString(GS_RESET_BUTTON),
     width = "full",
     helpUrl = "https://esouimods.github.io/3-master_merchant.html#ResetData",
   }
   optionsData[#optionsData + 1] = {
     type = "description",
-    title = GetString(GS_RESET_NA_LIBGUILDSTORE),
-    text = GetString(GS_RESET_NA_DESC),
+    text = GetString(GS_RESET_DESC),
   }
   optionsData[#optionsData + 1] = {
     type = "button",
-    name = GetString(GS_RESET_NA_NAME),
-    tooltip = GetString(GS_RESET_NA_TIP),
+    name = GetString(GS_RESET_NAME),
+    tooltip = GetString(GS_RESET_TIP),
     func = function()
-      internal.dataToReset = internal.GS_NA_NAMESPACE
       ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation")
     end,
-  }
-  optionsData[#optionsData + 1] = {
-    type = "header",
-    name = GetString(GS_RESET_EU_BUTTON),
-    width = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ResetData",
-  }
-  optionsData[#optionsData + 1] = {
-    type = "description",
-    title = GetString(GS_RESET_EU_LIBGUILDSTORE),
-    text = GetString(GS_RESET_EU_DESC),
-  }
-  optionsData[#optionsData + 1] = {
-    type = "button",
-    name = GetString(GS_RESET_EU_NAME),
-    tooltip = GetString(GS_RESET_EU_TIP),
-    func = function()
-      internal.dataToReset = internal.GS_EU_NAMESPACE
-      ZO_Dialogs_ShowDialog("MasterMerchantResetConfirmation")
-    end,
+    warning = GetString(MM_RESET_LISTINGS_WARN_FORCE),
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -351,15 +330,13 @@ function internal:LibAddonInit()
   }
   optionsData[#optionsData + 1] = {
     type = "description",
-    title = GetString(GS_RESET_LISTINGS_DATA),
-    text = GetString(GS_RESET_LISTINGS_BUTTON),
+    text = GetString(GS_RESET_LISTINGS_DESC),
   }
   optionsData[#optionsData + 1] = {
     type = "button",
     name = GetString(GS_RESET_LISTINGS_NAME),
     tooltip = GetString(GS_RESET_LISTINGS_TIP),
     func = function()
-      internal.listingsToReset = internal.listingsNamespace
       ZO_Dialogs_ShowDialog("MasterMerchantResetListingsConfirmation")
     end,
     warning = GetString(MM_RESET_LISTINGS_WARN_FORCE),

@@ -1020,62 +1020,57 @@ end
 ----------------------------------------
 ----- Reset Data Functions         -----
 ----------------------------------------
+local function ResetSalesDataNA()
+  GS00Data:ResetSalesDataNA()
+  GS01Data:ResetSalesDataNA()
+  GS02Data:ResetSalesDataNA()
+  GS03Data:ResetSalesDataNA()
+  GS04Data:ResetSalesDataNA()
+  GS05Data:ResetSalesDataNA()
+  GS06Data:ResetSalesDataNA()
+  GS07Data:ResetSalesDataNA()
+  GS08Data:ResetSalesDataNA()
+  GS09Data:ResetSalesDataNA()
+  GS10Data:ResetSalesDataNA()
+  GS11Data:ResetSalesDataNA()
+  GS12Data:ResetSalesDataNA()
+  GS13Data:ResetSalesDataNA()
+  GS14Data:ResetSalesDataNA()
+  GS15Data:ResetSalesDataNA()
+end
+
+local function ResetSalesDataEU()
+  GS00Data:ResetSalesDataEU()
+  GS01Data:ResetSalesDataEU()
+  GS02Data:ResetSalesDataEU()
+  GS03Data:ResetSalesDataEU()
+  GS04Data:ResetSalesDataEU()
+  GS05Data:ResetSalesDataEU()
+  GS06Data:ResetSalesDataEU()
+  GS07Data:ResetSalesDataEU()
+  GS08Data:ResetSalesDataEU()
+  GS09Data:ResetSalesDataEU()
+  GS10Data:ResetSalesDataEU()
+  GS11Data:ResetSalesDataEU()
+  GS12Data:ResetSalesDataEU()
+  GS13Data:ResetSalesDataEU()
+  GS14Data:ResetSalesDataEU()
+  GS15Data:ResetSalesDataEU()
+end
 
 -- Handle the reset button - clear out the search and scan tables,
 -- and set the time of the last scan to nil, then force a scan.
 function internal:ResetSalesData()
-  if GetWorldName() == 'NA Megaserver' and internal.dataToReset == internal.GS_EU_NAMESPACE then
-    internal:dm("Info", GetString(GS_RESET_NA_INSTEAD))
-    return
-  end
-  if GetWorldName() == 'EU Megaserver' and internal.dataToReset == internal.GS_NA_NAMESPACE then
-    internal:dm("Info", GetString(GS_RESET_EU_INSTEAD))
-    return
-  end
-
-  internal:dm("Debug", "DoReset")
-  local sales_data = {}
-  local sr_index = {}
-  _G["LibGuildStore_SalesData"] = sales_data
-  _G["LibGuildStore_SalesIndex"] = sr_index
-  internal.sr_index_count = 0
-
-  GS00DataSavedVariables[internal.dataToReset] = {}
-  GS01DataSavedVariables[internal.dataToReset] = {}
-  GS02DataSavedVariables[internal.dataToReset] = {}
-  GS03DataSavedVariables[internal.dataToReset] = {}
-  GS04DataSavedVariables[internal.dataToReset] = {}
-  GS05DataSavedVariables[internal.dataToReset] = {}
-  GS06DataSavedVariables[internal.dataToReset] = {}
-  GS07DataSavedVariables[internal.dataToReset] = {}
-  GS08DataSavedVariables[internal.dataToReset] = {}
-  GS09DataSavedVariables[internal.dataToReset] = {}
-  GS10DataSavedVariables[internal.dataToReset] = {}
-  GS11DataSavedVariables[internal.dataToReset] = {}
-  GS12DataSavedVariables[internal.dataToReset] = {}
-  GS13DataSavedVariables[internal.dataToReset] = {}
-  GS14DataSavedVariables[internal.dataToReset] = {}
-  GS15DataSavedVariables[internal.dataToReset] = {}
-
-  internal.guildPurchases = {}
-  internal.guildSales = {}
-  internal.guildItems = {}
-  internal.myItems = {}
-  if MasterMerchantGuildWindow:IsHidden() then
-    MasterMerchant.scrollList:RefreshData()
+  internal:dm("Debug", "ResetSalesData")
+  if GetWorldName() == 'NA Megaserver' then
+    ResetSalesDataNA()
   else
-    MasterMerchant.guildScrollList:RefreshData()
+    ResetSalesDataEU()
   end
-  internal:DatabaseBusy(false)
-  internal:dm("Info", internal:concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_RESET_DONE)))
-  internal:dm("Info", internal:concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_REFRESH_START)))
-  MasterMerchant.isFirstScan = true
-  --[[needs updating so start and stop the listener then
-  init everyting
-  ]]--
-  internal:RefreshLibGuildStore()
-  internal:SetupListenerLibHistoire()
-  internal:StartQueue()
+  internal:DatabaseBusy(true)
+  LibGuildStore_SavedVariables[internal.firstrunNamespace] = true
+  LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
+  ReloadUI()
 end
 
 function internal:Expected(eventID)

@@ -12,6 +12,26 @@ local function Initialize()
   if not GS06DataSavedVariables then GS06DataSavedVariables = lib.defaults end
 end
 
+function lib:ResetAllData()
+  GS06DataSavedVariables = lib.defaults
+end
+
+function lib:ResetSalesDataNA()
+  GS06DataSavedVariables['datana'] = lib.defaults['datana']
+end
+
+function lib:ResetSalesDataEU()
+  GS06DataSavedVariables['dataeu'] = lib.defaults['dataeu']
+end
+
+function lib:ResetListingsDataNA()
+  GS06DataSavedVariables['listingsna'] = lib.defaults['listingsna']
+end
+
+function lib:ResetListingsDataEU()
+  GS06DataSavedVariables['listingseu'] = lib.defaults['listingseu']
+end
+
 local function OnAddOnLoaded(eventCode, addonName)
   if addonName == lib.libName then
     Initialize()

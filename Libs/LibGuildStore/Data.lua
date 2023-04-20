@@ -611,47 +611,54 @@ function internal:processAwesomeGuildStore(itemDatabase, guildId)
 
 end
 
+local function ResetListingsDataNA()
+  GS00Data:ResetListingsDataNA()
+  GS01Data:ResetListingsDataNA()
+  GS02Data:ResetListingsDataNA()
+  GS03Data:ResetListingsDataNA()
+  GS04Data:ResetListingsDataNA()
+  GS05Data:ResetListingsDataNA()
+  GS06Data:ResetListingsDataNA()
+  GS07Data:ResetListingsDataNA()
+  GS08Data:ResetListingsDataNA()
+  GS09Data:ResetListingsDataNA()
+  GS10Data:ResetListingsDataNA()
+  GS11Data:ResetListingsDataNA()
+  GS12Data:ResetListingsDataNA()
+  GS13Data:ResetListingsDataNA()
+  GS14Data:ResetListingsDataNA()
+  GS15Data:ResetListingsDataNA()
+end
+
+local function ResetListingsDataEU()
+  GS00Data:ResetListingsDataEU()
+  GS01Data:ResetListingsDataEU()
+  GS02Data:ResetListingsDataEU()
+  GS03Data:ResetListingsDataEU()
+  GS04Data:ResetListingsDataEU()
+  GS05Data:ResetListingsDataEU()
+  GS06Data:ResetListingsDataEU()
+  GS07Data:ResetListingsDataEU()
+  GS08Data:ResetListingsDataEU()
+  GS09Data:ResetListingsDataEU()
+  GS10Data:ResetListingsDataEU()
+  GS11Data:ResetListingsDataEU()
+  GS12Data:ResetListingsDataEU()
+  GS13Data:ResetListingsDataEU()
+  GS14Data:ResetListingsDataEU()
+  GS15Data:ResetListingsDataEU()
+end
 -- Handle the reset button - clear out the search and scan tables,
 -- and set the time of the last scan to nil, then force a scan.
 function internal:ResetListingsData()
   internal:dm("Debug", "ResetListingsData")
-
-  GS00DataSavedVariables[internal.listingsToReset] = {}
-  GS01DataSavedVariables[internal.listingsToReset] = {}
-  GS02DataSavedVariables[internal.listingsToReset] = {}
-  GS03DataSavedVariables[internal.listingsToReset] = {}
-  GS04DataSavedVariables[internal.listingsToReset] = {}
-  GS05DataSavedVariables[internal.listingsToReset] = {}
-  GS06DataSavedVariables[internal.listingsToReset] = {}
-  GS07DataSavedVariables[internal.listingsToReset] = {}
-  GS08DataSavedVariables[internal.listingsToReset] = {}
-  GS09DataSavedVariables[internal.listingsToReset] = {}
-  GS10DataSavedVariables[internal.listingsToReset] = {}
-  GS11DataSavedVariables[internal.listingsToReset] = {}
-  GS12DataSavedVariables[internal.listingsToReset] = {}
-  GS13DataSavedVariables[internal.listingsToReset] = {}
-  GS14DataSavedVariables[internal.listingsToReset] = {}
-  GS15DataSavedVariables[internal.listingsToReset] = {}
-  MasterMerchant.listIsDirty[LISTINGS] = true
-
-  local lr_index = {}
-  _G["LibGuildStore_ListingsIndex"] = lr_index
-  internal.lr_index_count = 0
-  local listings_data = {}
-  _G["LibGuildStore_ListingsData"] = listings_data
-  internal.listedItems = {}
-  internal.listedSellers = {}
-
-  local LEQ = LibExecutionQueue:new()
-  LEQ:Add(function() internal:DatabaseBusy(true) end, 'DatabaseBusy_true')
-  LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
-  LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
-  LEQ:Add(function() internal:IndexListingsData() end, 'IndexListingsData')
-  LEQ:Add(function() internal:DatabaseBusy(false) end, 'DatabaseBusy_false')
-  LEQ:Add(function() MasterMerchant.listingsScrollList:RefreshFilters() end, 'RefreshFilters')
-  LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
-  LEQ:Add(function() ReloadUI() end, 'Done')
-  LEQ:Start()
+  if GetWorldName() == 'NA Megaserver' then
+    ResetListingsDataNA()
+  else
+    ResetListingsDataEU()
+  end
+  internal:DatabaseBusy(true)
+  ReloadUI()
 end
 
 function internal:addTraderInfo(guildId, guildName)

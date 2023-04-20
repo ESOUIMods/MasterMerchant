@@ -470,8 +470,7 @@ function MMScrollList:SetupSalesRow(control, data)
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
   --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
   --end)
-  control.itemName:SetHandler('OnMouseEnter',
-    function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
+  control.itemName:SetHandler('OnMouseEnter', function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
   control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
 
   -- Quantity cell
@@ -3814,7 +3813,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantResetButton:SetText(GetString(SK_RESET_LABEL))
   MasterMerchantGuildResetButton:SetText(GetString(SK_RESET_LABEL))
   ]]--
-  local confirmDialog = {
+  local resetSalesDialog = {
     title = { text = GetString(GS_RESET_CONFIRM_TITLE) },
     mainText = { text = GetString(GS_RESET_CONFIRM_MAIN) },
     buttons = {
@@ -3825,8 +3824,8 @@ function MasterMerchant:SetupMasterMerchantWindow()
       { text = SI_DIALOG_CANCEL }
     }
   }
-  ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetConfirmation', confirmDialog)
-  local confirmDialog = {
+  ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetConfirmation', resetSalesDialog)
+  local resetListingsDialog = {
     title = { text = GetString(GS_RESET_LISTINGS_CONFIRM_TITLE) },
     mainText = { text = GetString(GS_RESET_LISTINGS_CONFIRM_MAIN) },
     buttons = {
@@ -3837,7 +3836,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
       { text = SI_DIALOG_CANCEL }
     }
   }
-  ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetListingsConfirmation', confirmDialog)
+  ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetListingsConfirmation', resetListingsDialog)
 
   -- Slider setup
   MasterMerchantStatsWindowSlider:SetValue(100)

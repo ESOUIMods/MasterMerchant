@@ -13,6 +13,10 @@ local function Initialize()
   if not GS16DataSavedVariables then GS16DataSavedVariables = lib.defaults end
 end
 
+function lib:ResetAllData()
+  GS16DataSavedVariables = lib.defaults
+end
+
 local function OnAddOnLoaded(eventCode, addonName)
   if addonName == lib.libName then
     Initialize()

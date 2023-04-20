@@ -47,6 +47,7 @@ end
 
 function internal:StartQueue()
   internal:dm("Debug", "StartQueue")
+  internal:DatabaseBusy(true)
   zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
 end
 

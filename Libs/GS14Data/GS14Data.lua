@@ -12,6 +12,26 @@ local function Initialize()
   if not GS14DataSavedVariables then GS14DataSavedVariables = lib.defaults end
 end
 
+function lib:ResetAllData()
+  GS14DataSavedVariables = lib.defaults
+end
+
+function lib:ResetSalesDataNA()
+  GS14DataSavedVariables['datana'] = lib.defaults['datana']
+end
+
+function lib:ResetSalesDataEU()
+  GS14DataSavedVariables['dataeu'] = lib.defaults['dataeu']
+end
+
+function lib:ResetListingsDataNA()
+  GS14DataSavedVariables['listingsna'] = lib.defaults['listingsna']
+end
+
+function lib:ResetListingsDataEU()
+  GS14DataSavedVariables['listingseu'] = lib.defaults['listingseu']
+end
+
 local function OnAddOnLoaded(eventCode, addonName)
   if addonName == lib.libName then
     Initialize()
