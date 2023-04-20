@@ -1451,7 +1451,7 @@ function MMScrollList:FilterScrollList()
             end
           end
         end
-        MasterMerchant:dm("Debug", string.format(GetString(MM_FILTER_TIME), GetTimeStamp() - startTimer))
+        -- MasterMerchant:dm("Debug", string.format(GetString(MM_FILTER_TIME), GetTimeStamp() - startTimer))
 
       end
     end

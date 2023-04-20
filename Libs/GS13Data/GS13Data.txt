@@ -1,4 +1,4 @@
-## APIVersion: 101035 101036
+## APIVersion: 101036 101037
 ## Title: LibGuildStore Data File GS13Data
 ## Description: GS13Data Stores Data
 ## Version 1.0.0
