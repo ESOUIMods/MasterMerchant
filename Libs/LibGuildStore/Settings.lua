@@ -224,7 +224,7 @@ function internal:LibAddonInit()
       type = "header",
       name = GetString(GS_IMPORT_ATT_PURCHASE_BUTTON),
       width = "full",
-      helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportATTPurchaces",
+      helpUrl = "https://esouimods.github.io/3-master_merchant.html#ImportATTPurchases",
     }
     optionsData[#optionsData + 1] = {
       type = "description",
@@ -338,6 +338,25 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_RESET_LISTINGS_TIP),
     func = function()
       ZO_Dialogs_ShowDialog("MasterMerchantResetListingsConfirmation")
+    end,
+    warning = GetString(MM_RESET_LISTINGS_WARN_FORCE),
+  }
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(GS_RESET_LIBGUILDSTORE_BUTTON),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#ResetData",
+  }
+  optionsData[#optionsData + 1] = {
+    type = "description",
+    text = GetString(GS_RESET_LIBGUILDSTORE_DESC),
+  }
+  optionsData[#optionsData + 1] = {
+    type = "button",
+    name = GetString(GS_RESET_LIBGUILDSTORE_NAME),
+    tooltip = GetString(GS_RESET_LIBGUILDSTORE_TIP),
+    func = function()
+      ZO_Dialogs_ShowDialog("MasterMerchantResetLibGuildStoreConfirmation")
     end,
     warning = GetString(MM_RESET_LISTINGS_WARN_FORCE),
   }

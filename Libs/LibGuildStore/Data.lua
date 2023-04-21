@@ -661,6 +661,36 @@ function internal:ResetListingsData()
   ReloadUI()
 end
 
+local function ResetAllData()
+  GS00Data:ResetAllData()
+  GS01Data:ResetAllData()
+  GS02Data:ResetAllData()
+  GS03Data:ResetAllData()
+  GS04Data:ResetAllData()
+  GS05Data:ResetAllData()
+  GS06Data:ResetAllData()
+  GS07Data:ResetAllData()
+  GS08Data:ResetAllData()
+  GS09Data:ResetAllData()
+  GS10Data:ResetAllData()
+  GS11Data:ResetAllData()
+  GS12Data:ResetAllData()
+  GS13Data:ResetAllData()
+  GS14Data:ResetAllData()
+  GS15Data:ResetAllData()
+  GS16Data:ResetAllData()
+  GS17Data:ResetAllData()
+end
+
+function internal:resetAllLibGuildStoreData()
+  internal:dm("Debug", "ResetAllData")
+  ResetAllData()
+  internal:DatabaseBusy(true)
+  LibGuildStore_SavedVariables[internal.firstrunNamespace] = true
+  LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
+  ReloadUI()
+end
+
 function internal:addTraderInfo(guildId, guildName)
   -- GetPlayerActiveSubzoneName() Southpoint in Grahtwood
   -- GetPlayerActiveZoneName() Grahtwood
