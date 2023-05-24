@@ -3964,7 +3964,7 @@ local function OnPlayerJoinedGuild(eventCode, guildId, guildName)
   end
 
   internal.LibHistoireListenerReady[guildId] = false
-  internal:QueueGuildHistoryListener(guildId)
+  internal:QueueGuildHistoryListener(guildId, nil)
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_JoinedGuild", EVENT_GUILD_SELF_JOINED_GUILD, OnPlayerJoinedGuild)
 

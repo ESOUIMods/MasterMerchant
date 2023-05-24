@@ -357,12 +357,14 @@ function internal:AddSalesTableData(key, value)
 end
 
 function internal:QueueGuildHistoryListener(guildId, guildIndex)
+  local multiplier = guildIndex
+  if not guildIndex then multiplier = 1 end
   internal:SetupGuildHistoryListener(guildId)
   if not internal.LibHistoireListenerReady[guildId] then
     internal:dm("Debug", "LibHistoireListener not ready")
-    zo_callLater(function() internal:QueueGuildHistoryListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE * guildIndex))
+    zo_callLater(function() internal:QueueGuildHistoryListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE * multiplier))
   else
-    zo_callLater(function() internal:SetupListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP * guildIndex))
+    zo_callLater(function() internal:SetupListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP * multiplier))
   end
 end
 
