@@ -240,14 +240,15 @@ end
 
 function internal:BuildAccountNameLookup()
   internal:dm("Debug", "BuildAccountNameLookup")
-  if not GS16DataSavedVariables["accountNames"] then GS16DataSavedVariables["accountNames"] = {} end
-  internal.accountNamesCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["accountNames"])
+  if not GS16DataSavedVariables["accountNames"] then return end
+  local startingCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["accountNames"])
   local count = 0
   for key, value in pairs(GS16DataSavedVariables["accountNames"]) do
     count = count + 1
     internal.accountNameByIdLookup[value] = key
   end
-  if count ~= internal.accountNamesCount then internal:dm("Warn", "Account Names Count Mismatch") end
+  internal.accountNamesCount = count
+  if count ~= startingCount then internal:dm("Warn", "Account Names Count Mismatch") end
 end
 
 function internal:BuildItemLinkNameLookup()

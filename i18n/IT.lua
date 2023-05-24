@@ -127,6 +127,7 @@ ZO_CreateStringId("SK_FEEDBACK_TOOLTIP", "Invia feedback")
 ZO_CreateStringId("SK_CLOSE_TOOLTIP", "Chiudi Finestra")
 ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Filtra per Nome")
 ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filtra per Tipo")
+ZO_CreateStringId("SK_FEEDBACK_MESSAGE", "I can not provide tech support in game. There is no way to send images or weblinks to understand or answer your question.\n\nI hope you are enjoying Master Merchant. Your feedback is always welcome. If you have wondered if there is some way you could help me get a Starbucks or a burger, maybe even help me in updating my computer so I can continue working on mods...\n\n you can visit: https://sharlikran.github.io")
 
 -- toggle view mode
 ZO_CreateStringId("SK_SELLER_TOOLTIP", "Mostra Classifica")

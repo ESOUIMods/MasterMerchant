@@ -1978,7 +1978,7 @@ function MasterMerchant:UpdateFonts()
 
   MasterMerchantFeedbackTitle:SetFont(string.format(fontString, windowTitle))
   MasterMerchantFeedbackNote:SetFont(string.format(fontString, windowHeader))
-  MasterMerchantFeedbackNote:SetText("I hope you are enjoying Master Merchant. Your feedback is always welcome. If you have wondered if there is some way you could help me get a Starbucks or a burger, maybe even help me in updating my computer so I can continue working on mods you can visit: https://sharlikran.github.io/")
+  MasterMerchantFeedbackNote:SetText(GetString(SK_FEEDBACK_MESSAGE))
 
   --[[TODO Setup New Filter windows
   ]]--
@@ -2721,7 +2721,7 @@ function MasterMerchant:GenerateStatsItemTooltip()
     mocParentName == 'ZO_GuildBankBackpackContents' or
     mocParentName == 'ZO_HouseBankBackpackContents' or
     mocParentName == 'ZO_UniversalDeconstructionTopLevel_KeyboardPanelInventoryBackpackContents' or
-    mocParentName == "ZO_CompanionEquipment_Panel_KeyboardListContents" then
+    mocParentName == 'ZO_CompanionEquipment_Panel_KeyboardListContents' then
     if not hasDataEntryData then return end
     local rowData = mouseOverControl.dataEntry.data
     itemLink = GetItemLink(rowData.bagId, rowData.slotIndex, LINK_STYLE_BRACKETS)

@@ -217,7 +217,7 @@
 
     <!-- About Box -->
     <TopLevelControl name="MasterMerchantFeedback" movable="true" mouseEnabled="true" hidden="true">
-      <Dimensions x="545" y="225"/>
+      <Dimensions x="550" y="300"/>
       <OnMoveStop>
         MasterMerchant:OnWindowMoveStop(self)
       </OnMoveStop>
@@ -237,7 +237,7 @@
           </OnClicked>
         </Button>
         <Label name="$(parent)Note" color="FFFFFF">
-          <Dimensions x="525" y="200"/>
+          <Dimensions x="525" y="275"/>
           <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50"/>
         </Label>
         <Button name="$(parent)Feedback" inherits="ZO_DefaultButton" text="Send Note">
