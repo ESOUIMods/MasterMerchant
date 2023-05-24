@@ -33,18 +33,18 @@ function internal:concatHash(a, ...)
 end
 
 function internal:GetAccountNameByIndex(index)
-  if not index or not internal.accountNameByIdLookup[index] then return nil end
-  return internal.accountNameByIdLookup[index]
+  if not index or not GS16DataSavedVariables["accountNames"][index] then return nil end
+  return GS16DataSavedVariables["accountNames"][index]
 end
 
 function internal:GetItemLinkByIndex(index)
-  if not index or not internal.itemLinkNameByIdLookup[index] then return nil end
-  return internal.itemLinkNameByIdLookup[index]
+  if not index or not GS16DataSavedVariables["itemLink"][index] then return nil end
+  return GS16DataSavedVariables["itemLink"][index]
 end
 
 function internal:GetGuildNameByIndex(index)
-  if not index or not internal.guildNameByIdLookup[index] then return nil end
-  return internal.guildNameByIdLookup[index]
+  if not index or not GS16DataSavedVariables["guildNames"][index] then return nil end
+  return GS16DataSavedVariables["guildNames"][index]
 end
 
 -- uses mod to determine which save files to use
@@ -238,43 +238,6 @@ function internal:AddSearchToItem(itemLink)
   return string.lower(adder)
 end
 
-function internal:BuildAccountNameLookup()
-  internal:dm("Debug", "BuildAccountNameLookup")
-  if not GS16DataSavedVariables["accountNames"] then return end
-  local startingCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["accountNames"])
-  local count = 0
-  for key, value in pairs(GS16DataSavedVariables["accountNames"]) do
-    count = count + 1
-    internal.accountNameByIdLookup[value] = key
-  end
-  internal.accountNamesCount = count
-  if count ~= startingCount then internal:dm("Warn", "Account Names Count Mismatch") end
-end
-
-function internal:BuildItemLinkNameLookup()
-  internal:dm("Debug", "BuildItemLinkNameLookup")
-  if not GS16DataSavedVariables["itemLink"] then GS16DataSavedVariables["itemLink"] = {} end
-  internal.itemLinksCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["itemLink"])
-  local count = 0
-  for key, value in pairs(GS16DataSavedVariables["itemLink"]) do
-    count = count + 1
-    internal.itemLinkNameByIdLookup[value] = key
-  end
-  if count ~= internal.itemLinksCount then internal:dm("Warn", "ItemLink Count Mismatch") end
-end
-
-function internal:BuildGuildNameLookup()
-  internal:dm("Debug", "BuildGuildNameLookup")
-  if not GS16DataSavedVariables["guildNames"] then GS16DataSavedVariables["guildNames"] = {} end
-  internal.guildNamesCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["guildNames"])
-  local count = 0
-  for key, value in pairs(GS16DataSavedVariables["guildNames"]) do
-    count = count + 1
-    internal.guildNameByIdLookup[value] = key
-  end
-  if count ~= internal.guildNamesCount then internal:dm("Warn", "Guild Names Count Mismatch") end
-end
-
 function internal:BuildTraderNameLookup()
   internal:dm("Debug", "BuildTraderNameLookup")
   if not GS17DataSavedVariables[internal.visitedNamespace] then GS17DataSavedVariables[internal.visitedNamespace] = {} end
@@ -332,27 +295,29 @@ end
 -- /script d(GS16DataSavedVariables["itemLink"]["|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"])
 function internal:AddSalesTableData(key, value)
   local saveData = GS16DataSavedVariables[key]
-  if not saveData[value] then
-    if key == "accountNames" then
-      internal.accountNamesCount = internal.accountNamesCount + 1
-      internal.accountNameByIdLookup[internal.accountNamesCount] = value
-      saveData[value] = internal.accountNamesCount
-      return internal.accountNamesCount
-    end
-    if key == "itemLink" then
-      internal.itemLinksCount = internal.itemLinksCount + 1
-      internal.itemLinkNameByIdLookup[internal.itemLinksCount] = value
-      saveData[value] = internal.itemLinksCount
-      return internal.itemLinksCount
-    end
-    if key == "guildNames" then
-      internal.guildNamesCount = internal.guildNamesCount + 1
-      internal.guildNameByIdLookup[internal.guildNamesCount] = value
-      saveData[value] = internal.guildNamesCount
-      return internal.guildNamesCount
-    end
-  else
-    return saveData[value]
+  if key == "accountNames" then
+    if GS16Data["accountNames"][value] then return GS16Data["accountNames"][value] end
+
+    GS16Data.accountNamesCount = GS16Data.accountNamesCount + 1
+    GS16Data["accountNames"][value] = GS16Data.accountNamesCount
+    saveData[GS16Data.accountNamesCount] = value
+    return GS16Data.accountNamesCount
+  end
+  if key == "itemLink" then
+    if GS16Data["itemLink"][value] then return GS16Data["itemLink"][value] end
+
+    GS16Data.itemLinksCount = GS16Data.itemLinksCount + 1
+    GS16Data["itemLink"][value] = GS16Data.itemLinksCount
+    saveData[GS16Data.itemLinksCount] = value
+    return GS16Data.itemLinksCount
+  end
+  if key == "guildNames" then
+    if GS16Data["guildNames"][value] then return GS16Data["guildNames"][value] end
+
+    internal.guildNamesCount = internal.guildNamesCount + 1
+    GS16Data["guildNames"][value] = internal.guildNamesCount
+    saveData[GS16Data.guildNamesCount] = value
+    return GS16Data.guildNamesCount
   end
 end
 

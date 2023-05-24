@@ -162,10 +162,7 @@ internal.LibHistoireListener = { } -- added for debug on 10-31
 internal.LibHistoireListenerReady = { } -- added 6-19-22
 internal.alertQueue = { }
 internal.guildMemberInfo = { }
-internal.accountNameByIdLookup = { }
 internal.traderIdByNameLookup = { }
-internal.itemLinkNameByIdLookup = { }
-internal.guildNameByIdLookup = { }
 internal.guildStoreSearchResults = { }
 internal.guildStoreSales = { } -- holds all sales
 internal.guildStoreListings = { } -- holds all listings
@@ -184,10 +181,6 @@ internal.totalPurchases = 0
 internal.totalListings = 0
 internal.totalPosted = 0
 internal.totalCanceled = 0
-
-internal.accountNamesCount = 0
-internal.itemLinksCount = 0
-internal.guildNamesCount = 0
 
 internal.purchasedItems = nil
 internal.purchasedBuyer = nil
