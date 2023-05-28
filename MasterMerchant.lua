@@ -3230,6 +3230,10 @@ function MasterMerchant:InitRosterChanges()
   })
 
   -- LibGuildRoster adding the Count Column
+  --[[ MM Note: I have no idea why anyone would want the count of sales?
+  That's what this seems to be. However, as far as stats go it's about the only
+  other usefull thing to display.
+  ]]--
   MasterMerchant.guild_columns['count'] = LibGuildRoster:AddColumn({
     key = 'MM_Count',
     disabled = not MasterMerchant.systemSavedVariables.diplayGuildInfo or not MasterMerchant.systemSavedVariables.diplayCountInfo,
@@ -3258,7 +3262,7 @@ function MasterMerchant:InitRosterChanges()
 
       end,
       format = function(value)
-        return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
+        return MasterMerchant.LocalizedNumber(value)
       end
     }
   })
