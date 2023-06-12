@@ -3272,7 +3272,9 @@ function MasterMerchant:InitRosterChanges()
 
   -- Placing Guild Time dropdown at the bottom of the Count Column when it has been generated
   LibGuildRoster:OnRosterReady(function()
-    MasterMerchant.UI_GuildTime:SetAnchor(TOP, MasterMerchant.guild_columns['count']:GetHeader(), BOTTOMRIGHT, -80, 570)
+    local countColumnControl = MasterMerchant.guild_columns['count']:GetHeader()
+    local rosterListHeight = ZO_GuildRosterListContents:GetHeight()
+    MasterMerchant.UI_GuildTime:SetAnchor(TOP, countColumnControl, BOTTOMRIGHT, -80, rosterListHeight)
     MasterMerchant.UI_GuildTime:SetDimensions(180, 25)
 
     -- Don't render the dropdown this cycle if the settings have columns disabled
