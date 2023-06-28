@@ -7,6 +7,66 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.66
+
+- Moved account names to GS17Data.lua
+- Updated Russian localization (mychaelo)
+- Added old AGS Deal Range Buttons
+
+## ChangeLog 3.7.65
+
+- Tweak to time chooser location placement so it anchors to the height of the column better (Hopefully)
+
+## ChangeLog 3.7.64
+
+- Fix for joining a new guild with MM already running
+- user:/AddOns/MasterMerchant/Libs/LibGuildStore/Data.lua:362: operator * is not supported for number * nil
+
+## ChangeLog 3.7.63
+
+- Rough draft for PTS
+- Updated Craft Costs for Necrom
+
+## ChangeLog 3.7.62
+
+- Added a full reset for when people experience Lua errors
+
+## ChangeLog 3.7.61
+
+- Increase version requirement for LibHistoire
+- Update LibGuildStore settings menu for Refresh and Reset buttons
+- Bump API for Necrom
+
+## ChangeLog 3.7.60
+
+- Added tooltip to Deconstruction assistants
+
+## ChangeLog 3.7.59
+
+- Fix for moc with Lazy Set Crafter
+
+## ChangeLog 3.7.58
+
+- Fix for Search Bonanza and searching for items in other languages then English
+- Added toggle for Search Bonanza menu option
+
+## ChangeLog 3.7.54, 3.7.55, 3.7.56, 3.7.57
+
+- Update to when tooltips are displayed from various windows. Includes Lazy Set Crafter, Furnature Catalogue, CraftStore, and QuickSlot (The inventory part)
+- Added special routines from Inventory Insight for Furniture Catalogue and Lazy Set Crafter
+- Added nil checks for AGS when data rows are temporarily empty or switching between a guild that has listed items for sale and one that doesn't
+
+## ChangeLog 3.7.51, 3.7.52, 3.7.53
+
+- More accurate averages when trimming outliers
+- Tooltip takes about 40% less time to be generated
+- Price to chat update
+- Tooltup price formatting update
+
+## ChangeLog 3.7.50
+
+- Fix for price to chat
+
 ## ChangeLog 3.7.49
 
 - Updated replace inventory pricing routines and restored displaying the unit price

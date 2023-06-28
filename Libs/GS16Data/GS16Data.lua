@@ -3,10 +3,8 @@ local lib = {}
 lib.libName = libName
 lib.defaults = {
   ["itemLink"] = {},
-  ["accountNames"] = {},
   ["guildNames"] = {},
-  ["visitedNATraders"] = {},
-  ["visitedEUTraders"] = {},
+  ["deletedSales"] = {},
 }
 
 local function Initialize()

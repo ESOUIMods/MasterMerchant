@@ -24,32 +24,32 @@ function MasterMerchant.InitDealFilterClass()
         {
           id = 1,
           label = GetString(AGS_OVERPRICED_LABEL),
-          icon = "MasterMerchant/AGS_Integration/overpriced_%s.dds",
+          icon = "MasterMerchant/AGS_Integration/images/overpriced_%s.dds",
         },
         {
           id = 2,
           label = GetString(AGS_OKAY_LABEL),
-          icon = "AwesomeGuildStore/images/qualitybuttons/normal_%s.dds",
+          icon = "MasterMerchant/AGS_Integration/images/normal_%s.dds",
         },
         {
           id = 3,
           label = GetString(AGS_REASONABLE_LABEL),
-          icon = "AwesomeGuildStore/images/qualitybuttons/magic_%s.dds",
+          icon = "MasterMerchant/AGS_Integration/images/magic_%s.dds",
         },
         {
           id = 4,
           label = GetString(AGS_GOOD_LABEL),
-          icon = "AwesomeGuildStore/images/qualitybuttons/arcane_%s.dds",
+          icon = "MasterMerchant/AGS_Integration/images/arcane_%s.dds",
         },
         {
           id = 5,
           label = GetString(AGS_GREAT_LABEL),
-          icon = "AwesomeGuildStore/images/qualitybuttons/artifact_%s.dds",
+          icon = "MasterMerchant/AGS_Integration/images/artifact_%s.dds",
         },
         {
           id = 6,
           label = GetString(AGS_BUYIT_LABEL),
-          icon = "AwesomeGuildStore/images/qualitybuttons/legendary_%s.dds",
+          icon = "MasterMerchant/AGS_Integration/images/legendary_%s.dds",
         }
       }
     })

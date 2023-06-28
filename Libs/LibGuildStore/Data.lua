@@ -240,10 +240,10 @@ end
 
 function internal:BuildAccountNameLookup()
   internal:dm("Debug", "BuildAccountNameLookup")
-  if not GS16DataSavedVariables["accountNames"] then return end
-  local startingCount = internal:NonContiguousNonNilCount(GS16DataSavedVariables["accountNames"])
+  if not GS17DataSavedVariables["accountNames"] then return end
+  local startingCount = internal:NonContiguousNonNilCount(GS17DataSavedVariables["accountNames"])
   local count = 0
-  for key, value in pairs(GS16DataSavedVariables["accountNames"]) do
+  for key, value in pairs(GS17DataSavedVariables["accountNames"]) do
     count = count + 1
     internal.accountNameByIdLookup[value] = key
   end
@@ -331,7 +331,9 @@ end
 -- /script d(LibGuildStore_Internal:AddSalesTableData("itemLink", "|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
 -- /script d(GS16DataSavedVariables["itemLink"]["|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"])
 function internal:AddSalesTableData(key, value)
-  local saveData = GS16DataSavedVariables[key]
+  local saveData
+  if key == "accountNames" then saveData = GS17DataSavedVariables[key]
+  else saveData = GS16DataSavedVariables[key] end
   if not saveData[value] then
     if key == "accountNames" then
       internal.accountNamesCount = internal.accountNamesCount + 1
