@@ -200,7 +200,7 @@ ZO_CreateStringId("MM_TIP_BONANZA_HEADER", "Bonanza (")
 ZO_CreateStringId("MM_TIP_TTC_HEADER", "TTC (")
 
 ZO_CreateStringId("MM_NO_DATA_FORMAT", "нет данных о продажах")
-ZO_CreateStringId("MM_NO_DATA_RANGE_FORMAT", "нет данных за <<1[прошедшие сутки/последние %d дня/последние %d дней]>>")
+ZO_CreateStringId("MM_NO_DATA_RANGE_FORMAT", "нет данных за последние %d дн.")
 
 ZO_CreateStringId("MM_PTC_PER_VOUCHER", "В среднем за расписку: %s")
 
