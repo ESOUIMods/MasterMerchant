@@ -149,7 +149,7 @@ ZO_CreateStringId("SK_RESET_DONE", "セールスヒストリーのリセット�
 ZO_CreateStringId("SK_SALES_ALERT", "%sを%d個、%s |t16:16:EsoUI/Art/currency/currency_gold.dds|tで販売しました：%s %s")
 ZO_CreateStringId("SK_SALES_ALERT_COLOR", "%sを%dこ|cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFで販売しました： %s %s")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP", "%d個のアイテムをトータルで%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t ギルドストアから販売しました。")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "%d個のアイテムをトータルで |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFギルドストアから販売しました。")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "%d個のアイテムをトータルで |cD5B526%s|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFギルドストアから販売しました。|r")
 ZO_CreateStringId("SK_SALES_REPORT", "セールスレポート:")
 ZO_CreateStringId("SK_SALES_REPORT_END", "レポート終わり。")
 
@@ -162,11 +162,6 @@ ZO_CreateStringId("SK_STATS_TOTAL_GOLD", "トータルゴールド: %s |t16:16:E
 ZO_CreateStringId("SK_STATS_BIGGEST", "最大セール: %s (%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t)")
 ZO_CreateStringId("SK_STATS_DAYS", "日数: ")
 ZO_CreateStringId("SK_STATS_ALL_GUILDS", "全てのギルド")
-
--- Tooltip Pricing
-ZO_CreateStringId("SK_PRICETIP_SALES", "<<1[%d セール]>>")
-ZO_CreateStringId("SK_PRICETIP_ONEDAY", "Master Merchant価格　(%s, <1 日): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
-ZO_CreateStringId("SK_PRICETIP_MULTDAY", "Master Merchant価格 (%s, %d 日): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
 
 -- Keybindings
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "メインウィンドウを表示/非表示")

@@ -150,7 +150,7 @@ ZO_CreateStringId("SK_RESET_DONE", "Cronologia delle vendite Cancellata")
 ZO_CreateStringId("SK_SALES_ALERT", "Hai venduto %s x%d per %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t da %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_COLOR", "Hai venduto %s x%d per |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFda %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_GROUP", "Hai venduto %d oggetti per un totale di %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t dai negozi della gilda.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Hai venduto %d oggetti per un totale di |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFdai negozi della gilda.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Hai venduto %d oggetti per un totale di |cD5B526%s|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFdai negozi della gilda.|r")
 ZO_CreateStringId("SK_SALES_REPORT", "Rapporto delle Vendite:")
 ZO_CreateStringId("SK_SALES_REPORT_END", "Fine Rapporto.")
 
@@ -163,11 +163,6 @@ ZO_CreateStringId("SK_STATS_TOTAL_GOLD", "Oro Totale: %s |t16:16:EsoUI/Art/curre
 ZO_CreateStringId("SK_STATS_BIGGEST", "Vendita più grande: %s (%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t)")
 ZO_CreateStringId("SK_STATS_DAYS", "Giorni: ")
 ZO_CreateStringId("SK_STATS_ALL_GUILDS", "Tutte le Gilde")
-
--- Tooltip Pricing
-ZO_CreateStringId("SK_PRICETIP_SALES", "<<1[%d Vendita/%d Vendite]>>")
-ZO_CreateStringId("SK_PRICETIP_ONEDAY", "Prezzo Master Merchant (%s, <1 day): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
-ZO_CreateStringId("SK_PRICETIP_MULTDAY", "Prezzo Master Merchant (%s, %d days): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
 
 -- Keybindings
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "Mostra/Nascondi la Finestra Principale")
