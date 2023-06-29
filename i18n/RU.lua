@@ -134,7 +134,7 @@ ZO_CreateStringId("SK_FEEDBACK_MESSAGE", "Я не могу оказывать т
 ZO_CreateStringId("SK_SELLER_TOOLTIP", "Экран рейтинга")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Экран предметов")
 
-ZO_CreateStringId("SK_TIME_DAYS", "<<1[%d день назад/%d дня назад/%d дней назад]>>")
+ZO_CreateStringId("SK_TIME_DAYS", "<<1[Вчера/1 дня назад/%d дней назад]>>")
 ZO_CreateStringId("SK_TIME_DAYSAGO", "%s дней назад")
 ZO_CreateStringId("SK_THOUSANDS_SEP", " ")
 
@@ -150,8 +150,8 @@ ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "Вы действительно хо
 ZO_CreateStringId("SK_RESET_DONE", "Журнал продаж обнулён.")
 ZO_CreateStringId("SK_SALES_ALERT", "Вы продали %s ×%d за %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t в %s %s.")
 ZO_CreateStringId("SK_SALES_ALERT_COLOR", "Вы продали %s ×%d за |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFв %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP", "Вы продали <<1[%d предмет/%d предмета/%d предметов]>> на сумму %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t в магазинах гильдий.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Вы продали <<1[%d предмет/%d предмета/%d предметов]>> на сумму |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFв магазинах гильдий.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP", "Вы продали %d предметов на общую сумму %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t из магазинов гильдии.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Вы продали %d предметов на общую сумму |cD5B526%s|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFиз магазинов гильдии.|r")
 ZO_CreateStringId("SK_SALES_REPORT", "Отчёт о продажах:")
 ZO_CreateStringId("SK_SALES_REPORT_END", "Конец отчёта.")
 
@@ -164,11 +164,6 @@ ZO_CreateStringId("SK_STATS_TOTAL_GOLD", "Всего золота: %s |t16:16:Es
 ZO_CreateStringId("SK_STATS_BIGGEST", "Самый дорогой предмет: %s (%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t)")
 ZO_CreateStringId("SK_STATS_DAYS", "Дней: ")
 ZO_CreateStringId("SK_STATS_ALL_GUILDS", "Все гильдии")
-
--- Tooltip Pricing
-ZO_CreateStringId("SK_PRICETIP_SALES", "<<1[%d продажа/%d продажи/%d продаж]>>")
-ZO_CreateStringId("SK_PRICETIP_ONEDAY", "Цена от Master Merchant (%s, <1 дня): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
-ZO_CreateStringId("SK_PRICETIP_MULTDAY", "Цена от Master Merchant (%s, <<1[%d день/%d дня/%d дней]>>): %.2f|t16:16:EsoUI/Art/currency/currency_gold.dds|t")
 
 -- Keybindings
 ZO_CreateStringId("SI_BINDING_NAME_MasterMerchant_TOGGLE", "Показать/скрыть главное окно")
