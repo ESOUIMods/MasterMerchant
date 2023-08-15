@@ -2268,7 +2268,7 @@ local listings =
         ["price"] = 148000,
         ["itemLink"] = 46,
         ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["timestamp"] = 1691993423,
         ["guild"] = 5,
         ["seller"] = 24858,
     },
@@ -2280,7 +2280,7 @@ local listings =
         ["price"] = 148000,
         ["itemLink"] = 46,
         ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["timestamp"] = 1691993430,
         ["guild"] = 5,
         ["seller"] = 24858,
     },
@@ -2292,7 +2292,7 @@ local listings =
         ["price"] = 59631,
         ["itemLink"] = 46,
         ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["timestamp"] = 1691993425,
         ["guild"] = 5,
         ["seller"] = 80189,
     },
@@ -2304,7 +2304,7 @@ local listings =
         ["price"] = 50000,
         ["itemLink"] = 46,
         ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["timestamp"] = 1691993440,
         ["guild"] = 5,
         ["seller"] = 3129,
     },
@@ -2316,7 +2316,7 @@ local listings =
         ["price"] = 1304,
         ["itemLink"] = 46,
         ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["timestamp"] = 1691993415,
         ["guild"] = 5,
         ["seller"] = 15774,
     },
@@ -2340,7 +2340,7 @@ local listings =
         ["price"] = 75000,
         ["itemLink"] = 46,
         ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["timestamp"] = 1691993479,
         ["guild"] = 5,
         ["seller"] = 96829,
     },
@@ -2352,12 +2352,38 @@ local listings =
         ["price"] = 35800,
         ["itemLink"] = 46,
         ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["timestamp"] = 1691993462,
         ["guild"] = 5,
         ["seller"] = 4046,
     },
 }
 
+
+function spairs(t, order)
+  -- Create a temporary table to hold the sorted key-value pairs
+  local sortedPairs = {}
+
+  -- Populate the sortedPairs table with key-value pairs from the original table
+  for k, v in pairs(t) do
+    table.insert(sortedPairs, { key = k, value = v })
+  end
+
+  -- Sort the sortedPairs table using the provided order function
+  if order then
+    table.sort(sortedPairs, function(a, b) return order(a.value, b.value) end)
+  else
+    table.sort(sortedPairs, function(a, b) return a.key < b.key end)
+  end
+
+  -- Return an iterator function that iterates over the sorted key-value pairs
+  local i = 0
+  return function()
+    i = i + 1
+    if sortedPairs[i] then
+      return sortedPairs[i].key, sortedPairs[i].value
+    end
+  end
+end
 
 local stats = {}
 
@@ -2365,9 +2391,38 @@ function stats.CleanUnitPrice(salesRecord)
   return salesRecord.price / salesRecord.quant
 end
 
+function stats.CleanTimestamp(salesRecord)
+  if (salesRecord == nil) or (salesRecord.timestamp == nil) or (type(salesRecord.timestamp) ~= 'number') then return 0 end
+  return salesRecord.timestamp
+end
+
+function stats.CleanPrice(salesRecord)
+  return salesRecord.price
+end
+
+-- This function will not sort sales because of CleanUnitPrice when the unit price is the same
 function stats.GetSortedSales(t)
   local sortedTable = {}
-  for _, v in internal:spairs(t, function(a, b) return stats.CleanUnitPrice(a) < stats.CleanUnitPrice(b) end) do
+  local salesDataTable = spairs(t, function(a, b) return stats.CleanUnitPrice(a) < stats.CleanUnitPrice(b) end)
+  for _, v in salesDataTable do
+    sortedTable[#sortedTable + 1] = v
+  end
+  return sortedTable
+end
+
+function stats.GetSortedSaleTimestamps(t)
+  local sortedTable = {}
+  local salesDataTable = spairs(t, function(a, b) return stats.CleanTimestamp(a) < stats.CleanTimestamp(b) end)
+  for _, v in salesDataTable do
+    sortedTable[#sortedTable + 1] = v
+  end
+  return sortedTable
+end
+
+function stats.GetSortedSalePrices(t)
+  local sortedTable = {}
+  local salesDataTable = spairs(t, function(a, b) return stats.CleanPrice(a) < stats.CleanPrice(b) end)
+  for _, v in salesDataTable do
     sortedTable[#sortedTable + 1] = v
   end
   return sortedTable
@@ -2504,6 +2559,48 @@ function stats.medianAbsoluteDeviation(t)
   return stats.median(absoluteDeviations)
 end
 
+function stats.getLowerAndUpperPercentages(percentage)
+    local function getPercent(percentage)
+      if type(percentage) == "number" and percentage >= 0 then
+        local floatPercentage = percentage / 100
+        return tonumber(string.format("%.2f", floatPercentage))
+      else
+        return nil -- Invalid input
+      end
+    end
+    
+    local lowerPercent = getPercent(percentage)
+    local upperPercent = getPercent(100 - percentage)
+    return lowerPercent, upperPercent
+end
+
+function stats.getPercentileIndex(statsData, percentage)
+  local contextIndex = math.ceil(#statsData * percentage)
+  return contextIndex
+end
+
+function stats.getUpperLowerPercentileIndexes(statsData, percentage)
+  local lowerPercent, upperPercent = stats.getLowerAndUpperPercentages(percentage)
+  print(lowerPercent, upperPercent)
+  local lowerIndex = math.ceil(#statsData * lowerPercent)
+  local upperIndex = math.ceil(#statsData * upperPercent)
+  return lowerIndex, upperIndex
+end
+
+function stats.getUpperLowerContextFactors(statsData, percentage)
+  local lowerIndex, upperIndex = stats.getUpperLowerPercentileIndexes(statsData, percentage)
+  local lowerContextFactor = statsData[lowerIndex]
+  local upperContextFactor = statsData[upperIndex]
+  print(lowerContextFactor, upperContextFactor)
+  return lowerContextFactor, upperContextFactor
+end
+
+function stats.calculatePercentileContextFactor(statsData, percentage)
+  local contextIndex = stats.getPercentileIndex(statsData, percentage)
+  local contextFactor = statsData[contextIndex]
+  return contextFactor
+end
+
 function stats.getMiddleIndex(count)
   local evenNumber = false
   local quotient, remainder = math.modf(count / 2)
@@ -2560,6 +2657,7 @@ function stats.calculateDomainPriceThreshold(statsData)
   local median = stats.median(statsData)
   local medianAbsoluteDev = stats.medianAbsoluteDeviation(statsData)
   local madScore = stats.calculateMADScore(statsData)
+
   local madThreshold = 3
   local domainPriceThreshold = median + madScore * medianAbsoluteDev * madThreshold
   return domainPriceThreshold
@@ -2695,15 +2793,19 @@ function stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsD
   --[[There is no need to determine if statsData is not empty and bonanzaStatsData is empty, because
   this function is called after previously checking whether or not bonanzaStatsData is empty]]--
   local statsPercentileFactor = 0
+  local bonanzaPercentileFactor = 0
   local adjustedBonanzaPercentileFactor = 0
+  local statsMean = 0
+  local bonanzaMean = 0
+
   if (statsData and not next(statsData)) and (bonanzaStatsData and next(bonanzaStatsData)) then
     adjustedBonanzaPercentileFactor = stats.calculatePercentileContextFactor(bonanzaStatsData, percentile)
   elseif (statsData and next(statsData)) and (bonanzaStatsData and next(bonanzaStatsData)) then
-    local statsMean = stats.mean(statsData)
-    local bonanzaMean = stats.mean(bonanzaStatsData)
+    statsMean = stats.mean(statsData)
+    bonanzaMean = stats.mean(bonanzaStatsData)
 
     statsPercentileFactor = stats.calculatePercentileContextFactor(statsData, percentile)
-    local bonanzaPercentileFactor = stats.calculatePercentileContextFactor(bonanzaStatsData, percentile)
+    bonanzaPercentileFactor = stats.calculatePercentileContextFactor(bonanzaStatsData, percentile)
 
     local statsStDev = stats.standardDeviation(statsData)
     local maxDeviation = 2.054  -- Maximum allowable deviation in standard deviations
@@ -2718,7 +2820,8 @@ function stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsD
 
   return {
     bonanzaPercentileFactor = adjustedBonanzaPercentileFactor,
-    meanDifference = adjustedBonanzaPercentileFactor - statsPercentileFactor
+    meanDifference = math.abs(statsMean - bonanzaMean),
+    adjustedMeanDifference = adjustedBonanzaPercentileFactor - statsPercentileFactor,
   }
 end
 
@@ -2854,16 +2957,133 @@ local function BuildStatsData(item)
     local individualSale = item.price / item.quant
     statsData[#statsData + 1] = individualSale
 end
-
 local function SortStatsData()
     statsDataCount = #statsData
     table.sort(statsData)
 end
-
 for _, item in pairs(sales) do
     BuildStatsData(item)
 end
 SortStatsData()
+
+local bonanzaStatsData = {}
+local function BuildBonanzaData(item)
+    local individualSale = item.price / item.quant
+    bonanzaStatsData[#bonanzaStatsData + 1] = individualSale
+end
+local function SortBonanzaData()
+    bonanzaDataCount = #bonanzaStatsData
+    table.sort(bonanzaStatsData)
+end
+for _, item in pairs(listings) do
+    BuildBonanzaData(item)
+end
+SortBonanzaData()
+
+
+print("Test All Functions:")
+  -- CleanUnitPrice
+  local cleanedPrice = stats.CleanUnitPrice(sales[1])
+  print("Cleaned Unit Price:", cleanedPrice)
+
+  -- GetSortedSales
+  local sortedSales = stats.GetSortedSales(listings)
+  print("Sorted Sales:")
+    for _, sale in pairs(sortedSales) do
+        print("Price:", sale.price)
+    end
+  print("--------------")
+
+local sortedSalesByTimestamp = stats.GetSortedSaleTimestamps(listings)
+  print("Sorted timestamps:")
+    for _, sale in pairs(sortedSalesByTimestamp) do
+        print("Price:", sale.timestamp)
+    end
+  print("--------------")
+
+local sortedSalesByPrice = stats.GetSortedSalePrices(listings)
+  print("Sorted Prices:")
+    for _, sale in pairs(sortedSalesByPrice) do
+        print("Price:", sale.price)
+    end
+  print("--------------")
+
+  -- mean
+  local mean, count, sum = stats.mean(statsData)
+  print("Mean:", mean, "Count:", count, "Sum:", sum)
+
+  -- mode
+  local modeValues = stats.mode(statsData)
+  print("Mode:", table.concat(modeValues, ", "))
+
+  -- median
+  local median = stats.median(statsData)
+  print("Median:", median)
+
+  -- standardDeviation
+  local stdev = stats.standardDeviation(statsData)
+  print("Standard Deviation:", stdev)
+
+  -- zscore
+  local zScore = stats.zscore(25, mean, stdev)
+  print("Z-Score:", zScore)
+
+  -- findMinMax
+  local maxVal, minVal = stats.findMinMax(statsData)
+  print("Max Value:", maxVal, "Min Value:", minVal)
+
+  -- range
+  local range = stats.range(statsData)
+  print("Range:", range)
+
+  -- medianAbsoluteDeviation
+  local mad = stats.medianAbsoluteDeviation(statsData)
+  print("Median Absolute Deviation:", mad)
+
+  -- getLowerAndUpperPercentages
+  local lowerPercent, upperPercent = stats.getLowerAndUpperPercentages(5)
+  print("Lower Percent:", lowerPercent, "Upper Percent:", upperPercent)
+
+  -- getPercentileIndex
+  local percentileIndex = stats.getPercentileIndex(statsData, 0.75)
+  print("Percentile Index:", percentileIndex)
+
+  -- getUpperLowerPercentileIndexes
+  local lowerIndex, upperIndex = stats.getUpperLowerPercentileIndexes(statsData, 5)
+  print("Lower Index:", lowerIndex, "Upper Index:", upperIndex)
+
+  -- getUpperLowerContextFactors
+  local lowerContextFactor, upperContextFactor = stats.getUpperLowerContextFactors(statsData, 5)
+  print("Lower Context Factor:", lowerContextFactor, "Upper Context Factor:", upperContextFactor)
+
+  -- calculatePercentileContextFactor
+  local contextFactor = stats.calculatePercentileContextFactor(statsData, 0.85)
+  print("Percentile Context Factor:", contextFactor)
+
+  -- IdentifyOutliers
+  local nonOutliers, oldestTime, nonOutliersCount = stats.IdentifyOutliers(sales, statsData)
+  print("Non-Outliers Count:", nonOutliersCount)
+
+  -- IdentifyOutliersWithContextFactor
+  local nonOutliersWithContext, oldestTimeWithContext, nonOutliersCountWithContext = stats.IdentifyOutliersWithContextFactor(sales, statsData)
+  print("Non-Outliers Count (with Context Factor):", nonOutliersCountWithContext)
+
+  -- IdentifyOutliersWithDynamicContextFactor
+  local nonOutliersWithDynamicContext, oldestTimeWithDynamicContext, nonOutliersCountWithDynamicContext = stats.IdentifyOutliersWithDynamicContextFactor(sales, statsData)
+  print("Non-Outliers Count (with Dynamic Context Factor):", nonOutliersCountWithDynamicContext)
+
+  -- calculateAdjustedPercentileContextFactor
+  local adjustedFactors = stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsData, 0.85)
+  print("Adjusted Bonanza Percentile Factor:", adjustedFactors.bonanzaPercentileFactor, "Mean Difference:", adjustedFactors.meanDifference, "Adjusted Mean Difference:", adjustedFactors.adjustedMeanDifference)
+
+  -- calculateHypotheticalPValue
+  local pValue = stats.calculateHypotheticalPValue(statsData, bonanzaStatsData)
+  print("Hypothetical P-Value:", pValue)
+
+  -- calculateContextualPercentile
+  local contextualPercentile, outlierProbability = stats.calculateContextualPercentile(statsData, bonanzaStatsData)
+  print("Contextual Percentile:", contextualPercentile, "Outlier Probability:", outlierProbability)
+
 
 local meanValue, count, sum = stats.mean(statsData)
 local medianValue = stats.median(statsData)
@@ -2879,6 +3099,7 @@ local madThreshold = stats.calculateMADThreshold(statsData)
 local domainPriceThreshold = stats.calculateDomainPriceThreshold(statsData)
 local contextFactor = medianValue + medianAbsDev * 2.7  -- Default context factor
 local dynamicContextFactor = stats.calculateDynamicMADThreshold(statsData, contextFactor)
+local lowerPercentileContextFactor, upperPercentileContextFactor = stats.getUpperLowerContextFactors(statsData, 5)
 
 print("Stats Data Count: ", statsDataCount)
 print("Stats Mean: ", meanValue)
@@ -2892,6 +3113,7 @@ print("Stats MAD Score: ", madScore)
 print("Stats MAD Threshold: ", madThreshold)
 print("Stats Domain Price Threshold: ", domainPriceThreshold)
 print("Stats Dynamic Context Factor: ", dynamicContextFactor)
+print("Stats Calculated Percentile Factors: ", lowerPercentileContextFactor, upperPercentileContextFactor)
 
 local outStatsData = {}
 print("Identified Outliers: ")
@@ -2953,7 +3175,7 @@ print("Listings MAD Score: ", conMadScore)
 print("Listings MAD Threshold: ", conMadThreshold)
 print("Listings Domain Price Threshold: ", conDomainPriceThreshold)
 print("Listings Dynamic Context Factor: ", conDynamicContextFactor)
-print("Listings Percentile ContextFactor: ", conPercentileContextFactor)
+print("Listings Calculated Percentile Factor: ", conPercentileContextFactor)
   print("Listings:")
 for _, sale in pairs(listOutliers) do
   print("Price:", sale.price)
@@ -2969,3 +3191,12 @@ print("PercentileFactor:", conAdjustedPercentileContextFactor.bonanzaPercentileF
 print("Mean Difference:", conAdjustedPercentileContextFactor.meanDifference)
 print("--------------")
 
+print("Some New Stuff To Test:")
+local statsPercentileFactor = 25000
+
+local statsDev = 1.53
+local maxDev = 2.5
+
+print("Product =", statsDev * maxDev)
+print("Added: ", statsPercentileFactor + maxDev * statsDev)
+print("Subtracted: ", statsPercentileFactor - maxDev * statsDev)
