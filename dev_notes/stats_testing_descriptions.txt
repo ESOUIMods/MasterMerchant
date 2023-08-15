@@ -1,0 +1,11 @@
+https://stats.stackexchange.com/questions/30196/using-mad-as-a-way-of-defining-a-threshold-for-significance-testing
+https://stats.stackexchange.com/questions/535525/using-standardized-values-z-score-for-mae-mean-absolute-error
+https://stats.stackexchange.com/questions/542188/can-i-use-a-modified-z-score-with-skewed-and-non-normal-data
+https://hausetutorials.netlify.app/posts/2019-10-07-outlier-detection-with-median-absolute-deviation/
+
+The concept implemented by the `calculateAdjustedPercentileContextFactor` function can be related to "Comparative Percentiles" or "Contextual Percentiles." However, there isn't a standard statistical term that precisely matches the functionality of this function.
+
+In essence, the function is calculating a modified percentile value (context factor) for a dataset based on a comparison with another dataset. It adjusts the percentile by considering the mean difference between the two datasets and applying a maximum allowable deviation. This process aims to provide a more contextually relevant perspective on the percentile value for the given dataset.
+
+While the specific implementation and calculations performed by the function are unique, the underlying idea of adjusting a percentile based on contextual factors aligns with the broader concept of comparative or contextual analysis in statistics.
+

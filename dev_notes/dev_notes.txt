@@ -1,3 +1,25 @@
+function MasterMerchant.concat(...)
+  local parts = {}
+  for i = 1, select('#', ...) do
+    local option = select(i, ...)
+    if option ~= nil and option ~= MM_STRING_EMPTY then
+      table.insert(parts, tostring(option))
+    end
+  end
+  return table.concat(parts, MM_STRING_SEPARATOR_SPACE)
+end
+
+function MasterMerchant.concatTooltip(...)
+  local parts = {}
+  for i = 1, select('#', ...) do
+    local option = select(i, ...)
+    if option ~= nil and option ~= MM_STRING_EMPTY then
+      table.insert(parts, tostring(option))
+    end
+  end
+  return table.concat(parts)
+end
+
 --[[Personal note:
 
 -- /script d(GetItemLinkRecipeResultItemLink("|H1:item:190094:4:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", LINK_STYLE_BRACKETS))
