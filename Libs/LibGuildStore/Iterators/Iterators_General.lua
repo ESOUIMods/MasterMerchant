@@ -107,74 +107,55 @@ end
 
 function internal:RenewExtraSalesData(otherData)
   local savedVars = otherData[internal.dataNamespace]
-  local newestTime = nil
-  local oldestTime = nil
-  local totalCount = 0
 
-  for itemID, itemIndex in pairs(savedVars) do
-    for field, itemIndexData in pairs(itemIndex) do
-      if itemIndexData["wasAltered"] then
-        newestTime = nil
-        oldestTime = nil
-        totalCount = 0
-        for _, saleData in pairs(itemIndexData['sales']) do
-          totalCount = totalCount + 1
-          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      if versiondata["wasAltered"] then
+        local sales = versiondata['sales'] or {}
+        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
+
+        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        for _, saleData in pairs(sales) do
+          table.insert(timestamps, saleData["timestamp"])
         end
-        if savedVars[itemID][field] then
-          savedVars[itemID][field].totalCount = totalCount
-          savedVars[itemID][field].newestTime = newestTime
-          savedVars[itemID][field].oldestTime = oldestTime
-          savedVars[itemID][field].wasAltered = false
-        else
-          --internal:dm("Warn", "Empty or nil savedVars[internal.dataNamespace]")
-        end
+
+        -- Find oldest and newest time from timestamps
+        local oldestTime = math.min(unpack(timestamps))
+        local newestTime = math.max(unpack(timestamps))
+
+        -- Update versiondata with calculated values
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].wasAltered = false
       end
     end
-  end
-end
-
---/script LibGuildStore_Internal:UpdateExtraSalesData(GS08DataSavedVariables["dataeu"][43525]["1:0:3:0:0"])
-function internal:UpdateExtraSalesData(savedVars)
-  internal:dm("Debug", "UpdateExtraSalesData")
-  local newestTime = nil
-  local oldestTime = nil
-  local totalCount = 0
-  if savedVars['sales'] then
-    for _, saleData in pairs(savedVars['sales']) do
-      totalCount = totalCount + 1
-      if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
-      if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
-    end
-    savedVars.totalCount = totalCount
-    savedVars.newestTime = newestTime
-    savedVars.oldestTime = oldestTime
-    savedVars.wasAltered = false
-  else
-    internal:dm("Warn", "Wait, hold up, somethin ain't right! UpdateExtraSalesData")
   end
 end
 
 function internal:RenewExtraListingsData(otherData)
   local savedVars = otherData[internal.listingsNamespace]
 
-  for itemID, itemIndex in pairs(savedVars) do
-    for field, itemIndexData in pairs(itemIndex) do
-      if itemIndexData.wasAltered then
-        local oldestTime = nil
-        local totalCount = 0
-        for _, saleData in pairs(itemIndexData['sales']) do
-          totalCount = totalCount + 1
-          if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      if versiondata["wasAltered"] then
+        local sales = versiondata['sales'] or {}
+        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
+
+        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        for _, saleData in pairs(sales) do
+          table.insert(timestamps, saleData["timestamp"])
         end
-        if savedVars[itemID][field] then
-          savedVars[itemID][field].totalCount = totalCount
-          savedVars[itemID][field].oldestTime = oldestTime
-          savedVars[itemID][field].wasAltered = false
-        else
-          --internal:dm("Warn", "Empty or nil savedVars[internal.dataNamespace]")
-        end
+
+        -- Find oldest and newest time from timestamps
+        local oldestTime = math.min(unpack(timestamps))
+        local newestTime = math.max(unpack(timestamps))
+
+        -- Update versiondata with calculated values
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].wasAltered = false
       end
     end
   end
@@ -183,29 +164,27 @@ end
 function internal:RenewExtraPurchaseData(otherData)
   internal:dm("Debug", "RenewExtraPurchaseData")
   local savedVars = GS17DataSavedVariables[internal.purchasesNamespace]
-  local newestTime = nil
-  local oldestTime = nil
-  local totalCount = 0
 
-  for itemID, itemIndex in pairs(savedVars) do
-    for field, itemIndexData in pairs(itemIndex) do
-      if itemIndexData["wasAltered"] then
-        newestTime = nil
-        oldestTime = nil
-        totalCount = 0
-        for _, saleData in pairs(itemIndexData['sales']) do
-          totalCount = totalCount + 1
-          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      if versiondata["wasAltered"] then
+        local sales = versiondata['sales'] or {}
+        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
+
+        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        for _, saleData in pairs(sales) do
+          table.insert(timestamps, saleData["timestamp"])
         end
-        if savedVars[itemID][field] then
-          savedVars[itemID][field].totalCount = totalCount
-          savedVars[itemID][field].newestTime = newestTime
-          savedVars[itemID][field].oldestTime = oldestTime
-          savedVars[itemID][field].wasAltered = false
-        else
-          --internal:dm("Warn", "Empty or nil savedVars[internal.purchasesNamespace]")
-        end
+
+        -- Find oldest and newest time from timestamps
+        local oldestTime = math.min(unpack(timestamps))
+        local newestTime = math.max(unpack(timestamps))
+
+        -- Update versiondata with calculated values
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].wasAltered = false
       end
     end
   end
@@ -214,29 +193,27 @@ end
 function internal:RenewExtraPostedData(otherData)
   internal:dm("Debug", "RenewExtraPostedData")
   local savedVars = GS17DataSavedVariables[internal.postedNamespace]
-  local newestTime = nil
-  local oldestTime = nil
-  local totalCount = 0
 
-  for itemID, itemIndex in pairs(savedVars) do
-    for field, itemIndexData in pairs(itemIndex) do
-      if itemIndexData["wasAltered"] then
-        newestTime = nil
-        oldestTime = nil
-        totalCount = 0
-        for _, saleData in pairs(itemIndexData['sales']) do
-          totalCount = totalCount + 1
-          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      if versiondata["wasAltered"] then
+        local sales = versiondata['sales'] or {}
+        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
+
+        local oldestTime = math.huge  -- Initialize to a large value
+        local newestTime = 0  -- Initialize to 0
+
+        for _, saleData in pairs(sales) do
+          local timestamp = saleData["timestamp"]
+          oldestTime = math.min(oldestTime, timestamp)
+          newestTime = math.max(newestTime, timestamp)
         end
-        if savedVars[itemID][field] then
-          savedVars[itemID][field].totalCount = totalCount
-          savedVars[itemID][field].newestTime = newestTime
-          savedVars[itemID][field].oldestTime = oldestTime
-          savedVars[itemID][field].wasAltered = false
-        else
-          --internal:dm("Warn", "Empty or nil savedVars[internal.postedNamespace]")
-        end
+
+        -- Update versiondata with calculated values
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].wasAltered = false
       end
     end
   end
@@ -294,101 +271,122 @@ function internal:VerifyItemLinks(hash, task)
   end)
 end
 
+-- Adds extra sales data to the provided sales data structure.
+-- @param otherData The sales data from which to extract and add extra data.
 function internal:AddExtraSalesData(otherData)
   local savedVars = otherData[internal.dataNamespace]
-  local oldestTime = nil
-  local newestTime = nil
-  local totalCount = 0
-  local firstEntry = nil
-  local salesHasEntry = false
 
-  for itemID, itemIndex in pairs(savedVars) do
-    for field, itemIndexData in pairs(itemIndex) do
-      oldestTime = nil
-      newestTime = nil
-      totalCount = 0
-      firstEntry = nil
-      salesHasEntry = false
-      if itemIndexData and itemIndexData['sales'] then
-        _, firstEntry = next(itemIndexData['sales'], nil)
-        if firstEntry and type(firstEntry) == 'table' then salesHasEntry = true end
-      end -- if ['sales'] has a table in it
-      if salesHasEntry then
-        for _, saleData in pairs(itemIndexData['sales']) do
+  -- Iterate through each itemID and versionlist pair in the savedVars.
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      -- Check if the current versiondata has sales data.
+      local hasSalesData = versiondata and versiondata['sales'] and next(versiondata['sales'])
+
+      -- Check if totalCount is missing or if savedVars[itemID] is missing.
+      if hasSalesData and (not savedVars[itemID] or not savedVars[itemID][versionid].totalCount) then
+        local oldestTime = nil
+        local newestTime = nil
+        local totalCount = 0
+
+        -- Iterate through each saleData in the versiondata's sales.
+        for _, saleData in pairs(versiondata['sales']) do
           if saleData and saleData["timestamp"] then
             totalCount = totalCount + 1
-            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-            if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then
+              oldestTime = saleData["timestamp"]
+            end
+            if newestTime == nil or newestTime < saleData["timestamp"] then
+              newestTime = saleData["timestamp"]
+            end
           end
         end
 
-        if savedVars[itemID][field] then
-          savedVars[itemID][field].totalCount = totalCount
-          savedVars[itemID][field].oldestTime = oldestTime
-          savedVars[itemID][field].newestTime = newestTime
-          savedVars[itemID][field].wasAltered = false
-        end
-      else
+        -- Assign the calculated values to the savedVars data structure.
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].wasAltered = false
+      -- If there is no sales data but the savedVars still exist.
+      elseif not hasSalesData and savedVars[itemID] then
+        -- Create dataInfo for erroneous records.
         local dataInfo = {
           lang = MasterMerchant.effective_lang,
-          itemIndexData = itemIndexData,
+          itemIndexData = versiondata,
           namespace = internal.dataNamespace,
           timestamp = GetTimeStamp(),
         }
-        if GS17DataSavedVariables["erroneous_records"] == nil then GS17DataSavedVariables["erroneous_records"] = {} end
-        if GS17DataSavedVariables["erroneous_records"][itemID] == nil then GS17DataSavedVariables["erroneous_records"][itemID] = {} end
-        table.insert(GS17DataSavedVariables["erroneous_records"][itemID], dataInfo)
-        savedVars[itemID][field] = nil
-      end -- salesHasEntry
 
-    end -- itemIndex
-  end -- savedVars
+        -- Initialize GS17DataSavedVariables if not already initialized.
+        GS17DataSavedVariables["erroneous_records"] = GS17DataSavedVariables["erroneous_records"] or {}
+        GS17DataSavedVariables["erroneous_records"][itemID] = GS17DataSavedVariables["erroneous_records"][itemID] or {}
+
+        -- Insert dataInfo into erroneous_records for the specific itemID.
+        table.insert(GS17DataSavedVariables["erroneous_records"][itemID], dataInfo)
+
+        -- Remove the versionid entry from savedVars.
+        savedVars[itemID][versionid] = nil
+      end
+    end
+  end
 end
 
+-- Adds extra sales data to the provided sales data structure.
+-- @param otherData The sales data from which to extract and add extra data.
 function internal:AddExtraListingsData(otherData)
   local savedVars = otherData[internal.listingsNamespace]
-  local oldestTime = nil
-  local totalCount = 0
-  local firstEntry = nil
-  local salesHasEntry = false
 
-  for itemID, itemIndex in pairs(savedVars) do
-    for field, itemIndexData in pairs(itemIndex) do
-      oldestTime = nil
-      totalCount = 0
-      firstEntry = nil
-      salesHasEntry = false
-      if itemIndexData and itemIndexData['sales'] then
-        _, firstEntry = next(itemIndexData['sales'], nil)
-        if firstEntry and type(firstEntry) == 'table' then salesHasEntry = true end
-      end -- if ['sales'] has a table in it
-      if salesHasEntry then
-        for _, saleData in pairs(itemIndexData['sales']) do
+  -- Iterate through each itemID and versionlist pair in the savedVars.
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      -- Check if the current versiondata has sales data.
+      local hasSalesData = versiondata and versiondata['sales'] and next(versiondata['sales'])
+
+      -- Check if totalCount is missing or if savedVars[itemID] is missing.
+      if hasSalesData and (not savedVars[itemID] or not savedVars[itemID][versionid].totalCount) then
+        local oldestTime = nil
+        local newestTime = nil
+        local totalCount = 0
+
+        -- Iterate through each saleData in the versiondata's sales.
+        for _, saleData in pairs(versiondata['sales']) do
           if saleData and saleData["timestamp"] then
             totalCount = totalCount + 1
-            if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
+            if oldestTime == nil or oldestTime > saleData["timestamp"] then
+              oldestTime = saleData["timestamp"]
+            end
+            if newestTime == nil or newestTime < saleData["timestamp"] then
+              newestTime = saleData["timestamp"]
+            end
           end
         end
 
-        if savedVars[itemID][field] then
-          savedVars[itemID][field].totalCount = totalCount
-          savedVars[itemID][field].oldestTime = oldestTime
-          savedVars[itemID][field].wasAltered = false
-        end
-      else
+        -- Assign the calculated values to the savedVars data structure.
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].wasAltered = false
+      -- If there is no sales data but the savedVars still exist.
+      elseif not hasSalesData and savedVars[itemID] then
+        -- Create dataInfo for erroneous records.
         local dataInfo = {
           lang = MasterMerchant.effective_lang,
-          itemIndexData = itemIndexData,
-          namespace = internal.listingsNamespace,
+          itemIndexData = versiondata,
+          namespace = internal.dataNamespace,
           timestamp = GetTimeStamp(),
         }
-        if GS17DataSavedVariables["erroneous_listings"] == nil then GS17DataSavedVariables["erroneous_listings"] = {} end
-        if GS17DataSavedVariables["erroneous_listings"][itemID] == nil then GS17DataSavedVariables["erroneous_listings"][itemID] = {} end
-        table.insert(GS17DataSavedVariables["erroneous_listings"][itemID], dataInfo)
-        savedVars[itemID][field] = nil
-      end -- salesHasEntry
-    end -- itemIndex
-  end -- savedVars
+
+        -- Initialize GS17DataSavedVariables if not already initialized.
+        GS17DataSavedVariables["erroneous_records"] = GS17DataSavedVariables["erroneous_records"] or {}
+        GS17DataSavedVariables["erroneous_records"][itemID] = GS17DataSavedVariables["erroneous_records"][itemID] or {}
+
+        -- Insert dataInfo into erroneous_records for the specific itemID.
+        table.insert(GS17DataSavedVariables["erroneous_records"][itemID], dataInfo)
+
+        -- Remove the versionid entry from savedVars.
+        savedVars[itemID][versionid] = nil
+      end
+    end
+  end
 end
 
 function internal:AddExtraPurchaseData(otherData)

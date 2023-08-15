@@ -79,26 +79,13 @@ function internal:addPostedItem(theEvent)
     posted_items_data[theIID][itemIndex].totalCount = 1
   end
 
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+  local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for posted items
 
-  local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    end
-  else
-    -- if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
-    if theEvent.seller then temp[3] = 's' .. theEvent.seller end
-    temp[5] = theEvent.guild or ''
-    temp[7] = searchItemDesc or ''
-    temp[9] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[11] = internal.PlayerSpecialText
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
+  temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
+  temp[3] = theEvent.guild or ''
+  temp[5] = searchItemDesc or ''
+  temp[7] = searchItemAdderText or ''
+  local searchText = zo_strlower(table.concat(temp, ''))
 
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData = { theIID, itemIndex, insertedIndex }
@@ -107,7 +94,7 @@ function internal:addPostedItem(theEvent)
   for i in searchByWords do
     if pir_index[i] == nil then pir_index[i] = {} end
     table.insert(pir_index[i], wordData)
-    internal.pir_index_count = internal.pir_index_count + 1
+    internal.pir_index_count = (internal.pir_index_count or 0) + 1
   end
 
   return true
@@ -176,7 +163,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+            LEQ:continueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
@@ -229,7 +216,7 @@ function internal:iterateOverPostedItemsData(itemid, versionid, saleid, prefunc,
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+        LEQ:continueWith(function() internal:iterateOverPostedItemsData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -348,41 +335,27 @@ function internal:IndexPostedItemsData()
     local currentGuild = internal:GetGuildNameByIndex(postedItem['guild'])
     local currentSeller = internal:GetAccountNameByIndex(postedItem['seller'])
 
-    local playerName = zo_strlower(GetDisplayName())
-    local selfSale = playerName == zo_strlower(currentSeller)
-    local searchText = ""
-    if LibGuildStore_SavedVariables["minimalIndexing"] then
-      if selfSale then
-        searchText = internal.PlayerSpecialText
-      end
-    else
-      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
-      versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
-      versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
+    versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
+    versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
+    versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
 
-      local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-      if currentSeller then temp[3] = 's' .. currentSeller end
-      temp[5] = currentGuild or ''
-      temp[7] = versiondata.itemDesc or ''
-      temp[9] = versiondata.itemAdderText or ''
-      if selfSale then
-        temp[11] = internal.PlayerSpecialText
-      end
-      searchText = zo_strlower(table.concat(temp, ''))
-    end
+    local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for posted items
+
+    temp[1] = currentSeller and ('s' .. currentSeller) or ''
+    temp[3] = currentGuild or ''
+    temp[5] = versiondata.itemDesc or ''
+    temp[7] = versiondata.itemAdderText or ''
+
+    local searchText = zo_strlower(table.concat(temp, ''))
+    local wordData = { numberID, itemData, itemIndex }
 
     -- Index each word
-    local searchByWords = zo_strgmatch(searchText, '%S+')
-    local wordData = { numberID, itemData, itemIndex }
-    for i in searchByWords do
-      if pir_index[i] == nil then
-        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        pir_index[i] = {}
-      end
+    for i in zo_strgmatch(searchText, '%S+') do
+      pir_index[i] = pir_index[i] or {}
       table.insert(pir_index[i], wordData)
-      internal.pir_index_count = internal.pir_index_count + 1
+      extraData.wordsIndexCount = (extraData.wordsIndexCount or 0) + 1
+      internal.pir_index_count = (internal.pir_index_count or 0) + 1
     end
-
   end
 
   local postfunc = function(extraData)

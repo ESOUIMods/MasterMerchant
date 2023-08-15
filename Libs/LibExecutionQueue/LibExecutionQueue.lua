@@ -1,6 +1,5 @@
-local libName, libVersion = "LibExecutionQueue", 200
-local lib
-lib = {}
+local libName, libVersion = "LibExecutionQueue", 201
+local lib = {}
 
 function lib:new(_wait)
   -- This is a singleton
@@ -12,28 +11,28 @@ function lib:new(_wait)
   return lib
 end
 
-function lib:Add(func, name)
+function lib:addTask(func, name)
   table.insert(self.Queue, 1, { func, name })
 end
 
-function lib:ContinueWith(func, name)
+function lib:continueWith(func, name)
   table.insert(self.Queue, { func, name })
-  self:Start()
+  self:start()
 end
 
-function lib:Start()
+function lib:start()
   if self.Paused then
     self.Paused = false
-    self:Next()
+    self:executeNextTask()
   end
 end
 
-function lib:Next()
+function lib:executeNextTask()
   if not self.Paused then
     local nextFunc = table.remove(self.Queue)
     if nextFunc then
       nextFunc[1]()
-      zo_callLater(function() self:Next() end, self.Wait)
+      zo_callLater(function() self:executeNextTask() end, self.Wait)
     else
       -- Queue empty so pausing
       self.Paused = true;
@@ -41,7 +40,7 @@ function lib:Next()
   end
 end
 
-function lib:Pause()
+function lib:pause()
   self.Paused = true
 end
 

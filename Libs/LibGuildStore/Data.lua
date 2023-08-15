@@ -101,16 +101,25 @@ local function GetItemsTrait(itemLink, itemType)
     return GetItemLinkTraitType(itemLink) or 0
   end
   local powerLevel = GetPotionPowerLevel(itemLink)
-  return internal.potionVarientTable[powerLevel] or 0
+  return internal.potionVarientTable and internal.potionVarientTable[powerLevel] or 0
 end
 
 local function GetRequiredLevel(itemLink, itemType)
-  return itemType ~= ITEMTYPE_RECIPE and GetItemLinkRequiredLevel(itemLink) or 1
+  if itemType == ITEMTYPE_RECIPE then
+    return 1
+  end
+  return GetItemLinkRequiredLevel(itemLink) or 1
 end
 
 local function CreateIndexFromLink(itemLink)
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  return GetRequiredLevel(itemLink, itemType) .. ":" .. GetItemLinkRequiredChampionPoints(itemLink) / 10 .. ":" .. GetItemLinkDisplayQuality(itemLink) .. ":" .. GetItemsTrait(itemLink, itemType) .. ":" .. internal:GetItemLinkParseData(itemLink)
+  local requiredChampionPoints = GetItemLinkRequiredChampionPoints(itemLink) or 0
+  local quality = GetItemLinkDisplayQuality(itemLink) or 1
+  local trait = GetItemsTrait(itemLink, itemType)
+  local parseData = internal:GetItemLinkParseData(itemLink)
+
+  local index = GetRequiredLevel(itemLink, itemType) .. ":" .. (requiredChampionPoints / 10) .. ":" .. quality .. ":" .. trait .. ":" .. parseData
+  return index
 end
 
 -- /script d(LibGuildStore_Internal.GetOrCreateIndexFromLink("|H0:item:44714:308:50:0:0:0:0:0:0:0:0:0:0:0:0:36:0:0:0:0:853248|h|h"))
@@ -331,29 +340,41 @@ end
 -- /script d(LibGuildStore_Internal:AddSalesTableData("itemLink", "|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
 -- /script d(GS16DataSavedVariables["itemLink"]["|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"])
 function internal:AddSalesTableData(key, value)
+  -- Initialize variables to hold saveData, lookupTable, and countVariable
   local saveData
-  if key == "accountNames" then saveData = GS17DataSavedVariables[key]
-  else saveData = GS16DataSavedVariables[key] end
+  local lookupTable
+  local countVariable
+
+  -- Check the key to determine which tables to use
+  if key == "accountNames" then
+    -- Use GS17DataSavedVariables for accountNames
+    saveData = GS17DataSavedVariables[key]
+    lookupTable = internal.accountNameByIdLookup
+    countVariable = internal.accountNamesCount
+  elseif key == "itemLink" then
+    -- Use GS16DataSavedVariables for itemLink
+    saveData = GS16DataSavedVariables[key]
+    lookupTable = internal.itemLinkNameByIdLookup
+    countVariable = internal.itemLinksCount
+  elseif key == "guildNames" then
+    -- Use GS16DataSavedVariables for guildNames
+    saveData = GS16DataSavedVariables[key]
+    lookupTable = internal.guildNameByIdLookup
+    countVariable = internal.guildNamesCount
+  end
+
+  -- Check if the value exists in the saveData table
   if not saveData[value] then
-    if key == "accountNames" then
-      internal.accountNamesCount = internal.accountNamesCount + 1
-      internal.accountNameByIdLookup[internal.accountNamesCount] = value
-      saveData[value] = internal.accountNamesCount
-      return internal.accountNamesCount
-    end
-    if key == "itemLink" then
-      internal.itemLinksCount = internal.itemLinksCount + 1
-      internal.itemLinkNameByIdLookup[internal.itemLinksCount] = value
-      saveData[value] = internal.itemLinksCount
-      return internal.itemLinksCount
-    end
-    if key == "guildNames" then
-      internal.guildNamesCount = internal.guildNamesCount + 1
-      internal.guildNameByIdLookup[internal.guildNamesCount] = value
-      saveData[value] = internal.guildNamesCount
-      return internal.guildNamesCount
-    end
+    -- Increment the count variable
+    countVariable = countVariable + 1
+    -- Assign the value to the saveData table
+    saveData[value] = countVariable
+    -- Assign the value to the lookup table
+    lookupTable[countVariable] = value
+    -- Return the updated countVariable (or any other value if needed)
+    return countVariable
   else
+    -- If the value already exists, return its corresponding value in saveData
     return saveData[value]
   end
 end
@@ -485,26 +506,45 @@ function internal:SetupListener(guildId)
   internal.LibHistoireListener[guildId]:Start()
 end
 
-function internal:GetSearchText(buyer, seller, guild, itemDesc, adderText, addPlayer)
+function internal:GenerateSearchText(theEvent, itemDesc, adderText)
   local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-  local playerName = GetDisplayName()
   local searchText = ""
-  local selfSale = playerName == seller
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if selfSale and addPlayer then
-      searchText = internal.PlayerSpecialText
+  local playerName = zo_strlower(GetDisplayName())
+  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+  local minimalIndexing = LibGuildStore_SavedVariables["minimalIndexing"]
+
+  if minimalIndexing then
+    if isSelfSale then
+      searchText = internal.PlayerSpecialText or ""
     end
   else
-    if buyer then temp[1] = 'b' .. buyer end
-    if seller then temp[3] = 's' .. seller end
-    temp[5] = guild or ''
+    temp[1] = theEvent.buyer and ('b' .. theEvent.buyer) or ''
+    temp[3] = theEvent.seller and ('s' .. theEvent.seller) or ''
+    temp[5] = theEvent.guild or ''
     temp[7] = itemDesc or ''
     temp[9] = adderText or ''
+
     if selfSale and addPlayer then
-      temp[11] = internal.PlayerSpecialText
+      temp[11] = internal.PlayerSpecialText or ""
     end
-    searchText = string.lower(table.concat(temp, ''))
+
+    searchText = zo_strlower(table.concat(temp, ''))
   end
+
+  return searchText
+end
+
+function internal:GenerateBasicSearchText(theEvent, itemDesc, adderText)
+  local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for Basic version
+  local searchText = ""
+
+    temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
+    temp[3] = theEvent.guild or ''
+    temp[5] = itemDesc or ''
+    temp[7] = adderText or ''
+
+    searchText = zo_strlower(table.concat(temp, ''))
+
   return searchText
 end
 
@@ -719,8 +759,10 @@ function internal:addTraderInfo(guildId, guildName)
     subzoneName = subzoneName,
     zoneId = zoneId,
   }
-  if GS17DataSavedVariables[internal.visitedNamespace] == nil then GS17DataSavedVariables[internal.visitedNamespace] = {} end
-  if GS17DataSavedVariables[internal.visitedNamespace][guildId] == nil then GS17DataSavedVariables[internal.visitedNamespace][guildId] = {} end
+
+  GS17DataSavedVariables[internal.visitedNamespace] = GS17DataSavedVariables[internal.visitedNamespace] or {}
+  GS17DataSavedVariables[internal.visitedNamespace][guildId] = GS17DataSavedVariables[internal.visitedNamespace][guildId] or {}
+
   GS17DataSavedVariables[internal.visitedNamespace][guildId] = theInfo
   internal.traderIdByNameLookup[guildName] = guildId
 end

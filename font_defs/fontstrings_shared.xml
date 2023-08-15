@@ -1,0 +1,31 @@
+<GuiXml>
+    <String name="MM_ARIAL_NARROW" value="MasterMerchant/Fonts/arialn.ttf" />
+    <BackupFont originalFont="$(MM_ARIAL_NARROW)" backupFont="EsoUI/Common/Fonts/ESO_FWNTLGUDC70-DB.ttf"/>
+    <BackupFont originalFont="$(MM_ARIAL_NARROW)" backupFont="EsoUI/Common/Fonts/ESO_KafuPenji-M.ttf"/>
+    <BackupFont originalFont="$(MM_ARIAL_NARROW)" backupFont="EsoUI/Common/Fonts/TrajanProCyrillic-Regular.otf"/>
+
+    <String name="MM_ESO_CARTOGRAPHER" value="MasterMerchant/Fonts/esocartographer-bold.otf" />
+    <BackupFont originalFont="$(MM_ESO_CARTOGRAPHER)" backupFont="EsoUI/Common/Fonts/ESO_FWNTLGUDC70-DB.ttf"/>
+    <BackupFont originalFont="$(MM_ESO_CARTOGRAPHER)" backupFont="EsoUI/Common/Fonts/ESO_KafuPenji-M.ttf"/>
+    <BackupFont originalFont="$(MM_ESO_CARTOGRAPHER)" backupFont="EsoUI/Common/Fonts/Univers67Cyrillic-CondensedBold.otf"/>
+
+    <String name="MM_FONTIN_BOLD" value="MasterMerchant/Fonts/fontin_sans_b.otf" />
+    <BackupFont originalFont="$(MM_FONTIN_BOLD)" backupFont="EsoUI/Common/Fonts/ESO_FWNTLGUDC70-DB.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_BOLD)" backupFont="EsoUI/Common/Fonts/ESO_KafuPenji-M.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_BOLD)" backupFont="EsoUI/Common/Fonts/TrajanProCyrillic-Regular.otf"/>
+
+    <String name="MM_FONTIN_ITALIC" value="MasterMerchant/Fonts/fontin_sans_i.otf" />
+    <BackupFont originalFont="$(MM_FONTIN_ITALIC)" backupFont="EsoUI/Common/Fonts/ESO_FWNTLGUDC70-DB.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_ITALIC)" backupFont="EsoUI/Common/Fonts/ESO_KafuPenji-M.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_ITALIC)" backupFont="EsoUI/Common/Fonts/TrajanProCyrillic-Regular.otf"/>
+
+    <String name="MM_FONTIN_REGULAR" value="MasterMerchant/Fonts/fontin_sans_r.otf" />
+    <BackupFont originalFont="$(MM_FONTIN_REGULAR)" backupFont="EsoUI/Common/Fonts/ESO_FWNTLGUDC70-DB.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_REGULAR)" backupFont="EsoUI/Common/Fonts/ESO_KafuPenji-M.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_REGULAR)" backupFont="EsoUI/Common/Fonts/TrajanProCyrillic-Regular.otf"/>
+
+    <String name="MM_FONTIN_SMALLCAPS" value="MasterMerchant/Fonts/fontin_sans_sc.otf" />
+    <BackupFont originalFont="$(MM_FONTIN_SMALLCAPS)" backupFont="EsoUI/Common/Fonts/ESO_FWNTLGUDC70-DB.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_SMALLCAPS)" backupFont="EsoUI/Common/Fonts/ESO_KafuPenji-M.ttf"/>
+    <BackupFont originalFont="$(MM_FONTIN_SMALLCAPS)" backupFont="EsoUI/Common/Fonts/TrajanProCyrillic-Regular.otf"/>
+</GuiXml>

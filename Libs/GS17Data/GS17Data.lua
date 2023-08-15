@@ -19,8 +19,12 @@ lib.defaults = {
   ["namefiltereu"] = {},
   ["posteditemsna"] = {},
   ["posteditemseu"] = {},
-  ["pricingdatana"] = {},
-  ["pricingdataeu"] = {},
+  ["pricingdatana"] = {
+    ["pricingdataall"] = {},
+  },
+  ["pricingdataeu"] = {
+    ["pricingdataall"] = {},
+  },
   ["purchasena"] = {},
   ["purchaseeu"] = {},
   ["visitedNATraders"] = {},

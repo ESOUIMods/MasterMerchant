@@ -51,7 +51,7 @@ function internal:LibAddonInit()
     type = 'slider',
     name = GetString(GS_HISTORY_DEPTH_NAME),
     tooltip = GetString(GS_HISTORY_DEPTH_TIP),
-    min = 20,
+    min = 15,
     max = 365,
     getFunc = function() return LibGuildStore_SavedVariables.historyDepth end,
     setFunc = function(value) LibGuildStore_SavedVariables.historyDepth = value end,

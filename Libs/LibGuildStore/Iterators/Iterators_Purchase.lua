@@ -113,26 +113,14 @@ function internal:addPurchaseData(theEvent)
     purchases_data[theIID][itemIndex].totalCount = 1
   end
 
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+  local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', } -- no player text for purchases
 
-  local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    end
-  else
-    if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
-    if theEvent.seller then temp[3] = 's' .. theEvent.seller end
-    temp[5] = theEvent.guild or ''
-    temp[7] = searchItemDesc or ''
-    temp[9] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[11] = internal.PlayerSpecialText
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
+  temp[1] = theEvent.buyer and ('b' .. theEvent.buyer) or ''
+  temp[3] = theEvent.seller and ('s' .. theEvent.seller) or ''
+  temp[5] = theEvent.guild or ''
+  temp[7] = searchItemDesc or ''
+  temp[9] = searchItemAdderText or ''
+  local searchText = zo_strlower(table.concat(temp, ''))
 
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData = { theIID, itemIndex, insertedIndex }
@@ -141,7 +129,7 @@ function internal:addPurchaseData(theEvent)
   for i in searchByWords do
     if pr_index[i] == nil then pr_index[i] = {} end
     table.insert(pr_index[i], wordData)
-    internal.pr_index_count = internal.pr_index_count + 1
+    internal.pr_index_count = (internal.pr_index_count or 0) + 1
   end
 
   return true
@@ -210,7 +198,7 @@ function internal:iterateOverPurchaseData(itemid, versionid, saleid, prefunc, lo
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:iterateOverPurchaseData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+            LEQ:continueWith(function() internal:iterateOverPurchaseData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
@@ -263,7 +251,7 @@ function internal:iterateOverPurchaseData(itemid, versionid, saleid, prefunc, lo
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:iterateOverPurchaseData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+        LEQ:continueWith(function() internal:iterateOverPurchaseData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -383,42 +371,30 @@ function internal:IndexPurchaseData()
     local currentBuyer = internal:GetAccountNameByIndex(purchasedItem['buyer'])
     local currentSeller = internal:GetAccountNameByIndex(purchasedItem['seller'])
 
-    local playerName = zo_strlower(GetDisplayName())
-    local selfSale = playerName == zo_strlower(currentSeller)
-    local searchText = ""
-    if LibGuildStore_SavedVariables["minimalIndexing"] then
-      if selfSale then
-        searchText = internal.PlayerSpecialText
-      end
-    else
-      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
-      versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
-      versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
+    versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
+    versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
+    versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
 
-      local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-      if currentBuyer then temp[1] = 'b' .. currentBuyer end
-      if currentSeller then temp[3] = 's' .. currentSeller end
-      temp[5] = currentGuild or ''
-      temp[7] = versiondata.itemDesc or ''
-      temp[9] = versiondata.itemAdderText or ''
-      if selfSale then
-        temp[11] = internal.PlayerSpecialText
-      end
-      searchText = zo_strlower(table.concat(temp, ''))
-    end
+    local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', } -- no player text for purchases
+
+    temp[1] = currentBuyer and ('b' .. currentBuyer) or ''
+    temp[3] = currentSeller and ('s' .. currentSeller) or ''
+    temp[5] = currentGuild or ''
+    temp[7] = versiondata.itemDesc or ''
+    temp[9] = versiondata.itemAdderText or ''
+
+    local searchText = zo_strlower(table.concat(temp, ''))
 
     -- Index each word
     local searchByWords = zo_strgmatch(searchText, '%S+')
     local wordData = { numberID, itemData, itemIndex }
-    for i in searchByWords do
-      if pr_index[i] == nil then
-        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        pr_index[i] = {}
-      end
-      table.insert(pr_index[i], wordData)
-      internal.pr_index_count = internal.pr_index_count + 1
-    end
 
+    for i in searchByWords do
+      pr_index[i] = pr_index[i] or {}
+      table.insert(pr_index[i], wordData)
+      extraData.wordsIndexCount = (extraData.wordsIndexCount or 0) + 1
+      internal.pr_index_count = (internal.pr_index_count or 0) + 1
+    end
   end
 
   local postfunc = function(extraData)

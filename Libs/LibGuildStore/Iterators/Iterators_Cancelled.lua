@@ -75,35 +75,23 @@ function internal:addCancelledItem(theEvent)
     cancelled_items_data[theIID][itemIndex].totalCount = 1
   end
 
-  local playerName = zo_strlower(GetDisplayName())
-  local isSelfSale = playerName == zo_strlower(theEvent.seller)
+  local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for cancelled items
 
-  local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-  local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
-    if isSelfSale then
-      searchText = internal.PlayerSpecialText
-    end
-  else
-    if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
-    if theEvent.seller then temp[3] = 's' .. theEvent.seller end
-    temp[5] = theEvent.guild or ''
-    temp[7] = searchItemDesc or ''
-    temp[9] = searchItemAdderText or ''
-    if isSelfSale then
-      temp[11] = internal.PlayerSpecialText
-    end
-    searchText = zo_strlower(table.concat(temp, ''))
-  end
+  temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
+  temp[3] = theEvent.guild or ''
+  temp[5] = searchItemDesc or ''
+  temp[7] = searchItemAdderText or ''
+
+  local searchText = zo_strlower(table.concat(temp, ''))
 
   local searchByWords = zo_strgmatch(searchText, '%S+')
   local wordData = { theIID, itemIndex, insertedIndex }
 
   -- Index each word
   for i in searchByWords do
-    if cr_index[i] == nil then cr_index[i] = {} end
+    cr_index[i] = cr_index[i] or {}
     table.insert(cr_index[i], wordData)
-    internal.cr_index_count = internal.cr_index_count + 1
+    internal.cr_index_count = (internal.cr_index_count or 0) + 1
   end
 
   return true
@@ -172,7 +160,7 @@ function internal:iterateOverCancelledItemData(itemid, versionid, saleid, prefun
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:iterateOverCancelledItemData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+            LEQ:continueWith(function() internal:iterateOverCancelledItemData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
@@ -225,7 +213,7 @@ function internal:iterateOverCancelledItemData(itemid, versionid, saleid, prefun
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:iterateOverCancelledItemData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+        LEQ:continueWith(function() internal:iterateOverCancelledItemData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -344,41 +332,29 @@ function internal:IndexCancelledItemData()
     local currentGuild = internal:GetGuildNameByIndex(cancelledItem['guild'])
     local currentSeller = internal:GetAccountNameByIndex(cancelledItem['seller'])
 
-    local playerName = zo_strlower(GetDisplayName())
-    local selfSale = playerName == zo_strlower(currentSeller)
-    local searchText = ""
-    if LibGuildStore_SavedVariables["minimalIndexing"] then
-      if selfSale then
-        searchText = internal.PlayerSpecialText
-      end
-    else
-      versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
-      versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
-      versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
+    versiondata.itemAdderText = versiondata.itemAdderText or self.addedSearchToItem(currentItemLink)
+    versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
+    versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
 
-      local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-      if currentSeller then temp[3] = 's' .. currentSeller end
-      temp[5] = currentGuild or ''
-      temp[7] = versiondata.itemDesc or ''
-      temp[9] = versiondata.itemAdderText or ''
-      if selfSale then
-        temp[11] = internal.PlayerSpecialText
-      end
-      searchText = zo_strlower(table.concat(temp, ''))
-    end
+    local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for cancelled items
+
+    temp[1] = currentSeller and ('s' .. currentSeller) or ''
+    temp[3] = currentGuild or ''
+    temp[5] = versiondata.itemDesc or ''
+    temp[7] = versiondata.itemAdderText or ''
+
+    local searchText = zo_strlower(table.concat(temp, ''))
 
     -- Index each word
     local searchByWords = zo_strgmatch(searchText, '%S+')
     local wordData = { numberID, itemData, itemIndex }
-    for i in searchByWords do
-      if cr_index[i] == nil then
-        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        cr_index[i] = {}
-      end
-      table.insert(cr_index[i], wordData)
-      internal.cr_index_count = internal.cr_index_count + 1
-    end
 
+    for i in searchByWords do
+      cr_index[i] = cr_index[i] or {}
+      table.insert(cr_index[i], wordData)
+      extraData.wordsIndexCount = (extraData.wordsIndexCount or 0) + 1
+      internal.cr_index_count = (internal.cr_index_count or 0) + 1
+    end
   end
 
   local postfunc = function(extraData)

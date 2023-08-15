@@ -1224,12 +1224,13 @@ function MMScrollList:FilterScrollList()
           else
             if CheckFilterTimeframe(item.timestamp) then
               local matchesAll = true
-              temp[1] = 'b' .. currentBuyer or ''
-              temp[3] = 's' .. currentSeller or ''
+              local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
+              temp[1] = currentBuyer and ('b' .. currentBuyer) or ''
+              temp[3] = currentSeller and ('s' .. currentSeller) or ''
               temp[5] = currentGuild or ''
               temp[7] = dataList['itemDesc'] or ''
               temp[9] = dataList['itemAdderText'] or ''
-              local gn = tolower(tconcat(temp, ''))
+              local gn = tolower(table.concat(temp, ''))
               local searchByWords = string.gmatch(searchText, '%S+')
               for searchWord in searchByWords do
                 matchesAll = (matchesAll and string.find(gn, searchWord))
@@ -1238,6 +1239,7 @@ function MMScrollList:FilterScrollList()
                 table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
+
           end
         end
       else
@@ -1258,15 +1260,15 @@ function MMScrollList:FilterScrollList()
               else
                 if CheckFilterTimeframe(item.timestamp) then
                   local matchesAll = true
-                  temp[1] = 'b' .. currentBuyer or ''
-                  temp[3] = 's' .. currentSeller or ''
+                  temp[1] = currentBuyer and ('b' .. currentBuyer) or ''
+                  temp[3] = currentSeller and ('s' .. currentSeller) or ''
                   temp[5] = currentGuild or ''
                   temp[7] = dataList['itemDesc'] or ''
                   temp[9] = dataList['itemAdderText'] or ''
-                  local gn = tolower(tconcat(temp, ''))
+                  local gn = tolower(table.concat(temp, ''))
                   local searchByWords = string.gmatch(searchText, '%S+')
                   for searchWord in searchByWords do
-                    matchesAll = (matchesAll and string.find(gn, searchWord))
+                    matchesAll = matchesAll and string.find(gn, searchWord)
                   end
                   if matchesAll then
                     table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))

@@ -6,9 +6,10 @@ local att_sales_data = _G["LibGuildStore_ATT_SalesData"]
 ----- ImportPricingData           -----
 ----------------------------------------
 function internal:ImportPricingData()
-  GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = {}
-  GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["pricingData"]
-  if GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] == nil then GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] = {} end
+  local svFile = GS17DataSavedVariables
+  local namespace = internal.pricingNamespace
+  local pricingData = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]["pricingData"]
+  svFile[namespace]["pricingdataall"] = pricingData
 end
 
 ----------------------------------------
@@ -95,16 +96,16 @@ function internal:ImportMasterMerchantSales()
       internal.guildSales = {}
       internal.guildItems = {}
       internal.myItems = {}
-      LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
-      LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
-      LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
+      LEQ:addTask(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
+      LEQ:addTask(function() internal:InitSalesHistory() end, 'InitSalesHistory')
+      LEQ:addTask(function() internal:IndexSalesData() end, 'indexHistoryTables')
+      LEQ:addTask(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
 
-    LEQ:Add(function()
+    LEQ:addTask(function()
       internal:DatabaseBusy(false)
     end, '')
-    LEQ:Start()
+    LEQ:start()
   end
 
   if not internal.isDatabaseBusy then
@@ -152,15 +153,15 @@ function internal:ImportATTSales()
       internal.guildSales = {}
       internal.guildItems = {}
       internal.myItems = {}
-      LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
-      LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
-      LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
+      LEQ:addTask(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
+      LEQ:addTask(function() internal:InitSalesHistory() end, 'InitSalesHistory')
+      LEQ:addTask(function() internal:IndexSalesData() end, 'indexHistoryTables')
+      LEQ:addTask(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
 
-    LEQ:Add(function() internal:DatabaseBusy(false) end, 'DatabaseBusy')
-    LEQ:Add(function() internal:dm("Info", GetString(GS_IMPORT_ATT_FINISHED)) end, 'Done')
-    LEQ:Start()
+    LEQ:addTask(function() internal:DatabaseBusy(false) end, 'DatabaseBusy')
+    LEQ:addTask(function() internal:dm("Info", GetString(GS_IMPORT_ATT_FINISHED)) end, 'Done')
+    LEQ:start()
   end
 
   if not internal.isDatabaseBusy then
@@ -220,7 +221,7 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+            LEQ:continueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
@@ -254,7 +255,7 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+        LEQ:continueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -335,7 +336,7 @@ function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, lo
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc,
+            LEQ:continueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc,
               postfunc,
               extraData) end, nil)
             return
@@ -371,7 +372,7 @@ function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, lo
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc,
+        LEQ:continueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc,
           extraData) end, nil)
         return
       end

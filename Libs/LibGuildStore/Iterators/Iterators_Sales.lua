@@ -162,19 +162,23 @@ function internal:addSalesData(theEvent)
 
   local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
   local searchText = ""
-  if LibGuildStore_SavedVariables["minimalIndexing"] then
+  local minimalIndexing = LibGuildStore_SavedVariables["minimalIndexing"]
+
+  if minimalIndexing then
     if isSelfSale then
       searchText = internal.PlayerSpecialText
     end
   else
-    if theEvent.buyer then temp[1] = 'b' .. theEvent.buyer end
-    if theEvent.seller then temp[3] = 's' .. theEvent.seller end
+    temp[1] = theEvent.buyer and ('b' .. theEvent.buyer) or ''
+    temp[3] = theEvent.seller and ('s' .. theEvent.seller) or ''
     temp[5] = theEvent.guild or ''
     temp[7] = searchItemDesc or ''
     temp[9] = searchItemAdderText or ''
+
     if isSelfSale then
       temp[11] = internal.PlayerSpecialText
     end
+
     searchText = zo_strlower(table.concat(temp, ''))
   end
 
@@ -185,7 +189,7 @@ function internal:addSalesData(theEvent)
   for i in searchByWords do
     if sr_index[i] == nil then sr_index[i] = {} end
     table.insert(sr_index[i], wordData)
-    internal.sr_index_count = internal.sr_index_count + 1
+    internal.sr_index_count = (internal.sr_index_count or 0) + 1
   end
 
   MasterMerchant.listIsDirty[ITEMS] = true
@@ -266,7 +270,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
           -- We've run out of time, wait and continue with next sale
           if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:ContinueWith(function() internal:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+            LEQ:continueWith(function() internal:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
@@ -319,7 +323,7 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
       saleid = nil
       if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:ContinueWith(function() internal:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+        LEQ:continueWith(function() internal:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -470,10 +474,13 @@ function internal:IndexSalesData()
     local currentBuyer = internal:GetAccountNameByIndex(soldItem['buyer'])
     local currentSeller = internal:GetAccountNameByIndex(soldItem['seller'])
 
+    local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
+    local searchText = ""
     local playerName = zo_strlower(GetDisplayName())
     local selfSale = playerName == zo_strlower(currentSeller)
-    local searchText = ""
-    if LibGuildStore_SavedVariables["minimalIndexing"] then
+    local minimalIndexing = LibGuildStore_SavedVariables["minimalIndexing"]
+
+    if minimalIndexing then
       if selfSale then
         searchText = internal.PlayerSpecialText
       end
@@ -482,9 +489,8 @@ function internal:IndexSalesData()
       versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
       versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
 
-      local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-      if currentBuyer then temp[1] = 'b' .. currentBuyer end
-      if currentSeller then temp[3] = 's' .. currentSeller end
+      temp[1] = currentBuyer and ('b' .. currentBuyer) or ''
+      temp[3] = currentSeller and ('s' .. currentSeller) or ''
       temp[5] = currentGuild or ''
       temp[7] = versiondata.itemDesc or ''
       temp[9] = versiondata.itemAdderText or ''
@@ -498,12 +504,10 @@ function internal:IndexSalesData()
     local searchByWords = zo_strgmatch(searchText, '%S+')
     local wordData = { numberID, itemData, itemIndex }
     for i in searchByWords do
-      if sr_index[i] == nil then
-        extraData.wordsIndexCount = extraData.wordsIndexCount + 1
-        sr_index[i] = {}
-      end
+      sr_index[i] = sr_index[i] or {}
       table.insert(sr_index[i], wordData)
-      internal.sr_index_count = internal.sr_index_count + 1
+      extraData.wordsIndexCount = (extraData.wordsIndexCount or 0) + 1
+      internal.sr_index_count = (internal.sr_index_count or 0) + 1
     end
     -- no return
   end
@@ -817,16 +821,16 @@ function internal:CleanOutBad()
       internal.guildItems = {}
       internal.myItems = {}
       LibGuildStore_SavedVariables["updateAdditionalText"] = false
-      LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-      LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
-      LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
-      LEQ:Add(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
+      LEQ:addTask(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
+      LEQ:addTask(function() internal:InitSalesHistory() end, 'InitSalesHistory')
+      LEQ:addTask(function() internal:IndexSalesData() end, 'indexHistoryTables')
+      LEQ:addTask(function() internal:dm("Info", GetString(GS_REINDEXING_COMPLETE)) end, 'Done')
     end
 
-    LEQ:Add(function()
+    LEQ:addTask(function()
       internal:DatabaseBusy(false)
     end, '')
-    LEQ:Start()
+    LEQ:start()
 
   end
 
@@ -847,14 +851,14 @@ local function FinalizePurge(count)
     internal.guildSales = {}
     internal.guildItems = {}
     internal.myItems = {}
-    LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
-    LEQ:Add(function() internal:IndexSalesData() end, 'indexHistoryTables')
+    LEQ:addTask(function() internal:InitSalesHistory() end, 'InitSalesHistory')
+    LEQ:addTask(function() internal:IndexSalesData() end, 'indexHistoryTables')
   end
-  LEQ:Add(function()
+  LEQ:addTask(function()
     internal:DatabaseBusy(false);
     internal:dm("Info", GetString(GS_REINDEXING_COMPLETE))
   end, 'LetScanningContinue')
-  LEQ:Start()
+  LEQ:start()
 end
 
 function internal:PurgeDups()
@@ -963,35 +967,65 @@ function internal:SlideSales(goback)
 
 end
 
+-- ReferenceSales: Merge and update sales data from different versions
+-- of saved variables into a unified sales_data table.
+-- @param otherData: A table containing sales data from different versions
 function internal:ReferenceSales(otherData)
+  -- Retrieve the saved variables data from the provided namespace
   local savedVars = otherData[internal.dataNamespace]
 
+  -- Iterate over each itemid and its corresponding versionlist in the savedVars
   for itemid, versionlist in pairs(savedVars) do
-    if sales_data[itemid] then
-      for versionid, versiondata in pairs(versionlist) do
-        if sales_data[itemid][versionid] then
-          if versiondata['sales'] then
-            sales_data[itemid][versionid]['sales'] = sales_data[itemid][versionid]['sales'] or {}
-            -- IPAIRS
-            for saleid, saledata in pairs(versiondata['sales']) do
-              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata["timestamp"]) == 'number') then
-                table.insert(sales_data[itemid][versionid]['sales'], saledata)
-              end
-            end
-            local _, first = next(versiondata['sales'], nil)
-            if first then
-              sales_data[itemid][versionid].itemIcon = GetItemLinkInfo(first.itemLink)
-              sales_data[itemid][versionid].itemAdderText = internal:AddSearchToItem(first.itemLink)
-              sales_data[itemid][versionid].itemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(first.itemLink))
-            end
-          end
-        else
-          sales_data[itemid][versionid] = versiondata
-        end
-      end
-      savedVars[itemid] = nil
-    else
+    -- Check if sales_data[itemid] doesn't exist and versionlist is not empty
+    if not sales_data[itemid] and next(versionlist) then
+      -- Assign the versionlist directly to sales_data[itemid]
       sales_data[itemid] = versionlist
+    else
+      -- Iterate over each versionid and versiondata in the versionlist
+      for versionid, versiondata in pairs(versionlist) do
+        -- If sales_data[itemid][versionid] doesn't exist, create an empty table for it
+        if not sales_data[itemid][versionid] then
+          sales_data[itemid][versionid] = {}
+        end
+
+        -- Initialize a table for sales and extract sales data from versiondata
+        local sales = versiondata['sales'] or {}
+
+        -- Iterate over each saleid and saledata in the versiondata's sales table
+        for saleid, saledata in pairs(versiondata['sales']) do
+          -- Check if saleid is a number and saledata is a table with timestamp
+          if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata["timestamp"]) == 'number') then
+            -- Insert the saledata into the sales table
+            table.insert(sales, saledata)
+          end
+        end
+
+        -- Retrieve the first sale data for itemLink and other details
+        local firstSale = next(versiondata['sales'], nil)
+        if firstSale then
+          local itemLink = firstSale.itemLink
+          -- Update sales_data with merged itemIcon, itemAdderText, and itemDesc
+          sales_data[itemid][versionid].itemIcon = versiondata.itemIcon or GetItemLinkInfo(itemLink)
+          sales_data[itemid][versionid].itemAdderText = versiondata.itemAdderText or internal:AddSearchToItem(itemLink)
+          sales_data[itemid][versionid].itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+        end
+
+        -- Create a 'sales' sub-table under the version data if not already present
+        if not sales_data[itemid][versionid]['sales'] then
+          sales_data[itemid][versionid]['sales'] = {}
+        end
+
+        -- Copy sales data from 'sales' table into the sales_data table
+        for _, saledata in ipairs(sales) do
+          table.insert(sales_data[itemid][versionid]['sales'], saledata)
+        end
+
+        -- Update totalCount using the count of items in the 'sales' table
+        sales_data[itemid][versionid].totalCount = NonContiguousCount(sales_data[itemid][versionid]['sales'])
+      end
+
+      -- Remove the processed data from savedVars to save memory
+      savedVars[itemid] = nil
     end
   end
 end

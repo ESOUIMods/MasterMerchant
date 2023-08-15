@@ -128,7 +128,7 @@ function MasterMerchant:playSounds(lastIndex)
 
     zo_callLater(function()
       local LEQ = LibExecutionQueue:new()
-      LEQ:ContinueWith(function() self:playSounds(index) end, nil)
+      LEQ:continueWith(function() self:playSounds(index) end, nil)
     end, 2000)
   end
 end
@@ -192,45 +192,30 @@ local function GetTimeAgo(timestamp)
   return formatedTime
 end
 
+local MM_DATE_FORMATS = {
+  [MM_MONTH_DAY_FORMAT] = "<<1>>/<<2>>",
+  [MM_DAY_MONTH_FORMAT] = "<<2>>/<<1>>",
+  [MM_MONTH_DAY_YEAR_FORMAT] = "<<1>>/<<2>>/<<3>>",
+  [MM_YEAR_MONTH_DAY_FORMAT] = "<<3>>/<<1>>/<<2>>",
+  [MM_DAY_MONTH_YEAR_FORMAT] = "<<2>>/<<1>>/<<3>>",
+}
+
 local function GetDateFormattedString(month, day, yearString)
-  local dateString = ""
-  if MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_MONTH_DAY_FORMAT then
-    dateString = string.format("%s/%s", month, day)
-  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_DAY_MONTH_FORMAT then
-    dateString = string.format("%s/%s", day, month)
-  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_MONTH_DAY_YEAR_FORMAT then
-    dateString = string.format("%s/%s/%s", month, day, yearString)
-  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_YEAR_MONTH_DAY_FORMAT then
-    dateString = string.format("%s/%s/%s", yearString, month, day)
-  elseif MasterMerchant.systemSavedVariables.dateFormatMonthDay == MM_DAY_MONTH_YEAR_FORMAT then
-    dateString = string.format("%s/%s/%s", day, month, yearString)
-  end
-  return dateString
+  local dateFormat = MM_DATE_FORMATS[MasterMerchant.systemSavedVariables.dateFormatMonthDay]
+  return zo_strformat(dateFormat, month, day, yearString)
 end
 
 local function GetTimeDateString(timestamp)
   local timeData = os.date("*t", timestamp)
-  local month = timeData.month
-  local day = timeData.day
-  local hour = timeData.hour
-  local minute = timeData.min
-  local year = timeData.year
+  local month, day, hour, minute, year = timeData.month, timeData.day, timeData.hour, timeData.min, timeData.year
   local postMeridiem = hour >= 12
   local yearString = string.sub(tostring(year), 3, 4)
-  local meridiemString = ""
-  local dateString = GetDateFormattedString(month, day, yearString)
-  if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and postMeridiem then
-    meridiemString = "PM"
-  elseif not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and not postMeridiem then
-    meridiemString = "AM"
+  local meridiemString = MasterMerchant.systemSavedVariables.useTwentyFourHourTime and "" or (postMeridiem and "PM" or "AM")
+  if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime then
+    hour = hour > 12 and hour - 12 or hour
   end
-  if not MasterMerchant.systemSavedVariables.useTwentyFourHourTime and (hour > 12) then
-    hour = hour - 12
-  end
-  if minute < 10 then
-    minute = "0" .. tostring(minute)
-  end
-  return string.format("%s %s:%s%s", dateString, hour, minute, meridiemString)
+  minute = minute < 10 and "0" .. tostring(minute) or tostring(minute)
+  return string.format("%s %s:%s%s", GetDateFormattedString(month, day, yearString), hour, minute, meridiemString)
 end
 
 -- Create a textual representation of a time interval

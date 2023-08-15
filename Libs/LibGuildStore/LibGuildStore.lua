@@ -158,19 +158,31 @@ function internal:SetupGuildContainers()
   internal:dm("Debug", "SetupGuildContainers")
 
   -- if first initialization
-  if GS17DataSavedVariables["currentNAGuilds"] == nil then GS17DataSavedVariables["currentNAGuilds"] = {} end
-  if GS17DataSavedVariables["currentEUGuilds"] == nil then GS17DataSavedVariables["currentEUGuilds"] = {} end
-  if GS17DataSavedVariables["currentNAGuilds"]["count"] == nil then GS17DataSavedVariables["currentNAGuilds"]["count"] = 0 end
-  if GS17DataSavedVariables["currentEUGuilds"]["count"] == nil then GS17DataSavedVariables["currentEUGuilds"]["count"] = 0 end
-  if GS17DataSavedVariables["currentNAGuilds"]["guilds"] == nil then GS17DataSavedVariables["currentNAGuilds"]["guilds"] = {} end
-  if GS17DataSavedVariables["currentEUGuilds"]["guilds"] == nil then GS17DataSavedVariables["currentEUGuilds"]["guilds"] = {} end
+  local function initializeGuildsTable(guildsTable)
+    guildsTable["count"] = guildsTable["count"] or 0
+    guildsTable["guilds"] = guildsTable["guilds"] or {}
+  end
+
+  initializeGuildsTable(GS17DataSavedVariables["currentNAGuilds"])
+  initializeGuildsTable(GS17DataSavedVariables["currentEUGuilds"])
 
   local function guildExists(guildName)
-    if GS17DataSavedVariables[internal.guildListNamespace]["count"] == 0 then return false end
-    for i = 1, #GS17DataSavedVariables[internal.guildListNamespace]["guilds"] do
-      local currentGuild = GS17DataSavedVariables[internal.guildListNamespace]["guilds"][i]
-      if currentGuild.guildName == guildName then return true end
+    local guildListNamespace = GS17DataSavedVariables[internal.guildListNamespace]
+    local guilds = guildListNamespace["guilds"]
+    local count = guildListNamespace["count"]
+
+    if count == 0 then
+      return false
     end
+
+    local totalCount = NonContiguousCount(guilds)
+    for i = 1, totalCount do
+      local currentGuild = guilds[i]
+      if currentGuild and currentGuild.guildName == guildName then
+        return true
+      end
+    end
+
     return false
   end
 
@@ -178,9 +190,10 @@ function internal:SetupGuildContainers()
     local guildId = GetGuildId(guildNum)
     local guildName = GetGuildName(guildId)
     if not guildExists(guildName) then
-      GS17DataSavedVariables[internal.guildListNamespace]["count"] = GS17DataSavedVariables[internal.guildListNamespace]["count"] + 1
-      local count = GS17DataSavedVariables[internal.guildListNamespace]["count"]
-      GS17DataSavedVariables[internal.guildListNamespace]["guilds"][count] = { guildId = guildId, guildName = guildName }
+      local guildListNamespace = GS17DataSavedVariables[internal.guildListNamespace]
+      guildListNamespace["count"] = guildListNamespace["count"] + 1
+      local count = guildListNamespace["count"]
+      guildListNamespace["guilds"][count] = { guildId = guildId, guildName = guildName }
     end
   end
 end
@@ -322,60 +335,60 @@ end
 local function SetupData()
   internal:dm("Debug", "SetupData")
   local LEQ = LibExecutionQueue:new()
-  LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INITIALIZING)) end, "LibGuildStoreInitializing")
-  LEQ:Add(function() BuildLookupTables() end, 'BuildLookupTables')
-  LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_REFERENCE_DATA)) end, "LibGuildStoreReferenceDataContainers")
+  LEQ:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INITIALIZING)) end, "LibGuildStoreInitializing")
+  LEQ:addTask(function() BuildLookupTables() end, 'BuildLookupTables')
+  LEQ:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_REFERENCE_DATA)) end, "LibGuildStoreReferenceDataContainers")
   -- Place data into containers
-  LEQ:Add(function() internal:ReferenceSalesDataContainer() end, 'ReferenceSalesDataContainer')
-  LEQ:Add(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
-  LEQ:Add(function() internal:ReferencePurchaseDataContainer() end, 'ReferencePurchaseDataContainer')
-  LEQ:Add(function() internal:ReferencePostedItemsDataContainer() end, 'ReferencePostedItemsDataContainer')
-  LEQ:Add(function() internal:ReferenceCancelledItemDataContainer() end, 'ReferenceCancelledItemDataContainer')
+  LEQ:addTask(function() internal:ReferenceSalesDataContainer() end, 'ReferenceSalesDataContainer')
+  LEQ:addTask(function() internal:ReferenceListingsDataContainer() end, 'ReferenceListingsDataContainer')
+  LEQ:addTask(function() internal:ReferencePurchaseDataContainer() end, 'ReferencePurchaseDataContainer')
+  LEQ:addTask(function() internal:ReferencePostedItemsDataContainer() end, 'ReferencePostedItemsDataContainer')
+  LEQ:addTask(function() internal:ReferenceCancelledItemDataContainer() end, 'ReferenceCancelledItemDataContainer')
   -- AddNewData, which adds counts
-  LEQ:Add(function() internal:AddExtraSalesDataAllContainers() end, 'AddExtraSalesDataAllContainers')
-  LEQ:Add(function() internal:AddExtraListingsDataAllContainers() end, 'AddExtraListingsDataAllContainers')
-  LEQ:Add(function() internal:AddExtraPurchaseData() end, 'AddExtraPurchaseData')
-  LEQ:Add(function() internal:AddExtraPostedData() end, 'AddExtraPostedData')
-  LEQ:Add(function() internal:AddExtraCancelledData() end, 'AddExtraCancelledData')
+  LEQ:addTask(function() internal:AddExtraSalesDataAllContainers() end, 'AddExtraSalesDataAllContainers')
+  LEQ:addTask(function() internal:AddExtraListingsDataAllContainers() end, 'AddExtraListingsDataAllContainers')
+  LEQ:addTask(function() internal:AddExtraPurchaseData() end, 'AddExtraPurchaseData')
+  LEQ:addTask(function() internal:AddExtraPostedData() end, 'AddExtraPostedData')
+  LEQ:addTask(function() internal:AddExtraCancelledData() end, 'AddExtraCancelledData')
   -- Truncate
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
-    LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_TRUNCATE)) end, "LibGuildStoreReferenceTables")
+    LEQ:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_TRUNCATE)) end, "LibGuildStoreReferenceTables")
   end
-  LEQ:Add(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
-  LEQ:Add(function() internal:TruncateListingsHistory() end, 'TruncateListingsHistory')
-  LEQ:Add(function() internal:TruncatePurchaseHistory() end, 'TruncatePurchaseHistory')
-  LEQ:Add(function() internal:TruncatePostedItemsHistory() end, 'TruncatePostedItemsHistory')
-  LEQ:Add(function() internal:TruncateCancelledItemHistory() end, 'TruncateCancelledItemHistory')
+  LEQ:addTask(function() internal:TruncateSalesHistory() end, 'TruncateSalesHistory')
+  LEQ:addTask(function() internal:TruncateListingsHistory() end, 'TruncateListingsHistory')
+  LEQ:addTask(function() internal:TruncatePurchaseHistory() end, 'TruncatePurchaseHistory')
+  LEQ:addTask(function() internal:TruncatePostedItemsHistory() end, 'TruncatePostedItemsHistory')
+  LEQ:addTask(function() internal:TruncateCancelledItemHistory() end, 'TruncateCancelledItemHistory')
   -- RenewExtraData, if was altered
-  LEQ:Add(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
-  LEQ:Add(function() internal:RenewExtraListingsDataAllContainers() end, 'RenewExtraListingsDataAllContainers')
-  LEQ:Add(function() internal:RenewExtraPurchaseData() end, 'RenewExtraPurchaseData')
-  LEQ:Add(function() internal:RenewExtraPostedData() end, 'RenewExtraPostedData')
-  LEQ:Add(function() internal:RenewExtraCancelledData() end, 'RenewExtraCancelledData')
+  LEQ:addTask(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
+  LEQ:addTask(function() internal:RenewExtraListingsDataAllContainers() end, 'RenewExtraListingsDataAllContainers')
+  LEQ:addTask(function() internal:RenewExtraPurchaseData() end, 'RenewExtraPurchaseData')
+  LEQ:addTask(function() internal:RenewExtraPostedData() end, 'RenewExtraPostedData')
+  LEQ:addTask(function() internal:RenewExtraCancelledData() end, 'RenewExtraCancelledData')
   -- and...
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
-    LEQ:Add(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_HISTORY_INIT)) end, "LibGuildStoreReferenceTables")
+    LEQ:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_HISTORY_INIT)) end, "LibGuildStoreReferenceTables")
   end
-  LEQ:Add(function() internal:InitSalesHistory() end, 'InitSalesHistory')
-  LEQ:Add(function() internal:InitListingHistory() end, 'InitListingHistory')
-  LEQ:Add(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
-  LEQ:Add(function() internal:InitPostedItemsHistory() end, 'InitPostedItemsHistory')
-  LEQ:Add(function() internal:InitCancelledItemsHistory() end, 'InitCancelledItemsHistory')
+  LEQ:addTask(function() internal:InitSalesHistory() end, 'InitSalesHistory')
+  LEQ:addTask(function() internal:InitListingHistory() end, 'InitListingHistory')
+  LEQ:addTask(function() internal:InitPurchaseHistory() end, 'InitPurchaseHistory')
+  LEQ:addTask(function() internal:InitPostedItemsHistory() end, 'InitPostedItemsHistory')
+  LEQ:addTask(function() internal:InitCancelledItemsHistory() end, 'InitCancelledItemsHistory')
   -- Index Data, like sr_index
   if LibGuildStore_SavedVariables["minimalIndexing"] then
-    LEQ:Add(function() internal:dm("Info", GetString(GS_MINIMAL_INDEXING)) end, "LibGuildStoreIndexData")
+    LEQ:addTask(function() internal:dm("Info", GetString(GS_MINIMAL_INDEXING)) end, "LibGuildStoreIndexData")
   else
-    LEQ:Add(function() internal:dm("Info", GetString(GS_FULL_INDEXING)) end, "LibGuildStoreIndexData")
+    LEQ:addTask(function() internal:dm("Info", GetString(GS_FULL_INDEXING)) end, "LibGuildStoreIndexData")
   end
-  LEQ:Add(function() internal:IndexSalesData() end, 'IndexSalesData')
-  LEQ:Add(function() internal:IndexListingsData() end, 'IndexListingsData')
-  LEQ:Add(function() internal:IndexPurchaseData() end, 'IndexPurchaseData')
-  LEQ:Add(function() internal:IndexPostedItemsData() end, 'IndexPostedItemsData')
-  LEQ:Add(function() internal:IndexCancelledItemData() end, 'IndexCancelledItemData')
+  LEQ:addTask(function() internal:IndexSalesData() end, 'IndexSalesData')
+  LEQ:addTask(function() internal:IndexListingsData() end, 'IndexListingsData')
+  LEQ:addTask(function() internal:IndexPurchaseData() end, 'IndexPurchaseData')
+  LEQ:addTask(function() internal:IndexPostedItemsData() end, 'IndexPostedItemsData')
+  LEQ:addTask(function() internal:IndexCancelledItemData() end, 'IndexCancelledItemData')
 
-  LEQ:Add(function() lib.guildStoreReady = true end, "LibGuildStoreIndexData")
+  LEQ:addTask(function() lib.guildStoreReady = true end, "LibGuildStoreIndexData")
   -- and...
-  LEQ:Start()
+  LEQ:start()
 end
 
 local function LibGuildStoreInitialize()
@@ -517,42 +530,78 @@ local function CheckServerImportType()
 end
 
 function internal:CheckMasterMerchantData()
-  if not MM00DataSavedVariables and not MM01DataSavedVariables and not MM02DataSavedVariables and
-    not MM03DataSavedVariables and not MM04DataSavedVariables and not MM05DataSavedVariables and
-    not MM06DataSavedVariables and not MM07DataSavedVariables and not MM08DataSavedVariables and
-    not MM09DataSavedVariables and not MM10DataSavedVariables and not MM11DataSavedVariables and
-    not MM12DataSavedVariables and not MM13DataSavedVariables and not MM14DataSavedVariables and
-    not MM15DataSavedVariables then return true end
-  return false
+  local mmDataSavedVariablesList = {
+    MM00DataSavedVariables, MM01DataSavedVariables, MM02DataSavedVariables,
+    MM03DataSavedVariables, MM04DataSavedVariables, MM05DataSavedVariables,
+    MM06DataSavedVariables, MM07DataSavedVariables, MM08DataSavedVariables,
+    MM09DataSavedVariables, MM10DataSavedVariables, MM11DataSavedVariables,
+    MM12DataSavedVariables, MM13DataSavedVariables, MM14DataSavedVariables,
+    MM15DataSavedVariables
+  }
+
+  for _, mmDataSavedVariables in ipairs(mmDataSavedVariablesList) do
+    if mmDataSavedVariables then
+      return false
+    end
+  end
+
+  return true
 end
 
 function internal:CheckArkadiusData()
-  if not ArkadiusTradeToolsSalesData01 and not ArkadiusTradeToolsSalesData02 and not ArkadiusTradeToolsSalesData03 and
-    not ArkadiusTradeToolsSalesData04 and not ArkadiusTradeToolsSalesData05 and not ArkadiusTradeToolsSalesData06 and
-    not ArkadiusTradeToolsSalesData07 and not ArkadiusTradeToolsSalesData08 and not ArkadiusTradeToolsSalesData09 and
-    not ArkadiusTradeToolsSalesData10 and not ArkadiusTradeToolsSalesData11 and not ArkadiusTradeToolsSalesData12 and
-    not ArkadiusTradeToolsSalesData13 and not ArkadiusTradeToolsSalesData14 and not ArkadiusTradeToolsSalesData15 and
-    not ArkadiusTradeToolsSalesData16 then return true end
-  return false
+  local arkadiusSalesDataList = {
+    ArkadiusTradeToolsSalesData01, ArkadiusTradeToolsSalesData02, ArkadiusTradeToolsSalesData03,
+    ArkadiusTradeToolsSalesData04, ArkadiusTradeToolsSalesData05, ArkadiusTradeToolsSalesData06,
+    ArkadiusTradeToolsSalesData07, ArkadiusTradeToolsSalesData08, ArkadiusTradeToolsSalesData09,
+    ArkadiusTradeToolsSalesData10, ArkadiusTradeToolsSalesData11, ArkadiusTradeToolsSalesData12,
+    ArkadiusTradeToolsSalesData13, ArkadiusTradeToolsSalesData14, ArkadiusTradeToolsSalesData15,
+    ArkadiusTradeToolsSalesData16
+  }
+
+  for _, salesData in ipairs(arkadiusSalesDataList) do
+    if salesData then
+      return false
+    end
+  end
+
+  return true
 end
 
 function internal:MasterMerchantDataActive()
-  if MM00DataSavedVariables or MM01DataSavedVariables or MM02DataSavedVariables or
-    MM03DataSavedVariables or MM04DataSavedVariables or MM05DataSavedVariables or
-    MM06DataSavedVariables or MM07DataSavedVariables or MM08DataSavedVariables or
-    MM09DataSavedVariables or MM10DataSavedVariables or MM11DataSavedVariables or
-    MM12DataSavedVariables or MM13DataSavedVariables or MM14DataSavedVariables and
-    MM15DataSavedVariables then return true end
+  local mmDataSavedVariablesList = {
+    MM00DataSavedVariables, MM01DataSavedVariables, MM02DataSavedVariables,
+    MM03DataSavedVariables, MM04DataSavedVariables, MM05DataSavedVariables,
+    MM06DataSavedVariables, MM07DataSavedVariables, MM08DataSavedVariables,
+    MM09DataSavedVariables, MM10DataSavedVariables, MM11DataSavedVariables,
+    MM12DataSavedVariables, MM13DataSavedVariables, MM14DataSavedVariables,
+    MM15DataSavedVariables
+  }
+
+  for _, mmData in ipairs(mmDataSavedVariablesList) do
+    if mmData then
+      return true
+    end
+  end
+
   return false
 end
 
 function internal:ArkadiusDataActive()
-  if ArkadiusTradeToolsSalesData01 or ArkadiusTradeToolsSalesData02 or ArkadiusTradeToolsSalesData03 or
-    ArkadiusTradeToolsSalesData04 or ArkadiusTradeToolsSalesData05 or ArkadiusTradeToolsSalesData06 or
-    ArkadiusTradeToolsSalesData07 or ArkadiusTradeToolsSalesData08 or ArkadiusTradeToolsSalesData09 or
-    ArkadiusTradeToolsSalesData10 or ArkadiusTradeToolsSalesData11 or ArkadiusTradeToolsSalesData12 or
-    ArkadiusTradeToolsSalesData13 or ArkadiusTradeToolsSalesData14 or ArkadiusTradeToolsSalesData15 or
-    ArkadiusTradeToolsSalesData16 then return true end
+  local arkadiusDataSavedVariablesList = {
+    ArkadiusTradeToolsSalesData01, ArkadiusTradeToolsSalesData02, ArkadiusTradeToolsSalesData03,
+    ArkadiusTradeToolsSalesData04, ArkadiusTradeToolsSalesData05, ArkadiusTradeToolsSalesData06,
+    ArkadiusTradeToolsSalesData07, ArkadiusTradeToolsSalesData08, ArkadiusTradeToolsSalesData09,
+    ArkadiusTradeToolsSalesData10, ArkadiusTradeToolsSalesData11, ArkadiusTradeToolsSalesData12,
+    ArkadiusTradeToolsSalesData13, ArkadiusTradeToolsSalesData14, ArkadiusTradeToolsSalesData15,
+    ArkadiusTradeToolsSalesData16
+  }
+
+  for _, arkadiusData in ipairs(arkadiusDataSavedVariablesList) do
+    if arkadiusData then
+      return true
+    end
+  end
+
   return false
 end
 
@@ -575,9 +624,9 @@ function internal:SlashImportMMSales()
   end
   internal:dm("Info", GetString(GS_IMPORTING_MM_SALES))
   local LEQ = LibExecutionQueue:new()
-  LEQ:Add(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
-  LEQ:Add(function() internal:ImportMasterMerchantSales() end, 'ImportMasterMerchantSales')
-  LEQ:Start()
+  LEQ:addTask(function() internal:ReferenceAllMMSales() end, 'ReferenceAllMMSales')
+  LEQ:addTask(function() internal:ImportMasterMerchantSales() end, 'ImportMasterMerchantSales')
+  LEQ:start()
 end
 
 function internal:SlashImportATTSales()
@@ -591,9 +640,9 @@ function internal:SlashImportATTSales()
   end
   internal:dm("Info", GetString(GS_IMPORTING_ATT_SALES))
   local LEQ = LibExecutionQueue:new()
-  LEQ:Add(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
-  LEQ:Add(function() internal:ImportATTSales() end, 'ImportATTSales')
-  LEQ:Start()
+  LEQ:addTask(function() internal:ReferenceAllATTSales() end, 'ReferenceAllATTSales')
+  LEQ:addTask(function() internal:ImportATTSales() end, 'ImportATTSales')
+  LEQ:start()
 end
 
 function internal.Slash(allArgs)

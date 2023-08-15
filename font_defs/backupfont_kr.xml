@@ -1,0 +1,8 @@
+<GuiXml>
+    <BackupFont originalFont="$(MM_ARIAL_NARROW)" backupFont="EsoKR/fonts/ftn47.otf"/>
+    <BackupFont originalFont="$(MM_ESO_CARTOGRAPHER)" backupFont="EsoKR/fonts/ftn57.otf"/>
+    <BackupFont originalFont="$(MM_FONTIN_BOLD)" backupFont="EsoKR/fonts/ftn87.otf"/>
+    <BackupFont originalFont="$(MM_FONTIN_ITALIC)" backupFont="EsoKR/fonts/ftn87.otf"/>
+    <BackupFont originalFont="$(MM_FONTIN_REGULAR)" backupFont="EsoKR/fonts/ftn57.otf"/>
+    <BackupFont originalFont="$(MM_FONTIN_SMALLCAPS)" backupFont="EsoKR/fonts/univers55.otf"/>
+</GuiXml>
