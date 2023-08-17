@@ -1,2432 +1,4836 @@
-local sales =  
+local sales =
 {
-    [1] = 
+    [1] =
     {
-        ["id"] = "2134304627",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 32918,
-        ["itemLink"] = 46,
-        ["buyer"] = 196337,
-        ["timestamp"] = 1687154184,
-        ["guild"] = 8,
-        ["seller"] = 27873,
-    },
-    [2] = 
-    {
-        ["id"] = "2154889221",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 6500,
-        ["itemLink"] = 46,
-        ["buyer"] = 100249,
-        ["timestamp"] = 1689771276,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [3] = 
-    {
-        ["id"] = "2154889245",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 6500,
-        ["itemLink"] = 46,
-        ["buyer"] = 100249,
-        ["timestamp"] = 1689771277,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [4] = 
-    {
-        ["id"] = "2161847805",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 28800,
-        ["itemLink"] = 46,
-        ["buyer"] = 196200,
-        ["timestamp"] = 1690552166,
-        ["guild"] = 4,
-        ["seller"] = 4103,
-    },
-    [5] = 
-    {
-        ["id"] = "2163189965",
-        ["wasKiosk"] = true,
-        ["quant"] = 10,
-        ["price"] = 1460,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1690668769,
-        ["guild"] = 4,
-        ["seller"] = 206355,
-    },
-    [6] = 
-    {
-        ["id"] = "2163596589",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 40000,
-        ["itemLink"] = 46,
-        ["buyer"] = 208990,
-        ["timestamp"] = 1690697868,
-        ["guild"] = 4,
-        ["seller"] = 3436,
-    },
-    [7] = 
-    {
-        ["id"] = "2163595175",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 24989,
-        ["itemLink"] = 46,
-        ["buyer"] = 86171,
-        ["timestamp"] = 1690697709,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691793067,
+        ["price"] = 80732,
         ["guild"] = 5,
-        ["seller"] = 4140,
-    },
-    [8] = 
-    {
-        ["id"] = "2164229411",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 35000,
-        ["itemLink"] = 46,
-        ["buyer"] = 18764,
-        ["timestamp"] = 1690763315,
-        ["guild"] = 4,
-        ["seller"] = 103629,
-    },
-    [9] = 
-    {
-        ["id"] = "2170550515",
-        ["wasKiosk"] = true,
-        ["quant"] = 13,
-        ["price"] = 2366,
-        ["itemLink"] = 46,
-        ["buyer"] = 209549,
-        ["timestamp"] = 1691348275,
-        ["guild"] = 4,
-        ["seller"] = 4122,
-    },
-    [10] = 
-    {
-        ["id"] = "2172116149",
+        ["seller"] = 4322,
+        ["buyer"] = 100179,
+        ["quant"] = 4,
+        ["id"] = "2175237903",
         ["wasKiosk"] = false,
-        ["quant"] = 50,
-        ["price"] = 7500,
-        ["itemLink"] = 46,
-        ["buyer"] = 209011,
-        ["timestamp"] = 1691490267,
-        ["guild"] = 2,
-        ["seller"] = 16827,
     },
-    [11] = 
+    [2] =
     {
-        ["id"] = "2174521043",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 7500,
-        ["itemLink"] = 46,
-        ["buyer"] = 29985,
-        ["timestamp"] = 1691714902,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [12] = 
-    {
-        ["id"] = "2171745791",
-        ["wasKiosk"] = true,
-        ["quant"] = 5,
-        ["price"] = 1380,
-        ["itemLink"] = 46,
-        ["buyer"] = 208205,
-        ["timestamp"] = 1691456201,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691793068,
+        ["price"] = 40568,
         ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [13] = 
-    {
-        ["id"] = "2173780805",
+        ["seller"] = 3697,
+        ["buyer"] = 100179,
+        ["quant"] = 2,
+        ["id"] = "2175237915",
         ["wasKiosk"] = false,
-        ["quant"] = 5,
-        ["price"] = 1290,
-        ["itemLink"] = 46,
-        ["buyer"] = 27969,
-        ["timestamp"] = 1691630925,
+    },
+    [3] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686975344,
+        ["price"] = 35200,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 185133,
+        ["quant"] = 2,
+        ["id"] = "2132718367",
+        ["wasKiosk"] = true,
+    },
+    [4] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691793069,
+        ["price"] = 40568,
         ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [14] = 
-    {
-        ["id"] = "2173780809",
+        ["seller"] = 3697,
+        ["buyer"] = 100179,
+        ["quant"] = 2,
+        ["id"] = "2175237923",
         ["wasKiosk"] = false,
-        ["quant"] = 16,
-        ["price"] = 4339,
-        ["itemLink"] = 46,
-        ["buyer"] = 27969,
-        ["timestamp"] = 1691630925,
+    },
+    [6] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687032986,
+        ["price"] = 20901,
         ["guild"] = 5,
         ["seller"] = 3440,
+        ["buyer"] = 192021,
+        ["quant"] = 1,
+        ["id"] = "2133192893",
+        ["wasKiosk"] = false,
     },
-    [15] = 
+    [7] =
     {
-        ["id"] = "2173877221",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 4750,
-        ["itemLink"] = 46,
-        ["buyer"] = 210365,
-        ["timestamp"] = 1691639326,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686981578,
+        ["price"] = 87500,
         ["guild"] = 4,
-        ["seller"] = 107056,
-    },
-    [16] = 
-    {
-        ["id"] = "2173917867",
+        ["seller"] = 90400,
+        ["buyer"] = 194895,
+        ["quant"] = 5,
+        ["id"] = "2132767541",
         ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 23821,
-        ["itemLink"] = 46,
-        ["buyer"] = 189185,
-        ["timestamp"] = 1691645078,
-        ["guild"] = 5,
-        ["seller"] = 4033,
     },
-    [45] = 
+    [8] =
     {
-        ["id"] = "2157626567",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 5900,
-        ["itemLink"] = 46,
-        ["buyer"] = 27532,
-        ["timestamp"] = 1690126391,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [46] = 
-    {
-        ["id"] = "2132649301",
-        ["wasKiosk"] = true,
-        ["quant"] = 51,
-        ["price"] = 6900,
-        ["itemLink"] = 46,
-        ["buyer"] = 11039,
-        ["timestamp"] = 1686968951,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [47] = 
-    {
-        ["id"] = "2133087259",
-        ["wasKiosk"] = true,
-        ["quant"] = 10,
-        ["price"] = 1500,
-        ["itemLink"] = 46,
-        ["buyer"] = 101499,
-        ["timestamp"] = 1687022182,
-        ["guild"] = 2,
-        ["seller"] = 21286,
-    },
-    [48] = 
-    {
-        ["id"] = "2133087263",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 33800,
-        ["itemLink"] = 46,
-        ["buyer"] = 101499,
-        ["timestamp"] = 1687022183,
-        ["guild"] = 2,
-        ["seller"] = 192207,
-    },
-    [49] = 
-    {
-        ["id"] = "2133087265",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 33800,
-        ["itemLink"] = 46,
-        ["buyer"] = 101499,
-        ["timestamp"] = 1687022184,
-        ["guild"] = 2,
-        ["seller"] = 192207,
-    },
-    [50] = 
-    {
-        ["id"] = "2133087267",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 33800,
-        ["itemLink"] = 46,
-        ["buyer"] = 101499,
-        ["timestamp"] = 1687022184,
-        ["guild"] = 2,
-        ["seller"] = 192207,
-    },
-    [51] = 
-    {
-        ["id"] = "2133087269",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 33800,
-        ["itemLink"] = 46,
-        ["buyer"] = 101499,
-        ["timestamp"] = 1687022185,
-        ["guild"] = 2,
-        ["seller"] = 192207,
-    },
-    [52] = 
-    {
-        ["id"] = "2133087273",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 33800,
-        ["itemLink"] = 46,
-        ["buyer"] = 101499,
-        ["timestamp"] = 1687022186,
-        ["guild"] = 2,
-        ["seller"] = 192207,
-    },
-    [55] = 
-    {
-        ["id"] = "2131994883",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 13999,
-        ["itemLink"] = 46,
-        ["buyer"] = 185596,
-        ["timestamp"] = 1686883409,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686981581,
+        ["price"] = 87500,
         ["guild"] = 4,
-        ["seller"] = 3115,
-    },
-    [56] = 
-    {
-        ["id"] = "2131649879",
-        ["wasKiosk"] = false,
-        ["quant"] = 10,
-        ["price"] = 1891,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1686840411,
-        ["guild"] = 8,
-        ["seller"] = 27859,
-    },
-    [57] = 
-    {
-        ["id"] = "2131649945",
-        ["wasKiosk"] = false,
-        ["quant"] = 10,
-        ["price"] = 2129,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1686840416,
-        ["guild"] = 8,
-        ["seller"] = 3440,
-    },
-    [58] = 
-    {
-        ["id"] = "2131650083",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 41214,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1686840440,
-        ["guild"] = 8,
-        ["seller"] = 3367,
-    },
-    [59] = 
-    {
-        ["id"] = "2131890227",
+        ["seller"] = 90400,
+        ["buyer"] = 194895,
+        ["quant"] = 5,
+        ["id"] = "2132767587",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 33556,
-        ["timestamp"] = 1686871169,
-        ["guild"] = 8,
-        ["seller"] = 18659,
     },
-    [60] = 
+    [9] =
     {
-        ["id"] = "2131890239",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686981675,
+        ["price"] = 17600,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 11954,
+        ["quant"] = 1,
+        ["id"] = "2132768525",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 33556,
-        ["timestamp"] = 1686871169,
-        ["guild"] = 8,
-        ["seller"] = 17611,
     },
-    [61] = 
+    [10] =
     {
-        ["id"] = "2132536321",
-        ["wasKiosk"] = false,
-        ["quant"] = 49,
-        ["price"] = 8053,
-        ["itemLink"] = 46,
-        ["buyer"] = 3229,
-        ["timestamp"] = 1686957335,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687101268,
+        ["price"] = 50000,
+        ["guild"] = 4,
+        ["seller"] = 6340,
+        ["buyer"] = 52968,
+        ["quant"] = 2,
+        ["id"] = "2133771145",
+        ["wasKiosk"] = true,
+    },
+    [11] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687133061,
+        ["price"] = 50415,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 29516,
+        ["quant"] = 3,
+        ["id"] = "2134117907",
+        ["wasKiosk"] = true,
+    },
+    [12] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687132405,
+        ["price"] = 19666,
         ["guild"] = 4,
         ["seller"] = 55914,
-    },
-    [62] = 
-    {
-        ["id"] = "2132019461",
-        ["wasKiosk"] = true,
-        ["quant"] = 2,
-        ["price"] = 599,
-        ["itemLink"] = 46,
-        ["buyer"] = 197707,
-        ["timestamp"] = 1686886323,
-        ["guild"] = 5,
-        ["seller"] = 4379,
-    },
-    [63] = 
-    {
-        ["id"] = "2133325357",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 4125,
-        ["itemLink"] = 46,
-        ["buyer"] = 12252,
-        ["timestamp"] = 1687046379,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [64] = 
-    {
-        ["id"] = "2133325385",
-        ["wasKiosk"] = true,
-        ["quant"] = 26,
-        ["price"] = 4550,
-        ["itemLink"] = 46,
-        ["buyer"] = 12252,
-        ["timestamp"] = 1687046380,
-        ["guild"] = 5,
-        ["seller"] = 3849,
-    },
-    [65] = 
-    {
-        ["id"] = "2132040391",
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2134111289",
         ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 3376,
-        ["timestamp"] = 1686888572,
-        ["guild"] = 8,
-        ["seller"] = 17611,
     },
-    [66] = 
+    [13] =
     {
-        ["id"] = "2132850937",
-        ["wasKiosk"] = false,
-        ["quant"] = 10,
-        ["price"] = 1788,
-        ["itemLink"] = 46,
-        ["buyer"] = 198086,
-        ["timestamp"] = 1686997529,
-        ["guild"] = 8,
-        ["seller"] = 27859,
-    },
-    [67] = 
-    {
-        ["id"] = "2133362083",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1687050290,
-        ["guild"] = 8,
-        ["seller"] = 17611,
-    },
-    [68] = 
-    {
-        ["id"] = "2133362109",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1687050292,
-        ["guild"] = 8,
-        ["seller"] = 17611,
-    },
-    [69] = 
-    {
-        ["id"] = "2133362129",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1687050294,
-        ["guild"] = 8,
-        ["seller"] = 19792,
-    },
-    [70] = 
-    {
-        ["id"] = "2134304631",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 32918,
-        ["itemLink"] = 46,
-        ["buyer"] = 196337,
-        ["timestamp"] = 1687154185,
-        ["guild"] = 8,
-        ["seller"] = 27873,
-    },
-    [71] = 
-    {
-        ["id"] = "2134304641",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 32918,
-        ["itemLink"] = 46,
-        ["buyer"] = 196337,
-        ["timestamp"] = 1687154186,
-        ["guild"] = 8,
-        ["seller"] = 27873,
-    },
-    [72] = 
-    {
-        ["id"] = "2134304653",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 32918,
-        ["itemLink"] = 46,
-        ["buyer"] = 196337,
-        ["timestamp"] = 1687154187,
-        ["guild"] = 8,
-        ["seller"] = 27873,
-    },
-    [73] = 
-    {
-        ["id"] = "2134304659",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 32918,
-        ["itemLink"] = 46,
-        ["buyer"] = 196337,
-        ["timestamp"] = 1687154188,
-        ["guild"] = 8,
-        ["seller"] = 27873,
-    },
-    [74] = 
-    {
-        ["id"] = "2133702843",
-        ["wasKiosk"] = true,
-        ["quant"] = 14,
-        ["price"] = 2450,
-        ["itemLink"] = 46,
-        ["buyer"] = 204246,
-        ["timestamp"] = 1687094937,
-        ["guild"] = 5,
-        ["seller"] = 3849,
-    },
-    [75] = 
-    {
-        ["id"] = "2133702847",
-        ["wasKiosk"] = true,
-        ["quant"] = 10,
-        ["price"] = 2000,
-        ["itemLink"] = 46,
-        ["buyer"] = 204246,
-        ["timestamp"] = 1687094937,
-        ["guild"] = 5,
-        ["seller"] = 3311,
-    },
-    [76] = 
-    {
-        ["id"] = "2134481243",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 17500,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1687190959,
-        ["guild"] = 8,
-        ["seller"] = 4740,
-    },
-    [77] = 
-    {
-        ["id"] = "2134481321",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 32918,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1687190966,
-        ["guild"] = 8,
-        ["seller"] = 27873,
-    },
-    [78] = 
-    {
-        ["id"] = "2135149331",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 38102,
-        ["itemLink"] = 46,
-        ["buyer"] = 193883,
-        ["timestamp"] = 1687271334,
-        ["guild"] = 8,
-        ["seller"] = 27893,
-    },
-    [79] = 
-    {
-        ["id"] = "2135471529",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 204897,
-        ["timestamp"] = 1687307789,
-        ["guild"] = 8,
-        ["seller"] = 3398,
-    },
-    [80] = 
-    {
-        ["id"] = "2136154763",
-        ["wasKiosk"] = false,
-        ["quant"] = 20,
-        ["price"] = 2711,
-        ["itemLink"] = 46,
-        ["buyer"] = 26472,
-        ["timestamp"] = 1687389580,
-        ["guild"] = 8,
-        ["seller"] = 4499,
-    },
-    [81] = 
-    {
-        ["id"] = "2134203321",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 37800,
-        ["itemLink"] = 46,
-        ["buyer"] = 19641,
-        ["timestamp"] = 1687141632,
-        ["guild"] = 5,
-        ["seller"] = 4046,
-    },
-    [82] = 
-    {
-        ["id"] = "2136267203",
-        ["wasKiosk"] = false,
-        ["quant"] = 20,
-        ["price"] = 2711,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1687400798,
-        ["guild"] = 8,
-        ["seller"] = 4499,
-    },
-    [83] = 
-    {
-        ["id"] = "2136267435",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 38800,
-        ["itemLink"] = 46,
-        ["buyer"] = 108779,
-        ["timestamp"] = 1687400816,
-        ["guild"] = 8,
-        ["seller"] = 6518,
-    },
-    [84] = 
-    {
-        ["id"] = "2136365085",
-        ["wasKiosk"] = false,
-        ["quant"] = 50,
-        ["price"] = 9500,
-        ["itemLink"] = 46,
-        ["buyer"] = 7767,
-        ["timestamp"] = 1687412964,
-        ["guild"] = 8,
-        ["seller"] = 10441,
-    },
-    [85] = 
-    {
-        ["id"] = "2136931963",
-        ["wasKiosk"] = true,
-        ["quant"] = 30,
-        ["price"] = 4100,
-        ["itemLink"] = 46,
-        ["buyer"] = 202864,
-        ["timestamp"] = 1687489287,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [86] = 
-    {
-        ["id"] = "2137990263",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 6900,
-        ["itemLink"] = 46,
-        ["buyer"] = 205055,
-        ["timestamp"] = 1687627648,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [87] = 
-    {
-        ["id"] = "2136973403",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 4796,
-        ["timestamp"] = 1687495563,
-        ["guild"] = 8,
-        ["seller"] = 18659,
-    },
-    [88] = 
-    {
-        ["id"] = "2137729895",
-        ["wasKiosk"] = true,
-        ["quant"] = 10,
-        ["price"] = 1706,
-        ["itemLink"] = 46,
-        ["buyer"] = 205205,
-        ["timestamp"] = 1687599024,
-        ["guild"] = 8,
-        ["seller"] = 27859,
-    },
-    [89] = 
-    {
-        ["id"] = "2138680801",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 201720,
-        ["timestamp"] = 1687708897,
-        ["guild"] = 8,
-        ["seller"] = 19792,
-    },
-    [90] = 
-    {
-        ["id"] = "2139146541",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 40000,
-        ["itemLink"] = 46,
-        ["buyer"] = 60890,
-        ["timestamp"] = 1687757143,
-        ["guild"] = 8,
-        ["seller"] = 5885,
-    },
-    [91] = 
-    {
-        ["id"] = "2139322517",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 57000,
-        ["itemLink"] = 46,
-        ["buyer"] = 96369,
-        ["timestamp"] = 1687793210,
-        ["guild"] = 8,
-        ["seller"] = 203331,
-    },
-    [92] = 
-    {
-        ["id"] = "2134811359",
-        ["wasKiosk"] = true,
-        ["quant"] = 15,
-        ["price"] = 2250,
-        ["itemLink"] = 46,
-        ["buyer"] = 202731,
-        ["timestamp"] = 1687224200,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687132407,
+        ["price"] = 80000,
         ["guild"] = 4,
-        ["seller"] = 49856,
-    },
-    [93] = 
-    {
-        ["id"] = "2135639793",
-        ["wasKiosk"] = false,
-        ["quant"] = 50,
-        ["price"] = 7500,
-        ["itemLink"] = 46,
-        ["buyer"] = 8977,
-        ["timestamp"] = 1687324336,
-        ["guild"] = 4,
-        ["seller"] = 3178,
-    },
-    [94] = 
-    {
-        ["id"] = "2135639819",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 15000,
-        ["itemLink"] = 46,
-        ["buyer"] = 8977,
-        ["timestamp"] = 1687324337,
-        ["guild"] = 4,
-        ["seller"] = 5694,
-    },
-    [95] = 
-    {
-        ["id"] = "2135639837",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 16900,
-        ["itemLink"] = 46,
-        ["buyer"] = 8977,
-        ["timestamp"] = 1687324338,
-        ["guild"] = 4,
-        ["seller"] = 4122,
-    },
-    [96] = 
-    {
-        ["id"] = "2135639849",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 17999,
-        ["itemLink"] = 46,
-        ["buyer"] = 8977,
-        ["timestamp"] = 1687324339,
-        ["guild"] = 4,
-        ["seller"] = 194470,
-    },
-    [97] = 
-    {
-        ["id"] = "2135939437",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 17999,
-        ["itemLink"] = 46,
-        ["buyer"] = 132261,
-        ["timestamp"] = 1687364853,
-        ["guild"] = 4,
-        ["seller"] = 194470,
-    },
-    [98] = 
-    {
-        ["id"] = "2137567087",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 8977,
-        ["timestamp"] = 1687573138,
-        ["guild"] = 4,
-        ["seller"] = 14338,
-    },
-    [99] = 
-    {
-        ["id"] = "2153545915",
-        ["wasKiosk"] = false,
-        ["quant"] = 35,
-        ["price"] = 7175,
-        ["itemLink"] = 46,
-        ["buyer"] = 4183,
-        ["timestamp"] = 1689589808,
-        ["guild"] = 4,
-        ["seller"] = 5113,
-    },
-    [100] = 
-    {
-        ["id"] = "2153545927",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 17500,
-        ["itemLink"] = 46,
-        ["buyer"] = 4183,
-        ["timestamp"] = 1689589810,
-        ["guild"] = 4,
-        ["seller"] = 11775,
-    },
-    [101] = 
-    {
-        ["id"] = "2153235453",
-        ["wasKiosk"] = true,
-        ["quant"] = 12,
-        ["price"] = 2200,
-        ["itemLink"] = 46,
-        ["buyer"] = 29475,
-        ["timestamp"] = 1689547513,
-        ["guild"] = 5,
-        ["seller"] = 82692,
-    },
-    [102] = 
-    {
-        ["id"] = "2153235465",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 36677,
-        ["itemLink"] = 46,
-        ["buyer"] = 29475,
-        ["timestamp"] = 1689547514,
-        ["guild"] = 5,
-        ["seller"] = 100403,
-    },
-    [103] = 
-    {
-        ["id"] = "2153235477",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 44400,
-        ["itemLink"] = 46,
-        ["buyer"] = 29475,
-        ["timestamp"] = 1689547515,
-        ["guild"] = 5,
-        ["seller"] = 80189,
-    },
-    [104] = 
-    {
-        ["id"] = "2153235479",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 44400,
-        ["itemLink"] = 46,
-        ["buyer"] = 29475,
-        ["timestamp"] = 1689547516,
-        ["guild"] = 5,
-        ["seller"] = 80189,
-    },
-    [105] = 
-    {
-        ["id"] = "2155354719",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 28800,
-        ["itemLink"] = 46,
-        ["buyer"] = 22883,
-        ["timestamp"] = 1689829008,
-        ["guild"] = 4,
-        ["seller"] = 119919,
-    },
-    [106] = 
-    {
-        ["id"] = "2155354739",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 33000,
-        ["itemLink"] = 46,
-        ["buyer"] = 22883,
-        ["timestamp"] = 1689829010,
-        ["guild"] = 4,
-        ["seller"] = 74640,
-    },
-    [107] = 
-    {
-        ["id"] = "2155354757",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 17500,
-        ["itemLink"] = 46,
-        ["buyer"] = 22883,
-        ["timestamp"] = 1689829013,
-        ["guild"] = 4,
-        ["seller"] = 11775,
-    },
-    [108] = 
-    {
-        ["id"] = "2155961909",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 40000,
-        ["itemLink"] = 46,
-        ["buyer"] = 194608,
-        ["timestamp"] = 1689918920,
-        ["guild"] = 4,
-        ["seller"] = 3172,
-    },
-    [109] = 
-    {
-        ["id"] = "2155961923",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 40000,
-        ["itemLink"] = 46,
-        ["buyer"] = 194608,
-        ["timestamp"] = 1689918922,
-        ["guild"] = 4,
-        ["seller"] = 3172,
-    },
-    [110] = 
-    {
-        ["id"] = "2154596755",
-        ["wasKiosk"] = true,
+        ["seller"] = 204718,
+        ["buyer"] = 116069,
         ["quant"] = 4,
-        ["price"] = 725,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1689726650,
-        ["guild"] = 5,
-        ["seller"] = 3849,
-    },
-    [111] = 
-    {
-        ["id"] = "2154596767",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 20000,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1689726651,
-        ["guild"] = 5,
-        ["seller"] = 3288,
-    },
-    [112] = 
-    {
-        ["id"] = "2154596775",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 40000,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1689726652,
-        ["guild"] = 5,
-        ["seller"] = 96829,
-    },
-    [113] = 
-    {
-        ["id"] = "2155139011",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 36850,
-        ["itemLink"] = 46,
-        ["buyer"] = 196990,
-        ["timestamp"] = 1689804729,
-        ["guild"] = 5,
-        ["seller"] = 3697,
-    },
-    [114] = 
-    {
-        ["id"] = "2155666537",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 5625,
-        ["itemLink"] = 46,
-        ["buyer"] = 208193,
-        ["timestamp"] = 1689879624,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [115] = 
-    {
-        ["id"] = "2155666545",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 5625,
-        ["itemLink"] = 46,
-        ["buyer"] = 208193,
-        ["timestamp"] = 1689879626,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [116] = 
-    {
-        ["id"] = "2155794451",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 5625,
-        ["itemLink"] = 46,
-        ["buyer"] = 207731,
-        ["timestamp"] = 1689897404,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [117] = 
-    {
-        ["id"] = "2157801423",
-        ["wasKiosk"] = true,
-        ["quant"] = 30,
-        ["price"] = 4800,
-        ["itemLink"] = 46,
-        ["buyer"] = 207647,
-        ["timestamp"] = 1690141626,
-        ["guild"] = 5,
-        ["seller"] = 3353,
-    },
-    [118] = 
-    {
-        ["id"] = "2157801499",
-        ["wasKiosk"] = true,
-        ["quant"] = 5,
-        ["price"] = 1298,
-        ["itemLink"] = 46,
-        ["buyer"] = 207647,
-        ["timestamp"] = 1690141634,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [119] = 
-    {
-        ["id"] = "2157801507",
-        ["wasKiosk"] = true,
-        ["quant"] = 5,
-        ["price"] = 1297,
-        ["itemLink"] = 46,
-        ["buyer"] = 207647,
-        ["timestamp"] = 1690141635,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [120] = 
-    {
-        ["id"] = "2157801529",
-        ["wasKiosk"] = true,
-        ["quant"] = 7,
-        ["price"] = 1749,
-        ["itemLink"] = 46,
-        ["buyer"] = 207647,
-        ["timestamp"] = 1690141638,
-        ["guild"] = 5,
-        ["seller"] = 4379,
-    },
-    [121] = 
-    {
-        ["id"] = "2157346257",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 19000,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1690092319,
-        ["guild"] = 4,
-        ["seller"] = 40045,
-    },
-    [122] = 
-    {
-        ["id"] = "2157742119",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 40000,
-        ["itemLink"] = 46,
-        ["buyer"] = 208384,
-        ["timestamp"] = 1690136142,
-        ["guild"] = 4,
-        ["seller"] = 3436,
-    },
-    [123] = 
-    {
-        ["id"] = "2157742525",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 41400,
-        ["itemLink"] = 46,
-        ["buyer"] = 208384,
-        ["timestamp"] = 1690136195,
-        ["guild"] = 4,
-        ["seller"] = 5660,
-    },
-    [124] = 
-    {
-        ["id"] = "2164229431",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 10000,
-        ["itemLink"] = 46,
-        ["buyer"] = 18764,
-        ["timestamp"] = 1690763316,
-        ["guild"] = 4,
-        ["seller"] = 104783,
-    },
-    [125] = 
-    {
-        ["id"] = "2166309449",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 6700,
-        ["itemLink"] = 46,
-        ["buyer"] = 12819,
-        ["timestamp"] = 1690983836,
-        ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [126] = 
-    {
-        ["id"] = "2168618731",
+        ["id"] = "2134111307",
         ["wasKiosk"] = false,
+    },
+    [14] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687221664,
+        ["price"] = 51544,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 28138,
+        ["quant"] = 3,
+        ["id"] = "2134779159",
+        ["wasKiosk"] = true,
+    },
+    [15] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687229555,
+        ["price"] = 51543,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 139164,
+        ["quant"] = 3,
+        ["id"] = "2134870225",
+        ["wasKiosk"] = true,
+    },
+    [16] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687235761,
+        ["price"] = 52300,
+        ["guild"] = 8,
+        ["seller"] = 54791,
+        ["buyer"] = 12599,
+        ["quant"] = 3,
+        ["id"] = "2134925921",
+        ["wasKiosk"] = false,
+    },
+    [17] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687235762,
+        ["price"] = 37843,
+        ["guild"] = 8,
+        ["seller"] = 96962,
+        ["buyer"] = 12599,
+        ["quant"] = 2,
+        ["id"] = "2134925925",
+        ["wasKiosk"] = false,
+    },
+    [18] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687235762,
+        ["price"] = 37843,
+        ["guild"] = 8,
+        ["seller"] = 96962,
+        ["buyer"] = 12599,
+        ["quant"] = 2,
+        ["id"] = "2134925927",
+        ["wasKiosk"] = false,
+    },
+    [19] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687235763,
+        ["price"] = 37843,
+        ["guild"] = 8,
+        ["seller"] = 96962,
+        ["buyer"] = 12599,
+        ["quant"] = 2,
+        ["id"] = "2134925929",
+        ["wasKiosk"] = false,
+    },
+    [20] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687235763,
+        ["price"] = 224560,
+        ["guild"] = 8,
+        ["seller"] = 24155,
+        ["buyer"] = 12599,
         ["quant"] = 10,
-        ["price"] = 1500,
-        ["itemLink"] = 46,
-        ["buyer"] = 2439,
-        ["timestamp"] = 1691194437,
+        ["id"] = "2134925933",
+        ["wasKiosk"] = false,
+    },
+    [21] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687265674,
+        ["price"] = 25000,
+        ["guild"] = 8,
+        ["seller"] = 12598,
+        ["buyer"] = 24513,
+        ["quant"] = 1,
+        ["id"] = "2135099141",
+        ["wasKiosk"] = true,
+    },
+    [22] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687302976,
+        ["price"] = 50877,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 80408,
+        ["quant"] = 3,
+        ["id"] = "2135419497",
+        ["wasKiosk"] = true,
+    },
+    [23] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687356692,
+        ["price"] = 90000,
+        ["guild"] = 8,
+        ["seller"] = 15247,
+        ["buyer"] = 12599,
+        ["quant"] = 5,
+        ["id"] = "2135853771",
+        ["wasKiosk"] = false,
+    },
+    [24] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687369036,
+        ["price"] = 90000,
+        ["guild"] = 8,
+        ["seller"] = 15247,
+        ["buyer"] = 23737,
+        ["quant"] = 5,
+        ["id"] = "2135983051",
+        ["wasKiosk"] = true,
+    },
+    [25] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687387164,
+        ["price"] = 50877,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 194470,
+        ["quant"] = 3,
+        ["id"] = "2136127849",
+        ["wasKiosk"] = true,
+    },
+    [26] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687417701,
+        ["price"] = 90000,
+        ["guild"] = 8,
+        ["seller"] = 15247,
+        ["buyer"] = 64355,
+        ["quant"] = 5,
+        ["id"] = "2136386289",
+        ["wasKiosk"] = true,
+    },
+    [27] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687417703,
+        ["price"] = 90000,
+        ["guild"] = 8,
+        ["seller"] = 15247,
+        ["buyer"] = 64355,
+        ["quant"] = 5,
+        ["id"] = "2136386293",
+        ["wasKiosk"] = true,
+    },
+    [28] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687419976,
+        ["price"] = 50877,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 7777,
+        ["quant"] = 3,
+        ["id"] = "2136399681",
+        ["wasKiosk"] = false,
+    },
+    [29] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687419981,
+        ["price"] = 18000,
+        ["guild"] = 8,
+        ["seller"] = 11579,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2136399713",
+        ["wasKiosk"] = false,
+    },
+    [30] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687419981,
+        ["price"] = 90000,
+        ["guild"] = 8,
+        ["seller"] = 15247,
+        ["buyer"] = 7777,
+        ["quant"] = 5,
+        ["id"] = "2136399721",
+        ["wasKiosk"] = false,
+    },
+    [31] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687419982,
+        ["price"] = 62400,
+        ["guild"] = 8,
+        ["seller"] = 7251,
+        ["buyer"] = 7777,
+        ["quant"] = 3,
+        ["id"] = "2136399731",
+        ["wasKiosk"] = false,
+    },
+    [32] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687491505,
+        ["price"] = 39600,
+        ["guild"] = 8,
+        ["seller"] = 32644,
+        ["buyer"] = 64355,
+        ["quant"] = 2,
+        ["id"] = "2136950085",
+        ["wasKiosk"] = true,
+    },
+    [33] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687491507,
+        ["price"] = 62400,
+        ["guild"] = 8,
+        ["seller"] = 7251,
+        ["buyer"] = 64355,
+        ["quant"] = 3,
+        ["id"] = "2136950099",
+        ["wasKiosk"] = true,
+    },
+    [34] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687491508,
+        ["price"] = 62400,
+        ["guild"] = 8,
+        ["seller"] = 7251,
+        ["buyer"] = 64355,
+        ["quant"] = 3,
+        ["id"] = "2136950111",
+        ["wasKiosk"] = true,
+    },
+    [35] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687491512,
+        ["price"] = 22500,
+        ["guild"] = 8,
+        ["seller"] = 37307,
+        ["buyer"] = 64355,
+        ["quant"] = 1,
+        ["id"] = "2136950133",
+        ["wasKiosk"] = true,
+    },
+    [36] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687491514,
+        ["price"] = 25000,
+        ["guild"] = 8,
+        ["seller"] = 12598,
+        ["buyer"] = 64355,
+        ["quant"] = 1,
+        ["id"] = "2136950139",
+        ["wasKiosk"] = true,
+    },
+    [37] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687801004,
+        ["price"] = 103200,
         ["guild"] = 2,
-        ["seller"] = 21286,
-    },
-    [127] = 
-    {
-        ["id"] = "2164518485",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 24989,
-        ["itemLink"] = 46,
-        ["buyer"] = 24858,
-        ["timestamp"] = 1690794081,
-        ["guild"] = 5,
-        ["seller"] = 4140,
-    },
-    [128] = 
-    {
-        ["id"] = "2168825233",
+        ["seller"] = 21479,
+        ["buyer"] = 199081,
+        ["quant"] = 6,
+        ["id"] = "2139398653",
         ["wasKiosk"] = true,
-        ["quant"] = 49,
-        ["price"] = 8183,
-        ["itemLink"] = 46,
-        ["buyer"] = 207002,
-        ["timestamp"] = 1691208744,
+    },
+    [38] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687801004,
+        ["price"] = 103200,
+        ["guild"] = 2,
+        ["seller"] = 21479,
+        ["buyer"] = 199081,
+        ["quant"] = 6,
+        ["id"] = "2139398655",
+        ["wasKiosk"] = true,
+    },
+    [39] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687808837,
+        ["price"] = 97160,
         ["guild"] = 4,
-        ["seller"] = 5718,
-    },
-    [158] = 
-    {
-        ["id"] = "2137567101",
+        ["seller"] = 202289,
+        ["buyer"] = 8157,
+        ["quant"] = 5,
+        ["id"] = "2139459621",
         ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 8977,
-        ["timestamp"] = 1687573139,
+    },
+    [40] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687808838,
+        ["price"] = 19666,
         ["guild"] = 4,
-        ["seller"] = 14338,
-    },
-    [159] = 
-    {
-        ["id"] = "2134972125",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 3875,
-        ["itemLink"] = 46,
-        ["buyer"] = 205603,
-        ["timestamp"] = 1687243041,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [160] = 
-    {
-        ["id"] = "2135606687",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 3875,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1687320246,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [161] = 
-    {
-        ["id"] = "2135606693",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 4000,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1687320248,
-        ["guild"] = 5,
-        ["seller"] = 3876,
-    },
-    [162] = 
-    {
-        ["id"] = "2135606709",
-        ["wasKiosk"] = true,
-        ["quant"] = 8,
-        ["price"] = 1400,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1687320250,
-        ["guild"] = 5,
-        ["seller"] = 3849,
-    },
-    [163] = 
-    {
-        ["id"] = "2136012669",
+        ["seller"] = 55914,
+        ["buyer"] = 8157,
+        ["quant"] = 1,
+        ["id"] = "2139459627",
         ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 38679,
-        ["itemLink"] = 46,
-        ["buyer"] = 3125,
-        ["timestamp"] = 1687373491,
-        ["guild"] = 5,
-        ["seller"] = 3697,
     },
-    [164] = 
+    [41] =
     {
-        ["id"] = "2136012673",
-        ["wasKiosk"] = false,
-        ["quant"] = 8,
-        ["price"] = 1624,
-        ["itemLink"] = 46,
-        ["buyer"] = 3125,
-        ["timestamp"] = 1687373491,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687879458,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 52898,
+        ["quant"] = 1,
+        ["id"] = "2140006505",
+        ["wasKiosk"] = true,
+    },
+    [42] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687879459,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 52898,
+        ["quant"] = 1,
+        ["id"] = "2140006507",
+        ["wasKiosk"] = true,
+    },
+    [43] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687879460,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 52898,
+        ["quant"] = 1,
+        ["id"] = "2140006511",
+        ["wasKiosk"] = true,
+    },
+    [44] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687883045,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 97842,
+        ["quant"] = 1,
+        ["id"] = "2140038879",
+        ["wasKiosk"] = true,
+    },
+    [45] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687883046,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 97842,
+        ["quant"] = 1,
+        ["id"] = "2140038895",
+        ["wasKiosk"] = true,
+    },
+    [46] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687883047,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 97842,
+        ["quant"] = 1,
+        ["id"] = "2140038907",
+        ["wasKiosk"] = true,
+    },
+    [47] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687883048,
+        ["price"] = 19394,
         ["guild"] = 5,
         ["seller"] = 3440,
-    },
-    [165] = 
-    {
-        ["id"] = "2136012677",
-        ["wasKiosk"] = false,
-        ["quant"] = 5,
-        ["price"] = 1267,
-        ["itemLink"] = 46,
-        ["buyer"] = 3125,
-        ["timestamp"] = 1687373492,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [166] = 
-    {
-        ["id"] = "2136012679",
-        ["wasKiosk"] = false,
-        ["quant"] = 5,
-        ["price"] = 1270,
-        ["itemLink"] = 46,
-        ["buyer"] = 3125,
-        ["timestamp"] = 1687373492,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [167] = 
-    {
-        ["id"] = "2136012683",
-        ["wasKiosk"] = false,
-        ["quant"] = 6,
-        ["price"] = 1645,
-        ["itemLink"] = 46,
-        ["buyer"] = 3125,
-        ["timestamp"] = 1687373493,
-        ["guild"] = 5,
-        ["seller"] = 4379,
-    },
-    [168] = 
-    {
-        ["id"] = "2136012691",
-        ["wasKiosk"] = false,
-        ["quant"] = 5,
-        ["price"] = 1371,
-        ["itemLink"] = 46,
-        ["buyer"] = 3125,
-        ["timestamp"] = 1687373493,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [169] = 
-    {
-        ["id"] = "2136012701",
-        ["wasKiosk"] = false,
-        ["quant"] = 5,
-        ["price"] = 1379,
-        ["itemLink"] = 46,
-        ["buyer"] = 3125,
-        ["timestamp"] = 1687373494,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [170] = 
-    {
-        ["id"] = "2136362819",
+        ["buyer"] = 97842,
+        ["quant"] = 1,
+        ["id"] = "2140038921",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 100000,
-        ["itemLink"] = 46,
-        ["buyer"] = 60997,
-        ["timestamp"] = 1687412478,
-        ["guild"] = 5,
-        ["seller"] = 3125,
     },
-    [171] = 
+    [48] =
     {
-        ["id"] = "2136956007",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687884516,
+        ["price"] = 20440,
+        ["guild"] = 5,
+        ["seller"] = 13609,
+        ["buyer"] = 17351,
+        ["quant"] = 1,
+        ["id"] = "2140048941",
+        ["wasKiosk"] = true,
+    },
+    [49] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687898725,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 8780,
+        ["buyer"] = 3864,
+        ["quant"] = 1,
+        ["id"] = "2140175333",
         ["wasKiosk"] = false,
-        ["quant"] = 25,
-        ["price"] = 4375,
-        ["itemLink"] = 46,
-        ["buyer"] = 3376,
-        ["timestamp"] = 1687492187,
-        ["guild"] = 5,
-        ["seller"] = 14831,
     },
-    [172] = 
+    [50] =
     {
-        ["id"] = "2136956015",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687898726,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 8780,
+        ["buyer"] = 3864,
+        ["quant"] = 1,
+        ["id"] = "2140175349",
         ["wasKiosk"] = false,
-        ["quant"] = 25,
-        ["price"] = 4375,
-        ["itemLink"] = 46,
-        ["buyer"] = 3376,
-        ["timestamp"] = 1687492187,
-        ["guild"] = 5,
-        ["seller"] = 14831,
     },
-    [173] = 
+    [51] =
     {
-        ["id"] = "2138240721",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 44400,
-        ["itemLink"] = 46,
-        ["buyer"] = 20123,
-        ["timestamp"] = 1687653844,
-        ["guild"] = 5,
-        ["seller"] = 5354,
-    },
-    [174] = 
-    {
-        ["id"] = "2138892751",
-        ["wasKiosk"] = true,
-        ["quant"] = 7,
-        ["price"] = 1350,
-        ["itemLink"] = 46,
-        ["buyer"] = 204493,
-        ["timestamp"] = 1687729619,
-        ["guild"] = 5,
-        ["seller"] = 3849,
-    },
-    [175] = 
-    {
-        ["id"] = "2139712407",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 204887,
-        ["timestamp"] = 1687836314,
-        ["guild"] = 8,
-        ["seller"] = 18659,
-    },
-    [176] = 
-    {
-        ["id"] = "2140149709",
-        ["wasKiosk"] = true,
-        ["quant"] = 10,
-        ["price"] = 1702,
-        ["itemLink"] = 46,
-        ["buyer"] = 27412,
-        ["timestamp"] = 1687895548,
-        ["guild"] = 8,
-        ["seller"] = 27859,
-    },
-    [177] = 
-    {
-        ["id"] = "2140221617",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 34800,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1687903499,
-        ["guild"] = 8,
-        ["seller"] = 26028,
-    },
-    [178] = 
-    {
-        ["id"] = "2140305489",
-        ["wasKiosk"] = true,
-        ["quant"] = 20,
-        ["price"] = 2711,
-        ["itemLink"] = 46,
-        ["buyer"] = 199476,
-        ["timestamp"] = 1687913550,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687817899,
+        ["price"] = 33333,
         ["guild"] = 8,
         ["seller"] = 4499,
-    },
-    [179] = 
-    {
-        ["id"] = "2140366929",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 44313,
-        ["itemLink"] = 46,
-        ["buyer"] = 3376,
-        ["timestamp"] = 1687919574,
-        ["guild"] = 8,
-        ["seller"] = 79977,
-    },
-    [180] = 
-    {
-        ["id"] = "2140366933",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 44313,
-        ["itemLink"] = 46,
-        ["buyer"] = 3376,
-        ["timestamp"] = 1687919574,
-        ["guild"] = 8,
-        ["seller"] = 79977,
-    },
-    [181] = 
-    {
-        ["id"] = "2141813937",
+        ["buyer"] = 205905,
+        ["quant"] = 2,
+        ["id"] = "2139533387",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 38000,
-        ["itemLink"] = 46,
-        ["buyer"] = 206155,
-        ["timestamp"] = 1688131118,
+    },
+    [52] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687971917,
+        ["price"] = 18500,
         ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [182] = 
-    {
-        ["id"] = "2141813947",
+        ["seller"] = 5350,
+        ["buyer"] = 94622,
+        ["quant"] = 1,
+        ["id"] = "2140723995",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 38000,
-        ["itemLink"] = 46,
-        ["buyer"] = 206155,
-        ["timestamp"] = 1688131120,
+    },
+    [53] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687972070,
+        ["price"] = 18500,
         ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [183] = 
-    {
-        ["id"] = "2141813955",
+        ["seller"] = 5350,
+        ["buyer"] = 94622,
+        ["quant"] = 1,
+        ["id"] = "2140725289",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 38000,
-        ["itemLink"] = 46,
-        ["buyer"] = 206155,
-        ["timestamp"] = 1688131121,
+    },
+    [54] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687972071,
+        ["price"] = 19000,
         ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [184] = 
-    {
-        ["id"] = "2140899541",
+        ["seller"] = 3849,
+        ["buyer"] = 94622,
+        ["quant"] = 1,
+        ["id"] = "2140725295",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 199551,
-        ["timestamp"] = 1687997795,
-        ["guild"] = 8,
-        ["seller"] = 3398,
     },
-    [185] = 
+    [55] =
     {
-        ["id"] = "2142124855",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 4000,
-        ["itemLink"] = 46,
-        ["buyer"] = 202955,
-        ["timestamp"] = 1688170019,
-        ["guild"] = 5,
-        ["seller"] = 3876,
-    },
-    [186] = 
-    {
-        ["id"] = "2141369175",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 28000,
-        ["itemLink"] = 46,
-        ["buyer"] = 12241,
-        ["timestamp"] = 1688063030,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687921129,
+        ["price"] = 85000,
         ["guild"] = 4,
-        ["seller"] = 9143,
-    },
-    [187] = 
-    {
-        ["id"] = "2141369193",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 28000,
-        ["itemLink"] = 46,
-        ["buyer"] = 12241,
-        ["timestamp"] = 1688063031,
-        ["guild"] = 4,
-        ["seller"] = 9143,
-    },
-    [188] = 
-    {
-        ["id"] = "2141369203",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 28000,
-        ["itemLink"] = 46,
-        ["buyer"] = 12241,
-        ["timestamp"] = 1688063032,
-        ["guild"] = 4,
-        ["seller"] = 9143,
-    },
-    [189] = 
-    {
-        ["id"] = "2141600767",
+        ["seller"] = 205552,
+        ["buyer"] = 187172,
+        ["quant"] = 5,
+        ["id"] = "2140380253",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 41528,
-        ["itemLink"] = 46,
-        ["buyer"] = 205957,
-        ["timestamp"] = 1688092841,
-        ["guild"] = 4,
-        ["seller"] = 96499,
     },
-    [190] = 
+    [56] =
     {
-        ["id"] = "2142980707",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 44200,
-        ["itemLink"] = 46,
-        ["buyer"] = 131731,
-        ["timestamp"] = 1688270120,
-        ["guild"] = 5,
-        ["seller"] = 3125,
-    },
-    [191] = 
-    {
-        ["id"] = "2143031771",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 44400,
-        ["itemLink"] = 46,
-        ["buyer"] = 204319,
-        ["timestamp"] = 1688275884,
-        ["guild"] = 5,
-        ["seller"] = 5354,
-    },
-    [192] = 
-    {
-        ["id"] = "2141707049",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 15000,
-        ["itemLink"] = 46,
-        ["buyer"] = 12241,
-        ["timestamp"] = 1688109490,
-        ["guild"] = 4,
-        ["seller"] = 5694,
-    },
-    [193] = 
-    {
-        ["id"] = "2141999795",
-        ["wasKiosk"] = false,
-        ["quant"] = 50,
-        ["price"] = 4500,
-        ["itemLink"] = 46,
-        ["buyer"] = 4122,
-        ["timestamp"] = 1688154770,
-        ["guild"] = 4,
-        ["seller"] = 206355,
-    },
-    [194] = 
-    {
-        ["id"] = "2142804019",
-        ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 30000,
-        ["itemLink"] = 46,
-        ["buyer"] = 3376,
-        ["timestamp"] = 1688252783,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687896588,
+        ["price"] = 20000,
         ["guild"] = 8,
-        ["seller"] = 18659,
-    },
-    [195] = 
-    {
-        ["id"] = "2142841671",
+        ["seller"] = 24138,
+        ["buyer"] = 13349,
+        ["quant"] = 1,
+        ["id"] = "2140158007",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 31000,
-        ["itemLink"] = 46,
-        ["buyer"] = 36595,
-        ["timestamp"] = 1688256334,
+    },
+    [57] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687896589,
+        ["price"] = 62400,
         ["guild"] = 8,
-        ["seller"] = 105668,
-    },
-    [196] = 
-    {
-        ["id"] = "2142841711",
+        ["seller"] = 7251,
+        ["buyer"] = 13349,
+        ["quant"] = 3,
+        ["id"] = "2140158011",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 33800,
-        ["itemLink"] = 46,
-        ["buyer"] = 36595,
-        ["timestamp"] = 1688256336,
+    },
+    [58] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687896591,
+        ["price"] = 62400,
         ["guild"] = 8,
-        ["seller"] = 26028,
-    },
-    [197] = 
-    {
-        ["id"] = "2143168397",
+        ["seller"] = 7251,
+        ["buyer"] = 13349,
+        ["quant"] = 3,
+        ["id"] = "2140158025",
         ["wasKiosk"] = true,
-        ["quant"] = 21,
-        ["price"] = 2835,
-        ["itemLink"] = 46,
-        ["buyer"] = 8990,
-        ["timestamp"] = 1688299550,
+    },
+    [59] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687909627,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 203063,
+        ["quant"] = 1,
+        ["id"] = "2140276693",
+        ["wasKiosk"] = true,
+    },
+    [60] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687909628,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 203063,
+        ["quant"] = 1,
+        ["id"] = "2140276701",
+        ["wasKiosk"] = true,
+    },
+    [61] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687909629,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 203063,
+        ["quant"] = 1,
+        ["id"] = "2140276707",
+        ["wasKiosk"] = true,
+    },
+    [62] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687909630,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 203063,
+        ["quant"] = 1,
+        ["id"] = "2140276717",
+        ["wasKiosk"] = true,
+    },
+    [63] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688062850,
+        ["price"] = 130000,
         ["guild"] = 5,
-        ["seller"] = 3555,
-    },
-    [198] = 
-    {
-        ["id"] = "2143170237",
+        ["seller"] = 184525,
+        ["buyer"] = 10597,
+        ["quant"] = 5,
+        ["id"] = "2141368333",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 6600,
-        ["itemLink"] = 46,
-        ["buyer"] = 204124,
-        ["timestamp"] = 1688299831,
-        ["guild"] = 2,
-        ["seller"] = 16827,
     },
-    [199] = 
+    [64] =
     {
-        ["id"] = "2143170723",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687918799,
+        ["price"] = 50211,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 89098,
+        ["quant"] = 3,
+        ["id"] = "2140359093",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 7350,
-        ["itemLink"] = 46,
-        ["buyer"] = 204124,
-        ["timestamp"] = 1688299909,
-        ["guild"] = 2,
-        ["seller"] = 4832,
     },
-    [200] = 
+    [65] =
     {
-        ["id"] = "2143171451",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687923335,
+        ["price"] = 124800,
+        ["guild"] = 8,
+        ["seller"] = 7251,
+        ["buyer"] = 170621,
+        ["quant"] = 6,
+        ["id"] = "2140398359",
         ["wasKiosk"] = true,
+    },
+    [66] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687980053,
+        ["price"] = 63000,
+        ["guild"] = 8,
+        ["seller"] = 96369,
+        ["buyer"] = 182682,
+        ["quant"] = 3,
+        ["id"] = "2140780249",
+        ["wasKiosk"] = true,
+    },
+    [67] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687991988,
+        ["price"] = 124800,
+        ["guild"] = 8,
+        ["seller"] = 7251,
+        ["buyer"] = 50417,
+        ["quant"] = 6,
+        ["id"] = "2140856709",
+        ["wasKiosk"] = false,
+    },
+    [68] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688002513,
+        ["price"] = 33377,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 29134,
+        ["quant"] = 2,
+        ["id"] = "2140937785",
+        ["wasKiosk"] = true,
+    },
+    [69] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688009863,
+        ["price"] = 46874,
+        ["guild"] = 8,
+        ["seller"] = 5705,
+        ["buyer"] = 3904,
+        ["quant"] = 4,
+        ["id"] = "2141021067",
+        ["wasKiosk"] = true,
+    },
+    [70] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688229967,
+        ["price"] = 33000,
+        ["guild"] = 5,
+        ["seller"] = 196571,
+        ["buyer"] = 184663,
+        ["quant"] = 2,
+        ["id"] = "2142601915",
+        ["wasKiosk"] = true,
+    },
+    [71] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688229969,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 184663,
+        ["quant"] = 1,
+        ["id"] = "2142601931",
+        ["wasKiosk"] = true,
+    },
+    [72] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688229970,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 184663,
+        ["quant"] = 1,
+        ["id"] = "2142601945",
+        ["wasKiosk"] = true,
+    },
+    [73] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688229972,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 184663,
+        ["quant"] = 1,
+        ["id"] = "2142601953",
+        ["wasKiosk"] = true,
+    },
+    [74] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688229974,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 184663,
+        ["quant"] = 1,
+        ["id"] = "2142601965",
+        ["wasKiosk"] = true,
+    },
+    [75] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688268677,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 197134,
+        ["quant"] = 1,
+        ["id"] = "2142967149",
+        ["wasKiosk"] = true,
+    },
+    [76] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688268678,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 197134,
+        ["quant"] = 1,
+        ["id"] = "2142967157",
+        ["wasKiosk"] = true,
+    },
+    [77] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688096551,
+        ["price"] = 33377,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 205978,
+        ["quant"] = 2,
+        ["id"] = "2141630901",
+        ["wasKiosk"] = true,
+    },
+    [78] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688096552,
+        ["price"] = 124800,
+        ["guild"] = 8,
+        ["seller"] = 7251,
+        ["buyer"] = 205978,
+        ["quant"] = 6,
+        ["id"] = "2141630905",
+        ["wasKiosk"] = true,
+    },
+    [79] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688287513,
+        ["price"] = 188560,
+        ["guild"] = 5,
+        ["seller"] = 3106,
+        ["buyer"] = 206336,
         ["quant"] = 10,
-        ["price"] = 1500,
-        ["itemLink"] = 46,
-        ["buyer"] = 204124,
-        ["timestamp"] = 1688300057,
-        ["guild"] = 2,
-        ["seller"] = 21286,
-    },
-    [201] = 
-    {
-        ["id"] = "2143171537",
+        ["id"] = "2143097719",
         ["wasKiosk"] = true,
-        ["quant"] = 15,
-        ["price"] = 2625,
-        ["itemLink"] = 46,
-        ["buyer"] = 204124,
-        ["timestamp"] = 1688300068,
-        ["guild"] = 2,
-        ["seller"] = 16846,
     },
-    [202] = 
+    [80] =
     {
-        ["id"] = "2144263299",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688287516,
+        ["price"] = 188560,
+        ["guild"] = 5,
+        ["seller"] = 3106,
+        ["buyer"] = 206336,
+        ["quant"] = 10,
+        ["id"] = "2143097725",
         ["wasKiosk"] = true,
+    },
+    [81] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688287521,
+        ["price"] = 630000,
+        ["guild"] = 5,
+        ["seller"] = 80408,
+        ["buyer"] = 206336,
+        ["quant"] = 30,
+        ["id"] = "2143097743",
+        ["wasKiosk"] = true,
+    },
+    [82] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688173676,
+        ["price"] = 126261,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 66047,
+        ["quant"] = 7,
+        ["id"] = "2142158621",
+        ["wasKiosk"] = true,
+    },
+    [83] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688218623,
+        ["price"] = 20000,
+        ["guild"] = 4,
+        ["seller"] = 206310,
+        ["buyer"] = 206378,
+        ["quant"] = 1,
+        ["id"] = "2142495415",
+        ["wasKiosk"] = true,
+    },
+    [84] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688218626,
+        ["price"] = 42000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 206378,
+        ["quant"] = 2,
+        ["id"] = "2142495457",
+        ["wasKiosk"] = true,
+    },
+    [85] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688108186,
+        ["price"] = 108899,
+        ["guild"] = 8,
+        ["seller"] = 95511,
+        ["buyer"] = 201146,
+        ["quant"] = 7,
+        ["id"] = "2141699613",
+        ["wasKiosk"] = true,
+    },
+    [86] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688108618,
+        ["price"] = 18500,
+        ["guild"] = 8,
+        ["seller"] = 11775,
+        ["buyer"] = 201146,
+        ["quant"] = 1,
+        ["id"] = "2141701881",
+        ["wasKiosk"] = true,
+    },
+    [87] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688108624,
+        ["price"] = 18500,
+        ["guild"] = 8,
+        ["seller"] = 11775,
+        ["buyer"] = 201146,
+        ["quant"] = 1,
+        ["id"] = "2141701921",
+        ["wasKiosk"] = true,
+    },
+    [88] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688108628,
+        ["price"] = 18500,
+        ["guild"] = 8,
+        ["seller"] = 11775,
+        ["buyer"] = 201146,
+        ["quant"] = 1,
+        ["id"] = "2141701975",
+        ["wasKiosk"] = true,
+    },
+    [89] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688108630,
+        ["price"] = 18500,
+        ["guild"] = 8,
+        ["seller"] = 11775,
+        ["buyer"] = 201146,
+        ["quant"] = 1,
+        ["id"] = "2141702013",
+        ["wasKiosk"] = true,
+    },
+    [90] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688108633,
+        ["price"] = 18500,
+        ["guild"] = 8,
+        ["seller"] = 11775,
+        ["buyer"] = 201146,
+        ["quant"] = 1,
+        ["id"] = "2141702031",
+        ["wasKiosk"] = true,
+    },
+    [91] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688108637,
+        ["price"] = 18500,
+        ["guild"] = 8,
+        ["seller"] = 11775,
+        ["buyer"] = 201146,
+        ["quant"] = 1,
+        ["id"] = "2141702043",
+        ["wasKiosk"] = true,
+    },
+    [92] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688113068,
+        ["price"] = 169980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2141722199",
+        ["wasKiosk"] = false,
+    },
+    [93] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688113068,
+        ["price"] = 169980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2141722205",
+        ["wasKiosk"] = false,
+    },
+    [94] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688113069,
+        ["price"] = 169980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2141722215",
+        ["wasKiosk"] = false,
+    },
+    [95] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688113070,
+        ["price"] = 169980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2141722223",
+        ["wasKiosk"] = false,
+    },
+    [96] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688209842,
+        ["price"] = 50064,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 26103,
+        ["quant"] = 3,
+        ["id"] = "2142403725",
+        ["wasKiosk"] = false,
+    },
+    [97] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688209844,
+        ["price"] = 50065,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 26103,
+        ["quant"] = 3,
+        ["id"] = "2142403733",
+        ["wasKiosk"] = false,
+    },
+    [98] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688272397,
+        ["price"] = 50111,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 202726,
+        ["quant"] = 3,
+        ["id"] = "2143003615",
+        ["wasKiosk"] = true,
+    },
+    [99] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688407870,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 3958,
+        ["quant"] = 1,
+        ["id"] = "2144099933",
+        ["wasKiosk"] = false,
+    },
+    [100] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688407871,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 3958,
+        ["quant"] = 1,
+        ["id"] = "2144099943",
+        ["wasKiosk"] = false,
+    },
+    [101] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688407872,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 3958,
+        ["quant"] = 1,
+        ["id"] = "2144099953",
+        ["wasKiosk"] = false,
+    },
+    [102] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688407873,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 3958,
+        ["quant"] = 1,
+        ["id"] = "2144099963",
+        ["wasKiosk"] = false,
+    },
+    [103] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688432667,
+        ["price"] = 130000,
+        ["guild"] = 5,
+        ["seller"] = 184525,
+        ["buyer"] = 23586,
         ["quant"] = 5,
-        ["price"] = 1300,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1688425719,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [203] = 
-    {
-        ["id"] = "2144263301",
+        ["id"] = "2144332127",
         ["wasKiosk"] = true,
-        ["quant"] = 5,
-        ["price"] = 1323,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1688425721,
-        ["guild"] = 5,
-        ["seller"] = 15774,
     },
-    [204] = 
+    [104] =
     {
-        ["id"] = "2144263305",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 65939,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1688425721,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688432669,
+        ["price"] = 59000,
         ["guild"] = 5,
-        ["seller"] = 191230,
-    },
-    [205] = 
-    {
-        ["id"] = "2144263309",
+        ["seller"] = 3849,
+        ["buyer"] = 23586,
+        ["quant"] = 3,
+        ["id"] = "2144332157",
         ["wasKiosk"] = true,
-        ["quant"] = 124,
-        ["price"] = 40883,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1688425722,
+    },
+    [105] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688490325,
+        ["price"] = 17500,
         ["guild"] = 5,
-        ["seller"] = 191230,
-    },
-    [206] = 
-    {
-        ["id"] = "2144263315",
+        ["seller"] = 123164,
+        ["buyer"] = 196126,
+        ["quant"] = 1,
+        ["id"] = "2144788501",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 38000,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1688425723,
+    },
+    [106] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688490326,
+        ["price"] = 17500,
         ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [207] = 
-    {
-        ["id"] = "2144263321",
+        ["seller"] = 123164,
+        ["buyer"] = 196126,
+        ["quant"] = 1,
+        ["id"] = "2144788513",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 38000,
-        ["itemLink"] = 46,
-        ["buyer"] = 148694,
-        ["timestamp"] = 1688425725,
-        ["guild"] = 5,
-        ["seller"] = 24858,
     },
-    [208] = 
+    [107] =
     {
-        ["id"] = "2144848769",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 39050,
-        ["itemLink"] = 46,
-        ["buyer"] = 206300,
-        ["timestamp"] = 1688496206,
-        ["guild"] = 5,
-        ["seller"] = 3163,
-    },
-    [209] = 
-    {
-        ["id"] = "2148283927",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 5500,
-        ["itemLink"] = 46,
-        ["buyer"] = 188076,
-        ["timestamp"] = 1688920602,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688614803,
+        ["price"] = 36000,
         ["guild"] = 2,
-        ["seller"] = 16827,
-    },
-    [210] = 
-    {
-        ["id"] = "2145261551",
+        ["seller"] = 205046,
+        ["buyer"] = 21824,
+        ["quant"] = 2,
+        ["id"] = "2145798355",
         ["wasKiosk"] = false,
-        ["quant"] = 25,
-        ["price"] = 4375,
-        ["itemLink"] = 46,
-        ["buyer"] = 24858,
-        ["timestamp"] = 1688546262,
+    },
+    [108] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688535064,
+        ["price"] = 17500,
         ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [211] = 
-    {
-        ["id"] = "2145501717",
+        ["seller"] = 123164,
+        ["buyer"] = 190953,
+        ["quant"] = 1,
+        ["id"] = "2145199411",
         ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 47000,
-        ["itemLink"] = 46,
-        ["buyer"] = 13823,
-        ["timestamp"] = 1688580188,
+    },
+    [109] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688535065,
+        ["price"] = 17500,
         ["guild"] = 5,
-        ["seller"] = 80189,
-    },
-    [212] = 
-    {
-        ["id"] = "2143527189",
+        ["seller"] = 123164,
+        ["buyer"] = 190953,
+        ["quant"] = 1,
+        ["id"] = "2145199415",
         ["wasKiosk"] = false,
-        ["quant"] = 200,
-        ["price"] = 28000,
-        ["itemLink"] = 46,
-        ["buyer"] = 205482,
-        ["timestamp"] = 1688333269,
+    },
+    [110] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688535067,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 190953,
+        ["quant"] = 1,
+        ["id"] = "2145199429",
+        ["wasKiosk"] = false,
+    },
+    [111] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688535068,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 190953,
+        ["quant"] = 1,
+        ["id"] = "2145199441",
+        ["wasKiosk"] = false,
+    },
+    [112] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688609285,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 190953,
+        ["quant"] = 1,
+        ["id"] = "2145744043",
+        ["wasKiosk"] = false,
+    },
+    [113] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688622147,
+        ["price"] = 53046,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 52898,
+        ["quant"] = 2,
+        ["id"] = "2145847085",
+        ["wasKiosk"] = true,
+    },
+    [114] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688667995,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 21944,
+        ["quant"] = 1,
+        ["id"] = "2146162879",
+        ["wasKiosk"] = true,
+    },
+    [115] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688667998,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 21944,
+        ["quant"] = 1,
+        ["id"] = "2146162889",
+        ["wasKiosk"] = true,
+    },
+    [116] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688668001,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 21944,
+        ["quant"] = 1,
+        ["id"] = "2146162909",
+        ["wasKiosk"] = true,
+    },
+    [117] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688759669,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 25953,
+        ["quant"] = 1,
+        ["id"] = "2146859881",
+        ["wasKiosk"] = true,
+    },
+    [118] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688759670,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 25953,
+        ["quant"] = 1,
+        ["id"] = "2146859899",
+        ["wasKiosk"] = true,
+    },
+    [119] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688759672,
+        ["price"] = 600000,
+        ["guild"] = 5,
+        ["seller"] = 80408,
+        ["buyer"] = 25953,
+        ["quant"] = 30,
+        ["id"] = "2146859917",
+        ["wasKiosk"] = true,
+    },
+    [120] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688786971,
+        ["price"] = 169420,
+        ["guild"] = 5,
+        ["seller"] = 10563,
+        ["buyer"] = 23783,
+        ["quant"] = 1,
+        ["id"] = "2147129459",
+        ["wasKiosk"] = true,
+    },
+    [121] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688871887,
+        ["price"] = 110000,
+        ["guild"] = 5,
+        ["seller"] = 196571,
+        ["buyer"] = 4349,
+        ["quant"] = 7,
+        ["id"] = "2147885561",
+        ["wasKiosk"] = true,
+    },
+    [122] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689016928,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 5469,
+        ["quant"] = 1,
+        ["id"] = "2149111045",
+        ["wasKiosk"] = true,
+    },
+    [123] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689055764,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 100179,
+        ["buyer"] = 146715,
+        ["quant"] = 1,
+        ["id"] = "2149452029",
+        ["wasKiosk"] = true,
+    },
+    [124] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689116435,
+        ["price"] = 17500,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 100179,
+        ["quant"] = 1,
+        ["id"] = "2149912493",
+        ["wasKiosk"] = false,
+    },
+    [125] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688497401,
+        ["price"] = 90000,
+        ["guild"] = 4,
+        ["seller"] = 3832,
+        ["buyer"] = 67832,
+        ["quant"] = 6,
+        ["id"] = "2144869267",
+        ["wasKiosk"] = true,
+    },
+    [126] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688924989,
+        ["price"] = 46305,
         ["guild"] = 4,
         ["seller"] = 5718,
-    },
-    [213] = 
-    {
-        ["id"] = "2147032411",
-        ["wasKiosk"] = false,
-        ["quant"] = 25,
-        ["price"] = 4000,
-        ["itemLink"] = 46,
-        ["buyer"] = 13823,
-        ["timestamp"] = 1688778314,
-        ["guild"] = 5,
-        ["seller"] = 3876,
-    },
-    [214] = 
-    {
-        ["id"] = "2148773077",
-        ["wasKiosk"] = true,
-        ["quant"] = 5,
-        ["price"] = 400,
-        ["itemLink"] = 46,
-        ["buyer"] = 199591,
-        ["timestamp"] = 1688970160,
-        ["guild"] = 5,
-        ["seller"] = 3849,
-    },
-    [215] = 
-    {
-        ["id"] = "2149050275",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 4375,
-        ["itemLink"] = 46,
-        ["buyer"] = 42935,
-        ["timestamp"] = 1689009396,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [216] = 
-    {
-        ["id"] = "2149050279",
-        ["wasKiosk"] = true,
-        ["quant"] = 25,
-        ["price"] = 4375,
-        ["itemLink"] = 46,
-        ["buyer"] = 42935,
-        ["timestamp"] = 1689009398,
-        ["guild"] = 5,
-        ["seller"] = 14831,
-    },
-    [217] = 
-    {
-        ["id"] = "2149054815",
-        ["wasKiosk"] = true,
-        ["quant"] = 5,
-        ["price"] = 1351,
-        ["itemLink"] = 46,
-        ["buyer"] = 207036,
-        ["timestamp"] = 1689009950,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [218] = 
-    {
-        ["id"] = "2145650463",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 15000,
-        ["itemLink"] = 46,
-        ["buyer"] = 202955,
-        ["timestamp"] = 1688598862,
-        ["guild"] = 4,
-        ["seller"] = 5694,
-    },
-    [219] = 
-    {
-        ["id"] = "2145993259",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 37000,
-        ["itemLink"] = 46,
-        ["buyer"] = 206415,
-        ["timestamp"] = 1688648697,
-        ["guild"] = 4,
-        ["seller"] = 5293,
-    },
-    [220] = 
-    {
-        ["id"] = "2146403683",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 37000,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1688696717,
-        ["guild"] = 4,
-        ["seller"] = 5293,
-    },
-    [221] = 
-    {
-        ["id"] = "2146403693",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 37000,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1688696723,
-        ["guild"] = 4,
-        ["seller"] = 5293,
-    },
-    [222] = 
-    {
-        ["id"] = "2146403697",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 37000,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1688696724,
-        ["guild"] = 4,
-        ["seller"] = 5293,
-    },
-    [223] = 
-    {
-        ["id"] = "2146403707",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 37000,
-        ["itemLink"] = 46,
-        ["buyer"] = 114628,
-        ["timestamp"] = 1688696725,
-        ["guild"] = 4,
-        ["seller"] = 5293,
-    },
-    [224] = 
-    {
-        ["id"] = "2146976657",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 15000,
-        ["itemLink"] = 46,
-        ["buyer"] = 193348,
-        ["timestamp"] = 1688773242,
-        ["guild"] = 4,
-        ["seller"] = 5694,
-    },
-    [225] = 
-    {
-        ["id"] = "2147908023",
-        ["wasKiosk"] = true,
+        ["buyer"] = 29516,
         ["quant"] = 3,
-        ["price"] = 600,
-        ["itemLink"] = 46,
-        ["buyer"] = 70794,
-        ["timestamp"] = 1688874264,
-        ["guild"] = 4,
-        ["seller"] = 26930,
-    },
-    [226] = 
-    {
-        ["id"] = "2149050881",
+        ["id"] = "2148329725",
         ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 33200,
-        ["itemLink"] = 46,
-        ["buyer"] = 42935,
-        ["timestamp"] = 1689009505,
-        ["guild"] = 4,
-        ["seller"] = 30336,
     },
-    [227] = 
+    [127] =
     {
-        ["id"] = "2149147703",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688962627,
+        ["price"] = 90000,
+        ["guild"] = 4,
+        ["seller"] = 207394,
+        ["buyer"] = 12599,
+        ["quant"] = 7,
+        ["id"] = "2148723451",
         ["wasKiosk"] = false,
-        ["quant"] = 100,
+    },
+    [128] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1688962628,
+        ["price"] = 61740,
+        ["guild"] = 4,
+        ["seller"] = 5718,
+        ["buyer"] = 12599,
+        ["quant"] = 4,
+        ["id"] = "2148723477",
+        ["wasKiosk"] = false,
+    },
+    [129] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689107016,
+        ["price"] = 36014,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 87163,
+        ["quant"] = 2,
+        ["id"] = "2149848215",
+        ["wasKiosk"] = true,
+    },
+    [130] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689107018,
+        ["price"] = 75000,
+        ["guild"] = 4,
+        ["seller"] = 14338,
+        ["buyer"] = 87163,
+        ["quant"] = 4,
+        ["id"] = "2149848227",
+        ["wasKiosk"] = true,
+    },
+    [131] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689107033,
+        ["price"] = 75000,
+        ["guild"] = 4,
+        ["seller"] = 14338,
+        ["buyer"] = 87163,
+        ["quant"] = 4,
+        ["id"] = "2149848325",
+        ["wasKiosk"] = true,
+    },
+    [132] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689243137,
+        ["price"] = 511500,
+        ["guild"] = 4,
+        ["seller"] = 167970,
+        ["buyer"] = 86364,
+        ["quant"] = 31,
+        ["id"] = "2150802353",
+        ["wasKiosk"] = true,
+    },
+    [133] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689243138,
+        ["price"] = 17251,
+        ["guild"] = 4,
+        ["seller"] = 206409,
+        ["buyer"] = 86364,
+        ["quant"] = 1,
+        ["id"] = "2150802355",
+        ["wasKiosk"] = true,
+    },
+    [134] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689299352,
+        ["price"] = 16500,
+        ["guild"] = 4,
+        ["seller"] = 167970,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2151225427",
+        ["wasKiosk"] = false,
+    },
+    [135] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352612,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151596937",
+        ["wasKiosk"] = true,
+    },
+    [136] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352612,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151596957",
+        ["wasKiosk"] = true,
+    },
+    [137] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352613,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151596971",
+        ["wasKiosk"] = true,
+    },
+    [138] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352614,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151596985",
+        ["wasKiosk"] = true,
+    },
+    [139] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352615,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151596999",
+        ["wasKiosk"] = true,
+    },
+    [140] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352616,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151597011",
+        ["wasKiosk"] = true,
+    },
+    [141] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352617,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151597013",
+        ["wasKiosk"] = true,
+    },
+    [142] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352618,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151597017",
+        ["wasKiosk"] = true,
+    },
+    [143] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352619,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151597021",
+        ["wasKiosk"] = true,
+    },
+    [144] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352619,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151597029",
+        ["wasKiosk"] = true,
+    },
+    [145] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689352621,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 189512,
+        ["quant"] = 1,
+        ["id"] = "2151597045",
+        ["wasKiosk"] = true,
+    },
+    [146] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689301235,
+        ["price"] = 180000,
+        ["guild"] = 5,
+        ["seller"] = 3555,
+        ["buyer"] = 190953,
+        ["quant"] = 10,
+        ["id"] = "2151244161",
+        ["wasKiosk"] = false,
+    },
+    [147] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689311557,
+        ["price"] = 18500,
+        ["guild"] = 5,
+        ["seller"] = 5350,
+        ["buyer"] = 191147,
+        ["quant"] = 1,
+        ["id"] = "2151330703",
+        ["wasKiosk"] = true,
+    },
+    [148] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689390355,
+        ["price"] = 18440,
+        ["guild"] = 4,
+        ["seller"] = 55289,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2151899329",
+        ["wasKiosk"] = false,
+    },
+    [149] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689495051,
+        ["price"] = 232480,
+        ["guild"] = 5,
+        ["seller"] = 3106,
+        ["buyer"] = 207392,
+        ["quant"] = 10,
+        ["id"] = "2152750931",
+        ["wasKiosk"] = true,
+    },
+    [150] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689495054,
+        ["price"] = 600000,
+        ["guild"] = 5,
+        ["seller"] = 80408,
+        ["buyer"] = 207392,
+        ["quant"] = 30,
+        ["id"] = "2152750953",
+        ["wasKiosk"] = true,
+    },
+    [151] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689534320,
+        ["price"] = 99000,
+        ["guild"] = 4,
+        ["seller"] = 167970,
+        ["buyer"] = 8977,
+        ["quant"] = 6,
+        ["id"] = "2153108135",
+        ["wasKiosk"] = false,
+    },
+    [152] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689534321,
+        ["price"] = 49500,
+        ["guild"] = 4,
+        ["seller"] = 167970,
+        ["buyer"] = 8977,
+        ["quant"] = 3,
+        ["id"] = "2153108163",
+        ["wasKiosk"] = false,
+    },
+    [153] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689530062,
+        ["price"] = 57000,
+        ["guild"] = 5,
+        ["seller"] = 100179,
+        ["buyer"] = 197134,
+        ["quant"] = 3,
+        ["id"] = "2153062697",
+        ["wasKiosk"] = true,
+    },
+    [154] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689611136,
+        ["price"] = 212349,
+        ["guild"] = 4,
+        ["seller"] = 206653,
+        ["buyer"] = 192748,
+        ["quant"] = 13,
+        ["id"] = "2153710643",
+        ["wasKiosk"] = true,
+    },
+    [155] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689650307,
         ["price"] = 18000,
-        ["itemLink"] = 46,
-        ["buyer"] = 3436,
-        ["timestamp"] = 1689021093,
         ["guild"] = 4,
-        ["seller"] = 16954,
+        ["seller"] = 11775,
+        ["buyer"] = 197648,
+        ["quant"] = 1,
+        ["id"] = "2154046479",
+        ["wasKiosk"] = true,
     },
-    [228] = 
+    [156] =
     {
-        ["id"] = "2149147719",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689650309,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 197648,
+        ["quant"] = 1,
+        ["id"] = "2154046483",
+        ["wasKiosk"] = true,
+    },
+    [157] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689566336,
+        ["price"] = 38000,
+        ["guild"] = 5,
+        ["seller"] = 100179,
+        ["buyer"] = 3958,
+        ["quant"] = 2,
+        ["id"] = "2153402257",
         ["wasKiosk"] = false,
-        ["quant"] = 33,
-        ["price"] = 6600,
-        ["itemLink"] = 46,
-        ["buyer"] = 3436,
-        ["timestamp"] = 1689021095,
-        ["guild"] = 4,
-        ["seller"] = 7746,
     },
-    [229] = 
+    [158] =
     {
-        ["id"] = "2150026959",
-        ["wasKiosk"] = false,
-        ["quant"] = 100,
-        ["price"] = 15000,
-        ["itemLink"] = 46,
-        ["buyer"] = 3229,
-        ["timestamp"] = 1689126121,
-        ["guild"] = 4,
-        ["seller"] = 5694,
-    },
-    [230] = 
-    {
-        ["id"] = "2150174589",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 27000,
-        ["itemLink"] = 46,
-        ["buyer"] = 45595,
-        ["timestamp"] = 1689142167,
-        ["guild"] = 4,
-        ["seller"] = 6662,
-    },
-    [231] = 
-    {
-        ["id"] = "2158311141",
-        ["wasKiosk"] = true,
-        ["quant"] = 200,
-        ["price"] = 50000,
-        ["itemLink"] = 46,
-        ["buyer"] = 80490,
-        ["timestamp"] = 1690215348,
-        ["guild"] = 5,
-        ["seller"] = 78121,
-    },
-    [232] = 
-    {
-        ["id"] = "2162183129",
-        ["wasKiosk"] = true,
-        ["quant"] = 10,
-        ["price"] = 1460,
-        ["itemLink"] = 46,
-        ["buyer"] = 7864,
-        ["timestamp"] = 1690582585,
-        ["guild"] = 4,
-        ["seller"] = 206355,
-    },
-    [233] = 
-    {
-        ["id"] = "2162183171",
-        ["wasKiosk"] = true,
-        ["quant"] = 10,
-        ["price"] = 1460,
-        ["itemLink"] = 46,
-        ["buyer"] = 7864,
-        ["timestamp"] = 1690582587,
-        ["guild"] = 4,
-        ["seller"] = 206355,
-    },
-    [234] = 
-    {
-        ["id"] = "2158431225",
-        ["wasKiosk"] = true,
-        ["quant"] = 5,
-        ["price"] = 1307,
-        ["itemLink"] = 46,
-        ["buyer"] = 59017,
-        ["timestamp"] = 1690226734,
-        ["guild"] = 5,
-        ["seller"] = 15774,
-    },
-    [235] = 
-    {
-        ["id"] = "2159196521",
-        ["wasKiosk"] = true,
-        ["quant"] = 100,
-        ["price"] = 20000,
-        ["itemLink"] = 46,
-        ["buyer"] = 16249,
-        ["timestamp"] = 1690316505,
-        ["guild"] = 5,
-        ["seller"] = 10960,
-    },
-    [236] = 
-    {
-        ["id"] = "2159196537",
-        ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 10000,
-        ["itemLink"] = 46,
-        ["buyer"] = 16249,
-        ["timestamp"] = 1690316509,
-        ["guild"] = 5,
-        ["seller"] = 3288,
-    },
-    [237] = 
-    {
-        ["id"] = "2161384565",
-        ["wasKiosk"] = false,
-        ["quant"] = 9,
-        ["price"] = 1800,
-        ["itemLink"] = 46,
-        ["buyer"] = 3448,
-        ["timestamp"] = 1690512838,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689566337,
+        ["price"] = 19000,
         ["guild"] = 5,
         ["seller"] = 3849,
+        ["buyer"] = 3958,
+        ["quant"] = 1,
+        ["id"] = "2153402261",
+        ["wasKiosk"] = false,
     },
-    [238] = 
+    [159] =
     {
-        ["id"] = "2162116521",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689670957,
+        ["price"] = 15394,
+        ["guild"] = 4,
+        ["seller"] = 5718,
+        ["buyer"] = 96625,
+        ["quant"] = 1,
+        ["id"] = "2154180097",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 68000,
-        ["itemLink"] = 46,
-        ["buyer"] = 78124,
-        ["timestamp"] = 1690576988,
+    },
+    [160] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689577648,
+        ["price"] = 48000,
         ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [239] = 
-    {
-        ["id"] = "2167492959",
+        ["seller"] = 3849,
+        ["buyer"] = 64826,
+        ["quant"] = 2,
+        ["id"] = "2153487753",
         ["wasKiosk"] = true,
-        ["quant"] = 50,
-        ["price"] = 11500,
-        ["itemLink"] = 46,
-        ["buyer"] = 209273,
-        ["timestamp"] = 1691092650,
+    },
+    [161] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689703502,
+        ["price"] = 35000,
+        ["guild"] = 4,
+        ["seller"] = 16578,
+        ["buyer"] = 13266,
+        ["quant"] = 2,
+        ["id"] = "2154412351",
+        ["wasKiosk"] = true,
+    },
+    [162] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709328,
+        ["price"] = 16500,
+        ["guild"] = 4,
+        ["seller"] = 167970,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468829",
+        ["wasKiosk"] = true,
+    },
+    [163] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709331,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468875",
+        ["wasKiosk"] = true,
+    },
+    [164] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709333,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468895",
+        ["wasKiosk"] = true,
+    },
+    [165] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709334,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468901",
+        ["wasKiosk"] = true,
+    },
+    [166] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709336,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468913",
+        ["wasKiosk"] = true,
+    },
+    [167] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709337,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468923",
+        ["wasKiosk"] = true,
+    },
+    [168] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709339,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468941",
+        ["wasKiosk"] = true,
+    },
+    [169] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709341,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468951",
+        ["wasKiosk"] = true,
+    },
+    [170] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709342,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154468965",
+        ["wasKiosk"] = true,
+    },
+    [171] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709347,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154469041",
+        ["wasKiosk"] = true,
+    },
+    [172] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709348,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154469061",
+        ["wasKiosk"] = true,
+    },
+    [173] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709349,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154469071",
+        ["wasKiosk"] = true,
+    },
+    [174] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709350,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154469079",
+        ["wasKiosk"] = true,
+    },
+    [175] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709351,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154469085",
+        ["wasKiosk"] = true,
+    },
+    [176] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689709353,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 73490,
+        ["quant"] = 1,
+        ["id"] = "2154469105",
+        ["wasKiosk"] = true,
+    },
+    [177] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689760546,
+        ["price"] = 49500,
+        ["guild"] = 4,
+        ["seller"] = 167970,
+        ["buyer"] = 5293,
+        ["quant"] = 3,
+        ["id"] = "2154822255",
+        ["wasKiosk"] = false,
+    },
+    [178] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689624486,
+        ["price"] = 198451,
         ["guild"] = 5,
-        ["seller"] = 3448,
-    },
-    [240] = 
-    {
-        ["id"] = "2173917877",
+        ["seller"] = 95992,
+        ["buyer"] = 196901,
+        ["quant"] = 11,
+        ["id"] = "2153815763",
         ["wasKiosk"] = true,
+    },
+    [179] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689624492,
+        ["price"] = 53226,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 196901,
+        ["quant"] = 2,
+        ["id"] = "2153815831",
+        ["wasKiosk"] = true,
+    },
+    [180] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689624493,
+        ["price"] = 53226,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 196901,
+        ["quant"] = 2,
+        ["id"] = "2153815841",
+        ["wasKiosk"] = true,
+    },
+    [181] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689624493,
+        ["price"] = 53226,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 196901,
+        ["quant"] = 2,
+        ["id"] = "2153815851",
+        ["wasKiosk"] = true,
+    },
+    [182] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689624494,
+        ["price"] = 53226,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 196901,
+        ["quant"] = 2,
+        ["id"] = "2153815857",
+        ["wasKiosk"] = true,
+    },
+    [183] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689624494,
+        ["price"] = 53226,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 196901,
+        ["quant"] = 2,
+        ["id"] = "2153815867",
+        ["wasKiosk"] = true,
+    },
+    [184] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689643716,
+        ["price"] = 18764,
+        ["guild"] = 5,
+        ["seller"] = 3697,
+        ["buyer"] = 7494,
+        ["quant"] = 1,
+        ["id"] = "2153993037",
+        ["wasKiosk"] = true,
+    },
+    [185] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689864104,
+        ["price"] = 194320,
+        ["guild"] = 4,
+        ["seller"] = 202289,
+        ["buyer"] = 194005,
+        ["quant"] = 10,
+        ["id"] = "2155553211",
+        ["wasKiosk"] = true,
+    },
+    [186] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689864106,
+        ["price"] = 72000,
+        ["guild"] = 4,
+        ["seller"] = 16578,
+        ["buyer"] = 194005,
+        ["quant"] = 4,
+        ["id"] = "2155553221",
+        ["wasKiosk"] = true,
+    },
+    [187] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689984817,
+        ["price"] = 49500,
+        ["guild"] = 4,
+        ["seller"] = 167970,
+        ["buyer"] = 196200,
+        ["quant"] = 3,
+        ["id"] = "2156410951",
+        ["wasKiosk"] = false,
+    },
+    [188] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689884556,
+        ["price"] = 3899999,
+        ["guild"] = 5,
+        ["seller"] = 3958,
+        ["buyer"] = 6992,
         ["quant"] = 100,
-        ["price"] = 23821,
-        ["itemLink"] = 46,
-        ["buyer"] = 189185,
-        ["timestamp"] = 1691645079,
-        ["guild"] = 5,
-        ["seller"] = 4033,
-    },
-    [241] = 
-    {
-        ["id"] = "2173917879",
+        ["id"] = "2155703359",
         ["wasKiosk"] = true,
-        ["quant"] = 20,
-        ["price"] = 4909,
-        ["itemLink"] = 46,
-        ["buyer"] = 189185,
-        ["timestamp"] = 1691645080,
-        ["guild"] = 5,
-        ["seller"] = 4140,
     },
-    [242] = 
+    [189] =
     {
-        ["id"] = "2173917897",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1689982230,
+        ["price"] = 18750,
+        ["guild"] = 5,
+        ["seller"] = 5350,
+        ["buyer"] = 3358,
+        ["quant"] = 1,
+        ["id"] = "2156384035",
+        ["wasKiosk"] = false,
+    },
+    [190] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690080141,
+        ["price"] = 54562,
+        ["guild"] = 4,
+        ["seller"] = 10372,
+        ["buyer"] = 207495,
+        ["quant"] = 3,
+        ["id"] = "2157238911",
         ["wasKiosk"] = true,
-        ["quant"] = 20,
-        ["price"] = 4909,
-        ["itemLink"] = 46,
-        ["buyer"] = 189185,
-        ["timestamp"] = 1691645085,
-        ["guild"] = 5,
-        ["seller"] = 4140,
     },
-    [243] = 
+    [191] =
     {
-        ["id"] = "2173917899",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690180869,
+        ["price"] = 816000,
+        ["guild"] = 4,
+        ["seller"] = 189270,
+        ["buyer"] = 187057,
+        ["quant"] = 48,
+        ["id"] = "2158168885",
         ["wasKiosk"] = true,
-        ["quant"] = 20,
-        ["price"] = 4909,
-        ["itemLink"] = 46,
-        ["buyer"] = 189185,
-        ["timestamp"] = 1691645086,
-        ["guild"] = 5,
-        ["seller"] = 4140,
     },
-    [244] = 
+    [192] =
     {
-        ["id"] = "2173917903",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690239768,
+        ["price"] = 15000,
+        ["guild"] = 4,
+        ["seller"] = 14338,
+        ["buyer"] = 3273,
+        ["quant"] = 1,
+        ["id"] = "2158548759",
+        ["wasKiosk"] = false,
+    },
+    [193] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690320730,
+        ["price"] = 56847,
+        ["guild"] = 4,
+        ["seller"] = 3273,
+        ["buyer"] = 8977,
+        ["quant"] = 3,
+        ["id"] = "2159239303",
+        ["wasKiosk"] = false,
+    },
+    [194] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690320731,
+        ["price"] = 37900,
+        ["guild"] = 4,
+        ["seller"] = 207451,
+        ["buyer"] = 8977,
+        ["quant"] = 2,
+        ["id"] = "2159239311",
+        ["wasKiosk"] = false,
+    },
+    [195] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687014628,
+        ["price"] = 35200,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 193771,
+        ["quant"] = 2,
+        ["id"] = "2133004297",
         ["wasKiosk"] = true,
-        ["quant"] = 20,
-        ["price"] = 4909,
-        ["itemLink"] = 46,
-        ["buyer"] = 189185,
-        ["timestamp"] = 1691645088,
-        ["guild"] = 5,
-        ["seller"] = 4140,
     },
-    [245] = 
+    [196] =
     {
-        ["id"] = "2173917909",
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687014629,
+        ["price"] = 35200,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 193771,
+        ["quant"] = 2,
+        ["id"] = "2133004313",
         ["wasKiosk"] = true,
-        ["quant"] = 20,
-        ["price"] = 4909,
-        ["itemLink"] = 46,
-        ["buyer"] = 189185,
-        ["timestamp"] = 1691645089,
+    },
+    [197] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687014630,
+        ["price"] = 35200,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 193771,
+        ["quant"] = 2,
+        ["id"] = "2133004329",
+        ["wasKiosk"] = true,
+    },
+    [198] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687014631,
+        ["price"] = 35200,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 193771,
+        ["quant"] = 2,
+        ["id"] = "2133004339",
+        ["wasKiosk"] = true,
+    },
+    [199] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687014632,
+        ["price"] = 35200,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 193771,
+        ["quant"] = 2,
+        ["id"] = "2133004353",
+        ["wasKiosk"] = true,
+    },
+    [201] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686993488,
+        ["price"] = 33611,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 7777,
+        ["quant"] = 2,
+        ["id"] = "2132834053",
+        ["wasKiosk"] = false,
+    },
+    [202] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686993489,
+        ["price"] = 33611,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 7777,
+        ["quant"] = 2,
+        ["id"] = "2132834055",
+        ["wasKiosk"] = false,
+    },
+    [203] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686993521,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2132834247",
+        ["wasKiosk"] = false,
+    },
+    [204] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686993521,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2132834253",
+        ["wasKiosk"] = false,
+    },
+    [205] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686993522,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2132834257",
+        ["wasKiosk"] = false,
+    },
+    [206] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686993523,
+        ["price"] = 179980,
+        ["guild"] = 8,
+        ["seller"] = 9107,
+        ["buyer"] = 7777,
+        ["quant"] = 1,
+        ["id"] = "2132834267",
+        ["wasKiosk"] = false,
+    },
+    [207] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687025726,
+        ["price"] = 19500,
+        ["guild"] = 8,
+        ["seller"] = 12598,
+        ["buyer"] = 201884,
+        ["quant"] = 1,
+        ["id"] = "2133119569",
+        ["wasKiosk"] = true,
+    },
+    [208] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687051015,
+        ["price"] = 130000,
         ["guild"] = 5,
-        ["seller"] = 4140,
-    },
-}
-
-local listings = 
-{
-    [1] = 
-    {
-        ["id"] = "4851513612097473716",
-        ["quant"] = 200,
-        ["listingTime"] = 1690290291,
-        ["price"] = 42600,
-        ["itemLink"] = 46,
-        ["guildId"] = 130457,
-        ["timestamp"] = 1691993322,
-        ["guild"] = 2,
-        ["seller"] = 21499,
-    },
-    [2] = 
-    {
-        ["id"] = "4917550967655771787",
-        ["quant"] = 200,
-        ["listingTime"] = 1690794126,
-        ["price"] = 148000,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
-        ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [3] = 
-    {
-        ["id"] = "4917550967655771786",
-        ["quant"] = 200,
-        ["listingTime"] = 1690794120,
-        ["price"] = 148000,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993423,
-        ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [4] = 
-    {
-        ["id"] = "4917550967655771785",
-        ["quant"] = 200,
-        ["listingTime"] = 1690794109,
-        ["price"] = 148000,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993430,
-        ["guild"] = 5,
-        ["seller"] = 24858,
-    },
-    [5] = 
-    {
-        ["id"] = "4759509090425513365",
-        ["quant"] = 200,
-        ["listingTime"] = 1690785998,
-        ["price"] = 59631,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993425,
-        ["guild"] = 5,
-        ["seller"] = 80189,
-    },
-    [6] = 
-    {
-        ["id"] = "4833496928665759207",
-        ["quant"] = 200,
-        ["listingTime"] = 1691720098,
-        ["price"] = 50000,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993440,
-        ["guild"] = 5,
-        ["seller"] = 3129,
-    },
-    [7] = 
-    {
-        ["id"] = "4658367446737414575",
+        ["seller"] = 184525,
+        ["buyer"] = 35799,
         ["quant"] = 5,
-        ["listingTime"] = 1691988463,
-        ["price"] = 1304,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993415,
-        ["guild"] = 5,
-        ["seller"] = 15774,
+        ["id"] = "2133370621",
+        ["wasKiosk"] = true,
     },
-    [8] = 
+    [209] =
     {
-        ["id"] = "4870810625280677055",
-        ["quant"] = 50,
-        ["listingTime"] = 1691893853,
-        ["price"] = 10000,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993427,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687051060,
+        ["price"] = 53046,
         ["guild"] = 5,
-        ["seller"] = 3288,
+        ["seller"] = 4468,
+        ["buyer"] = 35799,
+        ["quant"] = 2,
+        ["id"] = "2133370963",
+        ["wasKiosk"] = true,
     },
-    [9] = 
+    [210] =
     {
-        ["id"] = "4619979192254227687",
-        ["quant"] = 100,
-        ["listingTime"] = 1691869665,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687070639,
+        ["price"] = 18221,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 48292,
+        ["quant"] = 1,
+        ["id"] = "2133537473",
+        ["wasKiosk"] = true,
+    },
+    [211] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687070640,
+        ["price"] = 19000,
+        ["guild"] = 4,
+        ["seller"] = 204527,
+        ["buyer"] = 48292,
+        ["quant"] = 1,
+        ["id"] = "2133537479",
+        ["wasKiosk"] = true,
+    },
+    [212] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687053784,
+        ["price"] = 50416,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 200002,
+        ["quant"] = 3,
+        ["id"] = "2133399251",
+        ["wasKiosk"] = true,
+    },
+    [213] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687067820,
+        ["price"] = 180000,
+        ["guild"] = 8,
+        ["seller"] = 54791,
+        ["buyer"] = 25883,
+        ["quant"] = 9,
+        ["id"] = "2133516737",
+        ["wasKiosk"] = true,
+    },
+    [214] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687072611,
+        ["price"] = 269870,
+        ["guild"] = 8,
+        ["seller"] = 24155,
+        ["buyer"] = 24178,
+        ["quant"] = 10,
+        ["id"] = "2133550519",
+        ["wasKiosk"] = true,
+    },
+    [215] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687539598,
+        ["price"] = 62400,
+        ["guild"] = 8,
+        ["seller"] = 7251,
+        ["buyer"] = 54110,
+        ["quant"] = 3,
+        ["id"] = "2137283027",
+        ["wasKiosk"] = true,
+    },
+    [216] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687609958,
+        ["price"] = 33511,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 4323,
+        ["quant"] = 2,
+        ["id"] = "2137798995",
+        ["wasKiosk"] = true,
+    },
+    [217] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687609959,
+        ["price"] = 33511,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 4323,
+        ["quant"] = 2,
+        ["id"] = "2137799001",
+        ["wasKiosk"] = true,
+    },
+    [218] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687654521,
+        ["price"] = 50155,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 14063,
+        ["quant"] = 3,
+        ["id"] = "2138247185",
+        ["wasKiosk"] = true,
+    },
+    [219] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687662944,
+        ["price"] = 18507,
+        ["guild"] = 8,
+        ["seller"] = 201335,
+        ["buyer"] = 5343,
+        ["quant"] = 1,
+        ["id"] = "2138331553",
+        ["wasKiosk"] = true,
+    },
+    [220] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687676534,
+        ["price"] = 20700,
+        ["guild"] = 8,
+        ["seller"] = 12598,
+        ["buyer"] = 205280,
+        ["quant"] = 1,
+        ["id"] = "2138438419",
+        ["wasKiosk"] = true,
+    },
+    [221] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687684858,
+        ["price"] = 20700,
+        ["guild"] = 8,
+        ["seller"] = 12598,
+        ["buyer"] = 199141,
+        ["quant"] = 1,
+        ["id"] = "2138471407",
+        ["wasKiosk"] = true,
+    },
+    [222] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687724760,
+        ["price"] = 68500,
+        ["guild"] = 8,
+        ["seller"] = 54791,
+        ["buyer"] = 51106,
+        ["quant"] = 4,
+        ["id"] = "2138846443",
+        ["wasKiosk"] = true,
+    },
+    [223] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687736506,
+        ["price"] = 33411,
+        ["guild"] = 8,
+        ["seller"] = 4499,
+        ["buyer"] = 15722,
+        ["quant"] = 2,
+        ["id"] = "2138946879",
+        ["wasKiosk"] = true,
+    },
+    [224] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687226224,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 14338,
+        ["buyer"] = 15085,
+        ["quant"] = 6,
+        ["id"] = "2134831605",
+        ["wasKiosk"] = true,
+    },
+    [225] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687281271,
+        ["price"] = 18221,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2135230921",
+        ["wasKiosk"] = false,
+    },
+    [226] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687325386,
+        ["price"] = 14000,
+        ["guild"] = 4,
+        ["seller"] = 205398,
+        ["buyer"] = 190525,
+        ["quant"] = 1,
+        ["id"] = "2135645627",
+        ["wasKiosk"] = true,
+    },
+    [227] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687383863,
+        ["price"] = 127547,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 117516,
+        ["quant"] = 7,
+        ["id"] = "2136093469",
+        ["wasKiosk"] = true,
+    },
+    [228] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687383865,
+        ["price"] = 57015,
+        ["guild"] = 4,
+        ["seller"] = 98938,
+        ["buyer"] = 117516,
+        ["quant"] = 3,
+        ["id"] = "2136093483",
+        ["wasKiosk"] = true,
+    },
+    [229] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687383866,
         ["price"] = 75000,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993479,
-        ["guild"] = 5,
-        ["seller"] = 96829,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 117516,
+        ["quant"] = 3,
+        ["id"] = "2136093493",
+        ["wasKiosk"] = true,
     },
-    [10] = 
+    [230] =
     {
-        ["id"] = "4637446970279074294",
-        ["quant"] = 200,
-        ["listingTime"] = 1691861939,
-        ["price"] = 35800,
-        ["itemLink"] = 46,
-        ["guildId"] = 504447,
-        ["timestamp"] = 1691993462,
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687428548,
+        ["price"] = 70000,
+        ["guild"] = 4,
+        ["seller"] = 14338,
+        ["buyer"] = 205432,
+        ["quant"] = 5,
+        ["id"] = "2136434687",
+        ["wasKiosk"] = true,
+    },
+    [231] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687477003,
+        ["price"] = 111000,
+        ["guild"] = 4,
+        ["seller"] = 203043,
+        ["buyer"] = 95853,
+        ["quant"] = 6,
+        ["id"] = "2136825651",
+        ["wasKiosk"] = true,
+    },
+    [232] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687573090,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2137566769",
+        ["wasKiosk"] = false,
+    },
+    [233] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687573090,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2137566777",
+        ["wasKiosk"] = false,
+    },
+    [234] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687573091,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2137566783",
+        ["wasKiosk"] = false,
+    },
+    [235] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687573092,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2137566787",
+        ["wasKiosk"] = false,
+    },
+    [236] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687573092,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2137566793",
+        ["wasKiosk"] = false,
+    },
+    [237] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687573093,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 8977,
+        ["quant"] = 1,
+        ["id"] = "2137566797",
+        ["wasKiosk"] = false,
+    },
+    [238] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687633939,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2138056547",
+        ["wasKiosk"] = false,
+    },
+    [239] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687633940,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2138056561",
+        ["wasKiosk"] = false,
+    },
+    [240] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687633941,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2138056579",
+        ["wasKiosk"] = false,
+    },
+    [241] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687633942,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2138056599",
+        ["wasKiosk"] = false,
+    },
+    [242] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687633943,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2138056627",
+        ["wasKiosk"] = false,
+    },
+    [243] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687633943,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2138056653",
+        ["wasKiosk"] = false,
+    },
+    [244] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687633945,
+        ["price"] = 17500,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 116069,
+        ["quant"] = 1,
+        ["id"] = "2138056683",
+        ["wasKiosk"] = false,
+    },
+    [245] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687732333,
+        ["price"] = 145768,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 205520,
+        ["quant"] = 8,
+        ["id"] = "2138916873",
+        ["wasKiosk"] = true,
+    },
+    [246] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687211596,
+        ["price"] = 20440,
         ["guild"] = 5,
-        ["seller"] = 4046,
+        ["seller"] = 13609,
+        ["buyer"] = 23278,
+        ["quant"] = 1,
+        ["id"] = "2134676509",
+        ["wasKiosk"] = true,
+    },
+    [247] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687228653,
+        ["price"] = 630000,
+        ["guild"] = 5,
+        ["seller"] = 80408,
+        ["buyer"] = 199302,
+        ["quant"] = 30,
+        ["id"] = "2134861591",
+        ["wasKiosk"] = true,
+    },
+    [248] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687302091,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 142818,
+        ["quant"] = 1,
+        ["id"] = "2135411209",
+        ["wasKiosk"] = true,
+    },
+    [249] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687540485,
+        ["price"] = 60000,
+        ["guild"] = 5,
+        ["seller"] = 3849,
+        ["buyer"] = 14922,
+        ["quant"] = 3,
+        ["id"] = "2137288737",
+        ["wasKiosk"] = true,
+    },
+    [250] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687578196,
+        ["price"] = 187301,
+        ["guild"] = 5,
+        ["seller"] = 3163,
+        ["buyer"] = 192021,
+        ["quant"] = 10,
+        ["id"] = "2137615241",
+        ["wasKiosk"] = false,
+    },
+    [251] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687709449,
+        ["price"] = 130000,
+        ["guild"] = 5,
+        ["seller"] = 184525,
+        ["buyer"] = 194136,
+        ["quant"] = 5,
+        ["id"] = "2138686951",
+        ["wasKiosk"] = true,
+    },
+    [252] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687752736,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 15358,
+        ["quant"] = 1,
+        ["id"] = "2139108767",
+        ["wasKiosk"] = true,
+    },
+    [253] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687752737,
+        ["price"] = 18000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 15358,
+        ["quant"] = 1,
+        ["id"] = "2139108775",
+        ["wasKiosk"] = true,
+    },
+    [254] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687752738,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 15358,
+        ["quant"] = 1,
+        ["id"] = "2139108781",
+        ["wasKiosk"] = true,
+    },
+    [255] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687752739,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 15358,
+        ["quant"] = 1,
+        ["id"] = "2139108795",
+        ["wasKiosk"] = true,
+    },
+    [256] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687753284,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 11071,
+        ["quant"] = 1,
+        ["id"] = "2139112653",
+        ["wasKiosk"] = true,
+    },
+    [257] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687753285,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 11071,
+        ["quant"] = 1,
+        ["id"] = "2139112663",
+        ["wasKiosk"] = true,
+    },
+    [258] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687753286,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 11071,
+        ["quant"] = 1,
+        ["id"] = "2139112681",
+        ["wasKiosk"] = true,
+    },
+    [259] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687753288,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 11071,
+        ["quant"] = 1,
+        ["id"] = "2139112699",
+        ["wasKiosk"] = true,
+    },
+    [260] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687753289,
+        ["price"] = 19000,
+        ["guild"] = 5,
+        ["seller"] = 123164,
+        ["buyer"] = 11071,
+        ["quant"] = 1,
+        ["id"] = "2139112711",
+        ["wasKiosk"] = true,
+    },
+    [261] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1687796459,
+        ["price"] = 19427,
+        ["guild"] = 8,
+        ["seller"] = 3440,
+        ["buyer"] = 199948,
+        ["quant"] = 1,
+        ["id"] = "2139362289",
+        ["wasKiosk"] = true,
+    },
+    [262] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690604500,
+        ["price"] = 200000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 84864,
+        ["quant"] = 10,
+        ["id"] = "2162493249",
+        ["wasKiosk"] = true,
+    },
+    [263] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690604462,
+        ["price"] = 195000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 84864,
+        ["quant"] = 10,
+        ["id"] = "2162492647",
+        ["wasKiosk"] = true,
+    },
+    [264] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690242462,
+        ["price"] = 55596,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 206890,
+        ["quant"] = 2,
+        ["id"] = "2158582329",
+        ["wasKiosk"] = true,
+    },
+    [265] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690591084,
+        ["price"] = 96000,
+        ["guild"] = 4,
+        ["seller"] = 208386,
+        ["buyer"] = 89098,
+        ["quant"] = 6,
+        ["id"] = "2162307491",
+        ["wasKiosk"] = true,
+    },
+    [266] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690544613,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 7054,
+        ["quant"] = 1,
+        ["id"] = "2161752651",
+        ["wasKiosk"] = true,
+    },
+    [267] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690518255,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207214,
+        ["quant"] = 1,
+        ["id"] = "2161477425",
+        ["wasKiosk"] = true,
+    },
+    [268] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690465584,
+        ["price"] = 20,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 189646,
+        ["quant"] = 10,
+        ["id"] = "2160485805",
+        ["wasKiosk"] = true,
+    },
+    [269] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690452737,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 96518,
+        ["quant"] = 1,
+        ["id"] = "2160383343",
+        ["wasKiosk"] = true,
+    },
+    [270] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690452736,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 96518,
+        ["quant"] = 1,
+        ["id"] = "2160383337",
+        ["wasKiosk"] = true,
+    },
+    [271] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690452735,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 96518,
+        ["quant"] = 1,
+        ["id"] = "2160383329",
+        ["wasKiosk"] = true,
+    },
+    [272] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690452735,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 96518,
+        ["quant"] = 1,
+        ["id"] = "2160383321",
+        ["wasKiosk"] = true,
+    },
+    [273] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690452734,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 96518,
+        ["quant"] = 1,
+        ["id"] = "2160383315",
+        ["wasKiosk"] = true,
+    },
+    [274] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690452733,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 96518,
+        ["quant"] = 1,
+        ["id"] = "2160383307",
+        ["wasKiosk"] = true,
+    },
+    [275] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690452731,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 96518,
+        ["quant"] = 1,
+        ["id"] = "2160383281",
+        ["wasKiosk"] = true,
+    },
+    [276] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690376692,
+        ["price"] = 222000,
+        ["guild"] = 4,
+        ["seller"] = 20123,
+        ["buyer"] = 207230,
+        ["quant"] = 10,
+        ["id"] = "2159701409",
+        ["wasKiosk"] = true,
+    },
+    [277] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690376419,
+        ["price"] = 40000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 66975,
+        ["quant"] = 2,
+        ["id"] = "2159699753",
+        ["wasKiosk"] = true,
+    },
+    [278] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690376416,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 66975,
+        ["quant"] = 4,
+        ["id"] = "2159699749",
+        ["wasKiosk"] = true,
+    },
+    [279] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686986785,
+        ["price"] = 399980,
+        ["guild"] = 4,
+        ["seller"] = 12241,
+        ["buyer"] = 204504,
+        ["quant"] = 20,
+        ["id"] = "2132804217",
+        ["wasKiosk"] = true,
+    },
+    [280] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686981678,
+        ["price"] = 17600,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 11954,
+        ["quant"] = 1,
+        ["id"] = "2132768565",
+        ["wasKiosk"] = true,
+    },
+    [281] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686981676,
+        ["price"] = 17600,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 11954,
+        ["quant"] = 1,
+        ["id"] = "2132768547",
+        ["wasKiosk"] = true,
+    },
+    [282] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1686981676,
+        ["price"] = 17600,
+        ["guild"] = 4,
+        ["seller"] = 22772,
+        ["buyer"] = 11954,
+        ["quant"] = 1,
+        ["id"] = "2132768535",
+        ["wasKiosk"] = true,
+    },
+    [283] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691358400,
+        ["price"] = 16894,
+        ["guild"] = 5,
+        ["seller"] = 3440,
+        ["buyer"] = 206031,
+        ["quant"] = 1,
+        ["id"] = "2170697379",
+        ["wasKiosk"] = true,
+    },
+    [284] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691503890,
+        ["price"] = 16000,
+        ["guild"] = 4,
+        ["seller"] = 4551,
+        ["buyer"] = 4323,
+        ["quant"] = 1,
+        ["id"] = "2172284019",
+        ["wasKiosk"] = true,
+    },
+    [285] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691536417,
+        ["price"] = 15973,
+        ["guild"] = 5,
+        ["seller"] = 3440,
+        ["buyer"] = 68526,
+        ["quant"] = 1,
+        ["id"] = "2172699243",
+        ["wasKiosk"] = true,
+    },
+    [286] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691570785,
+        ["price"] = 15000,
+        ["guild"] = 4,
+        ["seller"] = 210022,
+        ["buyer"] = 30665,
+        ["quant"] = 1,
+        ["id"] = "2173082509",
+        ["wasKiosk"] = true,
+    },
+    [287] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691608746,
+        ["price"] = 167000,
+        ["guild"] = 4,
+        ["seller"] = 107056,
+        ["buyer"] = 14143,
+        ["quant"] = 10,
+        ["id"] = "2173567225",
+        ["wasKiosk"] = true,
+    },
+    [288] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691621145,
+        ["price"] = 80732,
+        ["guild"] = 5,
+        ["seller"] = 4322,
+        ["buyer"] = 17764,
+        ["quant"] = 4,
+        ["id"] = "2173679783",
+        ["wasKiosk"] = true,
+    },
+    [289] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691621148,
+        ["price"] = 20027,
+        ["guild"] = 5,
+        ["seller"] = 3697,
+        ["buyer"] = 17764,
+        ["quant"] = 1,
+        ["id"] = "2173679811",
+        ["wasKiosk"] = true,
+    },
+    [290] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691704358,
+        ["price"] = 14085,
+        ["guild"] = 5,
+        ["seller"] = 8780,
+        ["buyer"] = 160568,
+        ["quant"] = 1,
+        ["id"] = "2174404893",
+        ["wasKiosk"] = true,
+    },
+    [291] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691704359,
+        ["price"] = 14085,
+        ["guild"] = 5,
+        ["seller"] = 8780,
+        ["buyer"] = 160568,
+        ["quant"] = 1,
+        ["id"] = "2174404907",
+        ["wasKiosk"] = true,
+    },
+    [292] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691727512,
+        ["price"] = 17992,
+        ["guild"] = 5,
+        ["seller"] = 100179,
+        ["buyer"] = 182897,
+        ["quant"] = 1,
+        ["id"] = "2174661681",
+        ["wasKiosk"] = true,
+    },
+    [293] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691727514,
+        ["price"] = 35985,
+        ["guild"] = 5,
+        ["seller"] = 209766,
+        ["buyer"] = 182897,
+        ["quant"] = 2,
+        ["id"] = "2174661741",
+        ["wasKiosk"] = true,
+    },
+    [294] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690645987,
+        ["price"] = 100000,
+        ["guild"] = 5,
+        ["seller"] = 3386,
+        ["buyer"] = 32536,
+        ["quant"] = 4,
+        ["id"] = "2162900421",
+        ["wasKiosk"] = true,
+    },
+    [295] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690741452,
+        ["price"] = 20000,
+        ["guild"] = 5,
+        ["seller"] = 206896,
+        ["buyer"] = 3871,
+        ["quant"] = 2,
+        ["id"] = "2163963769",
+        ["wasKiosk"] = true,
+    },
+    [296] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690748811,
+        ["price"] = 18500,
+        ["guild"] = 5,
+        ["seller"] = 5350,
+        ["buyer"] = 60476,
+        ["quant"] = 1,
+        ["id"] = "2164035689",
+        ["wasKiosk"] = true,
+    },
+    [297] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690748812,
+        ["price"] = 18500,
+        ["guild"] = 5,
+        ["seller"] = 5350,
+        ["buyer"] = 60476,
+        ["quant"] = 1,
+        ["id"] = "2164035699",
+        ["wasKiosk"] = true,
+    },
+    [298] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690748813,
+        ["price"] = 18500,
+        ["guild"] = 5,
+        ["seller"] = 5350,
+        ["buyer"] = 60476,
+        ["quant"] = 1,
+        ["id"] = "2164035713",
+        ["wasKiosk"] = true,
+    },
+    [299] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690837177,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 91317,
+        ["quant"] = 1,
+        ["id"] = "2164898587",
+        ["wasKiosk"] = true,
+    },
+    [300] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690930533,
+        ["price"] = 33900,
+        ["guild"] = 4,
+        ["seller"] = 207451,
+        ["buyer"] = 15334,
+        ["quant"] = 2,
+        ["id"] = "2165804841",
+        ["wasKiosk"] = true,
+    },
+    [301] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690930536,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 15334,
+        ["quant"] = 1,
+        ["id"] = "2165804881",
+        ["wasKiosk"] = true,
+    },
+    [302] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690930537,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 15334,
+        ["quant"] = 1,
+        ["id"] = "2165804891",
+        ["wasKiosk"] = true,
+    },
+    [303] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690930538,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 15334,
+        ["quant"] = 1,
+        ["id"] = "2165804899",
+        ["wasKiosk"] = true,
+    },
+    [304] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690930539,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 15334,
+        ["quant"] = 1,
+        ["id"] = "2165804915",
+        ["wasKiosk"] = true,
+    },
+    [305] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933448,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846363",
+        ["wasKiosk"] = true,
+    },
+    [306] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933449,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846379",
+        ["wasKiosk"] = true,
+    },
+    [307] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933450,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846387",
+        ["wasKiosk"] = true,
+    },
+    [308] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933451,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846397",
+        ["wasKiosk"] = true,
+    },
+    [309] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933451,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846405",
+        ["wasKiosk"] = true,
+    },
+    [310] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933452,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846417",
+        ["wasKiosk"] = true,
+    },
+    [311] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933453,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846431",
+        ["wasKiosk"] = true,
+    },
+    [312] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933454,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846439",
+        ["wasKiosk"] = true,
+    },
+    [313] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933454,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846449",
+        ["wasKiosk"] = true,
+    },
+    [314] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933456,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846461",
+        ["wasKiosk"] = true,
+    },
+    [315] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933457,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846469",
+        ["wasKiosk"] = true,
+    },
+    [316] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933458,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 209334,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846475",
+        ["wasKiosk"] = true,
+    },
+    [317] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933459,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 209334,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846493",
+        ["wasKiosk"] = true,
+    },
+    [318] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690933461,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 209334,
+        ["buyer"] = 207346,
+        ["quant"] = 1,
+        ["id"] = "2165846517",
+        ["wasKiosk"] = true,
+    },
+    [319] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690937189,
+        ["price"] = 140000,
+        ["guild"] = 4,
+        ["seller"] = 4823,
+        ["buyer"] = 12200,
+        ["quant"] = 8,
+        ["id"] = "2165897379",
+        ["wasKiosk"] = true,
+    },
+    [320] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1690941085,
+        ["price"] = 264919,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 209348,
+        ["quant"] = 15,
+        ["id"] = "2165944827",
+        ["wasKiosk"] = true,
+    },
+    [321] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691109952,
+        ["price"] = 76000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 7272,
+        ["quant"] = 4,
+        ["id"] = "2167687383",
+        ["wasKiosk"] = false,
+    },
+    [322] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169481,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278421",
+        ["wasKiosk"] = true,
+    },
+    [323] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169482,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278435",
+        ["wasKiosk"] = true,
+    },
+    [324] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169482,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278449",
+        ["wasKiosk"] = true,
+    },
+    [325] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169483,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278465",
+        ["wasKiosk"] = true,
+    },
+    [326] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169484,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278479",
+        ["wasKiosk"] = true,
+    },
+    [327] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169484,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278489",
+        ["wasKiosk"] = true,
+    },
+    [328] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169485,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278495",
+        ["wasKiosk"] = true,
+    },
+    [329] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169486,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278499",
+        ["wasKiosk"] = true,
+    },
+    [330] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169486,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278503",
+        ["wasKiosk"] = true,
+    },
+    [331] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169488,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278511",
+        ["wasKiosk"] = true,
+    },
+    [332] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169489,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278539",
+        ["wasKiosk"] = true,
+    },
+    [333] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169490,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278545",
+        ["wasKiosk"] = true,
+    },
+    [334] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169490,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278555",
+        ["wasKiosk"] = true,
+    },
+    [335] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169491,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278565",
+        ["wasKiosk"] = true,
+    },
+    [336] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169492,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278577",
+        ["wasKiosk"] = true,
+    },
+    [337] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169494,
+        ["price"] = 17539,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 203336,
+        ["quant"] = 1,
+        ["id"] = "2168278619",
+        ["wasKiosk"] = true,
+    },
+    [338] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691171591,
+        ["price"] = 128216,
+        ["guild"] = 4,
+        ["seller"] = 10372,
+        ["buyer"] = 8977,
+        ["quant"] = 7,
+        ["id"] = "2168304711",
+        ["wasKiosk"] = false,
+    },
+    [339] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691205472,
+        ["price"] = 76000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 22290,
+        ["quant"] = 4,
+        ["id"] = "2168783997",
+        ["wasKiosk"] = true,
+    },
+    [340] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691205653,
+        ["price"] = 78000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 22290,
+        ["quant"] = 4,
+        ["id"] = "2168787129",
+        ["wasKiosk"] = true,
+    },
+    [341] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691280535,
+        ["price"] = 70502,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 207765,
+        ["quant"] = 4,
+        ["id"] = "2169709045",
+        ["wasKiosk"] = true,
+    },
+    [342] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691034099,
+        ["price"] = 422993,
+        ["guild"] = 5,
+        ["seller"] = 95992,
+        ["buyer"] = 35376,
+        ["quant"] = 23,
+        ["id"] = "2166890297",
+        ["wasKiosk"] = false,
+    },
+    [343] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691169064,
+        ["price"] = 100000,
+        ["guild"] = 5,
+        ["seller"] = 3386,
+        ["buyer"] = 23069,
+        ["quant"] = 4,
+        ["id"] = "2168274465",
+        ["wasKiosk"] = true,
+    },
+    [344] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691793070,
+        ["price"] = 35985,
+        ["guild"] = 5,
+        ["seller"] = 209766,
+        ["buyer"] = 100179,
+        ["quant"] = 2,
+        ["id"] = "2175237931",
+        ["wasKiosk"] = false,
+    },
+    [345] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691821687,
+        ["price"] = 300000,
+        ["guild"] = 5,
+        ["seller"] = 100179,
+        ["buyer"] = 192049,
+        ["quant"] = 12,
+        ["id"] = "2175527903",
+        ["wasKiosk"] = true,
+    },
+    [346] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691821689,
+        ["price"] = 50974,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 192049,
+        ["quant"] = 2,
+        ["id"] = "2175527937",
+        ["wasKiosk"] = true,
+    },
+    [347] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691821691,
+        ["price"] = 50974,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 192049,
+        ["quant"] = 2,
+        ["id"] = "2175527957",
+        ["wasKiosk"] = true,
+    },
+    [348] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691821692,
+        ["price"] = 55260,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 192049,
+        ["quant"] = 2,
+        ["id"] = "2175527977",
+        ["wasKiosk"] = true,
+    },
+    [349] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691821694,
+        ["price"] = 56098,
+        ["guild"] = 5,
+        ["seller"] = 4468,
+        ["buyer"] = 192049,
+        ["quant"] = 2,
+        ["id"] = "2175528001",
+        ["wasKiosk"] = true,
+    },
+    [350] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691971050,
+        ["price"] = 18430,
+        ["guild"] = 5,
+        ["seller"] = 27969,
+        ["buyer"] = 3159,
+        ["quant"] = 1,
+        ["id"] = "2177197819",
+        ["wasKiosk"] = false,
+    },
+    [351] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691812066,
+        ["price"] = 9999,
+        ["guild"] = 4,
+        ["seller"] = 210512,
+        ["buyer"] = 196624,
+        ["quant"] = 1,
+        ["id"] = "2175443989",
+        ["wasKiosk"] = true,
+    },
+    [352] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691812070,
+        ["price"] = 19999,
+        ["guild"] = 4,
+        ["seller"] = 210512,
+        ["buyer"] = 196624,
+        ["quant"] = 2,
+        ["id"] = "2175444021",
+        ["wasKiosk"] = true,
+    },
+    [353] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691812078,
+        ["price"] = 19999,
+        ["guild"] = 4,
+        ["seller"] = 210512,
+        ["buyer"] = 196624,
+        ["quant"] = 2,
+        ["id"] = "2175444163",
+        ["wasKiosk"] = true,
+    },
+    [354] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831883,
+        ["price"] = 33800,
+        ["guild"] = 4,
+        ["seller"] = 210462,
+        ["buyer"] = 25208,
+        ["quant"] = 2,
+        ["id"] = "2175584649",
+        ["wasKiosk"] = true,
+    },
+    [355] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831885,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584665",
+        ["wasKiosk"] = true,
+    },
+    [356] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831886,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584669",
+        ["wasKiosk"] = true,
+    },
+    [357] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831887,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584675",
+        ["wasKiosk"] = true,
+    },
+    [358] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831888,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584677",
+        ["wasKiosk"] = true,
+    },
+    [359] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831888,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584683",
+        ["wasKiosk"] = true,
+    },
+    [360] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831890,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584689",
+        ["wasKiosk"] = true,
+    },
+    [361] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831891,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584693",
+        ["wasKiosk"] = true,
+    },
+    [362] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831893,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584701",
+        ["wasKiosk"] = true,
+    },
+    [363] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831894,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584705",
+        ["wasKiosk"] = true,
+    },
+    [364] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831895,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584707",
+        ["wasKiosk"] = true,
+    },
+    [365] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691831897,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 25208,
+        ["quant"] = 1,
+        ["id"] = "2175584719",
+        ["wasKiosk"] = true,
+    },
+    [366] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691848244,
+        ["price"] = 38186,
+        ["guild"] = 4,
+        ["seller"] = 189531,
+        ["buyer"] = 194366,
+        ["quant"] = 2,
+        ["id"] = "2175758155",
+        ["wasKiosk"] = true,
+    },
+    [367] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691848249,
+        ["price"] = 78000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 194366,
+        ["quant"] = 4,
+        ["id"] = "2175758189",
+        ["wasKiosk"] = true,
+    },
+    [368] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691848256,
+        ["price"] = 90000,
+        ["guild"] = 4,
+        ["seller"] = 207394,
+        ["buyer"] = 194366,
+        ["quant"] = 5,
+        ["id"] = "2175758237",
+        ["wasKiosk"] = true,
+    },
+    [369] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691848268,
+        ["price"] = 105631,
+        ["guild"] = 4,
+        ["seller"] = 193512,
+        ["buyer"] = 194366,
+        ["quant"] = 6,
+        ["id"] = "2175758319",
+        ["wasKiosk"] = true,
+    },
+    [370] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691848277,
+        ["price"] = 78000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 194366,
+        ["quant"] = 4,
+        ["id"] = "2175758395",
+        ["wasKiosk"] = true,
+    },
+    [371] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691880760,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 192692,
+        ["buyer"] = 59793,
+        ["quant"] = 1,
+        ["id"] = "2176161327",
+        ["wasKiosk"] = true,
+    },
+    [372] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691880761,
+        ["price"] = 18569,
+        ["guild"] = 4,
+        ["seller"] = 206409,
+        ["buyer"] = 59793,
+        ["quant"] = 1,
+        ["id"] = "2176161337",
+        ["wasKiosk"] = true,
+    },
+    [373] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691986141,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 204899,
+        ["quant"] = 1,
+        ["id"] = "2177377133",
+        ["wasKiosk"] = true,
+    },
+    [374] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691991818,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 202275,
+        ["quant"] = 1,
+        ["id"] = "2177427259",
+        ["wasKiosk"] = true,
+    },
+    [375] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691991821,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 202275,
+        ["quant"] = 1,
+        ["id"] = "2177427301",
+        ["wasKiosk"] = true,
+    },
+    [376] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691991823,
+        ["price"] = 18000,
+        ["guild"] = 4,
+        ["seller"] = 192692,
+        ["buyer"] = 202275,
+        ["quant"] = 1,
+        ["id"] = "2177427347",
+        ["wasKiosk"] = true,
+    },
+    [377] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691991831,
+        ["price"] = 78000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 202275,
+        ["quant"] = 4,
+        ["id"] = "2177427485",
+        ["wasKiosk"] = true,
+    },
+    [378] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691991860,
+        ["price"] = 79000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["buyer"] = 202275,
+        ["quant"] = 4,
+        ["id"] = "2177427999",
+        ["wasKiosk"] = true,
+    },
+    [379] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692020719,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 210512,
+        ["quant"] = 1,
+        ["id"] = "2177649487",
+        ["wasKiosk"] = true,
+    },
+    [380] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692020721,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 210512,
+        ["quant"] = 1,
+        ["id"] = "2177649499",
+        ["wasKiosk"] = true,
+    },
+    [381] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692020723,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 210512,
+        ["quant"] = 1,
+        ["id"] = "2177649509",
+        ["wasKiosk"] = true,
+    },
+    [382] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692053642,
+        ["price"] = 174000,
+        ["guild"] = 4,
+        ["seller"] = 200615,
+        ["buyer"] = 201104,
+        ["quant"] = 10,
+        ["id"] = "2178002213",
+        ["wasKiosk"] = true,
+    },
+    [383] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692053643,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 201104,
+        ["quant"] = 1,
+        ["id"] = "2178002221",
+        ["wasKiosk"] = true,
+    },
+    [384] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692053644,
+        ["price"] = 17000,
+        ["guild"] = 4,
+        ["seller"] = 11775,
+        ["buyer"] = 201104,
+        ["quant"] = 1,
+        ["id"] = "2178002233",
+        ["wasKiosk"] = true,
     },
 }
 
-
-function spairs(t, order)
-  -- Create a temporary table to hold the sorted key-value pairs
-  local sortedPairs = {}
-
-  -- Populate the sortedPairs table with key-value pairs from the original table
-  for k, v in pairs(t) do
-    table.insert(sortedPairs, { key = k, value = v })
-  end
-
-  -- Sort the sortedPairs table using the provided order function
-  if order then
-    table.sort(sortedPairs, function(a, b) return order(a.value, b.value) end)
-  else
-    table.sort(sortedPairs, function(a, b) return a.key < b.key end)
-  end
-
-  -- Return an iterator function that iterates over the sorted key-value pairs
-  local i = 0
-  return function()
-    i = i + 1
-    if sortedPairs[i] then
-      return sortedPairs[i].key, sortedPairs[i].value
-    end
-  end
-end
+local listings =
+{
+    [1] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 79000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1691867781,
+        ["id"] = "4613052062842124404",
+        ["guildId"] = 622389,
+    },
+    [2] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 73200,
+        ["guild"] = 4,
+        ["seller"] = 192692,
+        ["quant"] = 4,
+        ["listingTime"] = 1692002687,
+        ["id"] = "4717041776651889394",
+        ["guildId"] = 622389,
+    },
+    [3] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 79000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1691867785,
+        ["id"] = "4613052062842124405",
+        ["guildId"] = 622389,
+    },
+    [4] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1692017639,
+        ["id"] = "4613052062842130388",
+        ["guildId"] = 622389,
+    },
+    [5] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 160000,
+        ["guild"] = 4,
+        ["seller"] = 16578,
+        ["quant"] = 8,
+        ["listingTime"] = 1690366593,
+        ["id"] = "4859019479763658635",
+        ["guildId"] = 622389,
+    },
+    [6] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1692062624,
+        ["id"] = "4613052062842131266",
+        ["guildId"] = 622389,
+    },
+    [7] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1692017636,
+        ["id"] = "4613052062842130387",
+        ["guildId"] = 622389,
+    },
+    [8] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1691990035,
+        ["id"] = "4613052062842130088",
+        ["guildId"] = 622389,
+    },
+    [9] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1690127277,
+        ["id"] = "4613052062842089544",
+        ["guildId"] = 622389,
+    },
+    [10] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 120000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [11] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 120000,
+        ["guild"] = 1,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [12] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 130000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 2,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [13] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 140000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [14] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 150000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 1,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [15] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 2,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [16] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 120000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 1,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [17] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 130000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 2,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [18] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 140000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 1,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [19] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 150000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 3,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+    [20] =
+    {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1692112981,
+        ["price"] = 80000,
+        ["guild"] = 4,
+        ["seller"] = 3234,
+        ["quant"] = 4,
+        ["listingTime"] = 1689858039,
+        ["id"] = "4613052062842081608",
+        ["guildId"] = 622389,
+    },
+}
 
 local stats = {}
-
-function stats.CleanUnitPrice(salesRecord)
-  return salesRecord.price / salesRecord.quant
-end
-
-function stats.CleanTimestamp(salesRecord)
-  if (salesRecord == nil) or (salesRecord.timestamp == nil) or (type(salesRecord.timestamp) ~= 'number') then return 0 end
-  return salesRecord.timestamp
-end
-
-function stats.CleanPrice(salesRecord)
-  return salesRecord.price
-end
-
--- This function will not sort sales because of CleanUnitPrice when the unit price is the same
-function stats.GetSortedSales(t)
-  local sortedTable = {}
-  local salesDataTable = spairs(t, function(a, b) return stats.CleanUnitPrice(a) < stats.CleanUnitPrice(b) end)
-  for _, v in salesDataTable do
-    sortedTable[#sortedTable + 1] = v
-  end
-  return sortedTable
-end
-
-function stats.GetSortedSaleTimestamps(t)
-  local sortedTable = {}
-  local salesDataTable = spairs(t, function(a, b) return stats.CleanTimestamp(a) < stats.CleanTimestamp(b) end)
-  for _, v in salesDataTable do
-    sortedTable[#sortedTable + 1] = v
-  end
-  return sortedTable
-end
-
-function stats.GetSortedSalePrices(t)
-  local sortedTable = {}
-  local salesDataTable = spairs(t, function(a, b) return stats.CleanPrice(a) < stats.CleanPrice(b) end)
-  for _, v in salesDataTable do
-    sortedTable[#sortedTable + 1] = v
-  end
-  return sortedTable
-end
 
 -- Get the mean value of a table
 function stats.mean(t)
@@ -2568,7 +4972,7 @@ function stats.getLowerAndUpperPercentages(percentage)
         return nil -- Invalid input
       end
     end
-    
+
     local lowerPercent = getPercent(percentage)
     local upperPercent = getPercent(100 - percentage)
     return lowerPercent, upperPercent
@@ -2591,7 +4995,6 @@ function stats.getUpperLowerContextFactors(statsData, percentage)
   local lowerIndex, upperIndex = stats.getUpperLowerPercentileIndexes(statsData, percentage)
   local lowerContextFactor = statsData[lowerIndex]
   local upperContextFactor = statsData[upperIndex]
-  print(lowerContextFactor, upperContextFactor)
   return lowerContextFactor, upperContextFactor
 end
 
@@ -2645,12 +5048,18 @@ function stats.calculateMADScoreWithStdDev(statsData)
   return madScore
 end
 
-function stats.calculateMADThreshold(statsData)
+function stats.calculateMADThreshold(statsData, maxDev)
   local medianAbsoluteDev = stats.medianAbsoluteDeviation(statsData)
-  local madScore = stats.calculateMADScore(statsData)
   local median = stats.median(statsData)
-  local madThreshold = median + madScore * medianAbsoluteDev
+  local madThreshold = median + (medianAbsoluteDev * maxDev)
   return madThreshold
+end
+
+function stats.calculateStDevThreshold(statsData, maxDev)
+  local stdev = stats.standardDeviation(statsData)
+  local mean = stats.mean(statsData)
+  local stdevThreshold = mean + (stdev * maxDev)
+  return stdevThreshold
 end
 
 function stats.calculateDomainPriceThreshold(statsData)
@@ -2663,18 +5072,13 @@ function stats.calculateDomainPriceThreshold(statsData)
   return domainPriceThreshold
 end
 
-function stats.calculateDynamicMADThreshold(statsData, contextFactor)
+function stats.calculateDynamicMADThreshold(statsData, maxDev)
+  local contextFactor = stats.calculateMADThreshold(statsData, maxDev)
   local median = stats.median(statsData)
   local medianAbsoluteDev = stats.medianAbsoluteDeviation(statsData)
   local madScore = stats.calculateMADScore(statsData)
   local dynamicMadThreshold = median + madScore * medianAbsoluteDev * contextFactor
   return dynamicMadThreshold
-end
-
-function stats.calculatePercentileContextFactor(statsData, percentile)
-  local contextIndex = math.ceil(#statsData * percentile)
-  local contextFactor = statsData[contextIndex]
-  return contextFactor
 end
 
 function stats.IdentifyOutliers(dataList, statsData)
@@ -2831,34 +5235,34 @@ function stats.calculateHypotheticalPValue(statsData, bonanzaStatsData)
   -- Calculate the mean of the two datasets
   local statsMean = stats.mean(statsData)
   local bonanzaMean = stats.mean(bonanzaStatsData)
-  
+
   -- Calculate the standard deviation of the statsData
   local statsStDev = stats.standardDeviation(statsData)
-  
+
   -- Calculate the maximum allowable deviation in standard deviations
   local maxDeviation = 1.881
-  
+
   -- Calculate the adjusted bonanzaMean based on the hypothetical situation
   local adjustedBonanzaMean = bonanzaMean
-  
+
   if bonanzaMean > statsMean then
     adjustedBonanzaMean = math.min(bonanzaMean, statsMean + maxDeviation * statsStDev)
   else
     adjustedBonanzaMean = math.max(bonanzaMean, statsMean - maxDeviation * statsStDev)
   end
-  
+
   -- Calculate the adjusted bonanzaStatsData based on the adjusted mean
   local adjustedBonanzaStatsData = {}
   for _, individualSale in pairs(bonanzaStatsData) do
     table.insert(adjustedBonanzaStatsData, individualSale - (bonanzaMean - adjustedBonanzaMean))
   end
-  
+
   -- Calculate the context factor for the specified percentile
   local contextFactor = stats.calculatePercentileContextFactor(adjustedBonanzaStatsData, percentile)
-  
+
   -- Calculate the p-value based on the context factor
   local pValue = contextFactor / adjustedBonanzaMean
-  
+
   return pValue
 end
 
@@ -2867,31 +5271,31 @@ function stats.calculateContextualPercentile(statsData, bonanzaStatsData)
   local statsMean = stats.mean(statsData)
   local bonanzaMean = stats.mean(bonanzaStatsData)
   local statsStDev = stats.standardDeviation(statsData)
-  
+
   local maxDeviation = 1.881
   local adjustedBonanzaMean = bonanzaMean
   local adjustedBonanzaStatsData = {}
-  
+
   if bonanzaMean > statsMean then
     adjustedBonanzaMean = math.min(bonanzaMean, statsMean + maxDeviation * statsStDev)
   else
     adjustedBonanzaMean = math.max(bonanzaMean, statsMean - maxDeviation * statsStDev)
   end
-  
+
   for _, individualSale in pairs(bonanzaStatsData) do
     table.insert(adjustedBonanzaStatsData, individualSale - (bonanzaMean - adjustedBonanzaMean))
   end
-  
+
   -- Calculate z-scores
   local zScores = {}
   for _, individualSale in pairs(adjustedBonanzaStatsData) do
     local zScore = stats.zscore(individualSale, adjustedBonanzaMean, statsStDev)
     table.insert(zScores, zScore)
   end
-  
+
   -- Find z-score threshold based on maxDeviation
   local zScoreThreshold = maxDeviation
-  
+
   -- Determine the threshold value based on z-score
   local threshold = 165000
   for i, zScore in ipairs(zScores) do
@@ -2900,12 +5304,12 @@ function stats.calculateContextualPercentile(statsData, bonanzaStatsData)
       break
     end
   end
-  
+
   -- Calculate contextual percentile
   local contextIndex = math.ceil(#adjustedBonanzaStatsData * desiredPercentile)
   local contextFactor = adjustedBonanzaStatsData[contextIndex]
   local contextualPercentile = contextFactor / adjustedBonanzaMean
-  
+
   -- Determine the outlier probability
   local outliers = 0
   for _, individualSale in pairs(adjustedBonanzaStatsData) do
@@ -2913,9 +5317,9 @@ function stats.calculateContextualPercentile(statsData, bonanzaStatsData)
       outliers = outliers + 1
     end
   end
-  
+
   local outlierProbability = outliers / #adjustedBonanzaStatsData
-  
+
   return contextualPercentile, outlierProbability
 end
 
@@ -2925,13 +5329,13 @@ function YourRemoveOutliersFromBonanzaList(bonanzaList)
 
   local percentileThreshold = contextualPercentile  -- Use contextual percentile as threshold
   local zScoreThreshold = outlierProbability       -- Use outlier probability as threshold
-  
+
   local filteredBonanzaList = {}
   for _, item in pairs(bonanzaList) do
     local currentGuild = internal:GetGuildNameByIndex(item.guild)
     local currentSeller = internal:GetAccountNameByIndex(item.seller)
     local nameInBlacklist = IsNameInBlacklist(currentGuild, currentSeller)
-    
+
     if not nameInBlacklist then
       local individualSale = item.price / item.quant
       local isOutlier = individualSale >= percentileThreshold or outlierProbability >= zScoreThreshold
@@ -2942,6 +5346,60 @@ function YourRemoveOutliersFromBonanzaList(bonanzaList)
   end
 
   return filteredBonanzaList
+end
+-- Formerly calculateContextualMADThreshold
+function stats.calculateAdjustedBonanzaMedian(statsData, bonanzaStatsData)
+  local percentile = 0.95
+  local deviation = 2.054
+
+  local statsMadThresh = stats.calculateMADThreshold(statsData, deviation)
+  local bonanzaMadThresh = stats.calculateMADThreshold(bonanzaStatsData, deviation)
+  local madThresholdDifference = math.abs(bonanzaMadThresh - statsMadThresh)
+  local median = stats.median(bonanzaStatsData)
+
+  local adjustedBonanzaMedian = median + madThresholdDifference
+  return adjustedBonanzaMedian, madThresholdDifference
+end
+
+function stats.IdentifyOutliersAdjustedBonanzaMedian(bonanzaListings, sortedSalesData, sortedBonanzaData)
+  local adjustedBonanzaMedian = stats.calculateAdjustedBonanzaMedian(sortedSalesData, sortedBonanzaData)
+  local mean, count, sum = stats.mean(sortedBonanzaData)
+  local median = stats.median(sortedBonanzaData)
+  local madThreshold = stats.calculateMADThreshold(sortedBonanzaData, 2.7)
+  local stdev = stats.standardDeviation(sortedBonanzaData)
+  local zScoreThreshold = 1.645
+  local iqrMultiplier = 1.5
+
+  local nonOutliers = {}
+  local nonOutliersCount = 0
+  local oldestTime = nil
+
+  local quartile1, quartile3, quartileRange = stats.interquartileRange(sortedBonanzaData)
+  print(adjustedBonanzaMedian)
+  print(zScoreThreshold)
+  print("Stats Interquartile Range", quartile1, quartile3, quartileRange)
+  for _, item in pairs(bonanzaListings) do
+    local individualSale = item.price / item.quant
+    local zScore = stats.zscore(individualSale, mean, stdev)
+    local isWithinAdjustedMedian = individualSale <= adjustedBonanzaMedian
+    local isWithinMadThreshold = individualSale <= madThreshold
+    local isWithinIQR = individualSale >= quartile1 - iqrMultiplier * quartileRange and individualSale <= quartile3 + iqrMultiplier * quartileRange
+    local isZScoreValid = zScore <= zScoreThreshold and zScore >= -zScoreThreshold
+    local saleMedianDifference = math.abs(individualSale - median)
+    print("Unit Price:", individualSale, "zScore:", zScore, "Median Difference:", saleMedianDifference, "Mad Thresh:", madThreshold, "Within Adjusted Median:", isWithinAdjustedMedian, "Within Mad Threshold:", isWithinMadThreshold, "Within IQR:", isWithinIQR, "is ZScore Valid:", isZScoreValid)
+
+    if isWithinAdjustedMedian then
+      if isWithinIQR then
+        if isZScoreValid then
+          if oldestTime == nil or oldestTime > item.timestamp then oldestTime = item.timestamp end
+          nonOutliersCount = nonOutliersCount + 1
+          table.insert(nonOutliers, item)
+        end
+      end
+    end
+  end
+
+  return nonOutliers, oldestTime, nonOutliersCount
 end
 
 function IsNameInBlacklist(guild, seller)
@@ -2982,32 +5440,6 @@ SortBonanzaData()
 
 
 print("Test All Functions:")
-  -- CleanUnitPrice
-  local cleanedPrice = stats.CleanUnitPrice(sales[1])
-  print("Cleaned Unit Price:", cleanedPrice)
-
-  -- GetSortedSales
-  local sortedSales = stats.GetSortedSales(listings)
-  print("Sorted Sales:")
-    for _, sale in pairs(sortedSales) do
-        print("Price:", sale.price)
-    end
-  print("--------------")
-
-local sortedSalesByTimestamp = stats.GetSortedSaleTimestamps(listings)
-  print("Sorted timestamps:")
-    for _, sale in pairs(sortedSalesByTimestamp) do
-        print("Price:", sale.timestamp)
-    end
-  print("--------------")
-
-local sortedSalesByPrice = stats.GetSortedSalePrices(listings)
-  print("Sorted Prices:")
-    for _, sale in pairs(sortedSalesByPrice) do
-        print("Price:", sale.price)
-    end
-  print("--------------")
-
   -- mean
   local mean, count, sum = stats.mean(statsData)
   print("Mean:", mean, "Count:", count, "Sum:", sum)
@@ -3057,7 +5489,7 @@ local sortedSalesByPrice = stats.GetSortedSalePrices(listings)
   print("Lower Context Factor:", lowerContextFactor, "Upper Context Factor:", upperContextFactor)
 
   -- calculatePercentileContextFactor
-  local contextFactor = stats.calculatePercentileContextFactor(statsData, 0.85)
+  local contextFactor = stats.calculatePercentileContextFactor(statsData, 0.95)
   print("Percentile Context Factor:", contextFactor)
 
   -- IdentifyOutliers
@@ -3084,7 +5516,22 @@ local sortedSalesByPrice = stats.GetSortedSalePrices(listings)
   local contextualPercentile, outlierProbability = stats.calculateContextualPercentile(statsData, bonanzaStatsData)
   print("Contextual Percentile:", contextualPercentile, "Outlier Probability:", outlierProbability)
 
+local function convertToFloat(value)
+  return 1.0 + (value - 10) / 20 * 2
+end
 
+local testTable = {}
+
+for i = 10, 30 do
+  table.insert(testTable, i)
+end
+
+-- Print the test table
+for _, value in ipairs(testTable) do
+  print(convertToFloat(value))
+end
+
+print("Test Specific Functions:")
 local meanValue, count, sum = stats.mean(statsData)
 local medianValue = stats.median(statsData)
 local modeValues = stats.mode(statsData)
@@ -3095,11 +5542,11 @@ local nonOutliers, oldestTime, nonOutliersCount = stats.IdentifyOutliers(sales, 
 local range = stats.range(statsData)
 local madScore = stats.calculateMADScore(statsData)
 local madScoreDev = stats.calculateMADScoreWithStdDev(statsData)
-local madThreshold = stats.calculateMADThreshold(statsData)
+local madThreshold = stats.calculateMADThreshold(statsData, 2.7)
 local domainPriceThreshold = stats.calculateDomainPriceThreshold(statsData)
-local contextFactor = medianValue + medianAbsDev * 2.7  -- Default context factor
-local dynamicContextFactor = stats.calculateDynamicMADThreshold(statsData, contextFactor)
+local dynamicContextFactor = stats.calculateDynamicMADThreshold(statsData, 2.7)
 local lowerPercentileContextFactor, upperPercentileContextFactor = stats.getUpperLowerContextFactors(statsData, 5)
+local conMadThresh, conMadDiff = stats.calculateAdjustedBonanzaMedian(statsData, bonanzaStatsData)
 
 print("Stats Data Count: ", statsDataCount)
 print("Stats Mean: ", meanValue)
@@ -3114,6 +5561,9 @@ print("Stats MAD Threshold: ", madThreshold)
 print("Stats Domain Price Threshold: ", domainPriceThreshold)
 print("Stats Dynamic Context Factor: ", dynamicContextFactor)
 print("Stats Calculated Percentile Factors: ", lowerPercentileContextFactor, upperPercentileContextFactor)
+print("Stats Adjusted Bonanza Median:", conMadThresh, "Diff:", conMadDiff)
+print("Stats Mean plus 3 times the stdev :", stats.calculateStDevThreshold(statsData, 3))
+print("Stats Percentile Context Factor :", stats.calculatePercentileContextFactor(statsData, 0.95))
 
 local outStatsData = {}
 print("Identified Outliers: ")
@@ -3134,16 +5584,18 @@ print("Outlier Probability:", outlierProbability)
 local outMeanValue, count, sum = stats.mean(outStatsData)
 local outRange = stats.range(outStatsData)
 local outMadScore = stats.calculateMADScore(outStatsData)
-local outMadThreshold = stats.calculateMADThreshold(outStatsData)
+local outMadThreshold = stats.calculateMADThreshold(outStatsData, 2.7)
 print("Non Outliers Mean: ", outMeanValue)
 print("Non Outliers Range: ", outRange)
 print("Non Outliers MAD Score: ", outMadScore)
 print("Non Outliers MAD Threshold: ", outMadThreshold)
+--[[
   print("Sales:")
 for _, sale in pairs(nonOutliers) do
   print("Price:", sale.price)
 end
   print("--------------")
+  ]]--
 
 print("Contextually Identified Outliers: ")
 
@@ -3154,36 +5606,46 @@ for _, item in pairs(listings) do
 end
 table.sort(conStatsData)
 
-local listOutliers, listOldestTime, listOutliersCount = stats.IdentifyOutliers(listings, conStatsData)
-local conOutliers, oldestTime, conOutliersCount = stats.IdentifyOutliersWithContextFactor(listings, conStatsData)
-local conMeanValue, count, sum = stats.mean(conStatsData)
-local conMedianValue = stats.median(conStatsData)
-local conMedianAbsDev = stats.medianAbsoluteDeviation(conStatsData)
-local conRange = stats.range(conStatsData)
-local conMadScore = stats.calculateMADScore(conStatsData)
-local conMadThreshold = stats.calculateMADThreshold(conStatsData)
-local conPercentileContextFactor = stats.calculatePercentileContextFactor(conStatsData, 0.95)
-local conAdjustedPercentileContextFactor = stats.calculateAdjustedPercentileContextFactor(statsData, conStatsData, 0.95)
-local conDomainPriceThreshold = stats.calculateDomainPriceThreshold(conStatsData)
-local conContextFactor = medianValue + conMedianAbsDev * 2.7  -- Default context factor
-local conDynamicContextFactor = stats.calculateDynamicMADThreshold(conStatsData, conContextFactor)
+local listOutliers, listOldestTime, listOutliersCount = stats.IdentifyOutliers(listings, bonanzaStatsData)
+local conOutliers, oldestTime, conOutliersCount = stats.IdentifyOutliersAdjustedBonanzaMedian(listings, statsData, bonanzaStatsData)
+local conMeanValue, count, sum = stats.mean(bonanzaStatsData)
+local conMedianValue = stats.median(bonanzaStatsData)
+local conMedianAbsDev = stats.medianAbsoluteDeviation(bonanzaStatsData)
+local conRange = stats.range(bonanzaStatsData)
+local conMadScore = stats.calculateMADScore(bonanzaStatsData)
+local conMadThreshold = stats.calculateMADThreshold(bonanzaStatsData, 2.7)
+local conPercentileContextFactor = stats.calculatePercentileContextFactor(bonanzaStatsData, 0.95)
+local conAdjustedPercentileContextFactor = stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsData, 0.95)
+local conDomainPriceThreshold = stats.calculateDomainPriceThreshold(bonanzaStatsData)
+local conDynamicContextFactor = stats.calculateDynamicMADThreshold(bonanzaStatsData, 2.7)
+local conMedianAbsDev = stats.medianAbsoluteDeviation(bonanzaStatsData)
+
 print("Listings Data Count: ", conOutliersCount)
 print("Listings Mean: ", conMeanValue)
 print("Listings Median: ", conMedianValue)
 print("Listings Range: ", conRange)
+print("Listings Median Absolute Deviation: ", conMedianAbsDev)
 print("Listings MAD Score: ", conMadScore)
 print("Listings MAD Threshold: ", conMadThreshold)
 print("Listings Domain Price Threshold: ", conDomainPriceThreshold)
 print("Listings Dynamic Context Factor: ", conDynamicContextFactor)
-print("Listings Calculated Percentile Factor: ", conPercentileContextFactor)
+print("Listings Percentile Context Factor: ", conPercentileContextFactor)
+  local lowerContextFactor, upperContextFactor = stats.getUpperLowerContextFactors(bonanzaStatsData, 5)
+  print("Listings Lower Context Factor:", lowerContextFactor, "Listings Upper Context Factor:", upperContextFactor)
+
   print("Listings:")
+for _, sale in pairs(bonanzaStatsData) do
+  print("Price:", sale)
+end
+  print("--------------")
+  print("Listings Out:")
 for _, sale in pairs(listOutliers) do
   print("Price:", sale.price)
 end
   print("--------------")
-  print("Listings Contextual:")
+  print("Listings Adjusted Bonanza:")
 for _, sale in pairs(conOutliers) do
-  print("Price:", sale.price)
+  print("Price:", sale.price, "Unit Price:", (sale.price / sale.quant))
 end
   print("--------------")
 print("Adjusted Percentile ContextFactor:")
@@ -3200,3 +5662,39 @@ local maxDev = 2.5
 print("Product =", statsDev * maxDev)
 print("Added: ", statsPercentileFactor + maxDev * statsDev)
 print("Subtracted: ", statsPercentileFactor - maxDev * statsDev)
+
+local exampleTable = {}
+
+for i = 1, 100 do
+  local value = 1000 + (i - 1) * 200
+  table.insert(exampleTable, value)
+end
+
+local exstdev = stats.standardDeviation(exampleTable)
+print("Example Standard Deviation:", exstdev)
+--[[
+print("Table Values:")
+for _, sale in pairs(exampleTable) do
+  print("Price:", sale)
+end
+  print("--------------")
+  ]]--
+
+local exmean, excount, exsum = stats.mean(exampleTable)
+print("Example Mean:", exmean)
+print("Example Count:", excount)
+print("Example Sum:", exsum)
+
+print("Mean plus 3 times the stdev :", stats.calculateStDevThreshold(exampleTable, 3))
+local exmad = stats.medianAbsoluteDeviation(exampleTable)
+print("MAD:", exmad)
+  local exlowerContextFactor, exupperContextFactor = stats.getUpperLowerContextFactors(exampleTable, 5)
+  print("Lower Context Factor:", exlowerContextFactor, "Upper Context Factor:", exupperContextFactor)
+local exzScore = stats.zscore(exmean + (exstdev * 3), exmean, exstdev)
+print("zScore of the mean plus 3 times thestdev :", exzScore)
+local exzScore2 = stats.zscore(exupperContextFactor, exmean, exstdev)
+print("zScore:", exzScore2)
+  local exmedian = stats.median(exampleTable)
+  print("Median:", exmedian)
+local madThresh = stats.calculateMADThreshold(exampleTable, 3)
+  print("MAD Threshold:", madThresh)

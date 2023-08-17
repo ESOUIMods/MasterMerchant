@@ -1,3 +1,18 @@
+function convertToFloat(value)
+  return 1.0 + (value - 10) / 20 * 2
+end
+
+local testTable = {}
+
+for i = 10, 30 do
+  table.insert(testTable, i)
+end
+
+-- Print the test table
+for _, value in ipairs(testTable) do
+  print(convertToFloat(value))
+end
+
 function MasterMerchant.concat(...)
   local parts = {}
   for i = 1, select('#', ...) do
