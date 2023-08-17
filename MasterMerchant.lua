@@ -139,19 +139,6 @@ end
 
 local stats = {}
 
-function stats.calculateUnitPrice(salesRecord)
-  -- Calculate the unit price by dividing the "price" by the "quant"
-  return salesRecord.price / salesRecord.quant
-end
-
-function stats.GetSortedSales(t)
-  local sortedTable = {}
-  for _, v in internal:spairs(t, function(a, b) return stats.calculateUnitPrice(a) < stats.calculateUnitPrice(b) end) do
-    sortedTable[#sortedTable + 1] = v
-  end
-  return sortedTable
-end
-
 -- Get the mean value of a table
 function stats.mean(t)
   local sum = 0
@@ -279,6 +266,25 @@ function stats.getMiddleIndex(count)
   return middleIndex, evenNumber
 end
 
+function stats.medianAbsoluteDeviation(t)
+  local medianValue = stats.median(t)
+  local absoluteDeviations = {}
+
+  for _, value in pairs(t) do
+    local absoluteDeviation = math.abs(value - medianValue)
+    table.insert(absoluteDeviations, absoluteDeviation)
+  end
+
+  return stats.median(absoluteDeviations)
+end
+
+function stats.calculateMADThreshold(statsData, maxDev)
+  local medianAbsoluteDev = stats.medianAbsoluteDeviation(statsData)
+  local median = stats.median(statsData)
+  local madThreshold = median + (medianAbsoluteDev * maxDev)
+  return madThreshold
+end
+
 --[[ we do not use this function in there are less then three
 items in the table.
 
@@ -311,15 +317,17 @@ function stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsD
   --[[There is no need to determine if statsData is not empty and bonanzaStatsData is empty, because
   this function is called after previously checking whether or not bonanzaStatsData is empty]]--
   local statsPercentileFactor = 0
+  local bonanzaPercentileFactor = 0
   local adjustedBonanzaPercentileFactor = 0
+  local statsMean = 0
+  local bonanzaMean = 0
+
   if (statsData and not next(statsData)) and (bonanzaStatsData and next(bonanzaStatsData)) then
     adjustedBonanzaPercentileFactor = stats.calculatePercentileContextFactor(bonanzaStatsData, percentile)
   elseif (statsData and next(statsData)) and (bonanzaStatsData and next(bonanzaStatsData)) then
-    local statsMean = stats.mean(statsData)
-    local bonanzaMean = stats.mean(bonanzaStatsData)
 
     statsPercentileFactor = stats.calculatePercentileContextFactor(statsData, percentile)
-    local bonanzaPercentileFactor = stats.calculatePercentileContextFactor(bonanzaStatsData, percentile)
+    bonanzaPercentileFactor = stats.calculatePercentileContextFactor(bonanzaStatsData, percentile)
 
     local statsStDev = stats.standardDeviation(statsData)
 
@@ -333,7 +341,8 @@ function stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsD
 
   return {
     bonanzaPercentileFactor = adjustedBonanzaPercentileFactor,
-    meanDifference = adjustedBonanzaPercentileFactor - statsPercentileFactor
+    meanDifference = math.abs(statsMean - bonanzaMean),
+    adjustedMeanDifference = adjustedBonanzaPercentileFactor - statsPercentileFactor,
   }
 end
 
@@ -348,9 +357,8 @@ MasterMerchant.stats = stats
 -- LibGuildStore_Internal.GetOrCreateIndexFromLink("|H0:item:54484:369:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
 -- MasterMerchant:GetTooltipStats(54484, "50:16:4:0:0", false, true)
 -- Computes the weighted moving average across available data
--- /script MasterMerchant.itemInformationCache = {}
--- /script MasterMerchant:ClearPriceCacheById(54173, "1:0:5:0:0")
--- /script MasterMerchant:ClearBonanzaCachePriceById(54173, "1:0:5:0:0")
+-- /script internal:ClearItemCacheById(54173, "1:0:5:0:0")
+-- /script internal:ClearBonanzaCacheById(54173, "1:0:5:0:0")
 -- Vamp Fang |H1:item:64210:177:50:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h -- 1 bonanza listing no price to chat
 -- hide scraps |H1:item:71239:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h -- 1 bonanza listing no price to chat
 function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
@@ -367,11 +375,8 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   ZO_ONE_DAY_IN_SECONDS to ensure that all the sales were displayed.
   ]]--
   -- setup early local variables
-  local statsPercentile = 0.95
-  local bonanzaPercentile = 0.90
-  local stats_zScoreThreshold = 2.054
-  local bonanza_zScoreThreshold = 1.881
-  local maxDeviation = 1.881  -- Maximum allowable deviation in standard deviations
+  local zScoreThreshold = 2.054
+  local maxDeviation = 2.7
   local iqrMultiplier = 1.5
   local iqrThreshold = 3 -- Minimum threshold for data set size to apply IQR
 
@@ -407,7 +412,12 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   local ignoreOutliers = nil
   local numVouchers = 0
   local graphInfo = nil
-  local cacheBonanza = false
+  local updateItemCache = false
+  local updateBonanzaCache = false
+  local updateGraphinfoCache = false
+
+  local hasSales = false
+  local hasListings = false
 
   -- set timeCheck and daysRange for cache and tooltips
   local timeCheck, daysRange = self:CheckTimeframe()
@@ -474,6 +484,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       tooltip = stringPrice .. MM_COIN_ICON_NO_SPACE
     end
     salesPoints[#salesPoints + 1] = { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller }
+    updateGraphinfoCache = true
   end
 
   local function ProcessSalesInfo(item)
@@ -555,13 +566,13 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
 
   -- make sure we have a list of sales to work with
-  local hasSales = MasterMerchant:itemIDHasSales(itemID, itemIndex)
-  local hasListings = MasterMerchant:itemIDHasListings(itemID, itemIndex)
-  local hasPriceInfo = MasterMerchant:ItemCacheHasPriceInfoById(itemID, itemIndex, daysRange)
-  local hasGraph = MasterMerchant:ItemCacheHasGraphInfoById(itemID, itemIndex, daysRange)
-  local hasBonanza = MasterMerchant:ItemCacheHasBonanzaInfoById(itemID, itemIndex, daysRange)
-  local createGraph = not hasGraph and generateGraph
-  if hasSales and (not hasPriceInfo or createGraph) then
+  hasSales = MasterMerchant:itemIDHasSales(itemID, itemIndex)
+  hasListings = MasterMerchant:itemIDHasListings(itemID, itemIndex)
+  local hasSalesPrice = internal:ItemCacheHasPriceInfoById(itemID, itemIndex, daysRange)
+  local hasBonanzaPrice = internal:BonanzaCacheHasPriceInfoById(itemID, itemIndex, daysRange)
+  local hasGraphinfo = internal:CacheHasGraphInfoById(itemID, itemIndex, daysRange)
+  local createGraph = generateGraph and not hasGraphinfo
+  if hasSales and (not hasSalesPrice or createGraph) then
     versionData = sales_data[itemID][itemIndex]
     salesData = versionData['sales']
     nameString = versionData.itemDesc
@@ -605,7 +616,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     SortStatsData()
     if ignoreOutliers then
       if (outliersList and next(outliersList)) and (statsDataCount and statsDataCount > 0) then
-        local percentileContextFactor = stats.calculatePercentileContextFactor(statsData, statsPercentile)
+        local madThreshold = stats.calculateMADThreshold(statsData, maxDeviation)
         local mean = stats.mean(statsData)
         local stdev = stats.standardDeviation(statsData)
         local quartile1, quartile3, quartileRange = stats.interquartileRange(statsData)
@@ -617,15 +628,15 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
           currentSeller = internal:GetAccountNameByIndex(item.seller)
           local individualSale = item.price / item.quant
           local zScore = stats.zscore(individualSale, mean, stdev)
-          local isWithinDCP = individualSale <= percentileContextFactor
-          local isZScoreValid = zScore <= stats_zScoreThreshold and zScore >= -stats_zScoreThreshold
+          local isWithinMadThreshold = individualSale <= madThreshold
+          local isZScoreValid = zScore <= zScoreThreshold and zScore >= -zScoreThreshold
           if isIQRApplicable then
             local isWithinIQR = individualSale >= quartile1 - iqrMultiplier * quartileRange and individualSale <= quartile3 + iqrMultiplier * quartileRange
-            if isWithinIQR and isWithinDCP and isZScoreValid then
+            if isWithinIQR and isWithinMadThreshold and isZScoreValid then
               ProcessItemWithTimestamp(item, useDaysRange, false)
             end
           else
-            if isWithinDCP and isZScoreValid then
+            if isWithinMadThreshold and isZScoreValid then
               ProcessItemWithTimestamp(item, useDaysRange, false)
             end
           end
@@ -639,28 +650,14 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       ]]--
       if avgPrice < 0.01 then avgPrice = 0.01 end
     end
+    if avgPrice then updateItemCache = true end
   end
-  if hasPriceInfo and not createGraph then
-    local itemInfo = MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
-    avgPrice = itemInfo.avgPrice
-    legitSales = itemInfo.numSales
-    daysHistory = itemInfo.numDays
-    countSold = itemInfo.numItems
-    numVouchers = itemInfo.numVouchers
-    local graphInformation = itemInfo.graphInfo
-    if graphInformation then
-      oldestTime = graphInformation.oldestTime
-      lowPrice = graphInformation.low
-      highPrice = graphInformation.high
-      salesPoints = graphInformation.points
-    end
-  end
-  if hasListings and (not hasBonanza and not averageOnly) then
+  if hasListings and (not hasBonanzaPrice and not averageOnly) then
     bonanzaList = listings_data[itemID][itemIndex]['sales']
     bonanzaList, bonanzaStatsData = RemoveListingsPerBlacklist(bonanzaList)
     SortBonanzaStatsData()
     if (bonanzaList and next(bonanzaList)) and (bonanzaStatsDataCount and bonanzaStatsDataCount > 0) then
-      local adjustedPercentileFactor = stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsData, maxDeviation, bonanzaPercentile).bonanzaPercentileFactor
+      local madThreshold = stats.calculateMADThreshold(bonanzaStatsData, maxDeviation)
       local mean = stats.mean(bonanzaStatsData)
       local stdev = stats.standardDeviation(bonanzaStatsData)
       local quartile1, quartile3, quartileRange = stats.interquartileRange(bonanzaStatsData)
@@ -668,27 +665,27 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       for _, item in pairs(bonanzaList) do
         local individualSale = item.price / item.quant
         local zScore = stats.zscore(individualSale, mean, stdev)
-        local isWithinDCP = individualSale <= adjustedPercentileFactor
-        local isZScoreValid = zScore <= bonanza_zScoreThreshold and zScore >= -bonanza_zScoreThreshold
+        local isWithinMadThreshold = individualSale <= madThreshold
+        local isZScoreValid = zScore <= zScoreThreshold and zScore >= -zScoreThreshold
         if isIQRApplicable then
           local isWithinIQR = individualSale >= quartile1 - iqrMultiplier * quartileRange and individualSale <= quartile3 + iqrMultiplier * quartileRange
-          if isWithinIQR and isWithinDCP and isZScoreValid then
+          if isWithinIQR and isWithinMadThreshold and isZScoreValid then
             ProcessBonanzaSale(item)
           end
         else
-          if isWithinDCP and isZScoreValid then
+          if isWithinMadThreshold and isZScoreValid then
             ProcessBonanzaSale(item)
           end
         end
       end
       if bonanzaListings and bonanzaListings >= 1 then
         bonanzaPrice = bonanzaPrice / bonanzaItemCount
+        --[[found an average price of 0.07 which X 200 is 14g
+        even 0.01 X 200 is 2g
+        ]]--
+        if bonanzaPrice and bonanzaPrice < 0.01 then bonanzaPrice = 0.01 end
       end
-      --[[found an average price of 0.07 which X 200 is 14g
-      even 0.01 X 200 is 2g
-      ]]--
-      if bonanzaPrice and bonanzaPrice < 0.01 then bonanzaPrice = 0.01 end
-      if bonanzaPrice then cacheBonanza = true end
+      if bonanzaPrice then updateBonanzaCache = true end
     end
 
     if MasterMerchant.systemSavedVariables.useLibDebugLogger and (bonanzaPrice == nil or (bonanzaItemCount == nil and bonanzaListings == nil)) then
@@ -704,37 +701,68 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       bonanzaItemCount = nil
     end
   end
-  if hasBonanza and not cacheBonanza then
-    local itemInfo = MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
-    bonanzaPrice = itemInfo.bonanzaPrice
-    bonanzaListings = itemInfo.bonanzaListings
-    bonanzaItemCount = itemInfo.bonanzaItemCount
-  end
   if itemType == ITEMTYPE_MASTER_WRIT and MasterMerchant.systemSavedVariables.includeVoucherAverage then
     numVouchers = MasterMerchant_Internal:GetVoucherCountByItemLink(itemLink)
   end
-  if hasSales and (not hasPriceInfo or createGraph or cacheBonanza) then
+  -- Retrieve Item (['sales']) information including graph if hasSalesPrice and not generating new graphInfo
+  if hasSalesPrice and not createGraph then
+    local itemInfo = internal:GetItemCacheStats(itemLink, daysRange)
+    if itemInfo then
+      avgPrice = itemInfo.avgPrice
+      legitSales = itemInfo.numSales
+      daysHistory = itemInfo.numDays
+      countSold = itemInfo.numItems
+      numVouchers = itemInfo.numVouchers
+      local graphInformation = itemInfo.graphInfo
+      if graphInformation then
+        oldestTime = graphInformation.oldestTime
+        lowPrice = graphInformation.low
+        highPrice = graphInformation.high
+        salesPoints = graphInformation.points
+      end
+    end
+  end
+  -- Retrieve Bonanza (['listings']) information from the cache if we aren't generating it again
+  if hasBonanzaPrice then -- not verified
+    local itemInfo = internal:GetBonanzaCacheStats(itemLink, daysRange)
+    if itemInfo then
+      bonanzaPrice = itemInfo.bonanzaPrice
+      bonanzaListings = itemInfo.bonanzaListings
+      bonanzaItemCount = itemInfo.bonanzaItemCount
+    end
+  end
+  -- Setup Graphinfo if salesPoints exists
+  if salesPoints then
+    graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints }
+  end
+  -- Assign Item (['sales']) information to the cache
+  if hasSales and updateItemCache then
     local itemInfo = {
       avgPrice = avgPrice,
       numSales = legitSales,
       numDays = daysHistory,
       numItems = countSold,
+      numVouchers = numVouchers,
+    }
+    internal:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
+  end
+  -- Assign Bonanza (['listings']) information to the cache
+  if hasListings and updateBonanzaCache then
+    local itemInfo = {
       bonanzaPrice = bonanzaPrice,
       bonanzaListings = bonanzaListings,
       bonanzaItemCount = bonanzaItemCount,
-      numVouchers = numVouchers,
     }
-    graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints }
-    if legitSales and legitSales > 1500 and salesPoints then
-      itemInfo.graphInfo = graphInfo
+    internal:SetBonanzaCacheById(itemID, itemIndex, daysRange, itemInfo)
+  end
+  -- Assign Graphinfo to the Item (['sales']) Cache
+  if hasSales and salesPoints and updateGraphinfoCache then
+    if legitSales and legitSales > 1500 then
+      internal:SetGraphInfoCacheById(itemID, itemIndex, daysRange, graphInfo)
     end
-    MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
   end
-  if salesPoints then
-    graphInfo = { oldestTime = oldestTime, low = lowPrice, high = highPrice, points = salesPoints }
-  end
-  returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
-                 ['bonanzaPrice'] = bonanzaPrice, ['bonanzaListings'] = bonanzaListings, ['bonanzaItemCount'] = bonanzaItemCount, ['numVouchers'] = numVouchers,
+  returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold, ['numVouchers'] = numVouchers,
+                 ['bonanzaPrice'] = bonanzaPrice, ['bonanzaListings'] = bonanzaListings, ['bonanzaItemCount'] = bonanzaItemCount,
                  ['graphInfo'] = graphInfo }
   return returnData
 end
@@ -765,110 +793,6 @@ function MasterMerchant:itemLinkHasListings(itemLink)
   local itemID = GetItemLinkItemId(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   return MasterMerchant:itemIDHasListings(itemID, itemIndex)
-end
-
-function MasterMerchant:ItemCacheStats(itemLink)
-  local timeCheck, daysRange = self:CheckTimeframe()
-  if MasterMerchant:ItemCacheHasInfoByItemLink(itemLink, daysRange) then
-    local itemID = GetItemLinkItemId(itemLink)
-    local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-    return MasterMerchant.itemInformationCache[itemID][itemIndex][daysRange]
-  end
-  return MasterMerchant:GetTooltipStats(itemLink, true, false)
-end
-
-function MasterMerchant:ItemCacheHasGraphInfoById(theIID, itemIndex, daysRange)
-  local cache = MasterMerchant.itemInformationCache
-  local itemInfo = cache[theIID] and cache[theIID][itemIndex]
-  return itemInfo and itemInfo[daysRange] and itemInfo[daysRange].graphInfo ~= nil
-end
-
-function MasterMerchant:ItemCacheHasPriceInfoById(theIID, itemIndex, daysRange)
-  local cache = MasterMerchant.itemInformationCache
-  local itemInfo = cache[theIID] and cache[theIID][itemIndex] and cache[theIID][itemIndex][daysRange]
-  if itemInfo and itemInfo.avgPrice then
-    return true
-  end
-  return false
-end
-
-function MasterMerchant:ItemCacheHasBonanzaInfoById(theIID, itemIndex, daysRange)
-  local cache = MasterMerchant.itemInformationCache
-  local itemInfo = cache[theIID] and cache[theIID][itemIndex] and cache[theIID][itemIndex][daysRange]
-  if itemInfo and itemInfo.bonanzaPrice then
-    return true
-  end
-  return false
-end
-
-function MasterMerchant:ItemCacheHasInfoByItemLink(itemLink, daysRange)
-  local itemID = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  return MasterMerchant:ItemCacheHasPriceInfoById(itemID, itemIndex, daysRange)
-end
-
-function MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
-  local cache = MasterMerchant.itemInformationCache
-  cache[itemID] = cache[itemID] or {}
-  cache[itemID][itemIndex] = cache[itemID][itemIndex] or {}
-  cache[itemID][itemIndex][daysRange] = itemInfo
-end
-
-function MasterMerchant:SetItemCacheByItemLink(itemLink, daysRange, itemInfo)
-  local itemID = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  MasterMerchant:SetItemCacheById(itemID, itemIndex, daysRange, itemInfo)
-end
-
-function MasterMerchant:ClearPriceCacheById(itemID, itemIndex)
-  local cache = MasterMerchant.itemInformationCache
-  local itemInfo = cache[itemID] and cache[itemID][itemIndex]
-  if itemInfo then
-    for daysRange, info in pairs(itemInfo) do
-      info.avgPrice = nil
-      info.numSales = nil
-      info.numDays = nil
-      info.numItems = nil
-      info.numVouchers = nil
-      info.graphInfo = nil
-    end
-  end
-end
-
-function MasterMerchant:ClearItemCacheByItemLink(itemLink)
-  local itemID = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  MasterMerchant:ClearPriceCacheById(itemID, itemIndex)
-end
-
-function MasterMerchant:ClearBonanzaCachePriceById(itemID, itemIndex)
-  local cache = MasterMerchant.itemInformationCache
-  local itemInfo = cache[itemID] and cache[itemID][itemIndex]
-  if itemInfo then
-    for daysRange, info in pairs(itemInfo) do
-      info.bonanzaPrice = nil
-      info.bonanzaListings = nil
-      info.bonanzaItemCount = nil
-    end
-  end
-end
-
--- /script MasterMerchant:ClearBonanzaPriceCacheByItemLink("|H1:item:54173:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")
-function MasterMerchant:ClearBonanzaPriceCacheByItemLink(itemLink)
-  local itemID = GetItemLinkItemId(itemLink)
-  local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
-  MasterMerchant:ClearBonanzaCachePriceById(itemID, itemIndex)
-end
-
-function MasterMerchant:ResetItemInformationCache()
-  MasterMerchant.itemInformationCache = { }
-end
-
-function MasterMerchant:ValidInfoForCache(avgPrice, numSales, numDays, numItems)
-  if avgPrice == nil or numSales == nil or numDays == nil or numItems == nil then
-    return false
-  end
-  return true
 end
 
 -- /script d(MasterMerchant:GetTradeSkillInformation("|H1:item:33825:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:1:0:0:0:0|h|h"))
@@ -1438,7 +1362,7 @@ function MasterMerchant:OnTradingHouseListingClicked(itemLink, sellerName)
   else
     if not MasterMerchant:IsInBlackList(sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
-      MasterMerchant:ResetItemInformationCache()
+      internal:ResetItemAndBonanzaCache()
       MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
     end
   end
@@ -1965,7 +1889,7 @@ function MasterMerchant:LibAddonInit()
         getFunc = function() return MasterMerchant.systemSavedVariables.blacklist end,
         setFunc = function(value)
           MasterMerchant.systemSavedVariables.blacklist = value
-          MasterMerchant:ResetItemInformationCache()
+          internal:ResetItemAndBonanzaCache()
           MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
         end,
         default = MasterMerchant.systemDefault.blacklist,
@@ -2257,7 +2181,6 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.displaySalesDetails end,
     setFunc = function(value)
       MasterMerchant.systemSavedVariables.displaySalesDetails = value
-      MasterMerchant:ResetItemInformationCache()
     end,
     default = MasterMerchant.systemDefault.displaySalesDetails,
   }
@@ -2296,7 +2219,7 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliers end,
     setFunc = function(value)
       MasterMerchant.systemSavedVariables.trimOutliers = value
-      MasterMerchant:ResetItemInformationCache()
+      internal:ResetItemAndBonanzaCache()
     end,
     default = MasterMerchant.systemDefault.trimOutliers,
   }
@@ -3322,20 +3245,20 @@ function MasterMerchant.TradingHouseSetupPendingPost(self)
     local selectedGuildId = GetSelectedTradingHouseGuildId()
     local pricingData = nil
 
-    if MasterMerchant.systemSavedVariables.priceCalcAll then
-      if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] and GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID] and GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex] then
-        pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"][theIID][itemIndex]
-      end
-    else
-      if GS17DataSavedVariables[internal.pricingNamespace] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID] and GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex] then
-        pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId][theIID][itemIndex]
-      end
+    local pricingDataNamespace = GS17DataSavedVariables[internal.pricingNamespace]
+    local priceDataKey = MasterMerchant.systemSavedVariables.priceCalcAll and "pricingdataall" or selectedGuildId
+    local pricingDataInfo = pricingDataNamespace[priceDataKey]
+
+    if pricingDataInfo and pricingDataInfo[theIID] and pricingDataInfo[theIID][itemIndex] then
+      pricingData = pricingDataInfo[itemIndex]
     end
 
     if pricingData then
       self:SetPendingPostPrice(math.floor(pricingData * stackCount))
     else
-      local tipStats = MasterMerchant:ItemCacheStats(itemLink, false)
+      local timeCheck, daysRange = MasterMerchant:CheckTimeframe()
+      local tipStats = internal:ItemCacheStats(itemLink, daysRange)
+      if tipStats == nil then MasterMerchant:GetTooltipStats(itemLink, true, false) end
       if (tipStats.avgPrice) then
         self:SetPendingPostPrice(math.floor(tipStats.avgPrice * stackCount))
       end
@@ -3381,7 +3304,46 @@ local function CompleteMasterMerchantSetup()
   local libSource = 1
   LibAlchemy:InitializePrices(libSource)
 end
+local function UpdateVars()
+  local systemDefaultVariables = {
+    "dataLocations", "pricingData", "showChatAlerts",
+    "showMultiple", "openWithMail", "openWithStore",
+    "showFullPrice", "salesWinLeft", "salesWinTop",
+    "guildWinLeft", "guildWinTop", "listingWinLeft",
+    "listingWinTop", "purchaseWinLeft", "purchaseWinTop",
+    "reportsWinLeft", "reportsWinTop", "statsWinLeft",
+    "statsWinTop", "feedbackWinLeft", "feedbackWinTop",
+    "windowFont", "showAnnounceAlerts", "showCyroAlerts",
+    "alertSoundName", "showUnitPrice", "viewSize",
+    "offlineSales", "showPricing", "showBonanzaPricing",
+    "useCondensedPriceToChat", "omitBonanzaPricingGraphLessThanSix",
+    "omitBonanzaPricingChatLessThanSix", "includeItemCountPriceToChat",
+    "includeTTCDataPriceToChat", "includeVoucherAverage", "voucherValueTypeToUse",
+    "isWindowMovable", "showAltTtcTipline", "showCraftCost",
+    "showMaterialCost", "showGraph", "showCalc", "priceCalcAll",
+    "minProfitFilter", "rankIndex", "rankIndexRoster",
+    "viewBuyerSeller", "viewGuildBuyerSeller", "trimOutliers",
+    "trimDecimals", "replaceInventoryValues", "replacementTypeToUse",
+    "displaySalesDetails", "displayItemAnalysisButtons", "focus1",
+    "focus2", "focus3", "blacklist", "defaultDays", "shiftDays",
+    "ctrlDays", "ctrlShiftDays", "displayProfit", "displayListingMessage",
+    "customTimeframe", "customTimeframeType", "diplayGuildInfo",
+    "diplayPurchasesInfo", "diplaySalesInfo", "diplayTaxesInfo",
+    "diplayCountInfo", "showAmountTaxes", "useLibDebugLogger",
+    "verThreeItemIDConvertedToString", "shouldReindex",
+    "shouldAdderText", "showGuildInitSummary", "showIndexingSummary",
+    "lastReceivedEventID", "minimalIndexing", "useSalesHistory",
+    "historyDepth", "minItemCount", "maxItemCount", "disableAttWarn",
+    "dealCalcToUse", "agsPercentSortOrderToUse",
+    "modifiedSuggestedPriceDealCalc", "modifiedSuggestedPriceInventory",
+    "modifiedSuggestedPriceVoucher", "showUnitPrice", "showSearchBonanza",
+    "useFormatedTime", "useTwentyFourHourTime", "dateFormatMonthDay",
+    "customDealCalc", "customDealBuyIt", "customDealSeventyFive",
+    "customDealFifty", "customDealTwentyFive", "customDealZero",
+    "windowTimeRange", "customFilterDateRange",
+  }
 
+end
 -- ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
 -- ["pricingData"]
 -- self.savedVariables.verbose = value
