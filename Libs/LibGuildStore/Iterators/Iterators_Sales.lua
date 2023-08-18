@@ -195,7 +195,7 @@ function internal:addSalesData(theEvent)
   MasterMerchant.listIsDirty[ITEMS] = true
   MasterMerchant.listIsDirty[GUILDS] = true
 
-  internal:ClearItemCacheById(theIID, itemIndex)
+  MasterMerchant_Internal:ClearItemCacheById(theIID, itemIndex)
 
   return true
 end

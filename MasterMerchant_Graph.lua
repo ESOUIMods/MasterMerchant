@@ -1,3 +1,4 @@
+local mmUtils = _G["MasterMerchant_Internal"]
 MM_Graph = ZO_Object:Subclass()
 
 function MM_Graph:New(control, pointTemplate)
@@ -200,7 +201,7 @@ function MM_Graph:OnGraphPointClicked(graphPointControl, mouseButton, sellerName
   else
     if not MasterMerchant:IsInBlackList(sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
-      internal:ResetItemAndBonanzaCache()
+      mmUtils:ResetItemAndBonanzaCache()
       MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
     end
   end
@@ -214,7 +215,7 @@ function MM_Graph:OnSellerNameClicked(self, mouseButton, sellerName, itemLink)
   else
     if not MasterMerchant:IsInBlackList(sellerName) then
       MasterMerchant.systemSavedVariables.blacklist = MasterMerchant.systemSavedVariables.blacklist .. sellerName .. "\n"
-      internal:ResetItemAndBonanzaCache()
+      mmUtils:ResetItemAndBonanzaCache()
       MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
     end
   end

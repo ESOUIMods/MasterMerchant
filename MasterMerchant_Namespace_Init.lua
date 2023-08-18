@@ -26,13 +26,17 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.69'
+MasterMerchant.version = '3.7.70'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
 
-local mmInternal = {}
-_G["MasterMerchant_Internal"] = mmInternal
+local mmUtils = {}
+local itemCache = {}
+local bonanzaCache = {}
+_G["MasterMerchant_Internal"] = mmUtils
+_G["MasterMerchant_ItemCache"] = itemCache
+_G["MasterMerchant_BonanzaCache"] = bonanzaCache
 
 -------------------------------------------------
 ----- MasterMerchant Constants              -----

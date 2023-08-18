@@ -1,5 +1,4 @@
-local mmInternal = _G["MasterMerchant_Internal"]
-local bitwise = _G["MasterMerchant_Writs_Bitwise"]
+local mmUtils = _G["MasterMerchant_Internal"]
 
 local MM_WRITFIELD_ONE = 10
 local MM_WRITFIELD_TWO = 11
@@ -18,12 +17,12 @@ local MM_WRIT_ITEMTYPE_JEWELRY_RING = 24
 -- |H1:item:71059:6:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
 -- |H1:item:156735:4:1:0:0:0:117956:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h
 -- |H1:item:156733:4:1:0:0:0:117926:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h
--- /script d(MasterMerchant_Internal:GetVoucherCountByItemLink("|H1:item:121533:6:1:0:0:0:40:190:5:38:17:46:0:0:0:0:0:0:0:0:686400|h|h"))
+-- /script d(MasterMerchant_mmInternal:GetVoucherCountByItemLink("|H1:item:121533:6:1:0:0:0:40:190:5:38:17:46:0:0:0:0:0:0:0:0:686400|h|h"))
 -- |H1:item:153482:4:1:0:0:0:87690:0:0:0:0:0:0:0:0:0:0:0:0:0:20000|h|h witches writ
 -- |H1:item:153482:4:1:0:0:0:87691:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h witches writ
 -- |H1:item:153482:4:1:0:0:0:87686:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h witches writ
-function mmInternal:GetVoucherCountByItemLink(itemLink)
-  local data = mmInternal:GetPotionEffectWritRewardField(itemLink)
+function mmUtils:GetVoucherCountByItemLink(itemLink)
+  local data = mmUtils:GetPotionEffectWritRewardField(itemLink)
   local itemType, _ = GetItemLinkItemType(itemLink)
   if itemType == ITEMTYPE_MASTER_WRIT then
     local quotient, remainder = math.modf(data / 10000)
@@ -34,7 +33,7 @@ function mmInternal:GetVoucherCountByItemLink(itemLink)
 end
 
 -- /script d({MasterMerchant_Internal:GetWritFields("|H1:item:121533:6:1:0:0:0:40:190:5:38:17:46:0:0:0:0:0:0:0:0:686400|h|h")})
-function mmInternal:GetWritFields(itemLink)
+function mmUtils:GetWritFields(itemLink)
   local data = { ZO_LinkHandler_ParseLink(itemLink) }
   local field1 = tonumber(data[MM_WRITFIELD_ONE])
   local field2 = tonumber(data[MM_WRITFIELD_TWO])
@@ -46,23 +45,23 @@ function mmInternal:GetWritFields(itemLink)
 end
 
 -- /script d(MasterMerchant_Internal:GetPotionEffectWritRewardField("|H1:item:121533:6:1:0:0:0:40:190:5:38:17:46:0:0:0:0:0:0:0:0:686400|h|h"))
-function mmInternal:GetPotionEffectWritRewardField(itemLink)
+function mmUtils:GetPotionEffectWritRewardField(itemLink)
   local data = { ZO_LinkHandler_ParseLink(itemLink) }
   local field24 = tonumber(data[MM_EFFECT_REWARD_FIELD])
   return field24
 end
 
 -- /script d(MasterMerchant_Internal:IsItemLinkAlchemyItem("|H1:item:119696:5:1:0:0:0:199:2:11:21:0:0:0:0:0:0:0:0:0:0:50000|h|h"))
-function mmInternal:IsItemLinkAlchemyItem(itemLink)
-  local data = mmInternal:GetWritFields(itemLink)
+function mmUtils:IsItemLinkAlchemyItem(itemLink)
+  local data = mmUtils:GetWritFields(itemLink)
   if (data == MM_WRIT_ITEMTYPE_POTION) or (data == MM_WRIT_ITEMTYPE_POISON) then
     return true
   end
   return false
 end
 
-function mmInternal:IsItemLinkEnchantingItem(itemLink)
-  local requiredItemLink = mmInternal:GetMasterWritRequiredItemLink(itemLink)
+function mmUtils:IsItemLinkEnchantingItem(itemLink)
+  local requiredItemLink = mmUtils:GetMasterWritRequiredItemLink(itemLink)
   local itemType, _ = GetItemLinkItemType(requiredItemLink)
   if itemType == ITEMTYPE_GLYPH_ARMOR or itemType == ITEMTYPE_GLYPH_JEWELRY or itemType == ITEMTYPE_GLYPH_WEAPON then
     return true
@@ -71,8 +70,8 @@ function mmInternal:IsItemLinkEnchantingItem(itemLink)
 end
 
 -- /script d(MasterMerchant_Internal:IsItemLinkProvisioningItem("|H1:item:167170:5:1:0:0:0:33825:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
-function mmInternal:IsItemLinkProvisioningItem(itemLink)
-  local requiredItemLink = mmInternal:GetMasterWritRequiredItemLink(itemLink)
+function mmUtils:IsItemLinkProvisioningItem(itemLink)
+  local requiredItemLink = mmUtils:GetMasterWritRequiredItemLink(itemLink)
   local itemType, _ = GetItemLinkItemType(requiredItemLink)
   if itemType == ITEMTYPE_DRINK or itemType == ITEMTYPE_FOOD then
     return true
@@ -81,17 +80,17 @@ function mmInternal:IsItemLinkProvisioningItem(itemLink)
 end
 
 -- /script d(MasterMerchant_Internal:IsItemLinkWeaponArmorItem("|H1:item:119682:5:1:0:0:0:65:192:4:325:12:104:0:0:0:0:0:0:0:0:72000|h|h"))
-function mmInternal:IsItemLinkWeaponArmorItem(itemLink)
-  local data = mmInternal:GetWritFields(itemLink)
-  if mmInternal.blacksmithClothierWoodworkingItemType[data] then
+function mmUtils:IsItemLinkWeaponArmorItem(itemLink)
+  local data = mmUtils:GetWritFields(itemLink)
+  if mmUtils.blacksmithClothierWoodworkingItemType[data] then
     return true
   end
   return false
 end
 
 -- /script d(MasterMerchant_Internal:IsItemLinkJewelryItem("|H1:item:153737:5:1:0:0:0:18:255:4:177:21:0:0:0:0:0:0:0:0:0:1837500|h|h"))
-function mmInternal:IsItemLinkJewelryItem(itemLink)
-  local data = mmInternal:GetWritFields(itemLink)
+function mmUtils:IsItemLinkJewelryItem(itemLink)
+  local data = mmUtils:GetWritFields(itemLink)
   if data == MM_WRIT_ITEMTYPE_JEWELRY_NECK or data == MM_WRIT_ITEMTYPE_JEWELRY_RING then
     return true
   end
@@ -99,8 +98,8 @@ function mmInternal:IsItemLinkJewelryItem(itemLink)
 end
 
 -- /script d(MasterMerchant_Internal:IsItemLinkFurnitureItem("|H1:item:156735:4:1:0:0:0:117954:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
-function mmInternal:IsItemLinkFurnitureItem(itemLink)
-  local requiredItemLink = mmInternal:GetMasterWritRequiredItemLink(itemLink)
+function mmUtils:IsItemLinkFurnitureItem(itemLink)
+  local requiredItemLink = mmUtils:GetMasterWritRequiredItemLink(itemLink)
   local itemType, _ = GetItemLinkItemType(requiredItemLink)
   if itemType == ITEMTYPE_FURNISHING then
     return true
@@ -109,15 +108,15 @@ function mmInternal:IsItemLinkFurnitureItem(itemLink)
 end
 
 -- /script d(MasterMerchant_Internal:IsItemLinkNewLifeFestivalWrit("|H1:item:121532:6:1:0:0:0:29:194:5:48:25:98:0:0:0:0:0:0:0:0:1248000|h|h"))
-function mmInternal:IsItemLinkNewLifeFestivalWrit(itemLink)
+function mmUtils:IsItemLinkNewLifeFestivalWrit(itemLink)
   local itemType, _ = GetItemLinkItemType(itemLink)
   local requiredItemLink = nil
   local requiredItemLinkId = nil
   if itemType == ITEMTYPE_MASTER_WRIT then
-    requiredItemLink = mmInternal:GetMasterWritRequiredItemLink(itemLink)
-    if mmInternal:IsItemLinkFurnitureItem(itemLink) or mmInternal:IsItemLinkProvisioningItem(itemLink) then
+    requiredItemLink = mmUtils:GetMasterWritRequiredItemLink(itemLink)
+    if mmUtils:IsItemLinkFurnitureItem(itemLink) or mmUtils:IsItemLinkProvisioningItem(itemLink) then
       requiredItemLinkId = GetItemLinkItemId(requiredItemLink)
-      if mmInternal.winterWritsRequiredQty[requiredItemLinkId] then
+      if mmUtils.winterWritsRequiredQty[requiredItemLinkId] then
         return true
       end
     end
@@ -127,22 +126,22 @@ end
 
 -- /script d(MasterMerchant_Internal:GetItemLinkRequiredItemId("|H1:item:156735:4:1:0:0:0:117954:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 -- only gets the itemId and returns a fake itemLink, nothing else
-function mmInternal:GetMasterWritRequiredItemLink(itemLink)
-  local itemId = mmInternal:GetWritFields(itemLink)
+function mmUtils:GetMasterWritRequiredItemLink(itemLink)
+  local itemId = mmUtils:GetWritFields(itemLink)
   return string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', itemId)
 end
 
 -- /script d(MasterMerchant_Internal:GetMasterWritFurnatureItemLink("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
-function mmInternal:GetMasterWritFurnatureItemLink(itemLink)
-  if mmInternal:IsItemLinkFurnitureItem(itemLink) then
-    return mmInternal:GetMasterWritRequiredItemLink(itemLink)
+function mmUtils:GetMasterWritFurnatureItemLink(itemLink)
+  if mmUtils:IsItemLinkFurnitureItem(itemLink) then
+    return mmUtils:GetMasterWritRequiredItemLink(itemLink)
   end
   return nil
 end
 
 -- /script d(MasterMerchant_Internal:MaterialCostPrice("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
-function mmInternal:MaterialCostPrice(itemLink)
-  if not mmInternal:IsItemLinkNewLifeFestivalWrit(itemLink) then
+function mmUtils:MaterialCostPrice(itemLink)
+  if not mmUtils:IsItemLinkNewLifeFestivalWrit(itemLink) then
     return nil
   end
 
@@ -152,7 +151,7 @@ function mmInternal:MaterialCostPrice(itemLink)
   local flavorText = GetItemLinkFlavorText(itemLink)
   --[[Use GetMasterWritRequiredItemLink() for now to cover food or Furnature
   instead of GetMasterWritFurnatureItemLink() ]]--
-  local newLifeFestivalItemLink = mmInternal:GetMasterWritRequiredItemLink(itemLink)
+  local newLifeFestivalItemLink = mmUtils:GetMasterWritRequiredItemLink(itemLink)
   if not newLifeFestivalItemLink then
     return nil
   end
@@ -172,12 +171,12 @@ function mmInternal:MaterialCostPrice(itemLink)
       end
     end
 
-    if mmInternal:IsItemLinkProvisioningItem(itemLink) then
+    if mmUtils:IsItemLinkProvisioningItem(itemLink) then
       local multiplier = MasterMerchant:GetSkillLineProvisioningAlchemyRank(newLifeFestivalItemLink)
       cost = cost / multiplier
     end
 
-    local qtyRequired = mmInternal:GetWinterWritRequiredQty(itemLink)
+    local qtyRequired = mmUtils:GetWinterWritRequiredQty(itemLink)
     if qtyRequired then
       return cost * qtyRequired
     else
@@ -191,10 +190,10 @@ end
 -- /script d(MasterMerchant_Internal:GetWinterWritRequiredQty("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 -- /script d(MasterMerchant_Internal:GetWritFields("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 -- /script d(MasterMerchant_Internal.winterWritsRequiredQty[118034])
-function mmInternal:GetWinterWritRequiredQty(itemLink)
-  local itemId = mmInternal:GetWritFields(itemLink)
-  if mmInternal.winterWritsRequiredQty[itemId] ~= nil and mmInternal.winterWritsRequiredQty[itemId] > 0 then
-    return mmInternal.winterWritsRequiredQty[itemId]
+function mmUtils:GetWinterWritRequiredQty(itemLink)
+  local itemId = mmUtils:GetWritFields(itemLink)
+  if mmUtils.winterWritsRequiredQty[itemId] ~= nil and mmUtils.winterWritsRequiredQty[itemId] > 0 then
+    return mmUtils.winterWritsRequiredQty[itemId]
   end
   return nil
 end
@@ -206,7 +205,7 @@ ICW - Imperial Charity Writs
 ]]--
 
 -- Deep Winter Charity Writs
-mmInternal.winterWritsRequiredQty = {
+mmUtils.winterWritsRequiredQty = {
   [117954] = 12, -- Rough Crate, Bolted - DWC (x12),
   [117926] = 12, -- Rough Stretcher, Military - DWC (x12),
   [117956] = 12, -- Rough Box, Boarded - DWC (x12),
@@ -228,7 +227,7 @@ mmInternal.winterWritsRequiredQty = {
   [33813] = 12, -- Roast Corn ICW (x12) -- Ver
   [33825] = 12, -- Grape Preserves ICW (x12)
 }
-mmInternal.blacksmithClothierWoodworkingItemType = {
+mmUtils.blacksmithClothierWoodworkingItemType = {
   [17] = true, -- Helmet
   [18] = true, -- Neck
   [19] = true, -- Chest

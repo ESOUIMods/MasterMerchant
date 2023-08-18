@@ -88,10 +88,10 @@ local itemIndexCache = { }
 function internal:GetItemLinkParseData(itemLink)
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
   if itemType == ITEMTYPE_POISON or itemType == ITEMTYPE_POTION then
-    return internal:GetPotionEffectWritRewardField(itemLink)
+    return MasterMerchant_Internal:GetPotionEffectWritRewardField(itemLink)
   end
   if itemType == ITEMTYPE_MASTER_WRIT then
-    return internal:GetVoucherCountByItemLink(itemLink)
+    return MasterMerchant_Internal:GetVoucherCountByItemLink(itemLink)
   end
   return 0
 end

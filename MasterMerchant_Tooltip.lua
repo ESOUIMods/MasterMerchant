@@ -1,4 +1,4 @@
-local mmInternal = _G["MasterMerchant_Internal"]
+local mmUtils = _G["MasterMerchant_Internal"]
 
 function MasterMerchant:GetSingularOrPluralString(singularString, pluralString, formatValue)
   if formatValue > 1 then return string.format(pluralString, formatValue)
@@ -235,7 +235,7 @@ end
 
 -- /script d(MasterMerchant:MaterialCostPriceTip("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 function MasterMerchant:MaterialCostPriceTip(itemLink, writCost)
-  local cost = mmInternal:MaterialCostPrice(itemLink)
+  local cost = mmUtils:MaterialCostPrice(itemLink)
   local costTipString = ""
   local writCostTipString = ""
   local totalCostTipString = ""
@@ -251,7 +251,7 @@ function MasterMerchant:MaterialCostPriceTip(itemLink, writCost)
     totalCostTipString = MasterMerchant.LocalizedNumber(totalCost) .. MM_COIN_ICON_NO_SPACE
     materialTooltipString = string.format(GetString(MM_MATCOST_PLUS_WRITCOST_TIP), costTipString, writCostTipString, totalCostTipString)
   end
-  local qtyRequired = mmInternal:GetWinterWritRequiredQty(itemLink)
+  local qtyRequired = mmUtils:GetWinterWritRequiredQty(itemLink)
   if materialTooltipString ~= MM_STRING_EMPTY and not qtyRequired then
     materialTooltipString = materialTooltipString .. "\n(qty not in database)"
   end
