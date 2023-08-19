@@ -1409,6 +1409,7 @@ function MasterMerchant.PostPendingItem()
     MasterMerchant.listIsDirty[REPORTS] = true
     local pricingDataNamespace = GS17DataSavedVariables[internal.pricingNamespace]
     local priceDataKey = MasterMerchant.systemSavedVariables.priceCalcAll and "pricingdataall" or guildId
+    pricingDataNamespace[priceDataKey] = pricingDataNamespace[priceDataKey] or {}
     local pricingDataInfo = pricingDataNamespace[priceDataKey]
 
     pricingDataInfo[theIID] = pricingDataInfo[theIID] or {}
@@ -3236,6 +3237,7 @@ end
 function MasterMerchant.TradingHouseSetupPendingPost(self)
   --MasterMerchant:dm("Debug", "TradingHouseSetupPendingPost")
   OriginalSetupPendingPost(self)
+  -- MasterMerchantPriceCalculatorUnitCostAmount
 
   if (self.pendingItemSlot) then
     local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
@@ -3248,6 +3250,7 @@ function MasterMerchant.TradingHouseSetupPendingPost(self)
 
     local pricingDataNamespace = GS17DataSavedVariables[internal.pricingNamespace]
     local priceDataKey = MasterMerchant.systemSavedVariables.priceCalcAll and "pricingdataall" or selectedGuildId
+    pricingDataNamespace[priceDataKey] = pricingDataNamespace[priceDataKey] or {}
     local pricingDataInfo = pricingDataNamespace[priceDataKey]
 
     if pricingDataInfo and pricingDataInfo[theIID] and pricingDataInfo[theIID][itemIndex] then
@@ -3778,6 +3781,7 @@ function MasterMerchant:FirstInitialize()
 
         local pricingDataNamespace = GS17DataSavedVariables[internal.pricingNamespace]
         local priceDataKey = MasterMerchant.systemSavedVariables.priceCalcAll and "pricingdataall" or selectedGuildId
+        pricingDataNamespace[priceDataKey] = pricingDataNamespace[priceDataKey] or {}
         local pricingDataInfo = pricingDataNamespace[priceDataKey]
         pricingDataInfo[theIID] = pricingDataInfo[theIID] or {}
         pricingDataInfo[theIID][itemIndex] = tradingHouse.invoiceSellPrice.sellPrice / stackCount

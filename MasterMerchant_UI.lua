@@ -1991,6 +1991,7 @@ function MasterMerchant:UpdateFonts()
 end
 
 function MasterMerchant:updateCalc()
+  -- MasterMerchantPriceCalculatorUnitCostAmount
   local stackSize = zo_strmatch(MasterMerchantPriceCalculatorStack:GetText(), 'x (%d+)')
   local unitPrice = MasterMerchantPriceCalculatorUnitCostAmount:GetText()
   if not stackSize or tonumber(stackSize) < 1 then
