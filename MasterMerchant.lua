@@ -24,12 +24,6 @@ local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
 local REPORTS = 'reports_vs'
 
-local CSA_EVENT_SMALL_TEXT = 1
-local CSA_EVENT_LARGE_TEXT = 2
-local CSA_EVENT_COMBINED_TEXT = 3
-local CSA_EVENT_NO_TEXT = 4
-local CSA_EVENT_RAID_COMPLETE_TEXT = 5
-
 --[[
 used to temporarily ignore sales that are so new
 the ammount of time in seconds causes the UI to say
@@ -1389,12 +1383,13 @@ function MasterMerchant:my_GuildColumn_OnLinkMouseUp(guildZoneId, button, contro
   end
 end
 
-function MasterMerchant.PostPendingItem(self)
+function MasterMerchant.PostPendingItem()
   --MasterMerchant:dm("Debug", "PostPendingItem")
-  if self.pendingItemSlot and self.pendingSaleIsValid then
-    local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
-    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
-    local itemUniqueId = GetItemUniqueId(BAG_BACKPACK, self.pendingItemSlot)
+  local tradingHouse = TRADING_HOUSE
+  if tradingHouse.pendingItemSlot and tradingHouse.pendingSaleIsValid then
+    local itemLink = GetItemLink(BAG_BACKPACK, tradingHouse.pendingItemSlot)
+    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, tradingHouse.pendingItemSlot)
+    local itemUniqueId = GetItemUniqueId(BAG_BACKPACK, tradingHouse.pendingItemSlot)
 
     local theIID = GetItemLinkItemId(itemLink)
     local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
@@ -1406,22 +1401,29 @@ function MasterMerchant.PostPendingItem(self)
       itemLink = itemLink,
       quant = stackCount,
       timestamp = GetTimeStamp(),
-      price = self.invoiceSellPrice.sellPrice,
+      price = tradingHouse.invoiceSellPrice.sellPrice,
       seller = GetDisplayName(),
       id = itemUniqueId,
     }
     internal:addPostedItem(theEvent)
     MasterMerchant.listIsDirty[REPORTS] = true
-
     local pricingDataNamespace = GS17DataSavedVariables[internal.pricingNamespace]
-    local priceDataKey = MasterMerchant.systemSavedVariables.priceCalcAll and "pricingdataall" or selectedGuildId
+    local priceDataKey = MasterMerchant.systemSavedVariables.priceCalcAll and "pricingdataall" or guildId
     local pricingDataInfo = pricingDataNamespace[priceDataKey]
 
     pricingDataInfo[theIID] = pricingDataInfo[theIID] or {}
-    pricingDataInfo[theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
+    pricingDataInfo[theIID][itemIndex] = tradingHouse.invoiceSellPrice.sellPrice / stackCount
 
     if MasterMerchant.systemSavedVariables.displayListingMessage then
-      MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT)), zo_strformat('<<t:1>>', itemLink), stackCount, self.invoiceSellPrice.sellPrice, guildName))
+      local messageFormatter = MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(MM_LISTING_ALERT))
+      local message = string.format(
+        messageFormatter,
+        zo_strformat('<<t:1>>', itemLink),
+        stackCount,
+        tradingHouse.invoiceSellPrice.sellPrice,
+        guildName
+      )
+      MasterMerchant:dm("Info", message)
     end
   end
 end
@@ -2551,25 +2553,25 @@ function MasterMerchant:SpecialMessage(force)
       daysCount = math.floor(daysCount)
 
       if rem == 0 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
           "Objective_Complete",
           string.format("Keep it up!!  You've made it %s complete days!!", daysCount))
       end
 
       if rem == 0.25 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
           "Objective_Complete",
           string.format("Working your way through day %s...", daysCount + 1))
       end
 
       if rem == 0.5 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
           "Objective_Complete",
           string.format("Day %s half way done!", daysCount + 1))
       end
 
       if rem == 0.75 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT,
+        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
           "Objective_Complete",
           string.format("Just a little more to go in day %s...", daysCount + 1))
       end
@@ -2590,6 +2592,7 @@ function MasterMerchant:ExportSalesReport()
 
   local guildID = GetGuildId(guildNum)
   local guildName = GetGuildName(guildID)
+  local dateRange = MasterMerchant.systemSavedVariables.rankIndexRoster
 
   MasterMerchant:dm("Info", string.format(GetString(MM_EXPORTING), guildName))
   export[guildName] = {}
@@ -2599,23 +2602,9 @@ function MasterMerchant:ExportSalesReport()
   for guildMemberIndex = 1, numGuildMembers do
     local displayName, note, rankIndex, status, secsSinceLogoff = GetGuildMemberInfo(guildID, guildMemberIndex)
 
-    local amountBought = 0
-    if internal.guildPurchases and
-      internal.guildPurchases[guildName] and
-      internal.guildPurchases[guildName].sellers and
-      internal.guildPurchases[guildName].sellers[displayName] and
-      internal.guildPurchases[guildName].sellers[displayName].sales then
-      amountBought = internal.guildPurchases[guildName].sellers[displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster] or 0
-    end
+    local amountBought = mmUtils:GetGuildPurchases(guildName, displayName, dateRange)
 
-    local amountSold = 0
-    if internal.guildSales and
-      internal.guildSales[guildName] and
-      internal.guildSales[guildName].sellers and
-      internal.guildSales[guildName].sellers[displayName] and
-      internal.guildSales[guildName].sellers[displayName].sales then
-      amountSold = internal.guildSales[guildName].sellers[displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster] or 0
-    end
+    local amountSold = mmUtils:GetGuildSales(guildName, displayName, dateRange)
 
     -- sample [2] = "@Name&Sales&Purchases&Rank"
     local amountTaxes = 0
@@ -2892,7 +2881,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
               lastEvent[2] = textTime
               lastEvent[3] = 1
             end
-            MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, SOUNDS.NONE, string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
+            MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT, SOUNDS.NONE, string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
           end -- End of on screen announce
 
           -- Chat alert
@@ -2909,7 +2898,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
         local stringPrice = self.LocalizedNumber(totalGold)
 
         if MasterMerchant.systemSavedVariables.showAnnounceAlerts and (MasterMerchant.systemSavedVariables.showCyroAlerts or GetCurrentMapZoneIndex ~= 37) then
-          MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_EVENT_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName, string.format(GetString(SK_SALES_ALERT_GROUP_COLOR), numSold, stringPrice))
+          MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName, string.format(GetString(SK_SALES_ALERT_GROUP_COLOR), numSold, stringPrice))
         end
 
         -- Chat alert
@@ -3099,43 +3088,25 @@ function MasterMerchant:BuildRosterTimeDropdown()
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantRosterTimeChooser)
   timeDropdown:ClearItems()
 
-  MasterMerchant.systemSavedVariables.rankIndexRoster = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
+  local timeEntries = {
+    { range = MM_DATERANGE_TODAY, label = MM_INDEX_TODAY },
+    { range = MM_DATERANGE_YESTERDAY, label = MM_INDEX_YESTERDAY },
+    { range = MM_DATERANGE_THISWEEK, label = MM_INDEX_THISWEEK },
+    { range = MM_DATERANGE_LASTWEEK, label = MM_INDEX_LASTWEEK },
+    { range = MM_DATERANGE_PRIORWEEK, label = MM_INDEX_PRIORWEEK },
+    { range = MM_DATERANGE_7DAY, label = MM_INDEX_7DAY },
+    { range = MM_DATERANGE_10DAY, label = MM_INDEX_10DAY },
+    { range = MM_DATERANGE_30DAY, label = MM_INDEX_30DAY },
+    { range = MM_DATERANGE_CUSTOM, label = MasterMerchant.customTimeframeText }
+  }
 
-  local timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_TODAY), function() self:UpdateRosterWindow(MM_DATERANGE_TODAY) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_TODAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_TODAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_YESTERDAY), function() self:UpdateRosterWindow(MM_DATERANGE_YESTERDAY) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_YESTERDAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_YESTERDAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_THISWEEK), function() self:UpdateRosterWindow(MM_DATERANGE_THISWEEK) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_THISWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_THISWEEK)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_LASTWEEK), function() self:UpdateRosterWindow(MM_DATERANGE_LASTWEEK) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_LASTWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_LASTWEEK)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_PRIORWEEK), function() self:UpdateRosterWindow(MM_DATERANGE_PRIORWEEK) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_PRIORWEEK then timeDropdown:SetSelectedItem(GetString(MM_INDEX_PRIORWEEK)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_7DAY), function() self:UpdateRosterWindow(MM_DATERANGE_7DAY) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_7DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_7DAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_10DAY), function() self:UpdateRosterWindow(MM_DATERANGE_10DAY) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_10DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_10DAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(GetString(MM_INDEX_30DAY), function() self:UpdateRosterWindow(MM_DATERANGE_30DAY) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_30DAY then timeDropdown:SetSelectedItem(GetString(MM_INDEX_30DAY)) end
-
-  timeEntry = timeDropdown:CreateItemEntry(MasterMerchant.customTimeframeText, function() self:UpdateRosterWindow(MM_DATERANGE_CUSTOM) end)
-  timeDropdown:AddItem(timeEntry)
-  if MasterMerchant.systemSavedVariables.rankIndexRoster == MM_DATERANGE_CUSTOM then timeDropdown:SetSelectedItem(MasterMerchant.customTimeframeText) end
+  for _, entry in ipairs(timeEntries) do
+    local timeEntry = timeDropdown:CreateItemEntry(GetString(entry.label), function() self:UpdateRosterWindow(entry.range) end)
+    timeDropdown:AddItem(timeEntry)
+    if MasterMerchant.systemSavedVariables.rankIndexRoster == entry.range then
+      timeDropdown:SetSelectedItem(GetString(entry.label))
+    end
+  end
 end
 
 --/script ZO_SharedRightBackground:SetWidth(1088)
@@ -3158,21 +3129,9 @@ function MasterMerchant:InitRosterChanges()
     row = {
       align = TEXT_ALIGN_RIGHT,
       data = function(guildId, data, index)
-
-        local amountSold = 0
-
-        if internal.guildSales and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName] and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
-
-          amountSold = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
-
-        end
-
+        local dateRange = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
+        local amountSold = mmUtils:GetGuildSales(GUILD_ROSTER_MANAGER.guildName, data.displayName, dateRange)
         return amountSold
-
       end,
       format = function(value)
         return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
@@ -3192,19 +3151,8 @@ function MasterMerchant:InitRosterChanges()
     row = {
       align = TEXT_ALIGN_RIGHT,
       data = function(guildId, data, index)
-
-        local amountBought = 0
-
-        if internal.guildPurchases and
-          internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName] and
-          internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers and
-          internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
-          internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
-
-          amountBought = internal.guildPurchases[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
-
-        end
-
+        local dateRange = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
+        local amountBought = mmUtils:GetGuildPurchases(GUILD_ROSTER_MANAGER.guildName, data.displayName, dateRange)
         return amountBought
 
       end,
@@ -3227,20 +3175,9 @@ function MasterMerchant:InitRosterChanges()
     row = {
       align = TEXT_ALIGN_RIGHT,
       data = function(guildId, data, index)
-
-        local amountSold = 0
-
-        if internal.guildSales and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName] and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
-
-          amountSold = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
-        end
-
+        local dateRange = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
+        local amountSold = mmUtils:GetGuildPurchases(GUILD_ROSTER_MANAGER.guildName, data.displayName, dateRange)
         return math.floor(amountSold * 0.035)
-
       end,
       format = function(value)
         return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
@@ -3264,21 +3201,9 @@ function MasterMerchant:InitRosterChanges()
     row = {
       align = TEXT_ALIGN_RIGHT,
       data = function(guildId, data, index)
-
-        local saleCount = 0
-
-        if internal.guildSales and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName] and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName] and
-          internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].sales then
-
-          saleCount = internal.guildSales[GUILD_ROSTER_MANAGER.guildName].sellers[data.displayName].count[MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY] or 0
-
-        end
-
+        local dateRange = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
+        local saleCount = mmUtils:GetSalesCount(GUILD_ROSTER_MANAGER.guildName, data.displayName, dateRange)
         return saleCount
-
       end,
       format = function(value)
         return MasterMerchant.LocalizedNumber(value)
@@ -3846,6 +3771,7 @@ function MasterMerchant:FirstInitialize()
   if AwesomeGuildStore then
     AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
       function(guildId, itemLink, price, stackCount)
+        local tradingHouse = TRADING_HOUSE
         local theIID = GetItemLinkItemId(itemLink)
         local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
         local selectedGuildId = GetSelectedTradingHouseGuildId()
@@ -3854,7 +3780,7 @@ function MasterMerchant:FirstInitialize()
         local priceDataKey = MasterMerchant.systemSavedVariables.priceCalcAll and "pricingdataall" or selectedGuildId
         local pricingDataInfo = pricingDataNamespace[priceDataKey]
         pricingDataInfo[theIID] = pricingDataInfo[theIID] or {}
-        pricingDataInfo[theIID][itemIndex] = self.invoiceSellPrice.sellPrice / stackCount
+        pricingDataInfo[theIID][itemIndex] = tradingHouse.invoiceSellPrice.sellPrice / stackCount
 
       end)
   else

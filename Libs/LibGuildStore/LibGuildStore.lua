@@ -60,7 +60,7 @@ function internal:QueueCheckStatus()
     --[[
     MasterMerchant.CenterScreenAnnounce_AddMessage(
       'LibHistoireAlert',
-      CSA_EVENT_SMALL_TEXT,
+      CSA_CATEGORY_SMALL_TEXT,
       LibGuildStore.systemSavedVariables.alertSoundName,
       "LibHistoire Ready"
     )

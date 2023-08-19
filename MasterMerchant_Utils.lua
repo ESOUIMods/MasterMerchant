@@ -166,3 +166,33 @@ function mmUtils:ClearBonanzaPriceCacheByItemLink(itemLink)
   local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
   mmUtils:ClearBonanzaCacheById(itemID, itemIndex)
 end
+
+function mmUtils:GetGuildSales(guildName, displayName, dateRange)
+  local amountSold = (internal.guildSales and
+    internal.guildSales[guildName] and
+    internal.guildSales[guildName].sellers and
+    internal.guildSales[guildName].sellers[displayName] and
+    internal.guildSales[guildName].sellers[displayName].sales) and
+    internal.guildSales[guildName].sellers[displayName].sales[dateRange] or 0
+  return amountSold
+end
+
+function mmUtils:GetGuildPurchases(guildName, displayName, dateRange)
+  local amountSold = (internal.guildPurchases and
+    internal.guildPurchases[guildName] and
+    internal.guildPurchases[guildName].sellers and
+    internal.guildPurchases[guildName].sellers[displayName] and
+    internal.guildPurchases[guildName].sellers[displayName].sales) and
+    internal.guildPurchases[guildName].sellers[displayName].sales[dateRange] or 0
+  return amountSold
+end
+
+function mmUtils:GetSalesCount(guildName, displayName, dateRange)
+  local amountSold = (internal.guildPurchases and
+    internal.guildPurchases[guildName] and
+    internal.guildPurchases[guildName].sellers and
+    internal.guildPurchases[guildName].sellers[displayName] and
+    internal.guildPurchases[guildName].sellers[displayName].count) and
+    internal.guildPurchases[guildName].sellers[displayName].count[dateRange] or 0
+  return amountSold
+end
