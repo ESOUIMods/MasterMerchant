@@ -7,6 +7,21 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.69, 3.7.70
+
+- Fix for LibMediaProvider font issue
+- Fix for: MasterMerchant.lua:3260: function expected
+
+I sorta rushed this version. I will look into other reports as I have time and make sure things are working the best they can.
+
+## ChangeLog 3.7.68
+
+- Improved Outliers detection for regular sales and Bonanza sales
+
+## ChangeLog 3.7.67
+
+- Hotfix for Russian localization because mychaelo got creative with the string formatting
+
 ## ChangeLog 3.7.66
 
 - Moved account names to GS17Data.lua
