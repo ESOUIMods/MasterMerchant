@@ -500,60 +500,43 @@ end
 -- of saved variables into a unified listings_data table.
 -- @param otherData: A table containing sales data from different versions
 function internal:ReferenceListings(otherData)
-  -- Retrieve the saved variables data from the provided namespace
   local savedVars = otherData[internal.listingsNamespace]
+  local oldestTime = nil
+  local newestTime = nil
 
-  -- Iterate over each itemid and its corresponding versionlist in the savedVars
   for itemid, versionlist in pairs(savedVars) do
-    -- Check if listings_data[itemid] doesn't exist and versionlist is not empty
     if not listings_data[itemid] and next(versionlist) then
-      -- Assign the versionlist directly to listings_data[itemid]
       listings_data[itemid] = versionlist
     else
-      -- Iterate over each versionid and versiondata in the versionlist
       for versionid, versiondata in pairs(versionlist) do
-        -- If listings_data[itemid][versionid] doesn't exist, create an empty table for it
-        if not listings_data[itemid][versionid] then
-          listings_data[itemid][versionid] = {}
-        end
-
-        -- Initialize a table for sales and extract sales data from versiondata
-        local sales = versiondata['sales'] or {}
-
-        -- Iterate over each saleid and saledata in the versiondata's sales table
-        for saleid, saledata in pairs(versiondata['sales']) do
-          -- Check if saleid is a number and saledata is a table with timestamp
-          if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata["timestamp"]) == 'number') then
-            -- Insert the saledata into the sales table
-            table.insert(sales, saledata)
+        if not listings_data[itemid][versionid] and next(versiondata) then
+          listings_data[itemid][versionid] = versiondata
+        else
+          if next(versiondata['sales']) then
+            listings_data[itemid][versionid]['sales'] = listings_data[itemid][versionid]['sales'] or {}
+            for saleid, saledata in pairs(versiondata['sales']) do
+              if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata["timestamp"]) == 'number') then
+                table.insert(listings_data[itemid][versionid]['sales'], saledata)
+              end
+            end
+            local _, firstSale = next(versiondata['sales'], nil)
+            if firstSale then
+              local itemLink = internal:GetItemLinkByIndex(firstSale.itemLink)
+              listings_data[itemid][versionid].itemIcon = versiondata.itemIcon or GetItemLinkInfo(itemLink)
+              listings_data[itemid][versionid].itemAdderText = versiondata.itemAdderText or internal:AddSearchToItem(itemLink)
+              listings_data[itemid][versionid].itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+            end
+            for _, saledata in ipairs(listings_data[itemid][versionid]['sales']) do
+              if oldestTime == nil or oldestTime > saledata.timestamp then oldestTime = saledata.timestamp end
+              if newestTime == nil or newestTime < saledata.timestamp then newestTime = saledata.timestamp end
+            end
+            listings_data[itemid][versionid].totalCount = NonContiguousCount(sales_data[itemid][versionid]['sales'])
+            listings_data[itemid][versionid].wasAltered = true
+            listings_data[itemid][versionid].oldestTime = oldestTime
+            listings_data[itemid][versionid].newestTime = newestTime
           end
         end
-
-        -- Retrieve the first sale data for itemLink and other details
-        local firstSale = next(versiondata['sales'], nil)
-        if firstSale then
-          local itemLink = firstSale.itemLink
-          -- Update listings_data with merged itemIcon, itemAdderText, and itemDesc
-          listings_data[itemid][versionid].itemIcon = versiondata.itemIcon or GetItemLinkInfo(itemLink)
-          listings_data[itemid][versionid].itemAdderText = versiondata.itemAdderText or internal:AddSearchToItem(itemLink)
-          listings_data[itemid][versionid].itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-        end
-
-        -- Create a 'sales' sub-table under the version data if not already present
-        if not listings_data[itemid][versionid]['sales'] then
-          listings_data[itemid][versionid]['sales'] = {}
-        end
-
-        -- Copy sales data from 'sales' table into the listings_data table
-        for _, saledata in ipairs(sales) do
-          table.insert(listings_data[itemid][versionid]['sales'], saledata)
-        end
-
-        -- Update totalCount using the count of items in the 'sales' table
-        listings_data[itemid][versionid].totalCount = NonContiguousCount(listings_data[itemid][versionid]['sales'])
       end
-
-      -- Remove the processed data from savedVars to save memory
       savedVars[itemid] = nil
     end
   end

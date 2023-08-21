@@ -195,6 +195,7 @@ ZO_CreateStringId("MM_TIP_TTC_HEADER", "TTC (")
 
 ZO_CreateStringId("MM_NO_DATA_FORMAT", "Aucune donnée de vente")
 ZO_CreateStringId("MM_NO_DATA_RANGE_FORMAT", "Aucune donnée de vente au cours des derniers %d jours")
+ZO_CreateStringId("MM_DATE_RANGE_NONE", "Date range None is selected")
 
 ZO_CreateStringId("MM_PTC_PER_VOUCHER", "Moyenne par assignat: %s")
 

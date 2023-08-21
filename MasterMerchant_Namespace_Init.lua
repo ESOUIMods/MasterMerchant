@@ -26,7 +26,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.72'
+MasterMerchant.version = '3.7.73'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
@@ -97,6 +97,15 @@ MM_PRICE_BONANZA = 4
 MM_AGS_SORT_PERCENT_ASCENDING = 1
 MM_AGS_SORT_PERCENT_DESCENDING = 2
 
+MM_RANGE_VALUE_NONE = 1
+MM_RANGE_VALUE_ALL = 2
+MM_RANGE_VALUE_FOCUS1 = 3
+MM_RANGE_VALUE_FOCUS2 = 4
+MM_RANGE_VALUE_FOCUS3 = 5
+
+MM_DAYS_RANGE_NONE = -1
+MM_DAYS_RANGE_ALL = 10000
+
 -------------------------------------------------
 ----- MasterMerchant Assignments            -----
 -------------------------------------------------
@@ -135,6 +144,9 @@ MasterMerchant.guildList = {}
 MasterMerchant.blacklistTable = {}
 MasterMerchant.filterDateRanges = nil
 MasterMerchant.dateRanges = nil
+MasterMerchant.daysRangeChoices = {}
+MasterMerchant.daysRangeValues = {}
+MasterMerchant.daysRangeLookup = {}
 
 MasterMerchant.a_test = {}
 MasterMerchant.aa_test = {}

@@ -101,24 +101,21 @@ local function GetItemsTrait(itemLink, itemType)
     return GetItemLinkTraitType(itemLink) or 0
   end
   local powerLevel = GetPotionPowerLevel(itemLink)
-  return internal.potionVarientTable and internal.potionVarientTable[powerLevel] or 0
+  return internal.potionVarientTable[powerLevel] or 0
 end
 
 local function GetRequiredLevel(itemLink, itemType)
-  if itemType == ITEMTYPE_RECIPE then
-    return 1
-  end
-  return GetItemLinkRequiredLevel(itemLink) or 1
+  return itemType ~= ITEMTYPE_RECIPE and GetItemLinkRequiredLevel(itemLink) or 1
 end
 
 local function CreateIndexFromLink(itemLink)
   local itemType, specializedItemType = GetItemLinkItemType(itemLink)
-  local requiredChampionPoints = GetItemLinkRequiredChampionPoints(itemLink) or 0
-  local quality = GetItemLinkDisplayQuality(itemLink) or 1
+  local requiredLevel = GetRequiredLevel(itemLink, itemType)
+  local requiredChampionPoints = GetItemLinkRequiredChampionPoints(itemLink) / 10
+  local quality = GetItemLinkDisplayQuality(itemLink)
   local trait = GetItemsTrait(itemLink, itemType)
   local parseData = internal:GetItemLinkParseData(itemLink)
-
-  local index = GetRequiredLevel(itemLink, itemType) .. ":" .. (requiredChampionPoints / 10) .. ":" .. quality .. ":" .. trait .. ":" .. parseData
+  local index = requiredLevel .. ":" .. requiredChampionPoints .. ":" .. quality .. ":" .. trait .. ":" .. parseData
   return index
 end
 

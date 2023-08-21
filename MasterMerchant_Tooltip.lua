@@ -15,7 +15,8 @@ function MasterMerchant:AvgPricePriceTip(statsInfo, chatText)
   local avgPriceDays
   local includeItemCount = MasterMerchant.systemSavedVariables.includeItemCountPriceToChat
   local fullDataRange = false
-  if statsInfo and statsInfo.numDays == 10000 then fullDataRange = true end
+  if statsInfo and statsInfo.numDays == MM_DAYS_RANGE_ALL then fullDataRange = true end
+  if statsInfo and statsInfo.numDays == MM_DAYS_RANGE_NONE then return GetString(MM_DATE_RANGE_NONE) end
 
   if chatText then goldIcon = "" else goldIcon = MM_COIN_ICON_NO_SPACE end
   if chatText then headerText = GetString(MM_PTC_MM_HEADER) else headerText = GetString(MM_TIP_MM_HEADER) end

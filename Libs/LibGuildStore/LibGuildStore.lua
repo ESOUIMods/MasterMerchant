@@ -319,6 +319,9 @@ local function SetupDefaults()
   if GS17DataSavedVariables["namefilterna"] == nil then GS17DataSavedVariables["namefilterna"] = {} end
   if GS17DataSavedVariables["namefiltereu"] == nil then GS17DataSavedVariables["namefiltereu"] = {} end
 
+  -- set to false on startup in case previous process did not complete
+  LibGuildStore_SavedVariables["updateAdditionalText"] = false
+
   internal:SetupGuildContainers()
   SetupLibHistoireContainers()
   SetupLibGuildStore()

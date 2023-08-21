@@ -7,10 +7,22 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
-## ChangeLog 3.7.69, 3.7.70
+## ChangeLog 3.7.73
+
+- Addressed long standing issue for sales indexing
+- Added tooltip notification when the user has chosen "None" for a data range or focus value
+
+While attempting to simplify all code in order to improve the initialization routine so MM can use LibAsync or so I can refine LibExecutionQueue and reduce the stutter during initialization I discovered that the main routine for indexing sales was missing important functionality since about September of last year from version 3.6.46.
+
+I was never able to update the function in the past without breaking it and with my current improvements the missing functionality became more obvious. This functionality does not really impact sales totals but it could in some cases assign the incorrect name or icon to the sales data for an item. It may also cause MM to sort the sale incorrectly within its various sales containers.
+
+Using '/lgs redesc' and '/lgs clean' should correct the issue.
+
+## ChangeLog 3.7.69, 3.7.70, 3.7.71, , 3.7.72
 
 - Fix for LibMediaProvider font issue
 - Fix for: MasterMerchant.lua:3260: function expected
+- Fix for: MasterMerchant.lua:3857: attempt to index a nil value
 
 I sorta rushed this version. I will look into other reports as I have time and make sure things are working the best they can.
 

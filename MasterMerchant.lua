@@ -74,7 +74,7 @@ end
 
 function MasterMerchant:CheckTimeframe()
   -- setup focus info
-  local daysRange = 10000
+  local daysRange = MM_DAYS_RANGE_ALL
   local dayCutoff = GetTimeStamp()
   if not MasterMerchant.isInitialized then
     return dayCutoff - (daysRange * ZO_ONE_DAY_IN_SECONDS), daysRange
@@ -91,11 +91,11 @@ function MasterMerchant:CheckTimeframe()
   end
 
   -- 10000 for numDays is more or less like saying it is undefined
-  if range == GetString(MM_RANGE_NONE) then return -1, -1 end
-  if range == GetString(MM_RANGE_ALL) then daysRange = 10000 end
-  if range == GetString(MM_RANGE_FOCUS1) then daysRange = MasterMerchant.systemSavedVariables.focus1 end
-  if range == GetString(MM_RANGE_FOCUS2) then daysRange = MasterMerchant.systemSavedVariables.focus2 end
-  if range == GetString(MM_RANGE_FOCUS3) then daysRange = MasterMerchant.systemSavedVariables.focus3 end
+  if range == MM_RANGE_VALUE_NONE then return MM_DAYS_RANGE_NONE, MM_DAYS_RANGE_NONE end
+  if range == MM_RANGE_VALUE_ALL then daysRange = MM_DAYS_RANGE_ALL end
+  if range == MM_RANGE_VALUE_FOCUS1 then daysRange = MasterMerchant.systemSavedVariables.focus1 end
+  if range == MM_RANGE_VALUE_FOCUS2 then daysRange = MasterMerchant.systemSavedVariables.focus2 end
+  if range == MM_RANGE_VALUE_FOCUS3 then daysRange = MasterMerchant.systemSavedVariables.focus3 end
 
   return dayCutoff - (daysRange * ZO_ONE_DAY_IN_SECONDS), daysRange
 end
@@ -416,7 +416,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
 
   local avgPrice = nil
   local legitSales = nil
-  local daysHistory = 10000
+  local daysHistory = MM_DAYS_RANGE_ALL
   local countSold = nil
   local bonanzaPrice = nil
   local bonanzaListings = nil
@@ -446,14 +446,15 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
 
   -- set timeCheck and daysRange for cache and tooltips
   local timeCheck, daysRange = self:CheckTimeframe()
-  if daysRange ~= 10000 then daysHistory = daysRange end
+  if daysRange ~= MM_DAYS_RANGE_ALL then daysHistory = daysRange end
 
   local returnData = { ['avgPrice'] = avgPrice, ['numSales'] = legitSales, ['numDays'] = daysHistory, ['numItems'] = countSold,
                        ['bonanzaPrice'] = bonanzaPrice, ['bonanzaListings'] = bonanzaListings, ['bonanzaItemCount'] = bonanzaItemCount, ['numVouchers'] = numVouchers,
                        ['graphInfo'] = graphInfo }
 
-  if not MasterMerchant.isInitialized then return returnData end
-  if not itemLink then return returnData end
+  if not MasterMerchant.isInitialized or not itemLink or timeCheck == MM_DAYS_RANGE_NONE then
+    return returnData
+  end
 
   if not MasterMerchant.systemSavedVariables.showGraph then
     generateGraph = false
@@ -654,12 +655,12 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
 
     12-11-2022 Old 'daysHistory = daysRange' moved above for tooltips
     ]]--
-    if (daysRange == 10000) then
+    if (daysRange == MM_DAYS_RANGE_ALL) then
       local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS)
       daysHistory = quotient + math.floor(0.5 + remainder)
     end
 
-    local useDaysRange = daysRange ~= 10000
+    local useDaysRange = daysRange ~= MM_DAYS_RANGE_ALL
     oldestTime = nil
     -- start loop for non outliers
     for _, item in pairs(salesData) do
@@ -1925,7 +1926,8 @@ function MasterMerchant:LibAddonInit()
         type = 'dropdown',
         name = GetString(MM_DEFAULT_TIME_NAME),
         tooltip = GetString(MM_DEFAULT_TIME_TIP),
-        choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
+        choices = MasterMerchant.daysRangeChoices,
+        choicesValues = MasterMerchant.daysRangeValues,
         getFunc = function() return MasterMerchant.systemSavedVariables.defaultDays end,
         setFunc = function(value) MasterMerchant.systemSavedVariables.defaultDays = value end,
         default = MasterMerchant.systemDefault.defaultDays,
@@ -1935,7 +1937,8 @@ function MasterMerchant:LibAddonInit()
         type = 'dropdown',
         name = GetString(MM_SHIFT_TIME_NAME),
         tooltip = GetString(MM_SHIFT_TIME_TIP),
-        choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
+        choices = MasterMerchant.daysRangeChoices,
+        choicesValues = MasterMerchant.daysRangeValues,
         getFunc = function() return MasterMerchant.systemSavedVariables.shiftDays end,
         setFunc = function(value) MasterMerchant.systemSavedVariables.shiftDays = value end,
         default = MasterMerchant.systemDefault.shiftDays,
@@ -1945,7 +1948,8 @@ function MasterMerchant:LibAddonInit()
         type = 'dropdown',
         name = GetString(MM_CTRL_TIME_NAME),
         tooltip = GetString(MM_CTRL_TIME_TIP),
-        choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
+        choices = MasterMerchant.daysRangeChoices,
+        choicesValues = MasterMerchant.daysRangeValues,
         getFunc = function() return MasterMerchant.systemSavedVariables.ctrlDays end,
         setFunc = function(value) MasterMerchant.systemSavedVariables.ctrlDays = value end,
         default = MasterMerchant.systemDefault.ctrlDays,
@@ -1955,7 +1959,8 @@ function MasterMerchant:LibAddonInit()
         type = 'dropdown',
         name = GetString(MM_CTRLSHIFT_TIME_NAME),
         tooltip = GetString(MM_CTRLSHIFT_TIME_TIP),
-        choices = { GetString(MM_RANGE_ALL), GetString(MM_RANGE_FOCUS1), GetString(MM_RANGE_FOCUS2), GetString(MM_RANGE_FOCUS3), GetString(MM_RANGE_NONE) },
+        choices = MasterMerchant.daysRangeChoices,
+        choicesValues = MasterMerchant.daysRangeValues,
         getFunc = function() return MasterMerchant.systemSavedVariables.ctrlShiftDays end,
         setFunc = function(value) MasterMerchant.systemSavedVariables.ctrlShiftDays = value end,
         default = MasterMerchant.systemDefault.ctrlShiftDays,
@@ -1988,7 +1993,7 @@ function MasterMerchant:LibAddonInit()
           MasterMerchant.systemSavedVariables.customTimeframe = value
           MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
           MasterMerchant:BuildRosterTimeDropdown()
-          MasterMerchant:BuildGuiTimeDropdown()
+          MasterMerchant:BuildGuidTimeDropdown()
         end,
         default = MasterMerchant.systemDefault.customTimeframe,
         warning = GetString(MM_CUSTOM_TIMEFRAME_WARN),
@@ -2005,7 +2010,7 @@ function MasterMerchant:LibAddonInit()
           MasterMerchant.systemSavedVariables.customTimeframeType = value
           MasterMerchant.customTimeframeText = MasterMerchant.systemSavedVariables.customTimeframe .. ' ' .. MasterMerchant.systemSavedVariables.customTimeframeType
           MasterMerchant:BuildRosterTimeDropdown()
-          MasterMerchant:BuildGuiTimeDropdown()
+          MasterMerchant:BuildGuidTimeDropdown()
         end,
         default = MasterMerchant.systemDefault.customTimeframeType,
         warning = GetString(MM_CUSTOM_TIMEFRAME_WARN),
@@ -3102,10 +3107,12 @@ function MasterMerchant:BuildRosterTimeDropdown()
   }
 
   for _, entry in ipairs(timeEntries) do
-    local timeEntry = timeDropdown:CreateItemEntry(GetString(entry.label), function() self:UpdateRosterWindow(entry.range) end)
+    local label = GetString(entry.label)
+    if entry.range == MM_DATERANGE_CUSTOM then label = entry.label end
+    local timeEntry = timeDropdown:CreateItemEntry(label, function() self:UpdateRosterWindow(entry.range) end)
     timeDropdown:AddItem(timeEntry)
     if MasterMerchant.systemSavedVariables.rankIndexRoster == entry.range then
-      timeDropdown:SetSelectedItem(GetString(entry.label))
+      timeDropdown:SetSelectedItem(label)
     end
   end
 end
@@ -3429,10 +3436,10 @@ function MasterMerchant:FirstInitialize()
     focus2 = 3,
     focus3 = 30,
     blacklist = '',
-    defaultDays = GetString(MM_RANGE_ALL),
-    shiftDays = GetString(MM_RANGE_FOCUS1),
-    ctrlDays = GetString(MM_RANGE_FOCUS2),
-    ctrlShiftDays = GetString(MM_RANGE_FOCUS3),
+    defaultDays = MM_RANGE_VALUE_ALL,
+    shiftDays = MM_RANGE_VALUE_FOCUS1,
+    ctrlDays = MM_RANGE_VALUE_FOCUS2,
+    ctrlShiftDays = MM_RANGE_VALUE_FOCUS3,
     displayProfit = false,
     displayListingMessage = false,
     -- settingsToUse
@@ -3526,6 +3533,8 @@ function MasterMerchant:FirstInitialize()
   MasterMerchant:BuildDateRangeTable()
   MasterMerchant:BuildFilterDateRangeTable()
   MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
+  mmUtils:CreateDaysRangeChoices()
+  mmUtils:UpdateDaysRangeSettings()
 
   -- TODO Check historyDepth is only set once on first run
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then

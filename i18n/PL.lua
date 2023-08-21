@@ -194,6 +194,7 @@ ZO_CreateStringId("MM_TIP_TTC_HEADER", "TTC (")
 
 ZO_CreateStringId("MM_NO_DATA_FORMAT", "no sales data")
 ZO_CreateStringId("MM_NO_DATA_RANGE_FORMAT", "no sales data in last %d days")
+ZO_CreateStringId("MM_DATE_RANGE_NONE", "Date range None is selected")
 
 ZO_CreateStringId("MM_PTC_PER_VOUCHER", "Per Voucher Average: %s")
 

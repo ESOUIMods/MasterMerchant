@@ -3478,7 +3478,7 @@ function MasterMerchant:BuildFilterTimerangeDropdown()
   end
 end
 
-function MasterMerchant:BuildGuiTimeDropdown()
+function MasterMerchant:BuildGuidTimeDropdown()
   local timeDropdown = ZO_ComboBox_ObjectFromContainer(MasterMerchantGuildWindowTimeframeChooser)
   timeDropdown:ClearItems()
 
@@ -3495,10 +3495,12 @@ function MasterMerchant:BuildGuiTimeDropdown()
   }
 
   for _, entry in ipairs(timeEntries) do
-    local timeEntry = timeDropdown:CreateItemEntry(GetString(entry.label), function() self:UpdateGuildWindow(entry.range) end)
+    local label = GetString(entry.label)
+    if entry.range == MM_DATERANGE_CUSTOM then label = entry.label end
+    local timeEntry = timeDropdown:CreateItemEntry(label, function() self:UpdateGuildWindow(entry.range) end)
     timeDropdown:AddItem(timeEntry)
     if MasterMerchant.systemSavedVariables.rankIndex == entry.range then
-      timeDropdown:SetSelectedItem(GetString(entry.label))
+      timeDropdown:SetSelectedItem(label)
     end
   end
 end
@@ -3544,7 +3546,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
 
   MasterMerchant.systemSavedVariables.rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
 
-  MasterMerchant:BuildGuiTimeDropdown()
+  MasterMerchant:BuildGuidTimeDropdown()
   MasterMerchant:BuildFilterTimerangeDropdown()
 
   -- Set sort column headers and search label from translation

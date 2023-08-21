@@ -143,27 +143,30 @@ local function IsValueInteger(value)
 end
 
 function MasterMerchant.LocalizedNumber(amount)
+  local function IsValueInteger(value)
+    return value % 2 == 0
+  end
+
   local function comma_value(amount)
-    local formatted = amount
+    local formatted = tostring(amount)
     local k
-    while true do
-      formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1' .. GetString(SK_THOUSANDS_SEP) .. '%2')
-      if (k == 0) then
-        break
-      end
-    end
+
+    repeat
+      formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", "%1" .. GetString(SK_THOUSANDS_SEP) .. "%2")
+    until k == 0
+
     return formatted
   end
 
-  if not amount then
-    return tostring(0)
-  end
-  -- Check if amount is an integer
-  if (IsInGamepadPreferredMode() or MasterMerchant.systemSavedVariables.trimDecimals) or amount > 100 or IsValueInteger(amount) then
+
+  amount = amount or 0
+  local applyFormatting = MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount)
+
+  if IsInGamepadPreferredMode() or applyFormatting then
     return comma_value(zo_floor(amount))
   end
-  -- Round to two decimal values
-  return comma_value(zo_roundToNearest(amount, .01))
+
+  return comma_value(zo_roundToNearest(amount, 0.01))
 end
 
 function MasterMerchant:GetFullPriceOrProfit(dispPrice, quantity)

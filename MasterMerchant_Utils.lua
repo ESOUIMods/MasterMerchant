@@ -196,3 +196,30 @@ function mmUtils:GetSalesCount(guildName, displayName, dateRange)
     internal.guildPurchases[guildName].sellers[displayName].count[dateRange] or 0
   return amountSold
 end
+
+local MM_RANGE_CHOICES = {
+  [MM_RANGE_VALUE_NONE] = GetString(MM_RANGE_NONE),
+  [MM_RANGE_VALUE_ALL] = GetString(MM_RANGE_ALL),
+  [MM_RANGE_VALUE_FOCUS1] = GetString(MM_RANGE_FOCUS1),
+  [MM_RANGE_VALUE_FOCUS2] = GetString(MM_RANGE_FOCUS2),
+  [MM_RANGE_VALUE_FOCUS3] = GetString(MM_RANGE_FOCUS3),
+}
+
+function mmUtils:CreateDaysRangeChoices()
+  for rangeConstant, rangeString in pairs(MM_RANGE_CHOICES) do
+    MasterMerchant.daysRangeChoices[rangeConstant] = rangeString
+    MasterMerchant.daysRangeValues[rangeConstant] = rangeConstant
+    MasterMerchant.daysRangeLookup[rangeString] = rangeConstant
+  end
+end
+
+function mmUtils:UpdateDaysRangeSettings()
+  local keys = {"defaultDays", "shiftDays", "ctrlDays", "ctrlShiftDays"}
+
+  for _, key in ipairs(keys) do
+    local value = MasterMerchant.systemSavedVariables[key]
+    if type(value) == 'string' and MasterMerchant.daysRangeLookup[value] then
+      MasterMerchant.systemSavedVariables[key] = MasterMerchant.daysRangeLookup[value]
+    end
+  end
+end

@@ -111,12 +111,10 @@ function internal:RenewExtraSalesData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local sales = versiondata['sales'] or {}
-        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
-
+        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
         local timestamps = {}  -- Gather timestamps for oldest and newest time
-        for _, saleData in pairs(sales) do
-          table.insert(timestamps, saleData["timestamp"])
+        for saleid, saledata in pairs(versiondata['sales']) do
+          table.insert(timestamps, saledata["timestamp"])
         end
 
         -- Find oldest and newest time from timestamps
@@ -139,12 +137,10 @@ function internal:RenewExtraListingsData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local sales = versiondata['sales'] or {}
-        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
-
+        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
         local timestamps = {}  -- Gather timestamps for oldest and newest time
-        for _, saleData in pairs(sales) do
-          table.insert(timestamps, saleData["timestamp"])
+        for saleid, saledata in pairs(versiondata['sales']) do
+          table.insert(timestamps, saledata["timestamp"])
         end
 
         -- Find oldest and newest time from timestamps
@@ -168,12 +164,10 @@ function internal:RenewExtraPurchaseData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local sales = versiondata['sales'] or {}
-        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
-
+        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
         local timestamps = {}  -- Gather timestamps for oldest and newest time
-        for _, saleData in pairs(sales) do
-          table.insert(timestamps, saleData["timestamp"])
+        for saleid, saledata in pairs(versiondata['sales']) do
+          table.insert(timestamps, saledata["timestamp"])
         end
 
         -- Find oldest and newest time from timestamps
@@ -197,17 +191,15 @@ function internal:RenewExtraPostedData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local sales = versiondata['sales'] or {}
-        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
-
-        local oldestTime = math.huge  -- Initialize to a large value
-        local newestTime = 0  -- Initialize to 0
-
-        for _, saleData in pairs(sales) do
-          local timestamp = saleData["timestamp"]
-          oldestTime = math.min(oldestTime, timestamp)
-          newestTime = math.max(newestTime, timestamp)
+        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
+        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        for saleid, saledata in pairs(versiondata['sales']) do
+          table.insert(timestamps, saledata["timestamp"])
         end
+
+        -- Find oldest and newest time from timestamps
+        local oldestTime = math.min(unpack(timestamps))
+        local newestTime = math.max(unpack(timestamps))
 
         -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
@@ -222,29 +214,25 @@ end
 function internal:RenewExtraCancelledData(otherData)
   internal:dm("Debug", "RenewExtraCancelledData")
   local savedVars = GS17DataSavedVariables[internal.cancelledNamespace]
-  local newestTime = nil
-  local oldestTime = nil
-  local totalCount = 0
 
-  for itemID, itemIndex in pairs(savedVars) do
-    for field, itemIndexData in pairs(itemIndex) do
-      if itemIndexData["wasAltered"] then
-        newestTime = nil
-        oldestTime = nil
-        totalCount = 0
-        for _, saleData in pairs(itemIndexData['sales']) do
-          totalCount = totalCount + 1
-          if oldestTime == nil or oldestTime > saleData["timestamp"] then oldestTime = saleData["timestamp"] end
-          if newestTime == nil or newestTime < saleData["timestamp"] then newestTime = saleData["timestamp"] end
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      if versiondata["wasAltered"] then
+        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
+        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        for saleid, saledata in pairs(versiondata['sales']) do
+          table.insert(timestamps, saledata["timestamp"])
         end
-        if savedVars[itemID][field] then
-          savedVars[itemID][field].totalCount = totalCount
-          savedVars[itemID][field].newestTime = newestTime
-          savedVars[itemID][field].oldestTime = oldestTime
-          savedVars[itemID][field].wasAltered = false
-        else
-          --internal:dm("Warn", "Empty or nil savedVars[internal.cancelledNamespace]")
-        end
+
+        -- Find oldest and newest time from timestamps
+        local oldestTime = math.min(unpack(timestamps))
+        local newestTime = math.max(unpack(timestamps))
+
+        -- Update versiondata with calculated values
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].wasAltered = false
       end
     end
   end
