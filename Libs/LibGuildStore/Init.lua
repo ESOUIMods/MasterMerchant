@@ -109,7 +109,7 @@ function internal:is_in(search_value, search_table)
   for _, v in pairs(search_table) do
     if search_value == v then return true end
     if type(search_value) == "string" then
-      if string.find(string.lower(v), string.lower(search_value)) then return true end
+      if zo_strfind(zo_strlower(v), zo_strlower(search_value)) then return true end
     end
   end
   return false

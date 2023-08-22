@@ -474,10 +474,9 @@ function internal:IndexSalesData()
     local currentBuyer = internal:GetAccountNameByIndex(soldItem['buyer'])
     local currentSeller = internal:GetAccountNameByIndex(soldItem['seller'])
 
-    local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-    local searchText = ""
     local playerName = zo_strlower(GetDisplayName())
     local selfSale = playerName == zo_strlower(currentSeller)
+    local searchText = ""
     local minimalIndexing = LibGuildStore_SavedVariables["minimalIndexing"]
 
     if minimalIndexing then
@@ -489,6 +488,7 @@ function internal:IndexSalesData()
       versiondata.itemDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(currentItemLink))
       versiondata.itemIcon = versiondata.itemIcon or GetItemLinkInfo(currentItemLink)
 
+      local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
       temp[1] = currentBuyer and ('b' .. currentBuyer) or ''
       temp[3] = currentSeller and ('s' .. currentSeller) or ''
       temp[5] = currentGuild or ''

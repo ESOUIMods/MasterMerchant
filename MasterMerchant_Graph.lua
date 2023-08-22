@@ -122,7 +122,7 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   self.x_averagePriceLabel:SetText(x_averagePriceText)
   self.x_averagePriceLabel:SetColor(1, 0.996, 0, 1)
 
-  local left = math.max(self.x_averagePriceLabel:GetTextWidth(), self.y_lowestPriceLabelMarker:GetTextWidth(),
+  local left = zo_max(self.x_averagePriceLabel:GetTextWidth(), self.y_lowestPriceLabelMarker:GetTextWidth(),
     self.y_highestPriceLabelMarker:GetTextWidth()) + self.paddingX + 5
 
   -- self.x_startLabel:SetAnchor(TOP, self.control, BOTTOMRIGHT, left, -self.paddingY)
@@ -167,7 +167,7 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
     if self.x_bonanzaPriceValue < 15 then self.x_bonanzaPriceValue = 15 end
     if self.x_bonanzaPriceValue > 105 then self.x_bonanzaPriceValue = 105 end
 
-    local priceDif = math.abs(originalAveragePriceValue - originalBonanzaPriceValue)
+    local priceDif = zo_abs(originalAveragePriceValue - originalBonanzaPriceValue)
     local isOverlapping = priceDif < 15
     if isOverlapping and originalBonanzaPriceValue > originalAveragePriceValue then
       self.x_bonanzaPriceValue = self.x_averagePriceValue + 15

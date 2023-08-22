@@ -398,7 +398,7 @@ function MMScrollList:SetupSalesRow(control, data)
 
   --[[
   local controlName = control:GetName()
-  if not string.find(controlName, SALES_WINDOW_CONTROL_NAME_REGEX) then
+  if not zo_strfind(controlName, SALES_WINDOW_CONTROL_NAME_REGEX) then
     MasterMerchant:dm("Warn", controlName)
     return
   else
@@ -411,7 +411,7 @@ function MMScrollList:SetupSalesRow(control, data)
   local currentBuyer = internal:GetAccountNameByIndex(actualItem['buyer'])
   local currentSeller = internal:GetAccountNameByIndex(actualItem['seller'])
   local actualItemIcon = sales_data[data[1]][data[2]]['itemIcon']
-  local isFullSize = string.find(control:GetName(), SALES_WINDOW_CONTROL_NAME_REGEX)
+  local isFullSize = zo_strfind(control:GetName(), SALES_WINDOW_CONTROL_NAME_REGEX)
 
   local fontString = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont) .. '|%d'
 
@@ -468,7 +468,7 @@ function MMScrollList:SetupSalesRow(control, data)
   control.itemName:SetText(zo_strformat('<<t:1>>', currentItemLink))
   -- Insert the item link into the chat box, with a quick substitution so brackets show up
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
-  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
+  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. zo_strgsub(currentItemLink, '|H0', '|H1'))
   --end)
   control.itemName:SetHandler('OnMouseEnter', function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
   control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
@@ -513,7 +513,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
 
   --[[
   local controlName = control:GetName()
-  if not string.find(controlName, GUILD_WINDOW_CONTROL_NAME_REGEX) then
+  if not zo_strfind(controlName, GUILD_WINDOW_CONTROL_NAME_REGEX) then
     MasterMerchant:dm("Warn", controlName)
     return
   else
@@ -583,7 +583,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   control.sales:SetText(stringSales .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   -- Tax Cell
-  --local taxAmount = math.floor((sales * GetTradingHouseCutPercentage() / 200))
+  --local taxAmount = zo_floor((sales * GetTradingHouseCutPercentage() / 200))
   local taxAmount = data[8]
   local stringTax = MasterMerchant.LocalizedNumber(taxAmount)
   control.tax:SetText(stringTax .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
@@ -594,7 +594,7 @@ function MMScrollList:SetupGuildSalesRow(control, data)
 
   -- Percent Cell
   if data[7] and data[7] ~= 0 then
-    local percent = math.floor((1000 * sales / data[7]) + 0.5) / 10
+    local percent = zo_floor((1000 * sales / data[7]) + 0.5) / 10
     control.percent:SetText(percent .. GetString(MM_PERCENT_CHAR))
   else
     control.percent:SetText('--' .. GetString(MM_PERCENT_CHAR))
@@ -705,7 +705,7 @@ function MMScrollList:SetupListingsRow(control, data)
   control.itemName:SetText(zo_strformat('<<t:1>>', currentItemLink))
   -- Insert the item link into the chat box, with a quick substitution so brackets show up
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
-  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
+  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. zo_strgsub(currentItemLink, '|H0', '|H1'))
   --end)
   control.itemName:SetHandler('OnMouseEnter', function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
   control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
@@ -723,12 +723,12 @@ function MMScrollList:SetupListingsRow(control, data)
   control.listTime:SetText(dispTime)
 
   -- Handle the setting of whether or not to show pre-cut sale prices
-  -- math.floor(number + 0.5) is a quick shorthand way to round for
+  -- zo_floor(number + 0.5) is a quick shorthand way to round for
   -- positive values.
   local dispPrice = actualItem.price
   local quantity = actualItem.quant
   if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
-    dispPrice = math.floor((dispPrice / quantity) + 0.5)
+    dispPrice = zo_floor((dispPrice / quantity) + 0.5)
   end
 
   -- Insert thousands separators for the price
@@ -854,7 +854,7 @@ function MMScrollList:SetupPurchasesRow(control, data)
   control.itemName:SetText(zo_strformat('<<t:1>>', currentItemLink))
   -- Insert the item link into the chat box, with a quick substitution so brackets show up
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
-  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
+  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. zo_strgsub(currentItemLink, '|H0', '|H1'))
   --end)
   control.itemName:SetHandler('OnMouseEnter',
     function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
@@ -872,12 +872,12 @@ function MMScrollList:SetupPurchasesRow(control, data)
   control.purchaseTime:SetText(dispTime)
 
   -- Handle the setting of whether or not to show pre-cut sale prices
-  -- math.floor(number + 0.5) is a quick shorthand way to round for
+  -- zo_floor(number + 0.5) is a quick shorthand way to round for
   -- positive values.
   local dispPrice = actualItem.price
   local quantity = actualItem.quant
   if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
-    dispPrice = math.floor((dispPrice / quantity) + 0.5)
+    dispPrice = zo_floor((dispPrice / quantity) + 0.5)
   end
 
   -- Insert thousands separators for the price
@@ -980,7 +980,7 @@ function MMScrollList:SetupReportsRow(control, data)
   control.itemName:SetText(zo_strformat('<<t:1>>', currentItemLink))
   -- Insert the item link into the chat box, with a quick substitution so brackets show up
   --control.itemName:SetHandler('OnMouseDoubleClick', function()
-  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. string.gsub(currentItemLink, '|H0', '|H1'))
+  --  ZO_ChatWindowTextEntryEditBox:SetText(ZO_ChatWindowTextEntryEditBox:GetText() .. zo_strgsub(currentItemLink, '|H0', '|H1'))
   --end)
   control.itemName:SetHandler('OnMouseEnter',
     function() MasterMerchant.ShowToolTip(currentItemLink, control.itemName) end)
@@ -997,12 +997,12 @@ function MMScrollList:SetupReportsRow(control, data)
   control.sellTime:SetText(MasterMerchant.TextTimeSince(actualItem.timestamp))
 
   -- Handle the setting of whether or not to show pre-cut sale prices
-  -- math.floor(number + 0.5) is a quick shorthand way to round for
+  -- zo_floor(number + 0.5) is a quick shorthand way to round for
   -- positive values.
   local dispPrice = actualItem.price
   local quantity = actualItem.quant
   if MasterMerchant.systemSavedVariables.showUnitPrice and quantity > 0 then
-    dispPrice = math.floor((dispPrice / quantity) + 0.5)
+    dispPrice = zo_floor((dispPrice / quantity) + 0.5)
   end
 
   -- Insert thousands separators for the price
@@ -1023,7 +1023,7 @@ function MMScrollList:ColorRow(control, data, mouseIsOver)
     local child = control:GetChild(i)
     if not child.nonRecolorable then
       if child:GetType() == CT_LABEL then
-        if string.find(child:GetName(), 'Price$') then child:SetColor(0.84, 0.71, 0.15, 1)
+        if zo_strfind(child:GetName(), 'Price$') then child:SetColor(0.84, 0.71, 0.15, 1)
         else child:SetColor(1, 1, 1, 1) end
       end
     end
@@ -1147,9 +1147,9 @@ end
 local function CleanTextEnglish(searchText)
   -- pass two, clean up the text
   if searchText then
-    searchText = string.gsub(searchText, "'s", MM_STRING_EMPTY)
-    searchText = string.gsub(searchText, "-", " ")
-    searchText = string.gsub(searchText, "%p", MM_STRING_EMPTY)
+    searchText = zo_strgsub(searchText, "'s", MM_STRING_EMPTY)
+    searchText = zo_strgsub(searchText, "-", " ")
+    searchText = zo_strgsub(searchText, "%p", MM_STRING_EMPTY)
   end
   return searchText
 end
@@ -1177,7 +1177,7 @@ function MMScrollList:FilterScrollList()
     if MasterMerchant.effective_lang == "en" then searchText = CleanTextEnglish(searchText) end
     MasterMerchantListingWindowMenuHeaderSearchEditBox:SetText(searchText)
   end
-  if searchText then searchText = string.gsub(string.lower(searchText), '^%s*(.-)%s*$', '%1') end
+  if searchText then searchText = zo_strgsub(zo_strlower(searchText), '^%s*(.-)%s*$', '%1') end
   local rankIndex = MasterMerchant.systemSavedVariables.rankIndex or MM_DATERANGE_TODAY
 
   if MasterMerchant.systemSavedVariables.viewSize == ITEMS then
@@ -1203,9 +1203,6 @@ function MMScrollList:FilterScrollList()
       -- We just have player indexed and we have something to filter with
       if MasterMerchant.salesViewMode == MasterMerchant.personalSalesViewMode then
         -- Search all data using CheckFilterTimeframe()
-        local tconcat = table.concat
-        local tinsert = table.insert
-        local tolower = string.lower
         local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', }
 
         for k, v in pairs(sr_index[internal.PlayerSpecialText]) do
@@ -1224,29 +1221,24 @@ function MMScrollList:FilterScrollList()
           else
             if CheckFilterTimeframe(item.timestamp) then
               local matchesAll = true
-              local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
               temp[1] = currentBuyer and ('b' .. currentBuyer) or ''
               temp[3] = currentSeller and ('s' .. currentSeller) or ''
               temp[5] = currentGuild or ''
               temp[7] = dataList['itemDesc'] or ''
               temp[9] = dataList['itemAdderText'] or ''
-              local gn = tolower(table.concat(temp, ''))
-              local searchByWords = string.gmatch(searchText, '%S+')
+              local gn = zo_strlower(table.concat(temp, ''))
+              local searchByWords = zo_strgmatch(searchText, '%S+')
               for searchWord in searchByWords do
-                matchesAll = (matchesAll and string.find(gn, searchWord))
+                matchesAll = (matchesAll and zo_strfind(gn, searchWord))
               end
               if matchesAll then
                 table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
               end
             end
-
           end
         end
       else
         -- Search all data using CheckFilterTimeframe()
-        local tconcat = table.concat
-        local tinsert = table.insert
-        local tolower = string.lower
         local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', }
         for k, v in pairs(sales_data) do
           for j, dataList in pairs(v) do
@@ -1265,10 +1257,10 @@ function MMScrollList:FilterScrollList()
                   temp[5] = currentGuild or ''
                   temp[7] = dataList['itemDesc'] or ''
                   temp[9] = dataList['itemAdderText'] or ''
-                  local gn = tolower(table.concat(temp, ''))
-                  local searchByWords = string.gmatch(searchText, '%S+')
+                  local gn = zo_strlower(table.concat(temp, ''))
+                  local searchByWords = zo_strgmatch(searchText, '%S+')
                   for searchWord in searchByWords do
-                    matchesAll = matchesAll and string.find(gn, searchWord)
+                    matchesAll = (matchesAll and zo_strfind(gn, searchWord))
                   end
                   if matchesAll then
                     table.insert(listData, ZO_ScrollList_CreateDataEntry(1, { k, j, i, item.timestamp, item.price, item.quant }))
@@ -1296,7 +1288,7 @@ function MMScrollList:FilterScrollList()
       for searchWord in searchByWords do
         local addedIndexes = {}
         for key, indexes in pairs(indexToUse) do
-          local findStatus, findResult = pcall(string.find, key, searchWord)
+          local findStatus, findResult = pcall(zo_strfind, key, searchWord)
           if findStatus then
             if findResult then
               for i = 1, #indexes do
@@ -1399,7 +1391,7 @@ function MMScrollList:FilterScrollList()
           -- Break up search term into words
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
-            matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
+            matchesAll = (matchesAll and zo_strfind(zo_strlower(gn), searchWord))
           end
           if matchesAll then
             local sellerData = g.sellers[GetDisplayName()] or nil
@@ -1422,7 +1414,7 @@ function MMScrollList:FilterScrollList()
           -- Break up search term into words
           local searchByWords = zo_strgmatch(searchText, '%S+')
           for searchWord in searchByWords do
-            matchesAll = (matchesAll and string.find(zo_strlower(gn), searchWord))
+            matchesAll = (matchesAll and zo_strfind(zo_strlower(gn), searchWord))
           end
           if matchesAll and MasterMerchant.systemSavedVariables.viewGuildBuyerSeller ~= 'item' then
             if ((g.sales[rankIndex] or 0) > 0) or (zo_plainstrfind(MasterMerchant.guildList, gn)) then
@@ -1441,7 +1433,7 @@ function MMScrollList:FilterScrollList()
               else
                 txt = zo_strlower(MasterMerchant.concat(gn, sellerData.sellerName))
               end
-              matchesAll = (matchesAll and string.find(txt, searchWord))
+              matchesAll = (matchesAll and zo_strfind(txt, searchWord))
             end
             if matchesAll then
               if (sellerData.sales[rankIndex] and (sellerData.sales[rankIndex] > 0)) then
@@ -1488,7 +1480,7 @@ function MMScrollList:FilterScrollList()
       for searchWord in searchByWords do
         local addedIndexes = {}
         for key, indexes in pairs(indexToUse) do
-          local findStatus, findResult = pcall(string.find, key, searchWord)
+          local findStatus, findResult = pcall(zo_strfind, key, searchWord)
           if findStatus then
             if findResult then
               for i = 1, #indexes do
@@ -1566,7 +1558,7 @@ function MMScrollList:FilterScrollList()
       for searchWord in searchByWords do
         local addedIndexes = {}
         for key, indexes in pairs(indexToUse) do
-          local findStatus, findResult = pcall(string.find, key, searchWord)
+          local findStatus, findResult = pcall(zo_strfind, key, searchWord)
           if findStatus then
             if findResult then
               for i = 1, #indexes do
@@ -1646,7 +1638,7 @@ function MMScrollList:FilterScrollList()
       for searchWord in searchByWords do
         local addedIndexes = {}
         for key, indexes in pairs(indexTable) do
-          local findStatus, findResult = pcall(string.find, key, searchWord)
+          local findStatus, findResult = pcall(zo_strfind, key, searchWord)
           if findStatus then
             if findResult then
               for i = 1, #indexes do
@@ -2002,7 +1994,7 @@ function MasterMerchant:updateCalc()
     MasterMerchant:dm("Info", string.format("%s is not a valid unit price", unitPrice))
     return
   end
-  local totalPrice = math.floor(tonumber(unitPrice) * tonumber(stackSize))
+  local totalPrice = zo_floor(tonumber(unitPrice) * tonumber(stackSize))
   MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. MasterMerchant.LocalizedNumber(totalPrice) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
   TRADING_HOUSE:SetPendingPostPrice(totalPrice)
 end
@@ -2436,8 +2428,8 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
       if statsInfo.bonanzaPrice then
         local lowRange = nil
         local highRange = nil
-        lowRange = math.min(statsInfo.avgPrice, statsInfo.bonanzaPrice)
-        highRange = math.max(statsInfo.avgPrice, statsInfo.bonanzaPrice)
+        lowRange = zo_min(statsInfo.avgPrice, statsInfo.bonanzaPrice)
+        highRange = zo_max(statsInfo.avgPrice, statsInfo.bonanzaPrice)
         if graphInfo.low > lowRange then
           graphInfo.low = lowRange * 0.95
         end
@@ -3920,13 +3912,13 @@ end
 
 local function OnGuildMemberAdded(eventCode, guildId, displayName)
   if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
-  internal.guildMemberInfo[guildId][string.lower(displayName)] = true
+  internal.guildMemberInfo[guildId][zo_strlower(displayName)] = true
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_MemberAdded", EVENT_GUILD_MEMBER_ADDED, OnGuildMemberAdded)
 
 local function OnGuildMemberRemoved(eventCode, guildId, displayName, characterName)
   if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
-  internal.guildMemberInfo[guildId][string.lower(displayName)] = nil
+  internal.guildMemberInfo[guildId][zo_strlower(displayName)] = nil
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_MemberRemoved", EVENT_GUILD_MEMBER_REMOVED, OnGuildMemberRemoved)
 
@@ -3944,7 +3936,7 @@ local function OnPlayerJoinedGuild(eventCode, guildId, guildName)
   for m = 1, GetNumGuildMembers(guildId) do
     local name, _, _, _, _ = GetGuildMemberInfo(guildId, m)
     if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
-    internal.guildMemberInfo[guildId][string.lower(name)] = true
+    internal.guildMemberInfo[guildId][zo_strlower(name)] = true
   end
 
   internal.LibHistoireListenerReady[guildId] = false

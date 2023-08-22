@@ -347,10 +347,11 @@ function internal:IndexPostedItemsData()
     temp[7] = versiondata.itemAdderText or ''
 
     local searchText = zo_strlower(table.concat(temp, ''))
+    local searchByWords = zo_strgmatch(searchText, '%S+')
     local wordData = { numberID, itemData, itemIndex }
 
     -- Index each word
-    for i in zo_strgmatch(searchText, '%S+') do
+    for i in searchByWords do
       pir_index[i] = pir_index[i] or {}
       table.insert(pir_index[i], wordData)
       extraData.wordsIndexCount = (extraData.wordsIndexCount or 0) + 1

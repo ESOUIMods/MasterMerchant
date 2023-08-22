@@ -75,7 +75,7 @@ function internal:IsValidItemLink(itemLink)
   local theIID = GetItemLinkItemId(itemLink)
   local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
   local itemlinkName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-  local _, count = string.gsub(itemLink, ':', ':')
+  local _, count = zo_strgsub(itemLink, ':', ':')
 
   if count ~= 22 then
     internal:dm("Debug", "count ~= 22")
@@ -118,8 +118,8 @@ function internal:RenewExtraSalesData(otherData)
         end
 
         -- Find oldest and newest time from timestamps
-        local oldestTime = math.min(unpack(timestamps))
-        local newestTime = math.max(unpack(timestamps))
+        local oldestTime = zo_min(unpack(timestamps))
+        local newestTime = zo_max(unpack(timestamps))
 
         -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
@@ -144,8 +144,8 @@ function internal:RenewExtraListingsData(otherData)
         end
 
         -- Find oldest and newest time from timestamps
-        local oldestTime = math.min(unpack(timestamps))
-        local newestTime = math.max(unpack(timestamps))
+        local oldestTime = zo_min(unpack(timestamps))
+        local newestTime = zo_max(unpack(timestamps))
 
         -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
@@ -171,8 +171,8 @@ function internal:RenewExtraPurchaseData(otherData)
         end
 
         -- Find oldest and newest time from timestamps
-        local oldestTime = math.min(unpack(timestamps))
-        local newestTime = math.max(unpack(timestamps))
+        local oldestTime = zo_min(unpack(timestamps))
+        local newestTime = zo_max(unpack(timestamps))
 
         -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
@@ -198,8 +198,8 @@ function internal:RenewExtraPostedData(otherData)
         end
 
         -- Find oldest and newest time from timestamps
-        local oldestTime = math.min(unpack(timestamps))
-        local newestTime = math.max(unpack(timestamps))
+        local oldestTime = zo_min(unpack(timestamps))
+        local newestTime = zo_max(unpack(timestamps))
 
         -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
@@ -225,8 +225,8 @@ function internal:RenewExtraCancelledData(otherData)
         end
 
         -- Find oldest and newest time from timestamps
-        local oldestTime = math.min(unpack(timestamps))
-        local newestTime = math.max(unpack(timestamps))
+        local oldestTime = zo_min(unpack(timestamps))
+        local newestTime = zo_max(unpack(timestamps))
 
         -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount

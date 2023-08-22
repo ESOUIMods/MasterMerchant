@@ -200,11 +200,11 @@ function stats.median(t, index, range)
   -- If we have an even number of table elements or odd.
   if math.fmod(#temp, 2) == 0 then
     -- Return mean value of middle two elements
-    local middleIndex = math.ceil(#temp / 2)
+    local middleIndex = zo_ceil(#temp / 2)
     return (temp[middleIndex] + temp[middleIndex + 1]) / 2
   else
     -- Return middle element
-    local middleIndex = math.ceil(#temp / 2)
+    local middleIndex = zo_ceil(#temp / 2)
     return temp[middleIndex]
   end
 end
@@ -241,8 +241,8 @@ function stats.findMinMax(t)
   local minVal = math.huge
 
   for _, individualSale in pairs(t) do
-    maxVal = math.max(maxVal, individualSale)
-    minVal = math.min(minVal, individualSale)
+    maxVal = zo_max(maxVal, individualSale)
+    minVal = zo_min(minVal, individualSale)
   end
 
   return maxVal, minVal
@@ -257,7 +257,7 @@ function stats.getMiddleIndex(count)
   local evenNumber = false
   local quotient, remainder = math.modf(count / 2)
   if remainder == 0 then evenNumber = true end
-  local middleIndex = quotient + math.floor(0.5 + remainder)
+  local middleIndex = quotient + zo_floor(0.5 + remainder)
   return middleIndex, evenNumber
 end
 
@@ -266,7 +266,7 @@ function stats.medianAbsoluteDeviation(t)
   local absoluteDeviations = {}
 
   for _, value in pairs(t) do
-    local absoluteDeviation = math.abs(value - medianValue)
+    local absoluteDeviation = zo_abs(value - medianValue)
     table.insert(absoluteDeviations, absoluteDeviation)
   end
 
@@ -303,7 +303,7 @@ function stats.interquartileRange(statsData)
 end
 
 function stats.calculatePercentileContextFactor(statsData, percentile)
-  local contextIndex = math.ceil(#statsData * percentile)
+  local contextIndex = zo_ceil(#statsData * percentile)
   local contextFactor = statsData[contextIndex]
   return contextFactor
 end
@@ -328,15 +328,15 @@ function stats.calculateAdjustedPercentileContextFactor(statsData, bonanzaStatsD
 
     -- Calculate adjusted bonanzaPercentileFactor
     if bonanzaMean > statsMean then
-      adjustedBonanzaPercentileFactor = math.min(bonanzaPercentileFactor, statsPercentileFactor + maxDeviation * statsStDev)
+      adjustedBonanzaPercentileFactor = zo_min(bonanzaPercentileFactor, statsPercentileFactor + maxDeviation * statsStDev)
     else
-      adjustedBonanzaPercentileFactor = math.max(bonanzaPercentileFactor, statsPercentileFactor - maxDeviation * statsStDev)
+      adjustedBonanzaPercentileFactor = zo_max(bonanzaPercentileFactor, statsPercentileFactor - maxDeviation * statsStDev)
     end
   end
 
   return {
     bonanzaPercentileFactor = adjustedBonanzaPercentileFactor,
-    meanDifference = math.abs(statsMean - bonanzaMean),
+    meanDifference = zo_abs(statsMean - bonanzaMean),
     adjustedMeanDifference = adjustedBonanzaPercentileFactor - statsPercentileFactor,
   }
 end
@@ -358,8 +358,8 @@ end
 
 function stats.getUpperLowerPercentileIndexes(statsData, percentage)
   local lowerPercent, upperPercent = stats.getLowerAndUpperPercentages(percentage)
-  local lowerIndex = math.ceil(#statsData * lowerPercent)
-  local upperIndex = math.ceil(#statsData * upperPercent)
+  local lowerIndex = zo_ceil(#statsData * lowerPercent)
+  local upperIndex = zo_ceil(#statsData * upperPercent)
   return lowerIndex, upperIndex
 end
 
@@ -657,7 +657,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     ]]--
     if (daysRange == MM_DAYS_RANGE_ALL) then
       local quotient, remainder = math.modf((GetTimeStamp() - oldestTime) / ZO_ONE_DAY_IN_SECONDS)
-      daysHistory = quotient + math.floor(0.5 + remainder)
+      daysHistory = quotient + zo_floor(0.5 + remainder)
     end
 
     local useDaysRange = daysRange ~= MM_DAYS_RANGE_ALL
@@ -1208,7 +1208,7 @@ function MasterMerchant:OnItemLinkAction(itemLink)
   if tipLine then
     local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
     if (not ChatEditControl:HasFocus()) then StartChatInput() end
-    local itemText = string.gsub(itemLink, '|H0', '|H1')
+    local itemText = zo_strgsub(itemLink, '|H0', '|H1')
     ChatEditControl:InsertText(MasterMerchant.concat(tipLine, GetString(MM_TIP_FOR), itemText))
   end
 end
@@ -1221,7 +1221,7 @@ function MasterMerchant:onItemActionLinkCCLink(itemLink)
   if tipLine then
     local ChatEditControl = CHAT_SYSTEM.textEntry.editControl
     if (not ChatEditControl:HasFocus()) then StartChatInput() end
-    local itemText = string.gsub(itemLink, '|H0', '|H1')
+    local itemText = zo_strgsub(itemLink, '|H0', '|H1')
     ChatEditControl:InsertText(MasterMerchant.concat(tipLine, GetString(MM_TIP_FOR), itemText))
   end
 end
@@ -1271,7 +1271,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
 
     local link = linkFunction()
 
-    if (link ~= MM_STRING_EMPTY and string.match(link, '|H.-:item:(.-):')) then
+    if (link ~= MM_STRING_EMPTY and zo_strmatch(link, '|H.-:item:(.-):')) then
       ClearMenu()
 
       AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
@@ -1564,11 +1564,11 @@ function MasterMerchant:SalesStats(statsDays)
   -- them; divided by 86,400 it's the number of days (or at least close enough for this)
   local timeWindow = newestTime - oldestTime
   local dayWindow = 1
-  if timeWindow > ZO_ONE_DAY_IN_SECONDS then dayWindow = math.floor(timeWindow / ZO_ONE_DAY_IN_SECONDS) + 1 end
+  if timeWindow > ZO_ONE_DAY_IN_SECONDS then dayWindow = zo_floor(timeWindow / ZO_ONE_DAY_IN_SECONDS) + 1 end
 
   local overallTimeWindow = GetTimeStamp() - overallOldestTime
   local overallDayWindow = 1
-  if overallTimeWindow > ZO_ONE_DAY_IN_SECONDS then overallDayWindow = math.floor(overallTimeWindow / ZO_ONE_DAY_IN_SECONDS) + 1 end
+  if overallTimeWindow > ZO_ONE_DAY_IN_SECONDS then overallDayWindow = zo_floor(overallTimeWindow / ZO_ONE_DAY_IN_SECONDS) + 1 end
 
   local goldPerDay = {}
   local kioskPercentage = {}
@@ -1576,13 +1576,13 @@ function MasterMerchant:SalesStats(statsDays)
 
   -- Here we'll tweak stats as needed as well as add guilds to the guild chooser
   for theGuildName, guildItemsSold in pairs(itemsSold) do
-    goldPerDay[theGuildName] = math.floor(goldMade[theGuildName] / dayWindow)
+    goldPerDay[theGuildName] = zo_floor(goldMade[theGuildName] / dayWindow)
     local kioskSalesTemp = 0
     if kioskSales[theGuildName] ~= nil then kioskSalesTemp = kioskSales[theGuildName] end
     if guildItemsSold == 0 then
       kioskPercentage[theGuildName] = 0
     else
-      kioskPercentage[theGuildName] = math.floor((kioskSalesTemp / guildItemsSold) * 100)
+      kioskPercentage[theGuildName] = zo_floor((kioskSalesTemp / guildItemsSold) * 100)
     end
 
     if theGuildName ~= 'SK_STATS_TOTAL' then
@@ -1594,9 +1594,9 @@ function MasterMerchant:SalesStats(statsDays)
     -- If they have the option set to show prices post-cut, calculate that here
     if not showFullPrice then
       local cutMult = 1 - (GetTradingHouseCutPercentage() / 100)
-      goldMade[theGuildName] = math.floor(goldMade[theGuildName] * cutMult + 0.5)
-      goldPerDay[theGuildName] = math.floor(goldPerDay[theGuildName] * cutMult + 0.5)
-      largestSingle[theGuildName][1] = math.floor(largestSingle[theGuildName][1] * cutMult + 0.5)
+      goldMade[theGuildName] = zo_floor(goldMade[theGuildName] * cutMult + 0.5)
+      goldPerDay[theGuildName] = zo_floor(goldPerDay[theGuildName] * cutMult + 0.5)
+      largestSingle[theGuildName][1] = zo_floor(largestSingle[theGuildName][1] * cutMult + 0.5)
     end
   end
 
@@ -2551,12 +2551,12 @@ end
 
 function MasterMerchant:SpecialMessage(force)
   if GetDisplayName() == '@sylviermoone' or (GetDisplayName() == '@Philgo68' and force) then
-    local daysCount = math.floor(((GetTimeStamp() - (1460980800 + 38 * ZO_ONE_DAY_IN_SECONDS + 19 * ZO_ONE_HOUR_IN_SECONDS)) / ZO_ONE_DAY_IN_SECONDS) * 4) / 4
+    local daysCount = zo_floor(((GetTimeStamp() - (1460980800 + 38 * ZO_ONE_DAY_IN_SECONDS + 19 * ZO_ONE_HOUR_IN_SECONDS)) / ZO_ONE_DAY_IN_SECONDS) * 4) / 4
     if (daysCount > (MasterMerchant.systemSavedVariables.daysPast or 0)) or force then
       MasterMerchant.systemSavedVariables.daysPast = daysCount
 
-      local rem = daysCount - math.floor(daysCount)
-      daysCount = math.floor(daysCount)
+      local rem = daysCount - zo_floor(daysCount)
+      daysCount = zo_floor(daysCount)
 
       if rem == 0 then
         MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
@@ -2614,7 +2614,7 @@ function MasterMerchant:ExportSalesReport()
 
     -- sample [2] = "@Name&Sales&Purchases&Rank"
     local amountTaxes = 0
-    amountTaxes = math.floor(amountSold * 0.035)
+    amountTaxes = zo_floor(amountSold * 0.035)
     if MasterMerchant.systemSavedVariables.showAmountTaxes then
       table.insert(list, displayName .. "&" .. amountSold .. "&" .. amountBought .. "&" .. amountTaxes .. "&" .. rankIndex)
     else
@@ -2844,7 +2844,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
       local dispPrice = theEvent.price
       if not MasterMerchant.systemSavedVariables.showFullPrice then
         local cutPrice = dispPrice * (1 - (GetTradingHouseCutPercentage() / 100))
-        dispPrice = math.floor(cutPrice + 0.5)
+        dispPrice = zo_floor(cutPrice + 0.5)
       end
       totalGold = totalGold + dispPrice
 
@@ -3185,7 +3185,7 @@ function MasterMerchant:InitRosterChanges()
       data = function(guildId, data, index)
         local dateRange = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
         local amountSold = mmUtils:GetGuildPurchases(GUILD_ROSTER_MANAGER.guildName, data.displayName, dateRange)
-        return math.floor(amountSold * 0.035)
+        return zo_floor(amountSold * 0.035)
       end,
       format = function(value)
         return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"
@@ -3265,13 +3265,13 @@ function MasterMerchant.TradingHouseSetupPendingPost(self)
     end
 
     if pricingData then
-      self:SetPendingPostPrice(math.floor(pricingData * stackCount))
+      self:SetPendingPostPrice(zo_floor(pricingData * stackCount))
     else
       local timeCheck, daysRange = MasterMerchant:CheckTimeframe()
       local tipStats = mmUtils:GetItemCacheStats(itemLink, daysRange)
       if tipStats == nil then MasterMerchant:GetTooltipStats(itemLink, true, false) end
       if (tipStats.avgPrice) then
-        self:SetPendingPostPrice(math.floor(tipStats.avgPrice * stackCount))
+        self:SetPendingPostPrice(zo_floor(tipStats.avgPrice * stackCount))
       end
     end
   end
@@ -3540,51 +3540,51 @@ function MasterMerchant:FirstInitialize()
   if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     MasterMerchant:dm("Debug", "Checked Old MM Settings")
     if MasterMerchant.systemSavedVariables.historyDepth then
-      LibGuildStore_SavedVariables["historyDepth"] = math.max(MasterMerchant.systemSavedVariables.historyDepth,
+      LibGuildStore_SavedVariables["historyDepth"] = zo_max(MasterMerchant.systemSavedVariables.historyDepth,
         LibGuildStore_SavedVariables["historyDepth"])
     end
     if MasterMerchant.systemSavedVariables.minItemCount then
-      LibGuildStore_SavedVariables["minItemCount"] = math.max(MasterMerchant.systemSavedVariables.minItemCount,
+      LibGuildStore_SavedVariables["minItemCount"] = zo_max(MasterMerchant.systemSavedVariables.minItemCount,
         LibGuildStore_SavedVariables["minItemCount"])
     end
     if MasterMerchant.systemSavedVariables.maxItemCount then
-      LibGuildStore_SavedVariables["maxItemCount"] = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
+      LibGuildStore_SavedVariables["maxItemCount"] = zo_max(MasterMerchant.systemSavedVariables.maxItemCount,
         LibGuildStore_SavedVariables["maxItemCount"])
     end
     --[[TODO find a better way then these hacks
     ]]--
     -- History Depth
     if self.acctSavedVariables.historyDepth then
-      MasterMerchant.systemSavedVariables.historyDepth = math.max(MasterMerchant.systemSavedVariables.historyDepth,
+      MasterMerchant.systemSavedVariables.historyDepth = zo_max(MasterMerchant.systemSavedVariables.historyDepth,
         self.acctSavedVariables.historyDepth)
       self.acctSavedVariables.historyDepth = nil
     end
     if self.savedVariables.historyDepth then
-      MasterMerchant.systemSavedVariables.historyDepth = math.max(MasterMerchant.systemSavedVariables.historyDepth,
+      MasterMerchant.systemSavedVariables.historyDepth = zo_max(MasterMerchant.systemSavedVariables.historyDepth,
         self.savedVariables.historyDepth)
       self.savedVariables.historyDepth = nil
     end
 
     -- Min Count
     if self.acctSavedVariables.minItemCount then
-      MasterMerchant.systemSavedVariables.minItemCount = math.max(MasterMerchant.systemSavedVariables.minItemCount,
+      MasterMerchant.systemSavedVariables.minItemCount = zo_max(MasterMerchant.systemSavedVariables.minItemCount,
         self.acctSavedVariables.minItemCount)
       self.acctSavedVariables.minItemCount = nil
     end
     if self.savedVariables.minItemCount then
-      MasterMerchant.systemSavedVariables.minItemCount = math.max(MasterMerchant.systemSavedVariables.minItemCount,
+      MasterMerchant.systemSavedVariables.minItemCount = zo_max(MasterMerchant.systemSavedVariables.minItemCount,
         self.savedVariables.minItemCount)
       self.savedVariables.minItemCount = nil
     end
 
     -- Max Count
     if self.acctSavedVariables.maxItemCount then
-      MasterMerchant.systemSavedVariables.maxItemCount = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
+      MasterMerchant.systemSavedVariables.maxItemCount = zo_max(MasterMerchant.systemSavedVariables.maxItemCount,
         self.acctSavedVariables.maxItemCount)
       self.acctSavedVariables.maxItemCount = nil
     end
     if self.savedVariables.maxItemCount then
-      MasterMerchant.systemSavedVariables.maxItemCount = math.max(MasterMerchant.systemSavedVariables.maxItemCount,
+      MasterMerchant.systemSavedVariables.maxItemCount = zo_max(MasterMerchant.systemSavedVariables.maxItemCount,
         self.savedVariables.maxItemCount)
       self.savedVariables.maxItemCount = nil
     end
@@ -3710,7 +3710,7 @@ function MasterMerchant:FirstInitialize()
           if postedStats.avgPrice then floorPrice = string.format('%.2f', postedStats['avgPrice']) end
           MasterMerchantPriceCalculatorStack:SetText(GetString(MM_APP_TEXT_TIMES) .. stackSize)
           MasterMerchantPriceCalculatorUnitCostAmount:SetText(floorPrice)
-          MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(math.floor(floorPrice * stackSize)) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
+          MasterMerchantPriceCalculatorTotal:SetText(GetString(MM_TOTAL_TITLE) .. self.LocalizedNumber(zo_floor(floorPrice * stackSize)) .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
           MasterMerchantPriceCalculator:SetHidden(false)
         else MasterMerchantPriceCalculator:SetHidden(true) end
       end)
@@ -4134,7 +4134,7 @@ function MasterMerchant.Slash(allArgs)
     if argNum == 2 then guildNumber = tonumber(w) end
     if argNum == 3 then hoursBack = tonumber(w) end
   end
-  args = string.lower(args)
+  args = zo_strlower(args)
 
   if args == 'help' then
     MasterMerchant:dm("Info", GetString(MM_HELP_WINDOW))

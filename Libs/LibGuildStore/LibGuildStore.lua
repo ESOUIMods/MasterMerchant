@@ -19,7 +19,7 @@ function internal:CheckStatus()
     local numEvents = GetNumGuildEvents(guildId, GUILD_HISTORY_STORE)
     local eventCount, processingSpeed, timeLeft = internal.LibHistoireListener[guildId]:GetPendingEventMetrics()
 
-    timeLeft = math.floor(timeLeft)
+    timeLeft = zo_floor(timeLeft)
 
     if timeLeft ~= -1 or processingSpeed ~= -1 then internal.timeEstimated[guildId] = true end
 
@@ -32,7 +32,7 @@ function internal:CheckStatus()
 
     if timeLeft == 0 and internal.timeEstimated[guildId] then internal.eventsNeedProcessing[guildId] = false end
 
-    maxTime = math.max(maxTime, timeLeft)
+    maxTime = zo_max(maxTime, timeLeft)
     if internal.eventsNeedProcessing[guildId] and MasterMerchant.systemSavedVariables.useLibDebugLogger then
       internal:dm("Debug", string.format("%s: numEvents: %s eventCount: %s processingSpeed: %s timeLeft: %s", guildName, numEvents, eventCount, processingSpeed, timeLeft))
     end
@@ -55,7 +55,7 @@ function internal:QueueCheckStatus()
   local eventsRemaining, timeRemaining = internal:CheckStatus()
   if eventsRemaining then
     zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
-    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. ": estimated time remaining " .. (math.floor(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)) .. " minutes.")
+    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. ": estimated time remaining " .. (zo_floor(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)) .. " minutes.")
   else
     --[[
     MasterMerchant.CenterScreenAnnounce_AddMessage(
@@ -274,50 +274,28 @@ local function SetupDefaults()
     libHistoireScanByTimestamp = false,
   }
   internal.systemDefault = systemDefault
-  local sv = LibGuildStore_SavedVariables
-  for key, _ in pairs(sv) do
+  local savedVars = LibGuildStore_SavedVariables
+  local lastEventKey = "lastReceivedEventID"
+  local namespace = internal.libHistoireNamespace
+  for key, _ in pairs(savedVars) do
     -- Delete key-value pair if the key can't also be found in the default settings (except for version)
-    if (key ~= "lastReceivedEventID" and key ~= "version") and systemDefault[key] == nil then
-      sv[key] = nil
+    if (key ~= lastEventKey and key ~= "version") and systemDefault[key] == nil then
+      savedVars[key] = nil
     end
   end
 
   for key, val in pairs(systemDefault) do
-    if LibGuildStore_SavedVariables[key] == nil then LibGuildStore_SavedVariables[key] = val end
+    if savedVars[key] == nil then savedVars[key] = val end
   end
-  -- for some reason the above loop does not assign the empty table
+
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
-    if LibGuildStore_SavedVariables["lastReceivedEventID"] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"] = {} end
-    if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace] = {} end
-    if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] == nil then LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0" end
+    savedVars[lastEventKey] = savedVars[lastEventKey] or {}
+    savedVars[lastEventKey][namespace] = savedVars[lastEventKey][namespace] or {}
+    savedVars[lastEventKey][namespace][guildId] = savedVars[lastEventKey][namespace][guildId] or "0"
   end
 
   MasterMerchant.guildList = internal:GetGuildList()
-
-  --cleanup old vars and this can be removed for production
-  GS17DataSavedVariables["purchases"] = nil
-  GS17DataSavedVariables["listings"] = nil
-  GS17DataSavedVariables["postedItems"] = nil
-  GS17DataSavedVariables["cancelledItems"] = nil
-
-  if GS17DataSavedVariables["posteditemsna"] == nil then GS17DataSavedVariables["posteditemsna"] = {} end
-  if GS17DataSavedVariables["posteditemseu"] == nil then GS17DataSavedVariables["posteditemseu"] = {} end
-  if GS17DataSavedVariables["purchasena"] == nil then GS17DataSavedVariables["purchasena"] = {} end
-  if GS17DataSavedVariables["purchaseeu"] == nil then GS17DataSavedVariables["purchaseeu"] = {} end
-  if GS17DataSavedVariables["cancelleditemsna"] == nil then GS17DataSavedVariables["cancelleditemsna"] = {} end
-  if GS17DataSavedVariables["cancelleditemseu"] == nil then GS17DataSavedVariables["cancelleditemseu"] = {} end
-
-  if GS17DataSavedVariables["visitedNATraders"] == nil then GS17DataSavedVariables["visitedNATraders"] = {} end
-  if GS17DataSavedVariables["visitedEUTraders"] == nil then GS17DataSavedVariables["visitedEUTraders"] = {} end
-
-  if GS17DataSavedVariables["pricingdatana"] == nil then GS17DataSavedVariables["pricingdatana"] = {} end
-  if GS17DataSavedVariables["pricingdataeu"] == nil then GS17DataSavedVariables["pricingdataeu"] = {} end
-  if GS17DataSavedVariables["pricingdatana"]["pricingdataall"] == nil then GS17DataSavedVariables["pricingdatana"]["pricingdataall"] = {} end
-  if GS17DataSavedVariables["pricingdataeu"]["pricingdataall"] == nil then GS17DataSavedVariables["pricingdataeu"]["pricingdataall"] = {} end
-
-  if GS17DataSavedVariables["namefilterna"] == nil then GS17DataSavedVariables["namefilterna"] = {} end
-  if GS17DataSavedVariables["namefiltereu"] == nil then GS17DataSavedVariables["namefiltereu"] = {} end
 
   -- set to false on startup in case previous process did not complete
   LibGuildStore_SavedVariables["updateAdditionalText"] = false
@@ -404,7 +382,7 @@ local function LibGuildStoreInitialize()
     for m = 1, GetNumGuildMembers(guildId) do
       local name, _, _, _, _ = GetGuildMemberInfo(guildId, m)
       if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
-      internal.guildMemberInfo[guildId][string.lower(name)] = true
+      internal.guildMemberInfo[guildId][zo_strlower(name)] = true
     end
   end
   internal:LibAddonInit()
@@ -659,7 +637,7 @@ function internal.Slash(allArgs)
     if argNum == 2 then guildNumber = tonumber(w) end
     if argNum == 3 then hoursBack = tonumber(w) end
   end
-  args = string.lower(args)
+  args = zo_strlower(args)
 
   if args == 'help' then
     internal:dm("Info", GetString(GS_HELP_DUPS))

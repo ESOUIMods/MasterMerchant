@@ -26,7 +26,7 @@ function mmUtils:GetVoucherCountByItemLink(itemLink)
   local itemType, _ = GetItemLinkItemType(itemLink)
   if itemType == ITEMTYPE_MASTER_WRIT then
     local quotient, remainder = math.modf(data / 10000)
-    local voucherCount = quotient + math.floor(0.5 + remainder)
+    local voucherCount = quotient + zo_floor(0.5 + remainder)
     return voucherCount
   end
   return 0

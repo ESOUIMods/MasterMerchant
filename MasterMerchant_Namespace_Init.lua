@@ -9,6 +9,45 @@
 -- |H0:item:126485:5:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h  -- database item
 -- |H0:item:57159:3:40:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h
 
+--[[ from globalapi.lua
+
+zo_strlower         = LocaleAwareToLower
+zo_strupper         = LocaleAwareToUpper
+
+string.lowerbybyte  = string.lower
+string.upperbybyte  = string.upper
+
+string.lower        = zo_strlower
+string.upper        = zo_strupper
+
+zo_strsub           = string.sub
+zo_strgsub          = string.gsub
+zo_strlen           = string.len
+zo_strmatch         = string.match
+zo_strgmatch        = string.gmatch
+zo_strfind          = string.find
+zo_plainstrfind     = PlainStringFind
+zo_strsplit         = SplitString
+zo_loadstring       = LoadString
+
+zo_floor            = math.floor
+zo_ceil             = math.ceil
+zo_mod              = math.fmod
+zo_decimalsplit     = math.modf
+zo_abs              = math.abs
+zo_max              = math.max
+zo_min              = math.min
+zo_sqrt             = math.sqrt
+zo_pow              = math.pow
+zo_cos              = math.cos
+zo_sin              = math.sin
+zo_tan              = math.tan
+zo_atan2            = math.atan2
+zo_randomseed       = math.randomseed
+zo_random           = math.random
+zo_insecureNext     = InsecureNext
+]]--
+
 MMScrollList = ZO_SortFilterList:Subclass()
 MMScrollList.defaults = { }
 -- Sort keys for the scroll lists
@@ -26,7 +65,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.73'
+MasterMerchant.version = '3.7.74'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
@@ -105,6 +144,23 @@ MM_RANGE_VALUE_FOCUS3 = 5
 
 MM_DAYS_RANGE_NONE = -1
 MM_DAYS_RANGE_ALL = 10000
+
+MM_DATA_ITEMID = 1
+MM_DATA_VERSIONID = 2
+MM_DATA_SALEID = 3
+MM_DATA_TIMESTAMP = 4
+MM_DATA_PRICE = 5
+MM_DATA_QTY = 6
+
+MM_GDATA_GUILD = 1
+MM_GDATA_SELLER = 2
+MM_GDATA_SALES = 3
+MM_GDATA_RANK = 4
+MM_GDATA_COUNT = 5
+MM_GDATA_STACK = 6
+MM_GDATA_PERCENT = 7
+MM_GDATA_TAX = 8
+MM_GDATA_KIOSK = 9
 
 -------------------------------------------------
 ----- MasterMerchant Assignments            -----
@@ -219,7 +275,7 @@ function MasterMerchant:is_in(search_value, search_table)
   for k, v in pairs(search_table) do
     if search_value == v then return true end
     if type(search_value) == "string" then
-      if string.find(zo_strlower(v), zo_strlower(search_value)) then return true end
+      if zo_strfind(zo_strlower(v), zo_strlower(search_value)) then return true end
     end
   end
   return false

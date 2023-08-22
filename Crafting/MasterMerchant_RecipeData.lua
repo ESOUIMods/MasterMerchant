@@ -7,7 +7,7 @@ function MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
   end
 
   -- Clear player crafted flag and switch to H0 and see if this is an item resulting from a fixed recipe.
-  local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
+  local switchItemLink = zo_strgsub(zo_strgsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
   if MasterMerchant.recipeData[switchItemLink] then
     return GetItemLinkRecipeNumIngredients(MasterMerchant.recipeData[switchItemLink])
   end
@@ -31,7 +31,7 @@ function MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
     return ingredientItemLink, numRequired
   end
 
-  local switchItemLink = string.gsub(string.gsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
+  local switchItemLink = zo_strgsub(zo_strgsub(itemLink, '0:1:0:0:0:0|h', '0:0:0:0:0:0|h'), '|H1:', '|H0:')
   if MasterMerchant.recipeData[switchItemLink] then
     return MasterMerchant.GetItemLinkRecipeIngredientInfo(MasterMerchant.recipeData[switchItemLink], i)
   end

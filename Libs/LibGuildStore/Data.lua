@@ -15,7 +15,7 @@ function internal:concat(...)
       theString = theString .. tostring(option) .. MM_STRING_SEPARATOR_SPACE
     end
   end
-  theString = string.gsub(theString, '^%s*(.-)%s*$', '%1')
+  theString = zo_strgsub(theString, '^%s*(.-)%s*$', '%1')
   return theString
 end
 
@@ -49,7 +49,7 @@ end
 
 -- uses mod to determine which save files to use
 function internal:MakeHashStringByItemLink(itemLink)
-  local name = string.lower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
+  local name = zo_strlower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
   local hash = 0
   for c in zo_strgmatch(name, '.') do
     if c then hash = hash + string.byte(c) end
@@ -59,7 +59,7 @@ end
 
 -- uses mod to determine which save files to use
 function internal:MakeHashStringByFormattedItemName(itemName)
-  local name = string.lower(itemName)
+  local name = zo_strlower(itemName)
   local hash = 0
   for c in zo_strgmatch(itemName, '.') do
     if c then hash = hash + string.byte(c) end
@@ -210,7 +210,7 @@ function internal:AddSearchToItem(itemLink)
     local dataId = GetItemLinkFurnitureDataId(itemLink)
     local categoryId, subcategoryId = GetFurnitureDataCategoryInfo(dataId)
     if (categoryId ~= 0) then
-      adder = internal:concat(adder, string.lower(GetFurnitureCategoryInfo(categoryId)))
+      adder = internal:concat(adder, zo_strlower(GetFurnitureCategoryInfo(categoryId)))
     end
   end
 
@@ -218,8 +218,8 @@ function internal:AddSearchToItem(itemLink)
   --[[
   if itemType == ITEMTYPE_RECIPE then
     if (specializedItemType ~= 0) then
-      typeString = string.lower(zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType)))
-      typeString = string.gsub(typeString, 'furnishing', '')
+      typeString = zo_strlower(zo_strformat("<<t:1>>", GetString("SI_SPECIALIZEDITEMTYPE", specializedItemType)))
+      typeString = zo_strgsub(typeString, 'furnishing', '')
       adder = internal:concat(adder, typeString)
     end
   end
@@ -241,7 +241,7 @@ function internal:AddSearchToItem(itemLink)
     end
   end
   adder = table.concat(resultTable)
-  return string.lower(adder)
+  return zo_strlower(adder)
 end
 
 function internal:BuildAccountNameLookup()
@@ -337,41 +337,39 @@ end
 -- /script d(LibGuildStore_Internal:AddSalesTableData("itemLink", "|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"))
 -- /script d(GS16DataSavedVariables["itemLink"]["|H0:item:68212:3:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h"])
 function internal:AddSalesTableData(key, value)
-  -- Initialize variables to hold saveData, lookupTable, and countVariable
   local saveData
   local lookupTable
   local countVariable
 
-  -- Check the key to determine which tables to use
   if key == "accountNames" then
-    -- Use GS17DataSavedVariables for accountNames
     saveData = GS17DataSavedVariables[key]
     lookupTable = internal.accountNameByIdLookup
     countVariable = internal.accountNamesCount
   elseif key == "itemLink" then
-    -- Use GS16DataSavedVariables for itemLink
     saveData = GS16DataSavedVariables[key]
     lookupTable = internal.itemLinkNameByIdLookup
     countVariable = internal.itemLinksCount
   elseif key == "guildNames" then
-    -- Use GS16DataSavedVariables for guildNames
     saveData = GS16DataSavedVariables[key]
     lookupTable = internal.guildNameByIdLookup
     countVariable = internal.guildNamesCount
   end
 
-  -- Check if the value exists in the saveData table
   if not saveData[value] then
-    -- Increment the count variable
     countVariable = countVariable + 1
-    -- Assign the value to the saveData table
     saveData[value] = countVariable
-    -- Assign the value to the lookup table
     lookupTable[countVariable] = value
-    -- Return the updated countVariable (or any other value if needed)
+
+    if key == "accountNames" then
+      internal.accountNamesCount = countVariable
+    elseif key == "itemLink" then
+      internal.itemLinksCount = countVariable
+    elseif key == "guildNames" then
+      internal.guildNamesCount = countVariable
+    end
+
     return countVariable
   else
-    -- If the value already exists, return its corresponding value in saveData
     return saveData[value]
   end
 end
@@ -432,7 +430,7 @@ function internal:SetupListener(guildId)
         lastReceivedEventID = eventId
       end
       local guildName = GetGuildName(guildId)
-      local thePlayer = string.lower(GetDisplayName())
+      local thePlayer = zo_strlower(GetDisplayName())
       local added = false
       --[[
       local theEvent = {
@@ -481,7 +479,7 @@ function internal:SetupListener(guildId)
         wasKiosk = false,
         id = Id64ToString(eventId)
       }
-      theEvent.wasKiosk = (internal.guildMemberInfo[guildId][string.lower(theEvent.buyer)] == nil)
+      theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
 
       local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
       if (theEvent.timestamp > daysOfHistoryToKeep) then
@@ -490,7 +488,7 @@ function internal:SetupListener(guildId)
           added = internal:addSalesData(theEvent)
         end
         -- (doAlert and (internal.systemSavedVariables.showChatAlerts or internal.systemSavedVariables.showAnnounceAlerts))
-        if added and string.lower(theEvent.seller) == thePlayer then
+        if added and zo_strlower(theEvent.seller) == thePlayer then
           --internal:dm("Debug", "alertQueue updated")
           table.insert(internal.alertQueue[theEvent.guild], theEvent)
         end
@@ -535,12 +533,12 @@ function internal:GenerateBasicSearchText(theEvent, itemDesc, adderText)
   local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for Basic version
   local searchText = ""
 
-    temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
-    temp[3] = theEvent.guild or ''
-    temp[5] = itemDesc or ''
-    temp[7] = adderText or ''
+  temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
+  temp[3] = theEvent.guild or ''
+  temp[5] = itemDesc or ''
+  temp[7] = adderText or ''
 
-    searchText = zo_strlower(table.concat(temp, ''))
+  searchText = zo_strlower(table.concat(temp, ''))
 
   return searchText
 end

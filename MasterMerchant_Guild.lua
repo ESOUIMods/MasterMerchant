@@ -5,7 +5,6 @@
 -- Distribution without license is prohibited!
 local internal = _G["LibGuildStore_Internal"]
 
-local mfloor = math.floor
 local taxFactor = GetTradingHouseCutPercentage() / 200
 
 local MMSeller = {
@@ -48,7 +47,7 @@ function MMSeller:addSale(rankIndex, amount, stack, sort, tax)
   end
 
   self.sales[rankIndex] = self.sales[rankIndex] + amount
-  self.tax[rankIndex] = self.tax[rankIndex] + (tax or mfloor(amount * taxFactor))  -- Guild gets half the Cut with decimals cut off.
+  self.tax[rankIndex] = self.tax[rankIndex] + (tax or zo_floor(amount * taxFactor))  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = self.count[rankIndex] + 1
   self.stack[rankIndex] = self.stack[rankIndex] + stack
 
@@ -82,7 +81,7 @@ end
 
 function MMSeller:removeSale(rankIndex, amount, stack)
   self.sales[rankIndex] = (self.sales[rankIndex] or 0) - amount
-  self.tax[rankIndex] = (self.tax[rankIndex] or 0) - mfloor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
+  self.tax[rankIndex] = (self.tax[rankIndex] or 0) - zo_floor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = (self.count[rankIndex] or 0) - 1
   self.stack[rankIndex] = (self.stack[rankIndex] or 0) - stack
 end
@@ -293,7 +292,7 @@ function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, s
   end
 
   self.sales[rankIndex] = self.sales[rankIndex] + amount
-  local tax = mfloor(amount * taxFactor)
+  local tax = zo_floor(amount * taxFactor)
   self.tax[rankIndex] = self.tax[rankIndex] + tax  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = self.count[rankIndex] + 1
   self.stack[rankIndex] = self.stack[rankIndex] + stack
@@ -306,7 +305,7 @@ function MMGuild:removeSale(sellerName, rankIndex, amount, stack)
   if (self.sellers[sellersName]) then self.sellers[sellersName]:removeSale(rankIndex, amount, stack) end
 
   self.sales[rankIndex] = (self.sales[rankIndex] or 0) - amount
-  self.tax[rankIndex] = (self.tax[rankIndex] or 0) - mfloor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
+  self.tax[rankIndex] = (self.tax[rankIndex] or 0) - zo_floor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = (self.count[rankIndex] or 0) - 1
   self.stack[rankIndex] = (self.stack[rankIndex] or 0) - stack
 end

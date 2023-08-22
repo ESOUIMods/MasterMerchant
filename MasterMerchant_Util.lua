@@ -75,7 +75,7 @@ function MasterMerchant.concat(...)
       theString = theString .. tostring(option) .. MM_STRING_SEPARATOR_SPACE
     end
   end
-  theString = string.gsub(theString, '^%s*(.-)%s*$', '%1')
+  theString = zo_strgsub(theString, '^%s*(.-)%s*$', '%1')
   return theString
 end
 
@@ -152,12 +152,11 @@ function MasterMerchant.LocalizedNumber(amount)
     local k
 
     repeat
-      formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", "%1" .. GetString(SK_THOUSANDS_SEP) .. "%2")
+      formatted, k = zo_strgsub(formatted, "^(-?%d+)(%d%d%d)", "%1" .. GetString(SK_THOUSANDS_SEP) .. "%2")
     until k == 0
 
     return formatted
   end
-
 
   amount = amount or 0
   local applyFormatting = MasterMerchant.systemSavedVariables.trimDecimals or amount > 100 or IsValueInteger(amount)
@@ -190,7 +189,7 @@ local function GetTimeAgo(timestamp)
   if secsSince < ZO_ONE_DAY_IN_SECONDS then
     formatedTime = ZO_FormatDurationAgo(secsSince)
   else
-    formatedTime = zo_strformat(GetString(SK_TIME_DAYS), math.floor(secsSince / ZO_ONE_DAY_IN_SECONDS))
+    formatedTime = zo_strformat(GetString(SK_TIME_DAYS), zo_floor(secsSince / ZO_ONE_DAY_IN_SECONDS))
   end
   return formatedTime
 end

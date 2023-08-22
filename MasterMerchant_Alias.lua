@@ -58,8 +58,8 @@ function MasterMerchant:itemPriceTip(itemLink, chatText, clickable)
     end
 
     local avePriceString = self.LocalizedNumber(tipStats['avgPrice'])
-    tipFormat = string.gsub(tipFormat, '.2f', 's')
-    tipFormat = string.gsub(tipFormat, 'M.M.', 'MM')
+    tipFormat = zo_strgsub(tipFormat, '.2f', 's')
+    tipFormat = zo_strgsub(tipFormat, 'M.M.', 'MM')
     -- chatText
     if not chatText then tipFormat = tipFormat .. MM_COIN_ICON_NO_SPACE end
     local salesString = zo_strformat(GetString(SK_OLD_PRICETIP_SALES), tipStats['numSales'])

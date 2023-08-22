@@ -214,7 +214,7 @@ function mmUtils:CreateDaysRangeChoices()
 end
 
 function mmUtils:UpdateDaysRangeSettings()
-  local keys = {"defaultDays", "shiftDays", "ctrlDays", "ctrlShiftDays"}
+  local keys = { "defaultDays", "shiftDays", "ctrlDays", "ctrlShiftDays" }
 
   for _, key in ipairs(keys) do
     local value = MasterMerchant.systemSavedVariables[key]
