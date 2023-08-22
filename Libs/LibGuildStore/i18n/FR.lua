@@ -21,6 +21,9 @@ ZO_CreateStringId("GS_TRUNCATE_PURCHASE_COMPLETE", "Achat de découpage terminé
 ZO_CreateStringId("GS_TRUNCATE_POSTED_COMPLETE", "Découpage des éléments publiés terminé : %s secondes pour le découpage, %s anciens enregistrements supprimés.")
 ZO_CreateStringId("GS_TRUNCATE_CANCELLED_COMPLETE", "Découpage des éléments annulés terminé : %s secondes pour le découpage, %s anciens enregistrements supprimés.")
 
+ZO_CreateStringId("GS_DUPE_LIBGUILDSTORE_CONFIRM_TITLE", "Duplicate LibGuildStore Data Detected")
+ZO_CreateStringId("GS_DUPE_LIBGUILDSTORE_CONFIRM_MAIN", "Duplicate Account Name, Guild Name, or Item Link indexes detected. Sales discrepancies will occur. You can cancel and restore a backup prior to August 14 2023 otherwise a full reset of all data is required.")
+
 ZO_CreateStringId("GS_RESET_LISTINGS_BUTTON", "Réinitialiser les listes")
 ZO_CreateStringId("GS_RESET_LISTINGS_DESC", "Cela ne réinitialisera que les listes pour le type de serveur actuel NA ou EU.")
 ZO_CreateStringId("GS_RESET_LISTINGS_NAME", "Réinitialiser les données des listes")

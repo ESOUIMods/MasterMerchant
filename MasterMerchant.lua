@@ -3873,6 +3873,31 @@ function MasterMerchant:FirstInitialize()
   ]]--
 end
 
+local function GetDuplicatedValues(dataTable)
+  local valueCounts = {}
+  local duplicatedValues = {}
+
+  for value, count in pairs(dataTable) do
+    if not valueCounts[count] then
+      valueCounts[count] = value
+    elseif valueCounts[count] then
+      duplicatedValues[value] = true
+      duplicatedValues[valueCounts[count]] = true
+    end
+  end
+  return duplicatedValues
+end
+
+local function DisplayDupeWarning()
+  internal.duplicateAccountNames = GetDuplicatedValues(GS17DataSavedVariables["accountNames"])
+  internal.duplicateItemLinks = GetDuplicatedValues(GS16DataSavedVariables["itemLink"])
+  internal.duplicateGuildNames = GetDuplicatedValues(GS16DataSavedVariables["guildNames"])
+
+  if next(internal.duplicateAccountNames) or next(internal.duplicateItemLinks) or next(internal.duplicateGuildNames) then
+    ZO_Dialogs_ShowDialog("MasterMerchantDuplicateGuildStoreDataDialog")
+  end
+end
+
 function MasterMerchant:SecondInitialize()
   MasterMerchant:dm("Debug", "SecondInitialize")
   --[[
@@ -3916,6 +3941,7 @@ function MasterMerchant:SecondInitialize()
     LEQ:addTask(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
     LEQ:addTask(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
     LEQ:addTask(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
+    LEQ:addTask(function() DisplayDupeWarning() end, 'DisplayDupeWarning')
     LEQ:addTask(function()
       if internal:MasterMerchantDataActive() then
         MasterMerchant:dm("Info", GetString(MM_MMXXDATA_OBSOLETE))

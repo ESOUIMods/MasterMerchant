@@ -3825,6 +3825,18 @@ function MasterMerchant:SetupMasterMerchantWindow()
     }
   }
   ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetLibGuildStoreConfirmation', resetLibGuildStoreDialog)
+  local duplicateGuildStoreDataDialog = {
+    title = { text = GetString(GS_DUPE_LIBGUILDSTORE_CONFIRM_TITLE) },
+    mainText = { text = GetString(GS_DUPE_LIBGUILDSTORE_CONFIRM_MAIN) },
+    buttons = {
+      {
+        text = SI_DIALOG_ACCEPT,
+        callback = function() internal:resetAllLibGuildStoreData() end
+      },
+      { text = SI_DIALOG_CANCEL }
+    }
+  }
+  ZO_Dialogs_RegisterCustomDialog('MasterMerchantDuplicateGuildStoreDataDialog', duplicateGuildStoreDataDialog)
 
   -- Slider setup
   MasterMerchantStatsWindowSlider:SetValue(100)
