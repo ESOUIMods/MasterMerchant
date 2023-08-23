@@ -178,9 +178,6 @@ internal.myItems = nil
 internal.guildSales = nil
 internal.guildPurchases = nil
 internal.currentGuilds = {}
-internal.duplicateAccountNames = {}
-internal.duplicateGuildNames = {}
-internal.duplicateItemLinks = {}
 
 internal.totalSales = 0
 internal.totalPurchases = 0

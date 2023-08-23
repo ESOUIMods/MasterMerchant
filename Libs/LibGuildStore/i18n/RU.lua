@@ -21,9 +21,6 @@ ZO_CreateStringId("GS_TRUNCATE_PURCHASE_COMPLETE", "Отсечение поку�
 ZO_CreateStringId("GS_TRUNCATE_POSTED_COMPLETE", "Отсечение выставлений: завершено за %s сек., удалено устаревших записей: %s.")
 ZO_CreateStringId("GS_TRUNCATE_CANCELLED_COMPLETE", "Отсечение отмен: завершено за %s сек., удалено устаревших записей: %s.")
 
-ZO_CreateStringId("GS_DUPE_LIBGUILDSTORE_CONFIRM_TITLE", "Duplicate LibGuildStore Data Detected")
-ZO_CreateStringId("GS_DUPE_LIBGUILDSTORE_CONFIRM_MAIN", "Duplicate Account Name, Guild Name, or Item Link indexes detected. Sales discrepancies will occur. You can cancel and restore a backup prior to August 14 2023 otherwise a full reset of all data is required.")
-
 ZO_CreateStringId("GS_RESET_LISTINGS_BUTTON", "Обнулить размещения")
 ZO_CreateStringId("GS_RESET_LISTINGS_DESC", "Уничтожит архив размещений только на текущем сервере, NA или EU.")
 ZO_CreateStringId("GS_RESET_LISTINGS_NAME", "Сброс размещений")

@@ -3889,11 +3889,11 @@ local function GetDuplicatedValues(dataTable)
 end
 
 local function DisplayDupeWarning()
-  internal.duplicateAccountNames = GetDuplicatedValues(GS17DataSavedVariables["accountNames"])
-  internal.duplicateItemLinks = GetDuplicatedValues(GS16DataSavedVariables["itemLink"])
-  internal.duplicateGuildNames = GetDuplicatedValues(GS16DataSavedVariables["guildNames"])
+  MasterMerchant.duplicateAccountNames = GetDuplicatedValues(GS17DataSavedVariables["accountNames"])
+  MasterMerchant.duplicateItemLinks = GetDuplicatedValues(GS16DataSavedVariables["itemLink"])
+  MasterMerchant.duplicateGuildNames = GetDuplicatedValues(GS16DataSavedVariables["guildNames"])
 
-  if next(internal.duplicateAccountNames) or next(internal.duplicateItemLinks) or next(internal.duplicateGuildNames) then
+  if next(MasterMerchant.duplicateAccountNames) or next(MasterMerchant.duplicateItemLinks) or next(MasterMerchant.duplicateGuildNames) then
     ZO_Dialogs_ShowDialog("MasterMerchantDuplicateGuildStoreDataDialog")
   end
 end

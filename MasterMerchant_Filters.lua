@@ -376,6 +376,7 @@ end
 
 function MasterMerchant:UpdateFilterState(control, filterType)
   -- MasterMerchant:dm("Debug", "UpdateFilterState")
+  local buttonControl
   local function filtersCleared()
     for _, value in pairs(MasterMerchant.filterTypes) do
       if value.filterActive then return false end
@@ -394,13 +395,13 @@ function MasterMerchant:UpdateFilterState(control, filterType)
     end
     if filterType == MM_RECIPE_MOTIF_KNOWN and MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].filterActive then
       MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].filterActive = false
-      button = MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].button
-      button:SetNormalTexture(MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].up)
+      buttonControl = MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].button
+      buttonControl:SetNormalTexture(MasterMerchant.filterTypes[MM_RECIPE_MOTIF_UNKNOWN].up)
     end
     if filterType == MM_RECIPE_MOTIF_UNKNOWN and MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].filterActive then
       MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].filterActive = false
-      button = MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].button
-      button:SetNormalTexture(MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].up)
+      buttonControl = MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].button
+      buttonControl:SetNormalTexture(MasterMerchant.filterTypes[MM_RECIPE_MOTIF_KNOWN].up)
     end
   else
     MasterMerchant.filterTypes[filterType].filterActive = not MasterMerchant.filterTypes[filterType].filterActive

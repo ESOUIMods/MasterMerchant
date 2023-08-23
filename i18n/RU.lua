@@ -562,3 +562,6 @@ ZO_CreateStringId("MM_WINDOW_TIME_RANGE_LABEL_NINETY", "60–90 дней")
 ZO_CreateStringId("MM_WINDOW_TIME_RANGE_LABEL_CUSTOM", "По выбору")
 ZO_CreateStringId("MM_WINDOW_CUSTOM_TIMEFRAME_NAME", "Период по выбору")
 ZO_CreateStringId("MM_WINDOW_CUSTOM_TIMEFRAME_TIP", "Количество дней для периода по выбору.")
+
+ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_TITLE", "Duplicate LibGuildStore Data Detected")
+ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_MAIN", "Duplicate Account Name, Guild Name, or Item Link indexes detected. Sales discrepancies will occur. You can cancel and restore a backup prior to August 14 2023 otherwise a full reset of all data is required.")

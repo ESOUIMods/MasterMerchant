@@ -203,6 +203,9 @@ MasterMerchant.dateRanges = nil
 MasterMerchant.daysRangeChoices = {}
 MasterMerchant.daysRangeValues = {}
 MasterMerchant.daysRangeLookup = {}
+MasterMerchant.duplicateAccountNames = {}
+MasterMerchant.duplicateGuildNames = {}
+MasterMerchant.duplicateItemLinks = {}
 
 MasterMerchant.a_test = {}
 MasterMerchant.aa_test = {}

@@ -3826,8 +3826,8 @@ function MasterMerchant:SetupMasterMerchantWindow()
   }
   ZO_Dialogs_RegisterCustomDialog('MasterMerchantResetLibGuildStoreConfirmation', resetLibGuildStoreDialog)
   local duplicateGuildStoreDataDialog = {
-    title = { text = GetString(GS_DUPE_LIBGUILDSTORE_CONFIRM_TITLE) },
-    mainText = { text = GetString(GS_DUPE_LIBGUILDSTORE_CONFIRM_MAIN) },
+    title = { text = GetString(MM_DUPE_LIBGUILDSTORE_CONFIRM_TITLE) },
+    mainText = { text = GetString(MM_DUPE_LIBGUILDSTORE_CONFIRM_MAIN) },
     buttons = {
       {
         text = SI_DIALOG_ACCEPT,
