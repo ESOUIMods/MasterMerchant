@@ -35,54 +35,68 @@ function internal:addPostedItem(theEvent)
             buyer
           }
   ]]--
-  --internal:dm("Debug", theEvent)
-  local linkHash = internal:AddSalesTableData("itemLink", theEvent.itemLink)
-  local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
-  local guildHash = internal:AddSalesTableData("guildNames", theEvent.guild)
+  local eventItemLink = theEvent.itemLink
+  local eventSeller = theEvent.seller
+  local eventGuild = theEvent.guild
+  local timestamp = theEvent.timestamp
 
-  local itemIndex = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
-  local theIID = GetItemLinkItemId(theEvent.itemLink)
+  -- first add new data lookups to their tables
+  local linkHash = internal:AddSalesTableData("itemLink", eventItemLink)
+  local sellerHash = internal:AddSalesTableData("accountNames", eventSeller)
+  local guildHash = internal:AddSalesTableData("guildNames", eventGuild)
+  local formattedItemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(eventItemLink))
+
+  --[[The quality effects itemIndex although the ID from the
+  itemLink may be the same. We will keep them separate.
+  ]]--
+  local itemIndex = internal.GetOrCreateIndexFromLink(eventItemLink)
+
+  --[[theIID is used in wordData for the SRIndex, define it here.
+  ]]--
+  local theIID = GetItemLinkItemId(eventItemLink)
   if theIID == nil or theIID == 0 then return false end
 
+  --[[If the ID from the itemLink doesn't exist determine which
+  file or container it will belong to using SetGuildStoreData()
+  ]]--
   if not posted_items_data[theIID] then
     posted_items_data[theIID] = internal:SetPostedItmesData(theIID)
   end
-  local newEvent = ZO_DeepTableCopy(theEvent)
-  newEvent.itemLink = linkHash
-  newEvent.seller = sellerHash
-  newEvent.guild = guildHash
+  posted_items_data[theIID][itemIndex] = posted_items_data[theIID][itemIndex] or {}
+  posted_items_data[theIID][itemIndex].itemIcon = posted_items_data[theIID][itemIndex].itemIcon or GetItemLinkInfo(eventItemLink)
+  posted_items_data[theIID][itemIndex].itemAdderText = posted_items_data[theIID][itemIndex].itemAdderText or internal:AddSearchToItem(eventItemLink)
+  posted_items_data[theIID][itemIndex].itemDesc = posted_items_data[theIID][itemIndex].itemDesc or formattedItemName
+  posted_items_data[theIID][itemIndex].totalCount = posted_items_data[theIID][itemIndex].totalCount or 0 -- assign count if if new sale
+  posted_items_data[theIID][itemIndex].totalCount = posted_items_data[theIID][itemIndex].totalCount + 1 -- increment count if existing sale
+  posted_items_data[theIID][itemIndex].wasAltered = true
+  posted_items_data[theIID][itemIndex]['sales'] = posted_items_data[theIID][itemIndex]['sales'] or {}
+  local searchItemDesc = posted_items_data[theIID][itemIndex].itemDesc -- used for searchText
+  local searchItemAdderText = posted_items_data[theIID][itemIndex].itemAdderText -- used for searchText
+
+  theEvent.itemLink = linkHash
+  theEvent.seller = sellerHash
+  theEvent.guild = guildHash
 
   local insertedIndex = 1
-  local searchItemDesc = ""
-  local searchItemAdderText = ""
-  if posted_items_data[theIID][itemIndex] then
-    searchItemDesc = posted_items_data[theIID][itemIndex].itemDesc
-    searchItemAdderText = posted_items_data[theIID][itemIndex].itemAdderText
-    table.insert(posted_items_data[theIID][itemIndex]['sales'], newEvent)
-    insertedIndex = #posted_items_data[theIID][itemIndex]['sales']
+  local salesTable = posted_items_data[theIID][itemIndex]['sales']
+  local nextLocation = #salesTable + 1
+  if salesTable[nextLocation] == nil then
+    table.insert(salesTable, nextLocation, theEvent)
+    insertedIndex = nextLocation
   else
-    if posted_items_data[theIID][itemIndex] == nil then posted_items_data[theIID][itemIndex] = {} end
-    if posted_items_data[theIID][itemIndex]['sales'] == nil then posted_items_data[theIID][itemIndex]['sales'] = {} end
-    searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
-    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
-    posted_items_data[theIID][itemIndex] = {
-      itemIcon = GetItemLinkInfo(theEvent.itemLink),
-      itemAdderText = searchItemAdderText,
-      itemDesc = searchItemDesc,
-      sales = { newEvent } }
-    --internal:dm("Debug", newEvent)
+    table.insert(salesTable, theEvent)
+    insertedIndex = #salesTable
   end
-  posted_items_data[theIID][itemIndex].wasAltered = true
-  if posted_items_data[theIID][itemIndex] and posted_items_data[theIID][itemIndex].totalCount then
-    posted_items_data[theIID][itemIndex].totalCount = posted_items_data[theIID][itemIndex].totalCount + 1
-  else
-    posted_items_data[theIID][itemIndex].totalCount = 1
-  end
+
+  local newestTime = posted_items_data[theIID][itemIndex]["newestTime"]
+  local oldestTime = posted_items_data[theIID][itemIndex]["oldestTime"]
+  if newestTime == nil or newestTime < timestamp then posted_items_data[theIID][itemIndex]["newestTime"] = timestamp end
+  if oldestTime == nil or oldestTime > timestamp then posted_items_data[theIID][itemIndex]["oldestTime"] = timestamp end
 
   local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for posted items
 
-  temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
-  temp[3] = theEvent.guild or ''
+  temp[1] = eventSeller and ('s' .. eventSeller) or ''
+  temp[3] = eventGuild or ''
   temp[5] = searchItemDesc or ''
   temp[7] = searchItemAdderText or ''
   local searchText = zo_strlower(table.concat(temp, ''))
@@ -92,7 +106,7 @@ function internal:addPostedItem(theEvent)
 
   -- Index each word
   for i in searchByWords do
-    if pir_index[i] == nil then pir_index[i] = {} end
+    pir_index[i] = pir_index[i] or {}
     table.insert(pir_index[i], wordData)
     internal.pir_index_count = (internal.pir_index_count or 0) + 1
   end

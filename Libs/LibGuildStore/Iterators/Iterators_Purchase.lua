@@ -67,57 +67,72 @@ function internal:addPurchaseData(theEvent)
           buyer = GetDisplayName()
         }
   ]]--
-  --internal:dm("Debug", theEvent)
-  local linkHash = internal:AddSalesTableData("itemLink", theEvent.itemLink)
-  local buyerHash = internal:AddSalesTableData("accountNames", theEvent.buyer)
-  local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
-  local guildHash = internal:AddSalesTableData("guildNames", theEvent.guild)
+  local eventItemLink = theEvent.itemLink
+  local eventBuyer = theEvent.buyer
+  local eventSeller = theEvent.seller
+  local eventGuild = theEvent.guild
+  local timestamp = theEvent.timestamp
 
-  local itemIndex = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
-  local theIID = GetItemLinkItemId(theEvent.itemLink)
+  -- first add new data lookups to their tables
+  local linkHash = internal:AddSalesTableData("itemLink", eventItemLink)
+  local buyerHash = internal:AddSalesTableData("accountNames", eventBuyer)
+  local sellerHash = internal:AddSalesTableData("accountNames", eventSeller)
+  local guildHash = internal:AddSalesTableData("guildNames", eventGuild)
+  local formattedItemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(eventItemLink))
+
+  --[[The quality effects itemIndex although the ID from the
+  itemLink may be the same. We will keep them separate.
+  ]]--
+  local itemIndex = internal.GetOrCreateIndexFromLink(eventItemLink)
+
+  --[[theIID is used in wordData for the SRIndex, define it here.
+  ]]--
+  local theIID = GetItemLinkItemId(eventItemLink)
   if theIID == nil or theIID == 0 then return false end
 
+  --[[If the ID from the itemLink doesn't exist determine which
+  file or container it will belong to using SetGuildStoreData()
+  ]]--
   if not purchases_data[theIID] then
     purchases_data[theIID] = internal:SetPurchaseData(theIID)
   end
-  local newEvent = ZO_DeepTableCopy(theEvent)
-  newEvent.itemLink = linkHash
-  newEvent.buyer = buyerHash
-  newEvent.seller = sellerHash
-  newEvent.guild = guildHash
+  purchases_data[theIID][itemIndex] = purchases_data[theIID][itemIndex] or {}
+  purchases_data[theIID][itemIndex].itemIcon = purchases_data[theIID][itemIndex].itemIcon or GetItemLinkInfo(eventItemLink)
+  purchases_data[theIID][itemIndex].itemAdderText = purchases_data[theIID][itemIndex].itemAdderText or internal:AddSearchToItem(eventItemLink)
+  purchases_data[theIID][itemIndex].itemDesc = purchases_data[theIID][itemIndex].itemDesc or formattedItemName
+  purchases_data[theIID][itemIndex].totalCount = purchases_data[theIID][itemIndex].totalCount or 0 -- assign count if if new sale
+  purchases_data[theIID][itemIndex].totalCount = purchases_data[theIID][itemIndex].totalCount + 1 -- increment count if existing sale
+  purchases_data[theIID][itemIndex].wasAltered = true
+  purchases_data[theIID][itemIndex]['sales'] = purchases_data[theIID][itemIndex]['sales'] or {}
+  local searchItemDesc = purchases_data[theIID][itemIndex].itemDesc -- used for searchText
+  local searchItemAdderText = purchases_data[theIID][itemIndex].itemAdderText -- used for searchText
+
+  theEvent.itemLink = linkHash
+  theEvent.buyer = buyerHash
+  theEvent.seller = sellerHash
+  theEvent.guild = guildHash
 
   local insertedIndex = 1
-  local searchItemDesc = ""
-  local searchItemAdderText = ""
-  if purchases_data[theIID][itemIndex] then
-    searchItemDesc = purchases_data[theIID][itemIndex].itemDesc
-    searchItemAdderText = purchases_data[theIID][itemIndex].itemAdderText
-    table.insert(purchases_data[theIID][itemIndex]['sales'], newEvent)
-    insertedIndex = #purchases_data[theIID][itemIndex]['sales']
+  local salesTable = purchases_data[theIID][itemIndex]['sales']
+  local nextLocation = #salesTable + 1
+  if salesTable[nextLocation] == nil then
+    table.insert(salesTable, nextLocation, theEvent)
+    insertedIndex = nextLocation
   else
-    if purchases_data[theIID][itemIndex] == nil then purchases_data[theIID][itemIndex] = {} end
-    if purchases_data[theIID][itemIndex]['sales'] == nil then purchases_data[theIID][itemIndex]['sales'] = {} end
-    searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
-    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
-    purchases_data[theIID][itemIndex] = {
-      itemIcon = GetItemLinkInfo(theEvent.itemLink),
-      itemAdderText = searchItemAdderText,
-      itemDesc = searchItemDesc,
-      sales = { newEvent } }
-    --internal:dm("Debug", newEvent)
+    table.insert(salesTable, theEvent)
+    insertedIndex = #salesTable
   end
-  purchases_data[theIID][itemIndex].wasAltered = true
-  if purchases_data[theIID][itemIndex] and purchases_data[theIID][itemIndex].totalCount then
-    purchases_data[theIID][itemIndex].totalCount = purchases_data[theIID][itemIndex].totalCount + 1
-  else
-    purchases_data[theIID][itemIndex].totalCount = 1
-  end
+
+  local newestTime = purchases_data[theIID][itemIndex]["newestTime"]
+  local oldestTime = purchases_data[theIID][itemIndex]["oldestTime"]
+  if newestTime == nil or newestTime < timestamp then purchases_data[theIID][itemIndex]["newestTime"] = timestamp end
+  if oldestTime == nil or oldestTime > timestamp then purchases_data[theIID][itemIndex]["oldestTime"] = timestamp end
 
   local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', } -- no player text for purchases
 
-  temp[1] = theEvent.buyer and ('b' .. theEvent.buyer) or ''
-  temp[3] = theEvent.seller and ('s' .. theEvent.seller) or ''
-  temp[5] = theEvent.guild or ''
+  temp[1] = eventBuyer and ('b' .. eventBuyer) or ''
+  temp[3] = eventSeller and ('s' .. eventSeller) or ''
+  temp[5] = eventGuild or ''
   temp[7] = searchItemDesc or ''
   temp[9] = searchItemAdderText or ''
   local searchText = zo_strlower(table.concat(temp, ''))
@@ -127,7 +142,7 @@ function internal:addPurchaseData(theEvent)
 
   -- Index each word
   for i in searchByWords do
-    if pr_index[i] == nil then pr_index[i] = {} end
+    pr_index[i] = pr_index[i] or {}
     table.insert(pr_index[i], wordData)
     internal.pr_index_count = (internal.pr_index_count or 0) + 1
   end

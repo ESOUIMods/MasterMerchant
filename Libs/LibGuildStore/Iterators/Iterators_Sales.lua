@@ -106,7 +106,9 @@ function internal:addSalesData(theEvent)
   sales_data[theIID][itemIndex].totalCount = sales_data[theIID][itemIndex].totalCount + 1 -- increment count if existing sale
   sales_data[theIID][itemIndex].wasAltered = true
   sales_data[theIID][itemIndex]['sales'] = sales_data[theIID][itemIndex]['sales'] or {}
-  local adderDescConcat = sales_data[theIID][itemIndex].itemDesc .. ' ' .. sales_data[theIID][itemIndex].itemAdderText
+  local searchItemDesc = sales_data[theIID][itemIndex].itemDesc -- used for searchText
+  local searchItemAdderText = sales_data[theIID][itemIndex].itemAdderText -- used for searchText
+  local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
 
   theEvent.itemLink = linkHash
   theEvent.buyer = buyerHash

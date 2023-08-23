@@ -31,54 +31,68 @@ function internal:addCancelledItem(theEvent)
             buyer
           }
   ]]--
-  --internal:dm("Debug", theEvent)
-  local linkHash = internal:AddSalesTableData("itemLink", theEvent.itemLink)
-  local sellerHash = internal:AddSalesTableData("accountNames", theEvent.seller)
-  local guildHash = internal:AddSalesTableData("guildNames", theEvent.guild)
+  local eventItemLink = theEvent.itemLink
+  local eventSeller = theEvent.seller
+  local eventGuild = theEvent.guild
+  local timestamp = theEvent.timestamp
 
-  local itemIndex = internal.GetOrCreateIndexFromLink(theEvent.itemLink)
-  local theIID = GetItemLinkItemId(theEvent.itemLink)
+  -- first add new data lookups to their tables
+  local linkHash = internal:AddSalesTableData("itemLink", eventItemLink)
+  local sellerHash = internal:AddSalesTableData("accountNames", eventSeller)
+  local guildHash = internal:AddSalesTableData("guildNames", eventGuild)
+  local formattedItemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(eventItemLink))
+
+  --[[The quality effects itemIndex although the ID from the
+  itemLink may be the same. We will keep them separate.
+  ]]--
+  local itemIndex = internal.GetOrCreateIndexFromLink(eventItemLink)
+
+  --[[theIID is used in wordData for the SRIndex, define it here.
+  ]]--
+  local theIID = GetItemLinkItemId(eventItemLink)
   if theIID == nil or theIID == 0 then return false end
 
+  --[[If the ID from the itemLink doesn't exist determine which
+  file or container it will belong to using SetGuildStoreData()
+  ]]--
   if not cancelled_items_data[theIID] then
     cancelled_items_data[theIID] = internal:SetCancelledItmesData(theIID)
   end
-  local newEvent = ZO_DeepTableCopy(theEvent)
-  newEvent.itemLink = linkHash
-  newEvent.seller = sellerHash
-  newEvent.guild = guildHash
+  cancelled_items_data[theIID][itemIndex] = cancelled_items_data[theIID][itemIndex] or {}
+  cancelled_items_data[theIID][itemIndex].itemIcon = cancelled_items_data[theIID][itemIndex].itemIcon or GetItemLinkInfo(eventItemLink)
+  cancelled_items_data[theIID][itemIndex].itemAdderText = cancelled_items_data[theIID][itemIndex].itemAdderText or internal:AddSearchToItem(eventItemLink)
+  cancelled_items_data[theIID][itemIndex].itemDesc = cancelled_items_data[theIID][itemIndex].itemDesc or formattedItemName
+  cancelled_items_data[theIID][itemIndex].totalCount = cancelled_items_data[theIID][itemIndex].totalCount or 0 -- assign count if if new sale
+  cancelled_items_data[theIID][itemIndex].totalCount = cancelled_items_data[theIID][itemIndex].totalCount + 1 -- increment count if existing sale
+  cancelled_items_data[theIID][itemIndex].wasAltered = true
+  cancelled_items_data[theIID][itemIndex]['sales'] = cancelled_items_data[theIID][itemIndex]['sales'] or {}
+  local searchItemDesc = cancelled_items_data[theIID][itemIndex].itemDesc -- used for searchText
+  local searchItemAdderText = cancelled_items_data[theIID][itemIndex].itemAdderText -- used for searchText
+
+  theEvent.itemLink = linkHash
+  theEvent.seller = sellerHash
+  theEvent.guild = guildHash
 
   local insertedIndex = 1
-  local searchItemDesc = ""
-  local searchItemAdderText = ""
-  if cancelled_items_data[theIID][itemIndex] then
-    searchItemDesc = cancelled_items_data[theIID][itemIndex].itemDesc
-    searchItemAdderText = cancelled_items_data[theIID][itemIndex].itemAdderText
-    table.insert(cancelled_items_data[theIID][itemIndex]['sales'], newEvent)
-    insertedIndex = #cancelled_items_data[theIID][itemIndex]['sales']
+  local salesTable = cancelled_items_data[theIID][itemIndex]['sales']
+  local nextLocation = #salesTable + 1
+  if salesTable[nextLocation] == nil then
+    table.insert(salesTable, nextLocation, theEvent)
+    insertedIndex = nextLocation
   else
-    if cancelled_items_data[theIID][itemIndex] == nil then cancelled_items_data[theIID][itemIndex] = {} end
-    if cancelled_items_data[theIID][itemIndex]['sales'] == nil then cancelled_items_data[theIID][itemIndex]['sales'] = {} end
-    searchItemDesc = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(theEvent.itemLink))
-    searchItemAdderText = internal:AddSearchToItem(theEvent.itemLink)
-    cancelled_items_data[theIID][itemIndex] = {
-      itemIcon = GetItemLinkInfo(theEvent.itemLink),
-      itemAdderText = searchItemAdderText,
-      itemDesc = searchItemDesc,
-      sales = { newEvent } }
-    --internal:dm("Debug", newEvent)
+    table.insert(salesTable, theEvent)
+    insertedIndex = #salesTable
   end
-  cancelled_items_data[theIID][itemIndex].wasAltered = true
-  if cancelled_items_data[theIID][itemIndex] and cancelled_items_data[theIID][itemIndex].totalCount then
-    cancelled_items_data[theIID][itemIndex].totalCount = cancelled_items_data[theIID][itemIndex].totalCount + 1
-  else
-    cancelled_items_data[theIID][itemIndex].totalCount = 1
-  end
+
+  local newestTime = cancelled_items_data[theIID][itemIndex]["newestTime"]
+  local oldestTime = cancelled_items_data[theIID][itemIndex]["oldestTime"]
+  if newestTime == nil or newestTime < timestamp then cancelled_items_data[theIID][itemIndex]["newestTime"] = timestamp end
+  if oldestTime == nil or oldestTime > timestamp then cancelled_items_data[theIID][itemIndex]["oldestTime"] = timestamp end
 
   local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for cancelled items
 
-  temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
-  temp[3] = theEvent.guild or ''
+  temp[1] = eventSeller and ('s' .. eventSeller) or ''
+  temp[3] = eventGuild or ''
   temp[5] = searchItemDesc or ''
   temp[7] = searchItemAdderText or ''
 
