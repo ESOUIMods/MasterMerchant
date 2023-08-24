@@ -697,19 +697,6 @@ function MasterMerchant:LibAddonInit()
     default = MasterMerchant.systemDefault.trimOutliers,
     disabled = function() return MasterMerchant.systemSavedVariables.trimOutliersWithPercentile end,
   }
-  -- use moderate triming for outliers
-  optionsData[#optionsData + 1] = {
-    type = 'checkbox',
-    name = GetString(MM_MODERATE_TRIM_OUTLIERS_NAME),
-    tooltip = GetString(MM_MODERATE_TRIM_OUTLIERS_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.trimOutliersModerate end,
-    setFunc = function(value)
-      MasterMerchant.systemSavedVariables.trimOutliersModerate = value
-      mmUtils:ResetItemAndBonanzaCache()
-    end,
-    default = MasterMerchant.systemDefault.trimOutliersModerate,
-    disabled = function() return not MasterMerchant.systemSavedVariables.trimOutliers end,
-  }
   -- use agressive triming for outliers
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
