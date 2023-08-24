@@ -53,6 +53,7 @@ MasterMerchant_GuildListings.lua
 MasterMerchant_ItemNameFilter.lua
 MasterMerchant_Filters.lua
 MasterMerchant_Inventory.lua
+MasterMerchant_Settings.lua
 MasterMerchant.lua
 MasterMerchant_Alias.lua
 bindings.xml

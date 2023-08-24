@@ -65,9 +65,6 @@ ZO_CreateStringId("MM_TRAVEL_TO_ZONE_TEXT", "Переместиться на..."
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_NAME", "Отключить предупреждение об ATT")
 ZO_CreateStringId("MM_DISABLE_ATT_WARN_TIP", "Если вы хотите пользоваться MM и ATT одновременно, то отключите предупреждение о включённом ATT, чтобы оно не мозолило глаза.")
 
-ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Исключать выпадающие значения цен")
-ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Скрывать продажи по ценам, сильно отклоняющимся от средней.")
-
 ZO_CreateStringId("SK_TRIM_DECIMALS_NAME", "Округлять цены до целых чисел")
 ZO_CreateStringId("SK_TRIM_DECIMALS_TIP", "Округлять все цены до ближайшей золотой монеты.")
 
@@ -565,3 +562,16 @@ ZO_CreateStringId("MM_WINDOW_CUSTOM_TIMEFRAME_TIP", "Количество дне
 
 ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_TITLE", "Duplicate LibGuildStore Data Detected")
 ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_MAIN", "Duplicate Account Name, Guild Name, or Item Link indexes detected. Sales discrepancies will occur. You can cancel and restore a backup prior to August 14 2023 otherwise a full reset of all data is required.")
+
+-- New Outlier Options
+ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Исключать выпадающие значения цен")
+ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Скрывать продажи по ценам, сильно отклоняющимся от средней.")
+ZO_CreateStringId("MM_OUTLIER_OPTIONS_HEADER", "Outlier Options")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_NAME", "Trim by percentile only")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_TIP", "Enable trimming only the outer percentile of sales data.")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_NAME", "Percentile")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_TIP", "Specify the outer percentiles to remove extreme values only.")
+ZO_CreateStringId("MM_MODERATE_TRIM_OUTLIERS_NAME", "Enable Moderate Restrictions")
+ZO_CreateStringId("MM_MODERATE_TRIM_OUTLIERS_TIP", "When enabled additional outlier calculations will be performed without being too restrictive.")
+ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_NAME", "Enable Aggressive Restrictions")
+ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_TIP", "When enabled additional outlier calculations will be performed that are very restrictive.")
