@@ -302,12 +302,6 @@ function stats.interquartileRange(statsData)
   return quartile1, quartile3, quartile3 - quartile1
 end
 
-function stats.calculatePercentileContextFactor(statsData, percentile)
-  local contextIndex = zo_ceil(#statsData * percentile)
-  local contextFactor = statsData[contextIndex]
-  return contextFactor
-end
-
 function stats.getLowerAndUpperPercentages(percentage)
   local function getPercent(percentage)
     if type(percentage) == "number" and percentage >= 0 then
@@ -370,9 +364,12 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   local maxDeviation = 2.7
   local iqrMultiplier = 1.5
   local iqrThreshold = 3 -- Minimum threshold for data set size to apply IQR
+  local useOuterPercentile = MasterMerchant.systemSavedVariables.trimOutliersWithPercentile
+  local ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
+  local percentage = MasterMerchant.systemSavedVariables.outlierPercentile
+  local trimAgressive = MasterMerchant.systemSavedVariables.trimOutliersAgressive
 
   local outliersList = {}
-  local rebuiltOutliers = { }
   local bonanzaList = {}
   local statsData = {}
   local bonanzaStatsData = {}
@@ -401,7 +398,6 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   local salesDetails = true
   averageOnly = averageOnly or false
   local nameInBlacklist = false
-  local ignoreOutliers = nil
   local numVouchers = 0
   local graphInfo = nil
   local updateItemCache = false
@@ -506,10 +502,6 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     outliersList[#outliersList + 1] = item
   end
 
-  local function BuildCFOutliersList(item)
-    rebuiltOutliers[#rebuiltOutliers + 1] = item
-  end
-
   --[[Reminder the Bonanza Stats Data is built in
   RemoveListingsPerBlacklist. We just have to sort
   the Bonanza Stats Data.
@@ -539,7 +531,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
 
     if isValidTimeDate then
       AssignOldestTimestamp(item.timestamp)
-      if ignoreOutliers and buildOutliersAndStats then
+      if (ignoreOutliers or useOuterPercentile) and buildOutliersAndStats then
         BuildOutliersList(item)
       else
         ProcessSalesInfo(item)
@@ -551,33 +543,44 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     end
   end
 
-  local function FilterByContextFactor(outliersList)
-    local lowerContextFactor, upperContextFactor = nil, nil
-    local isWithinThreshold
-    local trimByContextFactor = false
-    rebuiltOutliers = outliersList
-    if not ignoreOutliers then return outliersList end
-    if (outliersList and next(outliersList)) then
-      local madThreshold = stats.calculateMADThreshold(statsData, maxDeviation)
-      local mean = stats.mean(statsData)
-      if mean > madThreshold then
-        lowerContextFactor, upperContextFactor = stats.getUpperLowerContextFactors(statsData, 5)
-        MasterMerchant:dm("Warn", string.format("Context Factors: %s : %s", lowerContextFactor, upperContextFactor))
-        trimByContextFactor = true
-        statsDataCount = nil
-        rebuiltOutliers = {}
+  local function FilterOutliers(item, calculatedStatsData)
+    -- useOuterPercentile, MasterMerchant.systemSavedVariables.trimOutliersWithPercentile
+    -- trimAgressive, MasterMerchant.systemSavedVariables.trimOutliersAgressive
+    -- dataCount, mean, stdev, quartile1, quartile3, quartileRange, madThreshold, lowerPercentile, upperPercentile
+    local mean = calculatedStatsData.mean
+    local stdev = calculatedStatsData.stdev
+    local quartile1, quartile3, quartileRange = calculatedStatsData.quartile1, calculatedStatsData.quartile3, calculatedStatsData.quartileRange
+    local madThreshold = calculatedStatsData.madThreshold
+    local isIQRApplicable = calculatedStatsData.dataCount >= iqrThreshold
+    local lowerPercentile, upperPercentile = calculatedStatsData.lowerPercentile, calculatedStatsData.upperPercentile
+
+    local individualSale = item.price / item.quant
+    local zScore = stats.zscore(individualSale, mean, stdev)
+    local isWithinMadThreshold = individualSale <= madThreshold
+    local isZScoreValid = zScore <= zScoreThreshold and zScore >= -zScoreThreshold
+
+    -- when trimAgressive is false then isWithinMadThreshold is ignored by making it true, regardless of the calculation
+    if not trimAgressive then isWithinMadThreshold = true end
+
+    if useOuterPercentile then
+      local isWithinPercentile = individualSale >= lowerPercentile and individualSale <= upperPercentile
+      if isWithinPercentile then
+        return true
       end
-      if trimByContextFactor then
-        for _, item in pairs(outliersList) do
-          local individualSale = item.price / item.quant
-          isWithinThreshold = individualSale >= lowerContextFactor and individualSale <= upperContextFactor
-          if isWithinThreshold then
-            BuildCFOutliersList(item)
-          end
+    elseif ignoreOutliers then
+      if isIQRApplicable then
+        local isWithinIQR = individualSale >= quartile1 - iqrMultiplier * quartileRange and individualSale <= quartile3 + iqrMultiplier * quartileRange
+        if isWithinIQR and isWithinMadThreshold and isZScoreValid then
+          return true
+        end
+      else
+        if isWithinMadThreshold and isZScoreValid then
+          return true
         end
       end
     end
-    return rebuiltOutliers
+
+    return false
   end
 
   -- 10000 for numDays is more or less like saying it is undefined
@@ -589,7 +592,6 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
   ]]--
 
   salesDetails = MasterMerchant.systemSavedVariables.displaySalesDetails
-  ignoreOutliers = MasterMerchant.systemSavedVariables.trimOutliers
 
   -- make sure we have a list of sales to work with
   hasSales = MasterMerchant:itemIDHasSales(itemID, itemIndex)
@@ -640,42 +642,32 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       end
     end -- end for loop for non outliers
     SortStatsData()
-    if ignoreOutliers then
+    if ignoreOutliers or useOuterPercentile then
       if (outliersList and next(outliersList)) and (statsDataCount and statsDataCount > 0) then
+        oldestTime = nil
         local madThreshold = stats.calculateMADThreshold(statsData, maxDeviation)
         local mean = stats.mean(statsData)
         local stdev = stats.standardDeviation(statsData)
         local quartile1, quartile3, quartileRange = stats.interquartileRange(statsData)
-        local isIQRApplicable = statsDataCount >= iqrThreshold
-        oldestTime = nil
-        --[[
-        if MasterMerchant.systemSavedVariables.useLibDebugLogger then
-          MasterMerchant:dm("Debug", string.format("Mean: %s", mean))
-          MasterMerchant:dm("Debug", string.format("Mad Threshold: %s", madThreshold))
-          if mean > madThreshold then
-            MasterMerchant:dm("Warn", string.format("Mad Threshold Error"))
-            MasterMerchant:dm("Warn", string.format("zScore of the mean: %s", stats.zscore(mean, mean, stdev)))
-            MasterMerchant:dm("Warn", string.format("zScore of the Mad Threshold: %s", stats.zscore(madThreshold, mean, stdev)))
-          end
-        end
-        ]]--
+        local lowerPercentile, upperPercentile = stats.getUpperLowerContextFactors(statsData, percentage)
+        local calculatedStatsData = {
+          dataCount = statsDataCount,
+          mean = mean,
+          stdev = stdev,
+          quartile1 = quartile1,
+          quartile3 = quartile3,
+          quartileRange = quartileRange,
+          madThreshold = madThreshold,
+          lowerPercentile = lowerPercentile,
+          upperPercentile = upperPercentile,
+        }
         for _, item in pairs(outliersList) do
           currentGuild = internal:GetGuildNameByIndex(item.guild)
           currentBuyer = internal:GetAccountNameByIndex(item.buyer)
           currentSeller = internal:GetAccountNameByIndex(item.seller)
-          local individualSale = item.price / item.quant
-          local zScore = stats.zscore(individualSale, mean, stdev)
-          local isWithinMadThreshold = individualSale <= madThreshold
-          local isZScoreValid = zScore <= zScoreThreshold and zScore >= -zScoreThreshold
-          if isIQRApplicable then
-            local isWithinIQR = individualSale >= quartile1 - iqrMultiplier * quartileRange and individualSale <= quartile3 + iqrMultiplier * quartileRange
-            if isWithinIQR and isWithinMadThreshold and isZScoreValid then
-              ProcessItemWithTimestamp(item, useDaysRange, false)
-            end
-          else
-            if isWithinMadThreshold and isZScoreValid then
-              ProcessItemWithTimestamp(item, useDaysRange, false)
-            end
+          local nonOutlier = FilterOutliers(item, calculatedStatsData)
+          if nonOutlier  then
+            ProcessItemWithTimestamp(item, useDaysRange, false)
           end
         end
       end
@@ -698,21 +690,22 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       local mean = stats.mean(bonanzaStatsData)
       local stdev = stats.standardDeviation(bonanzaStatsData)
       local quartile1, quartile3, quartileRange = stats.interquartileRange(bonanzaStatsData)
-      local isIQRApplicable = bonanzaStatsDataCount >= iqrThreshold
+      local lowerPercentile, upperPercentile = stats.getUpperLowerContextFactors(bonanzaStatsData, percentage)
+      local calculatedStatsData = {
+        dataCount = bonanzaStatsDataCount,
+        mean = mean,
+        stdev = stdev,
+        quartile1 = quartile1,
+        quartile3 = quartile3,
+        quartileRange = quartileRange,
+        madThreshold = madThreshold,
+        lowerPercentile = lowerPercentile,
+        upperPercentile = upperPercentile,
+      }
       for _, item in pairs(bonanzaList) do
-        local individualSale = item.price / item.quant
-        local zScore = stats.zscore(individualSale, mean, stdev)
-        local isWithinMadThreshold = individualSale <= madThreshold
-        local isZScoreValid = zScore <= zScoreThreshold and zScore >= -zScoreThreshold
-        if isIQRApplicable then
-          local isWithinIQR = individualSale >= quartile1 - iqrMultiplier * quartileRange and individualSale <= quartile3 + iqrMultiplier * quartileRange
-          if isWithinIQR and isWithinMadThreshold and isZScoreValid then
-            ProcessBonanzaSale(item)
-          end
-        else
-          if isWithinMadThreshold and isZScoreValid then
-            ProcessBonanzaSale(item)
-          end
+        local nonOutlier = FilterOutliers(item, calculatedStatsData)
+        if nonOutlier  then
+          ProcessBonanzaSale(item)
         end
       end
       if bonanzaListings and bonanzaListings >= 1 then
@@ -2572,6 +2565,11 @@ function MasterMerchant:FirstInitialize()
     customDealZero = 0,
     windowTimeRange = MM_WINDOW_TIME_RANGE_DEFAULT,
     customFilterDateRange = 90,
+    -- outliers
+    trimOutliers = false,
+    trimOutliersWithPercentile = false,
+    outlierPercentile = 5,
+    trimOutliersAgressive = false,
   }
 
   -- Finished setting up defaults, assign to global
