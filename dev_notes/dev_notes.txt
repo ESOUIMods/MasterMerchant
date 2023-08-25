@@ -1,3 +1,10 @@
+      local dayInterval = math.floor((GetTimeStamp() - oldestTime) / 86400.0) + 1
+      For Loop
+          local weightValue = dayInterval - math.floor((GetTimeStamp() - item.timestamp) / 86400.0)
+          avgPrice = avgPrice + (item.price * weightValue)
+          weigtedCountSold = weigtedCountSold + (item.quant * weightValue)
+
+
 function convertToFloat(value)
   return 1.0 + (value - 10) / 20 * 2
 end

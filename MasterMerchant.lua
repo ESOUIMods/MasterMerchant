@@ -666,7 +666,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
           currentBuyer = internal:GetAccountNameByIndex(item.buyer)
           currentSeller = internal:GetAccountNameByIndex(item.seller)
           local nonOutlier = FilterOutliers(item, calculatedStatsData)
-          if nonOutlier  then
+          if nonOutlier then
             ProcessItemWithTimestamp(item, useDaysRange, false)
           end
         end
@@ -704,7 +704,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       }
       for _, item in pairs(bonanzaList) do
         local nonOutlier = FilterOutliers(item, calculatedStatsData)
-        if nonOutlier  then
+        if nonOutlier then
           ProcessBonanzaSale(item)
         end
       end
@@ -2321,10 +2321,12 @@ function MasterMerchant.TradingHouseSetupPendingPost(self)
   --MasterMerchant:dm("Debug", "TradingHouseSetupPendingPost")
   OriginalSetupPendingPost(self)
   -- MasterMerchantPriceCalculatorUnitCostAmount
+  local tipStats
+  local tradingHouse = TRADING_HOUSE
 
-  if (self.pendingItemSlot) then
-    local itemLink = GetItemLink(BAG_BACKPACK, self.pendingItemSlot)
-    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, self.pendingItemSlot)
+  if (tradingHouse.pendingItemSlot) then
+    local itemLink = GetItemLink(BAG_BACKPACK, tradingHouse.pendingItemSlot)
+    local _, stackCount, _ = GetItemInfo(BAG_BACKPACK, tradingHouse.pendingItemSlot)
 
     local theIID = GetItemLinkItemId(itemLink)
     local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
@@ -2341,13 +2343,13 @@ function MasterMerchant.TradingHouseSetupPendingPost(self)
     end
 
     if pricingData then
-      self:SetPendingPostPrice(zo_floor(pricingData * stackCount))
+      tradingHouse:SetPendingPostPrice(zo_floor(pricingData * stackCount))
     else
       local timeCheck, daysRange = MasterMerchant:CheckTimeframe()
-      local tipStats = mmUtils:GetItemCacheStats(itemLink, daysRange)
-      if tipStats == nil then MasterMerchant:GetTooltipStats(itemLink, true, false) end
-      if (tipStats.avgPrice) then
-        self:SetPendingPostPrice(zo_floor(tipStats.avgPrice * stackCount))
+      tipStats = mmUtils:GetItemCacheStats(itemLink, daysRange)
+      if tipStats == nil then tipStats = MasterMerchant:GetTooltipStats(itemLink, true, false) end
+      if tipStats and tipStats.avgPrice then
+        tradingHouse:SetPendingPostPrice(zo_floor(tipStats.avgPrice * stackCount))
       end
     end
   end

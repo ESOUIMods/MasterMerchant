@@ -368,7 +368,7 @@ function MasterMerchant:LibAddonInit()
     type = 'submenu',
     name = GetString(MM_DEALCALC_OPTIONS_NAME),
     tooltip = GetString(MM_DEALCALC_OPTIONS_TIP),
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#CustomDealCalculator",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#DealCalculatorOptions",
     controls = {
       -- Enable DealCalc
       [1] = {
@@ -654,7 +654,7 @@ function MasterMerchant:LibAddonInit()
     type = "header",
     name = GetString(MM_OUTLIER_OPTIONS_HEADER),
     width = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#PriceToChatOptions",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#OutlierOptions",
   }
   -- should we remove outer percentiles
   optionsData[#optionsData + 1] = {
