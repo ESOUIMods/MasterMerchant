@@ -1,6 +1,61 @@
 local LAM = LibAddonMenu2
 local mmUtils = _G["MasterMerchant_Internal"]
 
+-- Table where the guild roster columns shall be placed
+MasterMerchant.guild_columns = {}
+MasterMerchant.UI_GuildTime = nil
+
+if TamrielTradeCentre then
+  MasterMerchant.dealCalcChoices = {
+    GetString(GS_DEAL_CALC_TTC_SUGGESTED),
+    GetString(GS_DEAL_CALC_TTC_AVERAGE),
+    GetString(GS_DEAL_CALC_MM_AVERAGE),
+    GetString(GS_DEAL_CALC_BONANZA_PRICE),
+  }
+  MasterMerchant.dealCalcValues = {
+    MM_PRICE_TTC_SUGGESTED,
+    MM_PRICE_TTC_AVERAGE,
+    MM_PRICE_MM_AVERAGE,
+    MM_PRICE_BONANZA,
+  }
+else
+  MasterMerchant.dealCalcChoices = {
+    GetString(GS_DEAL_CALC_MM_AVERAGE),
+    GetString(GS_DEAL_CALC_BONANZA_PRICE),
+  }
+  MasterMerchant.dealCalcValues = {
+    MM_PRICE_MM_AVERAGE,
+    MM_PRICE_BONANZA,
+  }
+end
+
+MasterMerchant.agsPercentSortChoices = {
+  GetString(AGS_PERCENT_ORDER_ASCENDING),
+  GetString(AGS_PERCENT_ORDER_DESCENDING),
+}
+MasterMerchant.agsPercentSortValues = {
+  MM_AGS_SORT_PERCENT_ASCENDING,
+  MM_AGS_SORT_PERCENT_DESCENDING,
+}
+
+local function CheckDealCalcValue()
+  if MasterMerchant.systemSavedVariables.dealCalcToUse ~= MM_PRICE_TTC_SUGGESTED then
+    MasterMerchant.systemSavedVariables.modifiedSuggestedPriceDealCalc = false
+  end
+end
+
+local function CheckInventoryValue()
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse ~= MM_PRICE_TTC_SUGGESTED then
+    MasterMerchant.systemSavedVariables.modifiedSuggestedPriceInventory = false
+  end
+end
+
+local function CheckVoucherValue()
+  if MasterMerchant.systemSavedVariables.voucherValueTypeToUse ~= MM_PRICE_TTC_SUGGESTED then
+    MasterMerchant.systemSavedVariables.modifiedSuggestedPriceVoucher = false
+  end
+end
+
 --[[ can not use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
 ]]--
