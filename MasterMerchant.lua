@@ -4,7 +4,6 @@
 -- Extended Feb 2015 - Oct 2016 by (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
 -- Distribution without license is prohibited!
-local LAM = LibAddonMenu2
 local LMP = LibMediaProvider
 local internal = _G["LibGuildStore_Internal"]
 local sales_data = _G["LibGuildStore_SalesData"]
@@ -23,13 +22,6 @@ local GUILDS = 'guild_vs'
 local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
 local REPORTS = 'reports_vs'
-
---[[
-used to temporarily ignore sales that are so new
-the ammount of time in seconds causes the UI to say
-the sale was made 1657 months ago or 71582789 minutes ago.
-]]--
-MasterMerchant.oneYearInSeconds = ZO_ONE_MONTH_IN_SECONDS * 12
 
 ------------------------------
 --- MM Stuff               ---
@@ -1575,43 +1567,6 @@ function MasterMerchant:SalesStats(statsDays)
            kioskPercent = kioskPercentage, }
 end
 
-function MasterMerchant:SpecialMessage(force)
-  if GetDisplayName() == '@sylviermoone' or (GetDisplayName() == '@Philgo68' and force) then
-    local daysCount = zo_floor(((GetTimeStamp() - (1460980800 + 38 * ZO_ONE_DAY_IN_SECONDS + 19 * ZO_ONE_HOUR_IN_SECONDS)) / ZO_ONE_DAY_IN_SECONDS) * 4) / 4
-    if (daysCount > (MasterMerchant.systemSavedVariables.daysPast or 0)) or force then
-      MasterMerchant.systemSavedVariables.daysPast = daysCount
-
-      local rem = daysCount - zo_floor(daysCount)
-      daysCount = zo_floor(daysCount)
-
-      if rem == 0 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
-          "Objective_Complete",
-          string.format("Keep it up!!  You've made it %s complete days!!", daysCount))
-      end
-
-      if rem == 0.25 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
-          "Objective_Complete",
-          string.format("Working your way through day %s...", daysCount + 1))
-      end
-
-      if rem == 0.5 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
-          "Objective_Complete",
-          string.format("Day %s half way done!", daysCount + 1))
-      end
-
-      if rem == 0.75 then
-        MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT,
-          "Objective_Complete",
-          string.format("Just a little more to go in day %s...", daysCount + 1))
-      end
-
-    end
-  end
-end
-
 function MasterMerchant:ExportSalesReport()
   local export = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, "EXPORT", {}, nil)
 
@@ -1998,8 +1953,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
     sellingAdvice:SetFont('/esoui/common/fonts/univers67.otf|14|soft-shadow-thin')
   end
 
-  --[[TODO make sure that the itemLink is not an empty string by mistake
-  ]]--
+  --[[TODO make sure that the itemLink is not an empty string by mistake]]--
   local itemLink = GetTradingHouseListingItemLink(result.slotIndex)
   if itemLink and itemLink ~= MM_STRING_EMPTY then
     local dealValue, margin, profit = MasterMerchant.GetDealInformation(itemLink, result.purchasePrice, result.stackCount)
@@ -2343,46 +2297,74 @@ local function CompleteMasterMerchantSetup()
   local libSource = 1
   LibAlchemy:InitializePrices(libSource)
 end
+
 local function UpdateVars()
-  local systemDefaultVariables = {
-    "dataLocations", "pricingData", "showChatAlerts",
-    "showMultiple", "openWithMail", "openWithStore",
-    "showFullPrice", "salesWinLeft", "salesWinTop",
-    "guildWinLeft", "guildWinTop", "listingWinLeft",
-    "listingWinTop", "purchaseWinLeft", "purchaseWinTop",
-    "reportsWinLeft", "reportsWinTop", "statsWinLeft",
-    "statsWinTop", "feedbackWinLeft", "feedbackWinTop",
-    "windowFont", "showAnnounceAlerts", "showCyroAlerts",
-    "alertSoundName", "showUnitPrice", "viewSize",
-    "offlineSales", "showPricing", "showBonanzaPricing",
-    "useCondensedPriceToChat", "omitBonanzaPricingGraphLessThanSix",
-    "omitBonanzaPricingChatLessThanSix", "includeItemCountPriceToChat",
-    "includeTTCDataPriceToChat", "includeVoucherAverage", "voucherValueTypeToUse",
-    "isWindowMovable", "showAltTtcTipline", "showCraftCost",
-    "showMaterialCost", "showGraph", "showCalc", "priceCalcAll",
-    "minProfitFilter", "rankIndex", "rankIndexRoster",
-    "viewBuyerSeller", "viewGuildBuyerSeller", "trimOutliers",
-    "trimDecimals", "replaceInventoryValues", "replacementTypeToUse",
-    "displaySalesDetails", "displayItemAnalysisButtons", "focus1",
-    "focus2", "focus3", "blacklist", "defaultDays", "shiftDays",
-    "ctrlDays", "ctrlShiftDays", "displayProfit", "displayListingMessage",
-    "customTimeframe", "customTimeframeType", "diplayGuildInfo",
-    "diplayPurchasesInfo", "diplaySalesInfo", "diplayTaxesInfo",
-    "diplayCountInfo", "showAmountTaxes", "useLibDebugLogger",
-    "verThreeItemIDConvertedToString", "shouldReindex",
-    "shouldAdderText", "showGuildInitSummary", "showIndexingSummary",
-    "lastReceivedEventID", "minimalIndexing", "useSalesHistory",
-    "historyDepth", "minItemCount", "maxItemCount", "disableAttWarn",
-    "dealCalcToUse", "agsPercentSortOrderToUse",
-    "modifiedSuggestedPriceDealCalc", "modifiedSuggestedPriceInventory",
-    "modifiedSuggestedPriceVoucher", "showUnitPrice", "showSearchBonanza",
-    "useFormatedTime", "useTwentyFourHourTime", "dateFormatMonthDay",
-    "customDealCalc", "customDealBuyIt", "customDealSeventyFive",
-    "customDealFifty", "customDealTwentyFive", "customDealZero",
-    "windowTimeRange", "customFilterDateRange",
+  if not LibGuildStore_SavedVariables then return end
+
+  local defaultSavedVars = ShopkeeperSavedVars["Default"]
+  if not defaultSavedVars then return end
+
+  local displayNameSavedVars = defaultSavedVars[GetDisplayName()]
+  if not displayNameSavedVars then return end
+
+  local unitNameSavedVars = displayNameSavedVars[GetUnitName("player")]
+  local accountWideSavedVars = displayNameSavedVars["$AccountWide"]
+  if not unitNameSavedVars or not accountWideSavedVars then return end
+  if not unitNameSavedVars[GetDisplayName()] or not accountWideSavedVars[GetDisplayName()] then return end
+
+  local oldSavedVariables = unitNameSavedVars[GetDisplayName()]
+  local oldAcctSavedVariables = accountWideSavedVars[GetDisplayName()]
+
+  local variables = {
+    "historyDepth", "minItemCount", "maxItemCount", "blacklist",
   }
 
+  if not LibGuildStore_SavedVariables.masterMerchantVariablesImported then
+    MasterMerchant:dm("Debug", "Checked Old MM Settings")
+
+    for _, key in ipairs(variables) do
+      local acctValue = oldSavedVariables[key]
+      local savedValue = oldAcctSavedVariables[key]
+      local systemValue = MasterMerchant.systemSavedVariables[key]
+
+      if acctValue and key ~= "blacklist" then
+        LibGuildStore_SavedVariables[key] = zo_max(acctValue, LibGuildStore_SavedVariables[key])
+      end
+
+      if savedValue and key ~= "blacklist" then
+        LibGuildStore_SavedVariables[key] = zo_max(savedValue, LibGuildStore_SavedVariables[key])
+      end
+
+      if systemValue and key ~= "blacklist" then
+        LibGuildStore_SavedVariables[key] = zo_max(systemValue, LibGuildStore_SavedVariables[key])
+      end
+
+      -- Check if the key is "blacklist" and not an empty string
+      if key == "blacklist" then
+        if acctValue and acctValue ~= MM_STRING_EMPTY then
+          LibGuildStore_SavedVariables[key] = acctValue
+        end
+
+        if savedValue and savedValue ~= MM_STRING_EMPTY then
+          LibGuildStore_SavedVariables[key] = savedValue
+        end
+
+        if systemValue and systemValue ~= MM_STRING_EMPTY then
+          LibGuildStore_SavedVariables[key] = systemValue
+        end
+      end
+    end
+
+    MasterMerchant.systemSavedVariables.masterMerchantVariablesImported = true
+  end
+  if oldSavedVariables and not internal:is_empty_or_nil(oldSavedVariables) then
+    ShopkeeperSavedVars["Default"][GetDisplayName()][GetUnitName("player")][GetDisplayName()] = nil
+  end
+  if oldAcctSavedVariables and not internal:is_empty_or_nil(oldAcctSavedVariables) then
+    ShopkeeperSavedVars["Default"][GetDisplayName()]["$AccountWide"][GetDisplayName()] = nil
+  end
 end
+
 -- ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
 -- ["pricingData"]
 -- self.savedVariables.verbose = value
@@ -2394,18 +2376,9 @@ end
 function MasterMerchant:FirstInitialize()
   MasterMerchant:dm("Debug", "FirstInitialize")
   -- SavedVar defaults
-  local old_defaults = {
-    dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
-    pricingData = {}, -- added 12-31 but has always been there
-    historyDepth = 30,
-    minItemCount = 20,
-    maxItemCount = 5000,
-    blacklist = '',
-  }
-
   local systemDefault = {
     -- old settings
-    dataLocations = {}, -- unused as of 5-15-2021 but has to stay here
+    dataLocations = {}, -- unused as of 5-15-2021 but has to stay here for mm import
     pricingData = {}, -- added 12-31 but has always been there
     showChatAlerts = false,
     showMultiple = true,
@@ -2479,25 +2452,11 @@ function MasterMerchant:FirstInitialize()
     diplayCountInfo = true,
     showAmountTaxes = false,
     useLibDebugLogger = false, -- added 11-28
-    --[[TODO settings moved to LGS or removed
-    ]]--
-    -- conversion vars
-    verThreeItemIDConvertedToString = false, -- this only converts id64 at this time
-    shouldReindex = false,
-    shouldAdderText = false,
-    showGuildInitSummary = false,
-    showIndexingSummary = false,
-    lastReceivedEventID = {}, -- unused, see LGS
     --[[you could assign this as the default but it needs to be a global var instead
     customTimeframeText = tostring(90) .. ' ' .. GetString(MM_CUSTOM_TIMEFRAME_DAYS),
 
     Assigned to: MasterMerchant.customTimeframeText
     ]]--
-    minimalIndexing = false,
-    useSalesHistory = false,
-    historyDepth = 30,
-    minItemCount = 20,
-    maxItemCount = 5000,
     disableAttWarn = false,
     dealCalcToUse = MM_PRICE_MM_AVERAGE,
     agsPercentSortOrderToUse = MM_AGS_SORT_PERCENT_ASCENDING,
@@ -2522,36 +2481,43 @@ function MasterMerchant:FirstInitialize()
     trimOutliersWithPercentile = false,
     outlierPercentile = 5,
     trimOutliersAgressive = false,
+    masterMerchantVariablesImported = false,
   }
 
   -- Finished setting up defaults, assign to global
   MasterMerchant.systemDefault = systemDefault
   -- Populate savedVariables
-  --[[TODO address saved vars
+  --[[August 25 2023, addressed unused savedVariables issue
   self.oldSavedVariables = ZO_SavedVars:NewAccountWide("MM00DataSavedVariables", 1, nil, {})
   self.savedVariables = ZO_SavedVars:NewAccountWide("MM00DataSavedVariables", 1, nil, {}, nil, 'MasterMerchant')
 
-  The above two lines from one of the
-  ]]--
-  --[[TODO Pick one
+  The above two lines from one of the old MM00DataSavedVariables modules, I think. I forget why that's there.
+
   self.savedVariables is used by the containers but with 'MasterMerchant' for the namespace
   self.acctSavedVariables seems to be no longer used
   self.systemSavedVariables is what is used when you are supposedly swaping between acoutwide
   or not such as
 
   example: MasterMerchant.systemSavedVariables.showChatAlerts = MasterMerchant.systemSavedVariables.showChatAlerts
-  ]]--
   self.savedVariables = ZO_SavedVars:New('ShopkeeperSavedVars', 1, GetDisplayName(), old_defaults)
-  --[[ MasterMerchant.systemSavedVariables.scanHistory is no longer used for MasterMerchant.systemSavedVariables.scanHistory
-  acording to the comment below but elf.acctSavedVariables is used when you are supposedly
-  swaping between acoutwide or not such as mentioned above
+  MasterMerchant.systemSavedVariables.scanHistory is no longer used for MasterMerchant.systemSavedVariables.scanHistory
+
+  savedVariables = ShopkeeperSavedVars["Default"]["@Sharlikran"]["Sharlikran"]["@Sharlikran"]["test"]
+
+  savedVariables = ShopkeeperSavedVars["Default"][GetDisplayName()][GetUnitName("player")][GetDisplayName()]["test"]
+
+  according to the comment below but elf.acctSavedVariables is used when you are supposedly
+  swapping between account wide or not such as mentioned above
 
   ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"][GetUnitName("player")][GetDisplayName()]
-
   ^^^ For reference may not be correct
-  ]]--
+
+  acctSavedVariables = ShopkeeperSavedVars["Default"][GetDisplayName()]["$AccountWide"][GetDisplayName()]["test"]
   self.acctSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, GetDisplayName(), old_defaults)
+  ]]--
   self.systemSavedVariables = ZO_SavedVars:NewAccountWide('ShopkeeperSavedVars', 1, nil, systemDefault, nil, 'MasterMerchant')
+
+  UpdateVars()
 
   local sv = ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
   -- Clean up saved variables (from previous versions)
@@ -2568,81 +2534,13 @@ function MasterMerchant:FirstInitialize()
   mmUtils:CreateDaysRangeChoices()
   mmUtils:UpdateDaysRangeSettings()
 
-  -- TODO Check historyDepth is only set once on first run
-  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
-    MasterMerchant:dm("Debug", "Checked Old MM Settings")
-    if MasterMerchant.systemSavedVariables.historyDepth then
-      LibGuildStore_SavedVariables["historyDepth"] = zo_max(MasterMerchant.systemSavedVariables.historyDepth,
-        LibGuildStore_SavedVariables["historyDepth"])
-    end
-    if MasterMerchant.systemSavedVariables.minItemCount then
-      LibGuildStore_SavedVariables["minItemCount"] = zo_max(MasterMerchant.systemSavedVariables.minItemCount,
-        LibGuildStore_SavedVariables["minItemCount"])
-    end
-    if MasterMerchant.systemSavedVariables.maxItemCount then
-      LibGuildStore_SavedVariables["maxItemCount"] = zo_max(MasterMerchant.systemSavedVariables.maxItemCount,
-        LibGuildStore_SavedVariables["maxItemCount"])
-    end
-    --[[TODO find a better way then these hacks
-    ]]--
-    -- History Depth
-    if self.acctSavedVariables.historyDepth then
-      MasterMerchant.systemSavedVariables.historyDepth = zo_max(MasterMerchant.systemSavedVariables.historyDepth,
-        self.acctSavedVariables.historyDepth)
-      self.acctSavedVariables.historyDepth = nil
-    end
-    if self.savedVariables.historyDepth then
-      MasterMerchant.systemSavedVariables.historyDepth = zo_max(MasterMerchant.systemSavedVariables.historyDepth,
-        self.savedVariables.historyDepth)
-      self.savedVariables.historyDepth = nil
-    end
-
-    -- Min Count
-    if self.acctSavedVariables.minItemCount then
-      MasterMerchant.systemSavedVariables.minItemCount = zo_max(MasterMerchant.systemSavedVariables.minItemCount,
-        self.acctSavedVariables.minItemCount)
-      self.acctSavedVariables.minItemCount = nil
-    end
-    if self.savedVariables.minItemCount then
-      MasterMerchant.systemSavedVariables.minItemCount = zo_max(MasterMerchant.systemSavedVariables.minItemCount,
-        self.savedVariables.minItemCount)
-      self.savedVariables.minItemCount = nil
-    end
-
-    -- Max Count
-    if self.acctSavedVariables.maxItemCount then
-      MasterMerchant.systemSavedVariables.maxItemCount = zo_max(MasterMerchant.systemSavedVariables.maxItemCount,
-        self.acctSavedVariables.maxItemCount)
-      self.acctSavedVariables.maxItemCount = nil
-    end
-    if self.savedVariables.maxItemCount then
-      MasterMerchant.systemSavedVariables.maxItemCount = zo_max(MasterMerchant.systemSavedVariables.maxItemCount,
-        self.savedVariables.maxItemCount)
-      self.savedVariables.maxItemCount = nil
-    end
-
-    -- Blacklist
-    if not internal:is_empty_or_nil(self.acctSavedVariables.blacklist) then
-      MasterMerchant.systemSavedVariables.blacklist = self.acctSavedVariables.blacklist
-      self.acctSavedVariables.blacklist = nil
-    end
-    if not internal:is_empty_or_nil(self.savedVariables.blacklist) then
-      MasterMerchant.systemSavedVariables.blacklist = self.savedVariables.blacklist
-      self.savedVariables.blacklist = nil
-    end
-
-
-  end
-
   --[[ Added 8-27-2021, for some reason if the last view size on a reload UI
-  or upon log in is something like LISTINGS then the game will hag for a while
+  or upon log in is something like LISTINGS then the game will hang for a while
 
   TODO figure out why it's doing that because I mark the list dirty and I don't
   want to refresh the data or the filter, unless this just happesn upon creation
   ]]--
   MasterMerchant.systemSavedVariables.viewSize = ITEMS
-
-  MasterMerchant.systemSavedVariables.diplayGuildInfo = MasterMerchant.systemSavedVariables.diplayGuildInfo or false
 
   --MasterMerchant:CreateControls()
 
@@ -3284,11 +3182,6 @@ function MasterMerchant.Slash(allArgs)
     MasterMerchant:dm("Info", GetString(MM_EXPORT_SHOPPING_LIST_START))
     MasterMerchant:ExportShoppingList()
     MasterMerchant:dm("Info", GetString(MM_EXPORT_COMPLETE))
-    return
-  end
-
-  if args == '42' then
-    MasterMerchant:SpecialMessage(true)
     return
   end
 
