@@ -227,13 +227,18 @@ function stats.standardDeviation(t)
     end
   end
 
+  if count <= 1 then
+    return 0
+  end
   result = math.sqrt(sum / (count - 1))
 
   return result
 end
 
 function stats.zscore(individualSale, mean, standardDeviation)
-  return (individualSale - mean) / standardDeviation
+  local result = (individualSale - mean) / standardDeviation
+  if result ~= result then return 0 end
+  return result
 end
 
 function stats.findMinMax(t)
