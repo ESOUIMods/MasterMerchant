@@ -5402,6 +5402,153 @@ function stats.IdentifyOutliersAdjustedBonanzaMedian(bonanzaListings, sortedSale
   return nonOutliers, oldestTime, nonOutliersCount
 end
 
+function stats.weightedMovingAverageUsingIntervals(data, oldestTime)
+    local weightedSum = 0
+    local totalWeight = 0
+    local totalRegularUnitPrice = 0
+
+    for i, value in pairs(data) do
+        local dayInterval = math.floor((currentTime - oldestTime) / 86400.0) + 1
+        local weightValue = dayInterval - math.floor((currentTime - value.timestamp) / 86400.0)
+        
+        local price = value.price
+        local quantity = value.quant
+        local weightedValue = price * weightValue
+        
+        weightedSum = weightedSum + weightedValue
+        totalWeight = totalWeight + weightValue
+        totalRegularUnitPrice = totalRegularUnitPrice + (price / quantity)
+    end
+    
+    if totalWeight == 0 then
+        return nil, nil, nil  -- Handle division by zero
+    end
+    
+    local weightedAverage = weightedSum / totalWeight
+    local regularAverage = totalRegularUnitPrice / #data
+    
+    return weightedAverage, regularAverage, totalWeight
+end
+
+-- Example usage with the sales table
+local sales = {
+    [1] = {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691793067,
+        ["price"] = 80732,
+        ["guild"] = 5,
+        ["seller"] = 4322,
+        ["buyer"] = 100179,
+        ["quant"] = 4,
+        ["id"] = "2175237903",
+        ["wasKiosk"] = false,
+    },
+    -- Add more sales data if needed
+}
+
+local oldestTime = 1686975344  -- Replace with your actual oldestTime value
+local wma, regularAverage, totalWeight = stats.weightedMovingAverageUsingIntervals(sales, oldestTime)
+print("Weighted Moving Average:", wma)
+print("Regular Average:", regularAverage)
+print("Total Weight:", totalWeight)
+--[[
+print("Test WMA:")
+local currentTime = 1693203250
+
+-- Calculate Weighted Moving Average using day intervals as weights
+function stats.weightedMovingAverageUsingIntervals(data, oldestTime)
+    local weightedSum = 0
+    local totalWeight = 0
+
+    for i, value in pairs(data) do
+        local dayInterval = math.floor((currentTime - oldestTime) / 86400.0) + 1
+        local weightValue = dayInterval - math.floor((currentTime - value.timestamp) / 86400.0)
+        
+        local price = value.price
+        local quantity = value.quant
+        local weightedValue = price * weightValue
+        
+        weightedSum = weightedSum + weightedValue
+        totalWeight = totalWeight + weightValue
+    end
+    
+    if totalWeight == 0 then
+        return nil  -- Handle division by zero
+    end
+    
+    return weightedSum / totalWeight
+end
+
+-- Example usage with the sales table
+local sales = {
+    [1] = {
+        ["itemLink"] = 222,
+        ["timestamp"] = 1691793067,
+        ["price"] = 80732,
+        ["guild"] = 5,
+        ["seller"] = 4322,
+        ["buyer"] = 100179,
+        ["quant"] = 4,
+        ["id"] = "2175237903",
+        ["wasKiosk"] = false,
+    },
+    -- Add more sales data if needed
+}
+
+local oldestTime = 1686975344  -- Replace with your actual oldestTime value
+local wma = stats.weightedMovingAverageUsingIntervals(sales, oldestTime)
+print("Weighted Moving Average:", wma)
+
+-- Calculate Weighted Moving Average
+function stats.weightedMovingAverage(data, weights)
+    local weightedSum = 0
+    local totalWeight = 0
+    
+    for i, value in ipairs(data) do
+        local weight = weights[i] or 0
+        weightedSum = weightedSum + (value * weight)
+        totalWeight = totalWeight + weight
+    end
+    
+    if totalWeight == 0 then
+        return nil  -- Handle division by zero
+    end
+    
+    return weightedSum / totalWeight
+end
+
+-- Example usage
+local data = {20183, 20284, 17600, 20750, 21000}
+local weights = {0.1, 0.2, 0.3, 0.2, 0.2}
+local wma = stats.weightedMovingAverage(data, weights)
+print("Weighted Moving Average:", wma)
+
+-- Calculate Autoregressive Integrated Moving Average (ARIMA)
+function stats.arima(data, p, d, q)
+    -- p: Autoregressive order, d: Differencing order, q: Moving average order
+    -- In this simplified example, we assume data is already differenced if needed
+    -- You might also need to implement parameter estimation and model fitting
+    
+    -- Example: Using a moving average to smooth the data (very basic)
+    local smoothedData = {}
+    for i = 1, #data - q do
+        local sum = 0
+        for j = 0, q - 1 do
+            sum = sum + data[i + j]
+        end
+        smoothedData[i] = sum / q
+    end
+    
+    return smoothedData
+end
+
+-- Example usage
+local data = {20183, 20284, 17600, 20750, 21000}
+local arimaOrder = {1, 0, 1}  -- ARIMA(1, 0, 1)
+local arimaResult = stats.arima(data, unpack(arimaOrder))
+print("ARIMA Result:", table.concat(arimaResult, ", "))
+
+]]--
 function IsNameInBlacklist(guild, seller)
   local blacklistTable = MasterMerchant.blacklistTable
   if blacklistTable == nil then return false end
