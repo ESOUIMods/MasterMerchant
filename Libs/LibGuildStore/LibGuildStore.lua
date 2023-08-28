@@ -55,7 +55,7 @@ function internal:QueueCheckStatus()
   local eventsRemaining, timeRemaining = internal:CheckStatus()
   if eventsRemaining then
     zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
-    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. ": estimated time remaining " .. (zo_floor(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)) .. " minutes.")
+    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. ": estimated time remaining " .. (zo_ceil(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)) .. " minutes.")
   else
     --[[
     MasterMerchant.CenterScreenAnnounce_AddMessage(
