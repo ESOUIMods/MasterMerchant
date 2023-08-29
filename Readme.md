@@ -7,24 +7,38 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
-## ChangeLog 3.7.73
+## ChangeLog 3.7.80
+
+- Update saved variables and remove old unused MM 2.x variables
+- Fix Alert Queue
+
+NOTE: MM will use the greatest value from the old MM saved variables for days of retention for sales, and min and max values. This was intended previously for updating from MM 3.5.x to 3.6.x and only needs to run once with the current version rather then every time there is a full reset of data.
+
+## ChangeLog 3.7.77, 3.7.78, 3.7.79
+
+- Fix for Trading House listing error
+- Fix for Settings Menu error
+
+## ChangeLog 3.7.76
+
+- Fix for Guild Roster using purchases rather then sales for the tax column
+- Added additional outlier options
+- Updated Craft Cost recipes
+- Updated Data routines to add new sales, listings, purchases, and canceled or posted items
+
+## ChangeLog 3.7.73, 3.7.74, 3.7.75
 
 - Addressed long standing issue for sales indexing
 - Added tooltip notification when the user has chosen "None" for a data range or focus value
+- Added notification for duplicate data indexes
 
-While attempting to simplify all code in order to improve the initialization routine so MM can use LibAsync or so I can refine LibExecutionQueue and reduce the stutter during initialization I discovered that the main routine for indexing sales was missing important functionality since about September of last year from version 3.6.46.
-
-I was never able to update the function in the past without breaking it and with my current improvements the missing functionality became more obvious. This functionality does not really impact sales totals but it could in some cases assign the incorrect name or icon to the sales data for an item. It may also cause MM to sort the sale incorrectly within its various sales containers.
-
-Using '/lgs redesc' and '/lgs clean' should correct the issue.
-
-## ChangeLog 3.7.69, 3.7.70, 3.7.71, , 3.7.72
+## ChangeLog 3.7.69, 3.7.70, 3.7.71, 3.7.72
 
 - Fix for LibMediaProvider font issue
 - Fix for: MasterMerchant.lua:3260: function expected
 - Fix for: MasterMerchant.lua:3857: attempt to index a nil value
 
-I sorta rushed this version. I will look into other reports as I have time and make sure things are working the best they can.
+I sort of rushed this version. I will look into other reports as I have time and make sure things are working the best they can.
 
 ## ChangeLog 3.7.68
 
@@ -138,7 +152,7 @@ NOTE: Previously to sort the inventory or the craft bag properly you would have 
 
 ## ChangeLog 3.7.41
 
-- Fixed bug introduced in 3.7.32 that effected the cache. It would not clear properly after adding someone to the guild and account filter. Cached values would not refresh for all items only the previously viewed item.
+- Fixed bug introduced in 3.7.32 that affected the cache. It would not clear properly after adding someone to the guild and account filter. Cached values would not refresh for all items only the previously viewed item.
 
 ## ChangeLog 3.7.40
 
@@ -235,7 +249,7 @@ NEW LIBRARY: LibAlchemy
 
 - Added Craft Cost for Potions and Poisons
 
-NOTE: I will be updating MM and LibPrice so that LibPrice manages a cache for prices. LibPrice sorta does that now but it does not cache the price depending on the Focus used. Such as Default, SHIFT, CTRL or both. It may not really be needed since "Default" is the most common used price for the individual user regardless of how it has been customized.
+NOTE: I will be updating MM and LibPrice so that LibPrice manages a cache for prices. LibPrice sort of does that now but it does not cache the price depending on the Focus used. Such as Default, SHIFT, CTRL or both. It may not really be needed since "Default" is the most common used price for the individual user regardless of how it has been customized.
 
 ## ChangeLog 3.7.21
 
