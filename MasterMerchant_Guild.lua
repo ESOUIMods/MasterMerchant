@@ -302,7 +302,7 @@ function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, s
 end
 
 function MMGuild:removeSale(sellerName, rankIndex, amount, stack)
-  if (self.sellers[sellersName]) then self.sellers[sellersName]:removeSale(rankIndex, amount, stack) end
+  if (self.sellers[sellerName]) then self.sellers[sellerName]:removeSale(rankIndex, amount, stack) end
 
   self.sales[rankIndex] = (self.sales[rankIndex] or 0) - amount
   self.tax[rankIndex] = (self.tax[rankIndex] or 0) - zo_floor(amount * taxFactor)  -- Guild gets half the Cut with decimals cut off.

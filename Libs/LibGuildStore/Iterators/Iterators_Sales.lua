@@ -380,9 +380,6 @@ function internal:TruncateSalesHistory()
   end
 
   local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
-
-    local salesDeleted = 0
-    local salesCount = versiondata.totalCount
     --[[TODO Determine how the salesCount can be 0 and there is an empty
     sale in the table.
     [8] = {},
@@ -393,16 +390,19 @@ function internal:TruncateSalesHistory()
       extraData.newSalesCount = 0
       return true -- value true for return
     end
+    local salesDeleted = 0
+    local salesCount = versiondata.totalCount
     local salesDataTable = internal:spairs(versiondata['sales'], function(a, b) return internal:CleanTimestamp(a) < internal:CleanTimestamp(b) end)
     for salesId, salesData in salesDataTable do
       local removeSale = false
-      local invalidTimestamp = salesData['timestamp'] == nil or type(salesData['timestamp']) ~= 'number'
-      local additionalCriteria = salesCount > extraData.maxItemCount or invalidTimestamp or salesData['timestamp'] < extraData.epochBack
+      local timestamp = salesData['timestamp']
+      local invalidTimestamp = not timestamp or type(timestamp) ~= 'number'
+      local additionalCriteria = salesCount > extraData.maxItemCount or invalidTimestamp or timestamp < extraData.epochBack
       if extraData.useSalesHistory then
-        if salesData['timestamp'] < extraData.epochBack or invalidTimestamp then removeSale = true end
+        if timestamp < extraData.epochBack or invalidTimestamp then removeSale = true end
       elseif extraData.useSalesInterval then
         local minInterval = GetTimeStamp() - (extraData.minSalesInterval * ZO_ONE_DAY_IN_SECONDS)
-        if (salesCount > extraData.minItemCount and salesData['timestamp'] < minInterval) and additionalCriteria then removeSale = true end
+        if (salesCount > extraData.minItemCount and timestamp < minInterval) and additionalCriteria then removeSale = true end
       else
         if salesCount > extraData.minItemCount and additionalCriteria then removeSale = true end
       end
@@ -460,14 +460,14 @@ function internal:IndexSalesData()
     internal:DatabaseBusy(true)
   end
 
-  local loopfunc = function(numberID, itemData, versiondata, itemIndex, soldItem, extraData)
+  local loopfunc = function(itemid, versionid, versiondata, saleid, saledata, extraData)
 
     extraData.indexCount = extraData.indexCount + 1
 
-    local currentItemLink = internal:GetItemLinkByIndex(soldItem['itemLink'])
-    local currentGuild = internal:GetGuildNameByIndex(soldItem['guild'])
-    local currentBuyer = internal:GetAccountNameByIndex(soldItem['buyer'])
-    local currentSeller = internal:GetAccountNameByIndex(soldItem['seller'])
+    local currentItemLink = internal:GetItemLinkByIndex(saledata['itemLink'])
+    local currentGuild = internal:GetGuildNameByIndex(saledata['guild'])
+    local currentBuyer = internal:GetAccountNameByIndex(saledata['buyer'])
+    local currentSeller = internal:GetAccountNameByIndex(saledata['seller'])
 
     local playerName = zo_strlower(GetDisplayName())
     local selfSale = playerName == zo_strlower(currentSeller)
@@ -497,7 +497,7 @@ function internal:IndexSalesData()
 
     -- Index each word
     local searchByWords = zo_strgmatch(searchText, '%S+')
-    local wordData = { numberID, itemData, itemIndex }
+    local wordData = { itemid, versionid, saleid }
     for i in searchByWords do
       sr_index[i] = sr_index[i] or {}
       table.insert(sr_index[i], wordData)
@@ -522,29 +522,25 @@ end
 
 function internal:InitSalesHistory()
   internal:dm("Debug", "InitSalesHistory")
-
-  local extradata = {}
-
-  if internal.guildItems == nil then
-    internal.guildItems = {}
-    extradata.doGuildItems = true
+  local function createGuildDataMap(map, key)
+    if map[key] == nil then
+      map[key] = MMGuild:new(key)
+    end
+    return map[key]
   end
 
-  if internal.myItems == nil then
-    internal.myItems = {}
-    extradata.doMyItems = true
-    extradata.playerName = zo_strlower(GetDisplayName())
-  end
+  local extradata = {
+    doGuildItems = not internal.guildItems,
+    doMyItems = not internal.myItems,
+    doGuildSales = not internal.guildSales,
+    doGuildPurchases = not internal.guildPurchases,
+    playerName = zo_strlower(GetDisplayName())
+  }
 
-  if internal.guildSales == nil then
-    internal.guildSales = {}
-    extradata.doGuildSales = true
-  end
-
-  if internal.guildPurchases == nil then
-    internal.guildPurchases = {}
-    extradata.doGuildPurchases = true
-  end
+  if extradata.doGuildItems then internal.guildItems = {} end
+  if extradata.doMyItems then internal.myItems = {} end
+  if extradata.doGuildSales then internal.guildSales = {} end
+  if extradata.doGuildPurchases then internal.guildPurchases = {} end
 
   if (extradata.doGuildItems or extradata.doMyItems or extradata.doGuildSales or extradata.doGuildPurchases) then
 
@@ -561,76 +557,67 @@ function internal:InitSalesHistory()
       if currentGuild then
         local currentSeller = internal:GetAccountNameByIndex(saledata['seller'])
         local currentBuyer = internal:GetAccountNameByIndex(saledata['buyer'])
+        local isPlayerSale = zo_strlower(currentSeller) == extradata.playerName
 
-        if (extradata.doGuildItems) then
-          if not internal.guildItems[currentGuild] then
-            internal.guildItems[currentGuild] = MMGuild:new(currentGuild)
-          end
-          local guild = internal.guildItems[currentGuild]
-          local _, firstsaledata = next(versiondata.sales, nil)
-          local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
-          local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
-          local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
-          local searchData = searchDataDesc .. ' ' .. searchDataAdder
-          guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
+        local _, firstsaledata = next(versiondata.sales, nil)
+        local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
+        local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
+        local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
+        local searchData = searchDataDesc .. ' ' .. searchDataAdder
+
+        if extradata.doGuildItems then
+          local guildItems = createGuildDataMap(internal.guildItems, currentGuild)
+          guildItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
         end
 
-        if (extradata.doMyItems and zo_strlower(currentSeller) == extradata.playerName) then
-          if not internal.myItems[currentGuild] then
-            internal.myItems[currentGuild] = MMGuild:new(currentGuild)
-          end
-          local _, firstsaledata = next(versiondata.sales, nil)
-          local firstsaledataItemLink = internal:GetItemLinkByIndex(firstsaledata.itemLink)
-          local searchDataDesc = versiondata.itemDesc or zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(firstsaledataItemLink))
-          local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
-          local searchData = searchDataDesc .. ' ' .. searchDataAdder
-          local guild = internal.myItems[currentGuild]
-          guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
+        if extradata.doMyItems and isPlayerSale then
+          local guildMyItems = createGuildDataMap(internal.myItems, currentGuild)
+          guildMyItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
         end
 
-        if (extradata.doGuildSales) then
-          if not internal.guildSales[currentGuild] then
-            internal.guildSales[currentGuild] = MMGuild:new(currentGuild)
-          end
-          local guild = internal.guildSales[currentGuild]
-          guild:addSaleByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
+        if extradata.doGuildSales then
+          local guildSales = createGuildDataMap(internal.guildSales, currentGuild)
+          guildSales:addSaleByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
         end
 
-        if (extradata.doGuildPurchases) then
-          if not internal.guildPurchases[currentGuild] then
-            internal.guildPurchases[currentGuild] = MMGuild:new(currentGuild)
-          end
-          local guild = internal.guildPurchases[currentGuild]
-          guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
+        if extradata.doGuildPurchases then
+          local guildPurchases = createGuildDataMap(internal.guildPurchases, currentGuild)
+          guildPurchases:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
         end
       end
       return false  -- value false for return
     end
 
     local postfunc = function(extraData)
+      local guildsToSort = {}  -- Create a table to track which guilds need sorting
 
-      if (extradata.doGuildItems) then
+      if extradata.doGuildItems then
         for _, guild in pairs(internal.guildItems) do
-          guild:SortAllRanks()
+          guildsToSort[guild] = true
         end
       end
 
-      if (extradata.doMyItems) then
+      if extradata.doMyItems then
         for _, guild in pairs(internal.myItems) do
-          guild:SortAllRanks()
+          guildsToSort[guild] = true
         end
       end
 
-      if (extradata.doGuildSales) then
+      if extradata.doGuildSales then
         for _, guild in pairs(internal.guildSales) do
-          guild:SortAllRanks()
+          guildsToSort[guild] = true
         end
       end
 
-      if (extradata.doGuildPurchases) then
+      if extradata.doGuildPurchases then
         for _, guild in pairs(internal.guildPurchases) do
-          guild:SortAllRanks()
+          guildsToSort[guild] = true
         end
+      end
+
+      -- Sort the ranks for each guild that needs sorting
+      for guild, _ in pairs(guildsToSort) do
+        guild:SortAllRanks()
       end
 
       internal:DatabaseBusy(false)
