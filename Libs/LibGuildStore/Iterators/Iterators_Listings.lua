@@ -39,10 +39,11 @@ function internal:addListingData(theEvent)
       buyer
     }
   ]]--
-  local eventItemLink = theEvent.itemLink
-  local eventSeller = theEvent.seller
-  local eventGuild = theEvent.guild
-  local timestamp = theEvent.timestamp
+  local newEvent = ZO_DeepTableCopy(theEvent)
+  local eventItemLink = newEvent.itemLink
+  local eventSeller = newEvent.seller
+  local eventGuild = newEvent.guild
+  local timestamp = newEvent.timestamp
 
   -- first add new data lookups to their tables
   local linkHash = internal:AddSalesTableData("itemLink", eventItemLink)
@@ -79,18 +80,20 @@ function internal:addListingData(theEvent)
   local searchItemAdderText = listings_data[theIID][itemIndex].itemAdderText -- used for searchText
   local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
 
-  theEvent.itemLink = linkHash
-  theEvent.seller = sellerHash
-  theEvent.guild = guildHash
+  newEvent.itemLink = linkHash
+  newEvent.seller = sellerHash
+  newEvent.guild = guildHash
 
   local insertedIndex = 1
   local salesTable = listings_data[theIID][itemIndex]['sales']
   local nextLocation = #salesTable + 1
+  --[[Note, while salesTable helps readability table.insert() can not insert
+  into the local variable]]--
   if salesTable[nextLocation] == nil then
-    table.insert(salesTable, nextLocation, theEvent)
+    table.insert(listings_data[theIID][itemIndex]['sales'], nextLocation, newEvent)
     insertedIndex = nextLocation
   else
-    table.insert(salesTable, theEvent)
+    table.insert(listings_data[theIID][itemIndex]['sales'], newEvent)
     insertedIndex = #salesTable
   end
 
@@ -104,11 +107,11 @@ function internal:addListingData(theEvent)
 
   guild = internal.listedItems[eventGuild] or MMGuild:new(eventGuild)
   internal.listedItems[eventGuild] = guild
-  guild:addPurchaseByDate(eventItemLink, timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+  guild:addPurchaseByDate(eventItemLink, timestamp, newEvent.price, newEvent.quant, false, nil, adderDescConcat)
 
   guild = internal.listedSellers[eventGuild] or MMGuild:new(eventGuild)
   internal.listedSellers[eventGuild] = guild
-  guild:addPurchaseByDate(eventSeller, timestamp, theEvent.price, theEvent.quant, false)
+  guild:addPurchaseByDate(eventSeller, timestamp, newEvent.price, newEvent.quant, false)
 
   local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for listings
   temp[1] = eventSeller and ('s' .. eventSeller) or ''

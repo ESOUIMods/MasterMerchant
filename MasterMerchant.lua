@@ -1763,7 +1763,7 @@ end
 -- displayed table, sending a message to chat if the scan was initiated
 -- via the 'refresh' or 'reset' buttons.
 
-function MasterMerchant:PostScanParallel(guildName, doAlert)
+function MasterMerchant:PostScanParallel(guildName)
   if not MasterMerchant.isInitialized then return end
   -- If the index is blank (first scan after login or after reset),
   -- build the indexes now that we have a scanned table.
@@ -1854,7 +1854,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
 
           -- On-screen alert; map index 37 is Cyrodiil
           if MasterMerchant.systemSavedVariables.showAnnounceAlerts and
-            (MasterMerchant.systemSavedVariables.showCyroAlerts or GetCurrentMapZoneIndex ~= 37) then
+            (MasterMerchant.systemSavedVariables.showCyroAlerts or GetCurrentMapZoneIndex() ~= 37) then
 
             -- We'll add a numerical suffix to avoid queueing two identical messages in a row
             -- because the alerts will 'miss' if we do
@@ -1884,7 +1884,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
         -- Insert thousands separators for the price
         local stringPrice = self.LocalizedNumber(totalGold)
 
-        if MasterMerchant.systemSavedVariables.showAnnounceAlerts and (MasterMerchant.systemSavedVariables.showCyroAlerts or GetCurrentMapZoneIndex ~= 37) then
+        if MasterMerchant.systemSavedVariables.showAnnounceAlerts and (MasterMerchant.systemSavedVariables.showCyroAlerts or GetCurrentMapZoneIndex() ~= 37) then
           MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName, string.format(GetString(SK_SALES_ALERT_GROUP_COLOR), numSold, stringPrice))
         end
 
@@ -1900,7 +1900,7 @@ function MasterMerchant:PostScanParallel(guildName, doAlert)
   --self:SpecialMessage(false)
 
   -- Set the stats slider past the max if this is brand new data
-  if MasterMerchant.isFirstScan and doAlert then MasterMerchantStatsWindowSlider:SetValue(15) end
+  if MasterMerchant.isFirstScan then MasterMerchantStatsWindowSlider:SetValue(15) end
   MasterMerchant.isFirstScan = false
 end
 

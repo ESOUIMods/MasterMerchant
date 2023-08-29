@@ -67,11 +67,12 @@ function internal:addPurchaseData(theEvent)
           buyer = GetDisplayName()
         }
   ]]--
-  local eventItemLink = theEvent.itemLink
-  local eventBuyer = theEvent.buyer
-  local eventSeller = theEvent.seller
-  local eventGuild = theEvent.guild
-  local timestamp = theEvent.timestamp
+  local newEvent = ZO_DeepTableCopy(theEvent)
+  local eventItemLink = newEvent.itemLink
+  local eventBuyer = newEvent.buyer
+  local eventSeller = newEvent.seller
+  local eventGuild = newEvent.guild
+  local timestamp = newEvent.timestamp
 
   -- first add new data lookups to their tables
   local linkHash = internal:AddSalesTableData("itemLink", eventItemLink)
@@ -107,19 +108,21 @@ function internal:addPurchaseData(theEvent)
   local searchItemDesc = purchases_data[theIID][itemIndex].itemDesc -- used for searchText
   local searchItemAdderText = purchases_data[theIID][itemIndex].itemAdderText -- used for searchText
 
-  theEvent.itemLink = linkHash
-  theEvent.buyer = buyerHash
-  theEvent.seller = sellerHash
-  theEvent.guild = guildHash
+  newEvent.itemLink = linkHash
+  newEvent.buyer = buyerHash
+  newEvent.seller = sellerHash
+  newEvent.guild = guildHash
 
   local insertedIndex = 1
   local salesTable = purchases_data[theIID][itemIndex]['sales']
   local nextLocation = #salesTable + 1
+  --[[Note, while salesTable helps readability table.insert() can not insert
+  into the local variable]]--
   if salesTable[nextLocation] == nil then
-    table.insert(salesTable, nextLocation, theEvent)
+    table.insert(purchases_data[theIID][itemIndex]['sales'], nextLocation, newEvent)
     insertedIndex = nextLocation
   else
-    table.insert(salesTable, theEvent)
+    table.insert(purchases_data[theIID][itemIndex]['sales'], newEvent)
     insertedIndex = #salesTable
   end
 

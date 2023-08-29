@@ -35,10 +35,11 @@ function internal:addPostedItem(theEvent)
             buyer
           }
   ]]--
-  local eventItemLink = theEvent.itemLink
-  local eventSeller = theEvent.seller
-  local eventGuild = theEvent.guild
-  local timestamp = theEvent.timestamp
+  local newEvent = ZO_DeepTableCopy(theEvent)
+  local eventItemLink = newEvent.itemLink
+  local eventSeller = newEvent.seller
+  local eventGuild = newEvent.guild
+  local timestamp = newEvent.timestamp
 
   -- first add new data lookups to their tables
   local linkHash = internal:AddSalesTableData("itemLink", eventItemLink)
@@ -73,18 +74,20 @@ function internal:addPostedItem(theEvent)
   local searchItemDesc = posted_items_data[theIID][itemIndex].itemDesc -- used for searchText
   local searchItemAdderText = posted_items_data[theIID][itemIndex].itemAdderText -- used for searchText
 
-  theEvent.itemLink = linkHash
-  theEvent.seller = sellerHash
-  theEvent.guild = guildHash
+  newEvent.itemLink = linkHash
+  newEvent.seller = sellerHash
+  newEvent.guild = guildHash
 
   local insertedIndex = 1
   local salesTable = posted_items_data[theIID][itemIndex]['sales']
   local nextLocation = #salesTable + 1
+  --[[Note, while salesTable helps readability table.insert() can not insert
+  into the local variable]]--
   if salesTable[nextLocation] == nil then
-    table.insert(salesTable, nextLocation, theEvent)
+    table.insert(posted_items_data[theIID][itemIndex]['sales'], nextLocation, newEvent)
     insertedIndex = nextLocation
   else
-    table.insert(salesTable, theEvent)
+    table.insert(posted_items_data[theIID][itemIndex]['sales'], newEvent)
     insertedIndex = #salesTable
   end
 

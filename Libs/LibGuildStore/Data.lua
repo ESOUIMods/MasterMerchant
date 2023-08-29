@@ -401,6 +401,13 @@ function internal:SetupGuildHistoryListener(guildId)
   end
 end
 
+function internal:UpdateAlertQueue(guildName, theEvent)
+  --internal:dm("Debug", "UpdateAlertQueue: " .. guildName)
+  local doAlert = MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts
+  if not internal.alertQueue[guildName] or not doAlert then return end
+  table.insert(internal.alertQueue[guildName], theEvent)
+end
+
 -- /script LibGuildStore_Internal.LibHistoireListener[guildId]:SetAfterEventId(StringToId64("0"))
 function internal:SetupListener(guildId)
   internal:dm("Debug", "SetupListener: " .. guildId)
@@ -424,50 +431,48 @@ function internal:SetupListener(guildId)
   end
   internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
     --internal:dm("Info", "SetEventCallback")
+    --[[
+    local theEvent = {
+      buyer = p2,
+      guild = guildName,
+      itemName = p4,
+      quant = p3,
+      saleTime = eventTime,
+      salePrice = p5,
+      seller = p1,
+      kioskSale = false,
+      id = Id64ToString(eventId)
+    }
+    local newSalesItem =
+      {buyer = theEvent.buyer,
+      guild = theEvent.guild,
+      itemLink = theEvent.itemName,
+      quant = tonumber(theEvent.quant),
+      timestamp = tonumber(theEvent.saleTime),
+      price = tonumber(theEvent.salePrice),
+      seller = theEvent.seller,
+      wasKiosk = theEvent.kioskSale,
+      id = theEvent.id
+    }
+    [1] =
+    {
+      ["price"] = 120,
+      ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
+      ["id"] = 1353657539,
+      ["guild"] = "Unstable Unicorns",
+      ["buyer"] = "@Traeky",
+      ["quant"] = 1,
+      ["wasKiosk"] = true,
+      ["timestamp"] = 1597969403,
+      ["seller"] = "@cherrypick",
+    },
+    ]]--
     if eventType == GUILD_EVENT_ITEM_SOLD then
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
         LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = Id64ToString(eventId)
         lastReceivedEventID = eventId
       end
       local guildName = GetGuildName(guildId)
-      local thePlayer = zo_strlower(GetDisplayName())
-      local added = false
-      --[[
-      local theEvent = {
-        buyer = p2,
-        guild = guildName,
-        itemName = p4,
-        quant = p3,
-        saleTime = eventTime,
-        salePrice = p5,
-        seller = p1,
-        kioskSale = false,
-        id = Id64ToString(eventId)
-      }
-      local newSalesItem =
-        {buyer = theEvent.buyer,
-        guild = theEvent.guild,
-        itemLink = theEvent.itemName,
-        quant = tonumber(theEvent.quant),
-        timestamp = tonumber(theEvent.saleTime),
-        price = tonumber(theEvent.salePrice),
-        seller = theEvent.seller,
-        wasKiosk = theEvent.kioskSale,
-        id = theEvent.id
-      }
-      [1] =
-      {
-        ["price"] = 120,
-        ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
-        ["id"] = 1353657539,
-        ["guild"] = "Unstable Unicorns",
-        ["buyer"] = "@Traeky",
-        ["quant"] = 1,
-        ["wasKiosk"] = true,
-        ["timestamp"] = 1597969403,
-        ["seller"] = "@cherrypick",
-      },
-      ]]--
       local theEvent = {
         buyer = p2,
         guild = guildName,
@@ -481,19 +486,20 @@ function internal:SetupListener(guildId)
       }
       theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
 
+      local thePlayer = zo_strlower(GetDisplayName())
+      local isSelfSale = zo_strlower(theEvent.seller) == thePlayer
+      local added = false
       local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
       if (theEvent.timestamp > daysOfHistoryToKeep) then
         local duplicate = internal:CheckForDuplicateSale(theEvent.itemLink, theEvent.id)
         if not duplicate then
           added = internal:addSalesData(theEvent)
         end
-        -- (doAlert and (internal.systemSavedVariables.showChatAlerts or internal.systemSavedVariables.showAnnounceAlerts))
-        if added and zo_strlower(theEvent.seller) == thePlayer then
-          --internal:dm("Debug", "alertQueue updated")
-          table.insert(internal.alertQueue[theEvent.guild], theEvent)
+        if added and isSelfSale then
+          internal:UpdateAlertQueue(guildName, theEvent)
         end
         if added then
-          MasterMerchant:PostScanParallel(guildName, true)
+          MasterMerchant:PostScanParallel(guildName)
         end
       end
     end

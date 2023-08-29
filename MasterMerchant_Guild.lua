@@ -278,6 +278,13 @@ function MMGuild:new(_name)
   return o
 end
 
+function MMGuild:CreateGuildDataMap(map, key)
+  if map[key] == nil then
+    map[key] = MMGuild:new(key)
+  end
+  return map[key]
+end
+
 function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, searchText)
   if sort == nil then sort = not internal.isDatabaseBusy end
   amount = tonumber(amount)

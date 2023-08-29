@@ -68,11 +68,12 @@ function internal:addSalesData(theEvent)
     ["seller"] = "@cherrypick",
   },
   ]]--
-  local eventItemLink = theEvent.itemLink
-  local eventBuyer = theEvent.buyer
-  local eventSeller = theEvent.seller
-  local eventGuild = theEvent.guild
-  local timestamp = theEvent.timestamp
+  local newEvent = ZO_DeepTableCopy(theEvent)
+  local eventItemLink = newEvent.itemLink
+  local eventBuyer = newEvent.buyer
+  local eventSeller = newEvent.seller
+  local eventGuild = newEvent.guild
+  local timestamp = newEvent.timestamp
 
   -- first add new data lookups to their tables
   local linkHash = internal:AddSalesTableData("itemLink", eventItemLink)
@@ -110,19 +111,21 @@ function internal:addSalesData(theEvent)
   local searchItemAdderText = sales_data[theIID][itemIndex].itemAdderText -- used for searchText
   local adderDescConcat = searchItemDesc .. ' ' .. searchItemAdderText
 
-  theEvent.itemLink = linkHash
-  theEvent.buyer = buyerHash
-  theEvent.seller = sellerHash
-  theEvent.guild = guildHash
+  newEvent.itemLink = linkHash
+  newEvent.buyer = buyerHash
+  newEvent.seller = sellerHash
+  newEvent.guild = guildHash
 
   local insertedIndex = 1
   local salesTable = sales_data[theIID][itemIndex]['sales']
   local nextLocation = #salesTable + 1
+  --[[Note, while salesTable helps readability table.insert() can not insert
+  into the local variable]]--
   if salesTable[nextLocation] == nil then
-    table.insert(salesTable, nextLocation, theEvent)
+    table.insert(sales_data[theIID][itemIndex]['sales'], nextLocation, newEvent)
     insertedIndex = nextLocation
   else
-    table.insert(salesTable, theEvent)
+    table.insert(sales_data[theIID][itemIndex]['sales'], newEvent)
     insertedIndex = #salesTable
   end
 
@@ -132,27 +135,21 @@ function internal:addSalesData(theEvent)
   if oldestTime == nil or oldestTime > timestamp then sales_data[theIID][itemIndex]["oldestTime"] = timestamp end
 
   -- this section adds the sales to the lists for the MM window
-  local guild
+  local guildSales = MMGuild:CreateGuildDataMap(internal.guildSales, eventGuild)
+  guildSales:addSaleByDate(eventSeller, timestamp, newEvent.price, newEvent.quant, false, nil)
 
-  guild = internal.guildSales[eventGuild] or MMGuild:new(eventGuild)
-  internal.guildSales[eventGuild] = guild
-  guild:addSaleByDate(eventSeller, timestamp, theEvent.price, theEvent.quant, false, nil)
+  local guildPurchases = MMGuild:CreateGuildDataMap(internal.guildPurchases, eventGuild)
+  guildPurchases:addSaleByDate(eventBuyer, timestamp, newEvent.price, newEvent.quant, newEvent.wasKiosk, nil)
 
-  guild = internal.guildPurchases[eventGuild] or MMGuild:new(eventGuild)
-  internal.guildPurchases[eventGuild] = guild
-  guild:addSaleByDate(eventBuyer, timestamp, theEvent.price, theEvent.quant, theEvent.wasKiosk, nil)
-
-  guild = internal.guildItems[eventGuild] or MMGuild:new(eventGuild)
-  internal.guildItems[eventGuild] = guild
-  guild:addSaleByDate(eventItemLink, timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+  local guildItems = MMGuild:CreateGuildDataMap(internal.guildItems, eventGuild)
+  guildItems:addSaleByDate(eventItemLink, timestamp, newEvent.price, newEvent.quant, false, nil, adderDescConcat)
 
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(eventSeller)
 
   if isSelfSale then
-    guild = internal.myItems[eventGuild] or MMGuild:new(eventGuild)
-    internal.myItems[eventGuild] = guild
-    guild:addSaleByDate(eventItemLink, timestamp, theEvent.price, theEvent.quant, false, nil, adderDescConcat)
+    local guildMyItems = MMGuild:CreateGuildDataMap(internal.myItems, eventGuild)
+    guildMyItems:addSaleByDate(eventItemLink, timestamp, newEvent.price, newEvent.quant, false, nil, adderDescConcat)
   end
 
   local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
@@ -522,13 +519,6 @@ end
 
 function internal:InitSalesHistory()
   internal:dm("Debug", "InitSalesHistory")
-  local function createGuildDataMap(map, key)
-    if map[key] == nil then
-      map[key] = MMGuild:new(key)
-    end
-    return map[key]
-  end
-
   local extradata = {
     doGuildItems = not internal.guildItems,
     doMyItems = not internal.myItems,
@@ -566,22 +556,22 @@ function internal:InitSalesHistory()
         local searchData = searchDataDesc .. ' ' .. searchDataAdder
 
         if extradata.doGuildItems then
-          local guildItems = createGuildDataMap(internal.guildItems, currentGuild)
+          local guildItems = MMGuild:CreateGuildDataMap(internal.guildItems, currentGuild)
           guildItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
         end
 
         if extradata.doMyItems and isPlayerSale then
-          local guildMyItems = createGuildDataMap(internal.myItems, currentGuild)
+          local guildMyItems = MMGuild:CreateGuildDataMap(internal.myItems, currentGuild)
           guildMyItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
         end
 
         if extradata.doGuildSales then
-          local guildSales = createGuildDataMap(internal.guildSales, currentGuild)
+          local guildSales = MMGuild:CreateGuildDataMap(internal.guildSales, currentGuild)
           guildSales:addSaleByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
         end
 
         if extradata.doGuildPurchases then
-          local guildPurchases = createGuildDataMap(internal.guildPurchases, currentGuild)
+          local guildPurchases = MMGuild:CreateGuildDataMap(internal.guildPurchases, currentGuild)
           guildPurchases:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
         end
       end
