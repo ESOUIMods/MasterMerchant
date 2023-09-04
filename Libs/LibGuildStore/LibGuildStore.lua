@@ -13,6 +13,8 @@ local REPORTS = 'reports_vs'
 function internal:CheckStatus()
   --internal:dm("Debug", "CheckStatus")
   local maxTime = 0
+  local maxEvents = 0
+
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     local guildName = GetGuildName(guildId)
@@ -21,28 +23,36 @@ function internal:CheckStatus()
 
     timeLeft = zo_floor(timeLeft)
 
-    if timeLeft ~= -1 or processingSpeed ~= -1 then internal.timeEstimated[guildId] = true end
+    if (processingSpeed > 0 and timeLeft >= 0) and not internal.timeEstimated[guildId] then
+      internal.timeEstimated[guildId] = true
+    end
 
-    if (numEvents == 0 and eventCount == 1 and processingSpeed == -1 and timeLeft == -1) then
+    -- Handle the case when numEvents is 0 and eventCount is 1 (inconsistent but no events)
+    -- Handle the case when numEvents is greater then 0, eventCount is 0, and timeLeft is 0
+    -- Example: numEvents: 0 eventCount: 1 processingSpeed: -1 timeLeft: -1
+    -- Example: numEvents: 5 eventCount: 0 processingSpeed: -1 timeLeft: 0
+    if (numEvents == 0 or eventCount == 0) and (processingSpeed == -1 or timeLeft == -1) then
       internal.timeEstimated[guildId] = true
       internal.eventsNeedProcessing[guildId] = false
     end
 
-    if eventCount == 0 and internal.timeEstimated[guildId] then internal.eventsNeedProcessing[guildId] = false end
-
-    if timeLeft == 0 and internal.timeEstimated[guildId] then internal.eventsNeedProcessing[guildId] = false end
+    -- Handle the case when timeLeft or eventCount is 0 (process finished)
+    if (eventCount == 0 or timeLeft == 0) and internal.timeEstimated[guildId] then
+      internal.eventsNeedProcessing[guildId] = false
+    end
 
     maxTime = zo_max(maxTime, timeLeft)
+    maxEvents = zo_max(maxEvents, eventCount)
     if internal.eventsNeedProcessing[guildId] and MasterMerchant.systemSavedVariables.useLibDebugLogger then
-      internal:dm("Debug", string.format("%s: numEvents: %s eventCount: %s processingSpeed: %s timeLeft: %s", guildName, numEvents, eventCount, processingSpeed, timeLeft))
+      internal:dm("Debug", string.format("%s, %s: numEvents: %s eventCount: %s processingSpeed: %s timeLeft: %s", guildName, guildId, numEvents, eventCount, processingSpeed, timeLeft))
     end
 
   end
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
-    if internal.eventsNeedProcessing[guildId] then return true, maxTime end
+    if internal.eventsNeedProcessing[guildId] then return true, maxTime, maxEvents end
   end
-  return false, maxTime
+  return false, maxTime, maxEvents
 end
 
 function internal:StartQueue()
@@ -52,10 +62,10 @@ function internal:StartQueue()
 end
 
 function internal:QueueCheckStatus()
-  local eventsRemaining, timeRemaining = internal:CheckStatus()
+  local eventsRemaining, timeRemaining, estimatedEvents = internal:CheckStatus()
   if eventsRemaining then
     zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
-    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. ": estimated time remaining " .. (zo_ceil(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)) .. " minutes.")
+    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. string.format(GetString(GS_REFRESH_ESTIMATE), estimatedEvents, zo_ceil(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)))
   else
     --[[
     MasterMerchant.CenterScreenAnnounce_AddMessage(
