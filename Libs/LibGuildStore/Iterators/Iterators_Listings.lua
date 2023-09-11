@@ -540,7 +540,7 @@ function internal:ReferenceListings(otherData)
               if oldestTime == nil or oldestTime > saledata.timestamp then oldestTime = saledata.timestamp end
               if newestTime == nil or newestTime < saledata.timestamp then newestTime = saledata.timestamp end
             end
-            listings_data[itemid][versionid].totalCount = NonContiguousCount(sales_data[itemid][versionid]['sales'])
+            listings_data[itemid][versionid].totalCount = NonContiguousCount(listings_data[itemid][versionid]['sales'])
             listings_data[itemid][versionid].wasAltered = true
             listings_data[itemid][versionid].oldestTime = oldestTime
             listings_data[itemid][versionid].newestTime = newestTime
