@@ -139,6 +139,7 @@ ZO_CreateStringId("GS_RESET_CONFIRM_MAIN", "Уничтожить весь жур
 ZO_CreateStringId("GS_REFRESH_NOT_FINISHED", "LibGuildStore: обновление ещё не окончено")
 ZO_CreateStringId("GS_REFRESH_FINISHED", "LibGuildStore: обновление завершено")
 ZO_CreateStringId("GS_REFRESH_STARTING", "LibGuildStore: обновление начато")
+ZO_CreateStringId("GS_REFRESH_ESTIMATE", ": %s estimated events and %s minutes remaining.")
 
 ZO_CreateStringId("GS_ALL_BUTTON", GetString(SI_ITEMTYPEDISPLAYCATEGORY0))
 ZO_CreateStringId("GS_WEAPONS_BUTTON", GetString(SI_ITEMTYPEDISPLAYCATEGORY1))

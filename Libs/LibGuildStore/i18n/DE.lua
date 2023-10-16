@@ -139,6 +139,7 @@ ZO_CreateStringId("GS_RESET_CONFIRM_MAIN", "Willst du wirklich deine Verkäufe H
 ZO_CreateStringId("GS_REFRESH_NOT_FINISHED", "LibGuildStore Aktualisierung nicht beendet")
 ZO_CreateStringId("GS_REFRESH_FINISHED", "LibGuildStore Aktualisierung beendet")
 ZO_CreateStringId("GS_REFRESH_STARTING", "Beginne LibGuildStore Aktualisierung")
+ZO_CreateStringId("GS_REFRESH_ESTIMATE", ": %s estimated events and %s minutes remaining.")
 
 ZO_CreateStringId("GS_ALL_BUTTON", GetString(SI_ITEMTYPEDISPLAYCATEGORY0))
 ZO_CreateStringId("GS_WEAPONS_BUTTON", GetString(SI_ITEMTYPEDISPLAYCATEGORY1))
