@@ -2795,12 +2795,19 @@ function MasterMerchant:FirstInitialize()
     end
   end
 
-  -- Watch Decon list
-  local originalCall = ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1].setupCallback
-  SecurePostHook(ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack.dataTypes[1], "setupCallback", function(rowControl, slot)
-    originalCall(rowControl, slot)
-    MasterMerchant:SetInventorySellPriceText(rowControl, slot)
-  end)
+  -- Watch Decon lists
+  local backpacks = {
+    ZO_SmithingTopLevelDeconstructionPanelInventoryBackpack,
+    ZO_UniversalDeconstructionTopLevel_KeyboardPanelInventoryBackpack,
+  }
+  for i = 1, #backpacks do
+    local oldCallback = backpacks[i].dataTypes[1].setupCallback
+
+    backpacks[i].dataTypes[1].setupCallback = function(rowControl, slot)
+      oldCallback(rowControl, slot)
+      MasterMerchant:SetInventorySellPriceText(rowControl, slot)
+    end
+  end
 
   -- With nothing only the item removed from teh craft bag updates, with the call above - not slot and hasItemInSlotNow
   --[[
