@@ -2366,38 +2366,38 @@ local function UpdateVars()
 end
 
 local function SetupBackupWarning()
-    local URL_LINK_TYPE = "mmdocs_url"
-    local DISABLE_LINK_TYPE = "mmbackupwarn_disable"
-    local function HandleLinkClick(link, button, text, linkStyle, linkType)
-        if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
-        if linkType == URL_LINK_TYPE then
-            RequestOpenUnsafeURL(text)
-            return true
-        elseif linkType == DISABLE_LINK_TYPE then
-            if not MasterMerchant.systemSavedVariables.disableBackupWarning then
-                MasterMerchant.systemSavedVariables.disableBackupWarning = true
-                CHAT_ROUTER:AddSystemMessage("[MasterMerchant] Warning disabled.")
-            end
-            return true
-        end
+  local URL_LINK_TYPE = "mmdocs_url"
+  local DISABLE_LINK_TYPE = "mmbackupwarn_disable"
+  local function HandleLinkClick(link, button, text, linkStyle, linkType)
+    if button ~= MOUSE_BUTTON_INDEX_LEFT then return end
+    if linkType == URL_LINK_TYPE then
+      RequestOpenUnsafeURL(text)
+      return true
+    elseif linkType == DISABLE_LINK_TYPE then
+      if not MasterMerchant.systemSavedVariables.disableBackupWarning then
+        MasterMerchant.systemSavedVariables.disableBackupWarning = true
+        CHAT_ROUTER:AddSystemMessage("[MasterMerchant] Warning disabled.")
+      end
+      return true
     end
-    LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_CLICKED_EVENT, HandleLinkClick)
-    LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, HandleLinkClick)
+  end
+  LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_CLICKED_EVENT, HandleLinkClick)
+  LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, HandleLinkClick)
 
-    EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_BackupWarn" , EVENT_PLAYER_ACTIVATED, function()
-        EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name .. "_BackupWarn" , EVENT_PLAYER_ACTIVATED)
-        zo_callLater(function()
-            local urlLink = ZO_LinkHandler_CreateLinkWithoutBrackets("https://esouimods.github.io/3-master_merchant.html#MajorChangeswithUpdate41", nil, URL_LINK_TYPE)
-            if GetAPIVersion() < 101041 then
-                if not MasterMerchant.systemSavedVariables.disableBackupWarning then
-                    local disableLink = ZO_LinkHandler_CreateLink("Click here to disable this warning", nil, DISABLE_LINK_TYPE)
-                    CHAT_ROUTER:AddSystemMessage("|cff6a00[MasterMerchant Warning] Major changes involving guild sales history will occur with Update 41. All sales information from your LibHistoire data cache will be deleted! It is important to read the Master Merchant documentation for information on how to back up your sales data in case of any future data corruption: |c0094ff" .. urlLink .. "|r " .. disableLink)
-                end
-            else
-                CHAT_ROUTER:AddSystemMessage("|cff6a00[Warning] This version of Master Merchant is not compatible with the current game version. Make sure to update to the latest version, but be aware that all previously cached data from LibHistoire will be deleted!")
-            end
-        end, 1000)
-    end)
+  EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_BackupWarn", EVENT_PLAYER_ACTIVATED, function()
+    EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name .. "_BackupWarn", EVENT_PLAYER_ACTIVATED)
+    zo_callLater(function()
+      local urlLink = ZO_LinkHandler_CreateLinkWithoutBrackets("https://esouimods.github.io/3-master_merchant.html#MajorChangeswithUpdate41", nil, URL_LINK_TYPE)
+      if GetAPIVersion() < 101041 then
+        if not MasterMerchant.systemSavedVariables.disableBackupWarning then
+          local disableLink = ZO_LinkHandler_CreateLink("Click here to disable this warning", nil, DISABLE_LINK_TYPE)
+          CHAT_ROUTER:AddSystemMessage("|cff6a00[MasterMerchant Warning] Major changes involving guild sales history will occur with Update 41. All sales information from your LibHistoire data cache will be deleted! It is important to read the Master Merchant documentation for information on how to back up your sales data in case of any future data corruption: |c0094ff" .. urlLink .. "|r " .. disableLink)
+        end
+      else
+        CHAT_ROUTER:AddSystemMessage("|cff6a00[Warning] This version of Master Merchant is not compatible with the current game version. Make sure to update to the latest version, but be aware that all previously cached data from LibHistoire will be deleted!")
+      end
+    end, 1000)
+  end)
 end
 
 -- ShopkeeperSavedVars["Default"]["MasterMerchant"]["$AccountWide"]
