@@ -42,6 +42,8 @@ ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Скрывать цену о�
 ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Не указывать цену от Bonanza на графике, если в данных Bonanza меньше 6 размещённых товаров.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Альтернативная цена от TTC")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Добавлять данные от TTC в сокращённом виде.")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_NAME", "Use TTC Sales Average")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_TIP", "Replace the alternate TTC pricing in the tooltip with the TTC Sales Average.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Расчётная цена изготовления")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Добавлять стоимость изготовления, полученную суммированием цен на ингредиенты из подсказки предмета.")
 ZO_CreateStringId("SK_SHOW_MATERIAL_COST_NAME", "Стоимость материалов")
@@ -126,7 +128,6 @@ ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Фильтр по названию"
 ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Фильтр по типу")
 ZO_CreateStringId("SK_FEEDBACK_MESSAGE", "Я не могу оказывать техподдержку внутри игры. Невозможно пересылать картинки или ссылки, чтобы разобраться или ответить на ваш вопрос.\n\nНадеюсь, вам нравится Master Merchant. Ваши отзывы всегда ценные. Если вы хотели бы помочь мне заказать чашку кофе или гамбургер, или быть может даже обновить компьютер для работы над аддонами...\n\n зайдите сюда: https://sharlikran.github.io")
 
-
 -- toggle view mode
 ZO_CreateStringId("SK_SELLER_TOOLTIP", "Экран рейтинга")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Экран предметов")
@@ -186,6 +187,7 @@ ZO_CreateStringId("MM_PTC_VOUCHER_VALUE_TYPE_TIP", "Доступные спос�
 ZO_CreateStringId("MM_PTC_MM_HEADER", "Цена от MM (")
 ZO_CreateStringId("MM_PTC_BONANZA_HEADER", "Bonanza-цена (")
 ZO_CreateStringId("MM_PTC_TTC_HEADER", "Цена от TTC (")
+ZO_CreateStringId("MM_PTC_TTC_SALES_HEADER", "TTC Sales Average (")
 
 ZO_CreateStringId("MM_TIP_MM_HEADER", "MM (")
 ZO_CreateStringId("MM_TIP_BONANZA_HEADER", "Bonanza (")
@@ -229,6 +231,7 @@ ZO_CreateStringId("MM_GRAPHTIP_BONANZA_PRICE", "Bonanza-цена (%s разм./%
 ZO_CreateStringId("MM_GRAPHTIP_TTC_PRICE", "TTC [%s разм.] рек.: %s, ср.: %s")
 ZO_CreateStringId("MM_GRAPHTIP_PER_VOUCHER", "%s за расписку (в среднем)")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[У TTC нет данных]")
+ZO_CreateStringId("MM_NO_TTC_SALES_PRICE", "[No TTC Sales Pricing]")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "У Bonanza нет данных")
 ZO_CreateStringId("MM_TIP_FOR", "для")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Ссылку в чат")

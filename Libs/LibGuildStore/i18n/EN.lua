@@ -184,6 +184,7 @@ ZO_CreateStringId("GS_ATT_PURCHASE_DATA_IMPORTED", "Arkadius Trade Tools Purchas
 -- dropdown choices
 ZO_CreateStringId("GS_DEAL_CALC_TTC_SUGGESTED", "TTC Suggested")
 ZO_CreateStringId("GS_DEAL_CALC_TTC_AVERAGE", "TTC Average")
+ZO_CreateStringId("GS_DEAL_CALC_TTC_SALES", "TTC Sales Average")
 ZO_CreateStringId("GS_DEAL_CALC_MM_AVERAGE", "MM Average")
 ZO_CreateStringId("GS_DEAL_CALC_BONANZA_PRICE", "Bonanza Price")
 

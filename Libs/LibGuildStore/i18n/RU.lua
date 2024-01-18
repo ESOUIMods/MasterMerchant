@@ -184,6 +184,7 @@ ZO_CreateStringId("GS_ATT_PURCHASE_DATA_IMPORTED", "Данные покупок 
 -- dropdown choices
 ZO_CreateStringId("GS_DEAL_CALC_TTC_SUGGESTED", "Рекомендуемая TTC")
 ZO_CreateStringId("GS_DEAL_CALC_TTC_AVERAGE", "Средняя по TTC")
+ZO_CreateStringId("GS_DEAL_CALC_TTC_SALES", "TTC Sales Average")
 ZO_CreateStringId("GS_DEAL_CALC_MM_AVERAGE", "Средняя по MM")
 ZO_CreateStringId("GS_DEAL_CALC_BONANZA_PRICE", "Bonanza-цена")
 

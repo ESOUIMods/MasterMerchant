@@ -15,6 +15,11 @@ local function GetAveragePrice(bagId, slotIndex)
       averagePrice = tipStats.bonanzaPrice
     end
   end
+  -- priceDict.SaleAvg, priceDict.SaleEntryCount, priceDict.SaleAmountCount
+  if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_TTC_SALES and TamrielTradeCentre then
+    local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+    if priceStats and priceStats.SaleAvg and priceStats.SaleAvg > 0 then averagePrice = priceStats.SaleAvg end
+  end
   if MasterMerchant.systemSavedVariables.replacementTypeToUse == MM_PRICE_TTC_AVERAGE and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
     if priceStats and priceStats.Avg and priceStats.Avg > 0 then averagePrice = priceStats.Avg end
@@ -33,7 +38,7 @@ local function GetCleanPrice(price)
   if IsInGamepadPreferredMode() or MasterMerchant.systemSavedVariables.trimDecimals then
     return tonumber(string.format('%.0f', price))
   else
-    return tonumber(string.format('%.2f', price))
+    return tonumber(string.format('%.0f', price))
   end
 end
 

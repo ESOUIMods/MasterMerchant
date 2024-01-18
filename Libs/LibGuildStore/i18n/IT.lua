@@ -185,6 +185,7 @@ ZO_CreateStringId("GS_ATT_PURCHASE_DATA_IMPORTED", "Non sono stati importati dat
 -- scelte a discesa
 ZO_CreateStringId("GS_DEAL_CALC_TTC_SUGGESTED", "Suggerito TTC")
 ZO_CreateStringId("GS_DEAL_CALC_TTC_AVERAGE", "Media TTC")
+ZO_CreateStringId("GS_DEAL_CALC_TTC_SALES", "TTC Sales Average")
 ZO_CreateStringId("GS_DEAL_CALC_MM_AVERAGE", "Media MM")
 ZO_CreateStringId("GS_DEAL_CALC_BONANZA_PRICE", "Prezzo Bonanza")
 

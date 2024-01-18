@@ -65,7 +65,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.84'
+MasterMerchant.version = '3.7.85'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
@@ -132,6 +132,7 @@ MM_PRICE_TTC_SUGGESTED = 1
 MM_PRICE_TTC_AVERAGE = 2
 MM_PRICE_MM_AVERAGE = 3
 MM_PRICE_BONANZA = 4
+MM_PRICE_TTC_SALES = 5
 
 MM_AGS_SORT_PERCENT_ASCENDING = 1
 MM_AGS_SORT_PERCENT_DESCENDING = 2

@@ -733,7 +733,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
     end
     ]]--
   end
-  if itemType == ITEMTYPE_MASTER_WRIT and MasterMerchant.systemSavedVariables.includeVoucherAverage then
+  if itemType == ITEMTYPE_MASTER_WRIT and (MasterMerchant.systemSavedVariables.includeVoucherAverageTooltip or MasterMerchant.systemSavedVariables.includeVoucherAveragePTC) then
     numVouchers = mmUtils:GetVoucherCountByItemLink(itemLink)
   end
   -- Retrieve Item (['sales']) information including graph if hasSalesPrice and not generating new graphInfo
@@ -2443,15 +2443,22 @@ function MasterMerchant:FirstInitialize()
     offlineSales = true,
     showPricing = true,
     showBonanzaPricing = true,
-    useCondensedPriceToChat = false,
     omitBonanzaPricingGraphLessThanSix = false,
     omitBonanzaPricingChatLessThanSix = false,
-    includeItemCountPriceToChat = false,
+    --[[ Show abreviated price to chat S: instead of Sales: ]]--
     includeTTCDataPriceToChat = true,
-    includeVoucherAverage = false,
+    useCondensedPriceToChat = false,
+    includeItemCountPriceToChat = false,
+    --[[ Include the Voucher average and which type ]]--
+    includeVoucherAverageTooltip = false,
+    includeVoucherAveragePTC = false,
     voucherValueTypeToUse = MM_PRICE_MM_AVERAGE,
     isWindowMovable = false,
-    showAltTtcTipline = true,
+    --[[ Show the TTC Tipline on the graph but it seems I added this
+    to the price to chat also and I need to update that ]]--
+    showTTCTipline = true,
+    --[[ Toggle to show sales average in place of average and suggested ]]--
+    showTTCSalesAverage = false,
     showCraftCost = true,
     showMaterialCost = true,
     showGraph = true,
@@ -2516,6 +2523,8 @@ function MasterMerchant:FirstInitialize()
     trimOutliersWithPercentile = false,
     outlierPercentile = 5,
     trimOutliersAgressive = false,
+    --[[ Whether or not the old MM variables were imported so they don't
+    keep overriding users saved values.]]--
     masterMerchantVariablesImported = false,
     disableBackupWarning = false,
   }
@@ -2994,6 +3003,12 @@ function MasterMerchant:GetAveragePriceAndCount(itemLink, priceType)
       averagePrice = priceStats.bonanzaPrice
       salesCount = priceStats.bonanzaListings
     end
+  end
+  -- priceDict.SaleAvg, priceDict.SaleEntryCount, priceDict.SaleAmountCount
+  if evalType == MM_PRICE_TTC_SALES and TamrielTradeCentre then
+    local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
+    if priceStats and priceStats.SaleAvg and priceStats.SaleAvg > 0 then averagePrice = priceStats.SaleAvg end
+    if priceStats and priceStats.SaleEntryCount then salesCount = priceStats.SaleEntryCount end
   end
   if evalType == MM_PRICE_TTC_AVERAGE and TamrielTradeCentre then
     local priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)

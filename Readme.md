@@ -7,6 +7,15 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.85
+
+- Added TTC Sales Average to Deal Calculator, Inventory replacement, Price To Chat, and Graph
+- Toggle between TTC Sales Average or TTC Average and TTC Suggested for Price To Chat and Graph
+
+## ChangeLog 3.7.84
+
+- Added inventory pricing to Decon assistants
+
 ## ChangeLog 3.7.83
 
 - Updated Craft Cost recipes

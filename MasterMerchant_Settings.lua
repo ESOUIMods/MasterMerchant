@@ -9,12 +9,14 @@ if TamrielTradeCentre then
   MasterMerchant.dealCalcChoices = {
     GetString(GS_DEAL_CALC_TTC_SUGGESTED),
     GetString(GS_DEAL_CALC_TTC_AVERAGE),
+    GetString(GS_DEAL_CALC_TTC_SALES),
     GetString(GS_DEAL_CALC_MM_AVERAGE),
     GetString(GS_DEAL_CALC_BONANZA_PRICE),
   }
   MasterMerchant.dealCalcValues = {
     MM_PRICE_TTC_SUGGESTED,
     MM_PRICE_TTC_AVERAGE,
+    MM_PRICE_TTC_SALES,
     MM_PRICE_MM_AVERAGE,
     MM_PRICE_BONANZA,
   }
@@ -635,9 +637,19 @@ function MasterMerchant:LibAddonInit()
     type = 'checkbox',
     name = GetString(SK_SHOW_TTC_PRICE_NAME),
     tooltip = GetString(SK_SHOW_TTC_PRICE_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.showAltTtcTipline end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.showAltTtcTipline = value end,
-    default = MasterMerchant.systemDefault.showAltTtcTipline,
+    getFunc = function() return MasterMerchant.systemSavedVariables.showTTCTipline end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showTTCTipline = value end,
+    default = MasterMerchant.systemDefault.showTTCTipline,
+  }
+  -- Whether or not to show TTC sales average in tooltips, rather then suggested and average
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(SK_SHOW_TTC_SALES_AVERAGE_NAME),
+    tooltip = GetString(SK_SHOW_TTC_SALES_AVERAGE_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.showTTCSalesAverage end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showTTCSalesAverage = value end,
+    default = MasterMerchant.systemDefault.showTTCSalesAverage,
+    disabled = function() return not MasterMerchant.systemSavedVariables.showTTCTipline end,
   }
   -- Whether or not to show the bonanza price in tooltips
   optionsData[#optionsData + 1] = {
@@ -703,6 +715,39 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.trimDecimals end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.trimDecimals = value end,
     default = MasterMerchant.systemDefault.trimDecimals,
+  }
+  -- should we ommit price per voucher for the tooltip?
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_PTC_ADD_VOUCHER_NAME),
+    tooltip = GetString(MM_PTC_ADD_VOUCHER_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.includeVoucherAverageTooltip end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.includeVoucherAverageTooltip = value end,
+    default = MasterMerchant.systemDefault.includeVoucherAverageTooltip,
+  }
+  -- replace inventory value type
+  optionsData[#optionsData + 1] = {
+    type = 'dropdown',
+    name = GetString(MM_PTC_VOUCHER_VALUE_TYPE_NAME),
+    tooltip = GetString(MM_PTC_VOUCHER_VALUE_TYPE_TIP),
+    choices = MasterMerchant.dealCalcChoices,
+    choicesValues = MasterMerchant.dealCalcValues,
+    getFunc = function() return MasterMerchant.systemSavedVariables.voucherValueTypeToUse end,
+    setFunc = function(value)
+      MasterMerchant.systemSavedVariables.voucherValueTypeToUse = value
+      CheckVoucherValue()
+    end,
+    default = MasterMerchant.systemDefault.voucherValueTypeToUse,
+    disabled = function() return not MasterMerchant.systemSavedVariables.includeVoucherAverageTooltip end,
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_MODIFIED_TTC_SUGGESTED_NAME),
+    tooltip = GetString(MM_MODIFIED_TTC_SUGGESTED_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPriceVoucher end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceVoucher = value end,
+    default = MasterMerchant.systemDefault.modifiedSuggestedPriceVoucher,
+    disabled = function() return (not MasterMerchant.systemSavedVariables.includeVoucherAverageTooltip) or (MasterMerchant.systemSavedVariables.voucherValueTypeToUse ~= MM_PRICE_TTC_SUGGESTED) end,
   }
   -- Section: Outlier Options
   optionsData[#optionsData + 1] = {
@@ -813,9 +858,9 @@ function MasterMerchant:LibAddonInit()
     type = 'checkbox',
     name = GetString(MM_PTC_ADD_VOUCHER_NAME),
     tooltip = GetString(MM_PTC_ADD_VOUCHER_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.includeVoucherAverage end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.includeVoucherAverage = value end,
-    default = MasterMerchant.systemDefault.includeVoucherAverage,
+    getFunc = function() return MasterMerchant.systemSavedVariables.includeVoucherAveragePTC end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.includeVoucherAveragePTC = value end,
+    default = MasterMerchant.systemDefault.includeVoucherAveragePTC,
   }
   -- replace inventory value type
   optionsData[#optionsData + 1] = {
@@ -830,7 +875,7 @@ function MasterMerchant:LibAddonInit()
       CheckVoucherValue()
     end,
     default = MasterMerchant.systemDefault.voucherValueTypeToUse,
-    disabled = function() return not MasterMerchant.systemSavedVariables.includeVoucherAverage end,
+    disabled = function() return not MasterMerchant.systemSavedVariables.includeVoucherAveragePTC end,
   }
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
@@ -839,7 +884,7 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.modifiedSuggestedPriceVoucher end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.modifiedSuggestedPriceVoucher = value end,
     default = MasterMerchant.systemDefault.modifiedSuggestedPriceVoucher,
-    disabled = function() return (not MasterMerchant.systemSavedVariables.includeVoucherAverage) or (MasterMerchant.systemSavedVariables.voucherValueTypeToUse ~= MM_PRICE_TTC_SUGGESTED) end,
+    disabled = function() return (not MasterMerchant.systemSavedVariables.includeVoucherAveragePTC) or (MasterMerchant.systemSavedVariables.voucherValueTypeToUse ~= MM_PRICE_TTC_SUGGESTED) end,
   }
   -- Section: Inventory Options
   optionsData[#optionsData + 1] = {

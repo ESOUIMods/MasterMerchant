@@ -41,6 +41,8 @@ ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Omit Bonanza Price if less th
 ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Omit Bonanza Price from Graph when there are less than 6 listings from Bonanza data.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Show Alternate TTC Price")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Include Alternate TTC condensed price tooltip.")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_NAME", "Use TTC Sales Average")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_TIP", "Replace the alternate TTC pricing in the tooltip with the TTC Sales Average.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Show Crafting Cost Info")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Include crafting cost based on ingredient costs in item tooltips.")
 ZO_CreateStringId("SK_SHOW_MATERIAL_COST_NAME", "Show Material Cost Info")
@@ -184,6 +186,7 @@ ZO_CreateStringId("MM_PTC_VOUCHER_VALUE_TYPE_TIP", "Calculate the average vouche
 ZO_CreateStringId("MM_PTC_MM_HEADER", "MM price (")
 ZO_CreateStringId("MM_PTC_BONANZA_HEADER", "Bonanza price (")
 ZO_CreateStringId("MM_PTC_TTC_HEADER", "TTC price (")
+ZO_CreateStringId("MM_PTC_TTC_SALES_HEADER", "TTC Sales Average (")
 
 ZO_CreateStringId("MM_TIP_MM_HEADER", "MM (")
 ZO_CreateStringId("MM_TIP_BONANZA_HEADER", "Bonanza (")
@@ -227,6 +230,7 @@ ZO_CreateStringId("MM_GRAPHTIP_BONANZA_PRICE", "Bonanza price (%s listings/%s it
 ZO_CreateStringId("MM_GRAPHTIP_TTC_PRICE", "TTC [%s listings] Sug: %s, Avg: %s")
 ZO_CreateStringId("MM_GRAPHTIP_PER_VOUCHER", "%s per voucher (of average)")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")
+ZO_CreateStringId("MM_NO_TTC_SALES_PRICE", "[No TTC Sales Pricing]")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "のため")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "チャットにリンク")
@@ -342,7 +346,7 @@ ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_NAME", "Add Taxes Sales Rank Export")
 ZO_CreateStringId("MM_SHOW_AMOUNT_TAXES_TIP", "Will calculate 3.5% of total sales as the amount of Taxes for a user when using /mm export.")
 
 ZO_CreateStringId("MM_GUILD_ROSTER_OPTIONS_NAME", "Guild Roster Options")
-ZO_CreateStringId("MM_GUILD_ROSTER_OPTIONS_TIP", "Enable and disable the different guild roster columns. (Requires until next update of LibGuild Roster)")
+ZO_CreateStringId("MM_GUILD_ROSTER_OPTIONS_TIP", "Enable and disable the different guild roster columns. (Reload UI required until next update of LibGuild Roster)")
 
 ZO_CreateStringId("MM_PURCHASES_COLUMN_NAME", "Enable Purchases Column")
 ZO_CreateStringId("MM_PURCHASES_COLUMN_TIP", "Display Purchases on guild roster.")
@@ -384,7 +388,7 @@ ZO_CreateStringId("MM_PTC_LISTINGS_COUNT_NAME", "Include Listings Count")
 ZO_CreateStringId("MM_PTC_LISTINGS_COUNT_TIP", "Include Listings Count with Price formatting for either Bonanza and TTC.")
 
 ZO_CreateStringId("MM_PTC_TTC_DATA_NAME", "Include TTC Pricing Data")
-ZO_CreateStringId("MM_PTC_TTC_DATA_TIP", "Include condensed TTC Pricing Data with Price formatting.")
+ZO_CreateStringId("MM_PTC_TTC_DATA_TIP", "Include TTC Pricing Data with Price To Chat.")
 ZO_CreateStringId("MM_PTC_BONANZA_NAME", "Omit Bonanza Price if less than 6 listings")
 ZO_CreateStringId("MM_PTC_BONANZA_TIP", "Omit Bonanza Price from Price formatting when there are less than 6 listings of Bonanza data.")
 

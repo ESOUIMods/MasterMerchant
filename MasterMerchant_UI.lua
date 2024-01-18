@@ -2038,7 +2038,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
     return nil
   end
 
-  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showTTCTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
   local bindType = GetItemLinkBindType(itemLink)
   local bindOnPickup = bindType == BIND_TYPE_ON_PICKUP or bindType == BIND_TYPE_ON_PICKUP_BACKPACK
 
@@ -2067,7 +2067,15 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   -- return ['graphInfo']: oldestTime, low, high, points
   local statsInfo = self:GetTooltipStats(itemLink, false, true)
   local priceStats
-  local useTTCPrice = MasterMerchant.systemSavedVariables.showAltTtcTipline or (MasterMerchant.systemSavedVariables.includeVoucherAverage and (MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_SUGGESTED or MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_AVERAGE))
+  local ttcTypeSelected = (MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_SUGGESTED or MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_AVERAGE or MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_SALES)
+  local useTTCPrice = MasterMerchant.systemSavedVariables.showTTCTipline or (MasterMerchant.systemSavedVariables.includeVoucherAverageTooltip and ttcTypeSelected)
+
+  if statsInfo.bonanzaListings and (statsInfo.bonanzaListings < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
+    statsInfo.bonanzaPrice = nil
+    statsInfo.bonanzaListings = nil
+    statsInfo.bonanzaItemCount = nil
+  end
+
   if TamrielTradeCentre and useTTCPrice then
     priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
   end
@@ -2097,15 +2105,10 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
   if statsInfo.bonanzaPrice then
     bonanzaTipline = MasterMerchant:BonanzaPriceTip(statsInfo, false)
   end
-  if MasterMerchant.systemSavedVariables.showAltTtcTipline and TamrielTradeCentre then
+  if MasterMerchant.systemSavedVariables.showTTCTipline and TamrielTradeCentre then
     ttcTipline = MasterMerchant:TTCPriceTip(priceStats, false)
   end
-  if statsInfo.bonanzaListings and (statsInfo.bonanzaListings < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingGraphLessThanSix then
-    statsInfo.bonanzaPrice = nil
-    statsInfo.bonanzaListings = nil
-    statsInfo.bonanzaItemCount = nil
-  end
-  local useVoucherCount = statsInfo and statsInfo.numVouchers and statsInfo.numVouchers > 0 and MasterMerchant.systemSavedVariables.includeVoucherAverage
+  local useVoucherCount = statsInfo and statsInfo.numVouchers and statsInfo.numVouchers > 0 and MasterMerchant.systemSavedVariables.includeVoucherAverageTooltip
   if useVoucherCount then
     voucherTipline = MasterMerchant:VoucherAveragePriceTip(statsInfo, priceStats, false)
   end
@@ -2328,7 +2331,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
 
   end
 
-  if ttcTipline and MasterMerchant.systemSavedVariables.showAltTtcTipline then
+  if ttcTipline and MasterMerchant.systemSavedVariables.showTTCTipline then
 
     if not tooltip.mmTTCText then
       tooltip:AddVerticalPadding(2)
@@ -2496,7 +2499,7 @@ end
 
 -- |H<style>:<type>[:<data>...]|h<text>|h
 function MasterMerchant:addStatsPopupTooltip(Popup)
-  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showTTCTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
 
   if Popup == ZO_ProvisionerTopLevelTooltip then
     local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
@@ -2551,7 +2554,7 @@ end
 
 function MasterMerchant:addStatsProvisionerTooltip(Popup)
   if not MasterMerchant.isInitialized then return end
-  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showTTCTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
 
   local recipeListIndex, recipeIndex = PROVISIONER:GetSelectedRecipeListIndex(), PROVISIONER:GetSelectedRecipeIndex()
   Popup.lastLink = GetRecipeResultItemLink(recipeListIndex, recipeIndex)
@@ -2671,7 +2674,7 @@ end
 -- how to grab the item data
 function MasterMerchant:GenerateStatsItemTooltip()
   if not MasterMerchant.isInitialized then return end
-  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
+  local showTooltipInformation = (MasterMerchant.systemSavedVariables.showPricing or MasterMerchant.systemSavedVariables.showGraph or MasterMerchant.systemSavedVariables.showCraftCost or MasterMerchant.systemSavedVariables.showBonanzaPricing or MasterMerchant.systemSavedVariables.showTTCTipline or MasterMerchant.systemSavedVariables.showMaterialCost)
   -- local skMoc = moc()
   local mouseOverControl = moc()
   -- Make sure we don't double-add stats or try to add them to nothing

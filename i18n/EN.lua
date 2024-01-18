@@ -43,6 +43,8 @@ ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Omit Bonanza Price if less th
 ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Omit Bonanza Price from Graph when there are less than 6 listings from Bonanza data.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Show Alternate TTC Price")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Include Alternate TTC condensed price tooltip.")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_NAME", "Use TTC Sales Average")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_TIP", "Replace the alternate TTC pricing in the tooltip with the TTC Sales Average.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Show Crafting Cost Info")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Include crafting cost based on ingredient costs in item tooltips.")
 ZO_CreateStringId("SK_SHOW_MATERIAL_COST_NAME", "Show Material Cost Info")
@@ -127,7 +129,6 @@ ZO_CreateStringId("SK_NAME_FILTER_TOOLTIP", "Filter By Name")
 ZO_CreateStringId("SK_TYPE_FILTER_TOOLTIP", "Filter By Type")
 ZO_CreateStringId("SK_FEEDBACK_MESSAGE", "I can not provide tech support in game. There is no way to send images or weblinks to understand or answer your question.\n\nI hope you are enjoying Master Merchant. Your feedback is always welcome. If you have wondered if there is some way you could help me get a Starbucks or a burger, maybe even help me in updating my computer so I can continue working on mods...\n\n you can visit: https://sharlikran.github.io")
 
-
 -- toggle view mode
 ZO_CreateStringId("SK_SELLER_TOOLTIP", "Ranking View")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Item View")
@@ -187,6 +188,7 @@ ZO_CreateStringId("MM_PTC_VOUCHER_VALUE_TYPE_TIP", "Calculate the average vouche
 ZO_CreateStringId("MM_PTC_MM_HEADER", "MM price (")
 ZO_CreateStringId("MM_PTC_BONANZA_HEADER", "Bonanza price (")
 ZO_CreateStringId("MM_PTC_TTC_HEADER", "TTC price (")
+ZO_CreateStringId("MM_PTC_TTC_SALES_HEADER", "TTC Sales Average (")
 
 ZO_CreateStringId("MM_TIP_MM_HEADER", "MM (")
 ZO_CreateStringId("MM_TIP_BONANZA_HEADER", "Bonanza (")
@@ -230,6 +232,7 @@ ZO_CreateStringId("MM_GRAPHTIP_BONANZA_PRICE", "Bonanza price (%s listings/%s it
 ZO_CreateStringId("MM_GRAPHTIP_TTC_PRICE", "TTC [%s listings] Sug: %s, Avg: %s")
 ZO_CreateStringId("MM_GRAPHTIP_PER_VOUCHER", "%s per voucher (of average)")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[No TTC Pricing]")
+ZO_CreateStringId("MM_NO_TTC_SALES_PRICE", "[No TTC Sales Pricing]")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "Bonanza has no data")
 ZO_CreateStringId("MM_TIP_FOR", "for")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Link in Chat")

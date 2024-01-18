@@ -58,10 +58,26 @@ function MasterMerchant:BonanzaPriceTip(statsInfo, chatText)
   return formatedBonanzaString
 end
 
-function MasterMerchant:TTCPriceTip(priceStats, chatText)
-  if not chatText and not priceStats and MasterMerchant.systemSavedVariables.showAltTtcTipline then return GetString(MM_NO_TTC_PRICE)
-  elseif not priceStats then return nil end
+function MasterMerchant:GetTTCSalesAverage(priceStats, chatText)
+  local formatedTTCString
+  local goldIcon
+  local ttcSalesAvgPriceString
+  local ttcSalesNumSalesEntries
 
+  if chatText then goldIcon = "" else goldIcon = MM_COIN_ICON_NO_SPACE end
+
+  -- priceDict.SaleAvg, priceDict.SaleEntryCount, priceDict.SaleAmountCount
+  if priceStats and priceStats.SaleAvg then ttcSalesAvgPriceString = self.LocalizedNumber(priceStats.SaleAvg) .. goldIcon end
+  if priceStats and priceStats.SaleEntryCount then ttcSalesNumSalesEntries = MasterMerchant:GetSingularOrPluralString(GetString(MM_PTC_SINGULAR_SALE), GetString(MM_PTC_PLURAL_SALES), priceStats.SaleEntryCount) end
+
+  -- When there is no sales data
+  if not ttcSalesAvgPriceString then return GetString(MM_NO_TTC_SALES_PRICE) end
+
+  formatedTTCString = MasterMerchant.concatTooltip(GetString(MM_PTC_TTC_SALES_HEADER), ttcSalesNumSalesEntries, GetString(MM_PTC_CLOSING_SEPERATOR), GetString(MM_PTC_COLON_SPACE_SEPERATOR), ttcSalesAvgPriceString)
+  return formatedTTCString
+end
+
+function MasterMerchant:GetTTCPricingInfo(priceStats, chatText)
   local formatedTTCString
   local goldIcon
   local headerText
@@ -90,6 +106,26 @@ function MasterMerchant:TTCPriceTip(priceStats, chatText)
   return formatedTTCString
 end
 
+--[[TODO: Add sales average (SaleAvg) from TTC instead
+of the Average and Suggested, use the sales average and count
+like the MM price]]--
+function MasterMerchant:TTCPriceTip(priceStats, chatText)
+  -- if the TTC price is enabled for the graph, but priceStats is nil, return no data for the graph tooltip
+  local useTTCPrice = MasterMerchant.systemSavedVariables.showTTCTipline
+  if not chatText and not priceStats and useTTCPrice then return GetString(MM_NO_TTC_PRICE)
+  elseif not priceStats then return nil end
+
+  local formatedTTCString
+
+  if MasterMerchant.systemSavedVariables.showTTCSalesAverage then
+    formatedTTCString = MasterMerchant:GetTTCSalesAverage(priceStats, chatText)
+  else
+    formatedTTCString = MasterMerchant:GetTTCPricingInfo(priceStats, chatText)
+  end
+
+  return formatedTTCString
+end
+
 function MasterMerchant:VoucherAveragePriceTip(statsInfo, ttcPriceInfo, chatText)
   if not statsInfo and not ttcPriceInfo then return end
   -- numVouchers > 0 already verified
@@ -102,12 +138,14 @@ function MasterMerchant:VoucherAveragePriceTip(statsInfo, ttcPriceInfo, chatText
   local useBonanza = statsInfo and statsInfo.bonanzaPrice and MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_BONANZA
   local useTTCAverage = ttcPriceInfo and ttcPriceInfo.Avg and MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_AVERAGE
   local useTTCSuggested = ttcPriceInfo and ttcPriceInfo.SuggestedPrice and MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_SUGGESTED
+  local useTTCSalesAverage = ttcPriceInfo and ttcPriceInfo.SaleAvg and MasterMerchant.systemSavedVariables.voucherValueTypeToUse == MM_PRICE_TTC_SALES
 
   if chatText then goldIcon = "" else goldIcon = MM_COIN_ICON_NO_SPACE end
   if useMMAverage then averagePrice = statsInfo.avgPrice
   elseif useBonanza then averagePrice = statsInfo.bonanzaPrice
   elseif useTTCAverage then averagePrice = ttcPriceInfo.Avg
-  elseif useTTCSuggested then averagePrice = ttcPriceInfo.SuggestedPrice end
+  elseif useTTCSuggested then averagePrice = ttcPriceInfo.SuggestedPrice
+  elseif useTTCSalesAverage then averagePrice = ttcPriceInfo.SaleAvg end
   if useTTCSuggested and averagePrice and MasterMerchant.systemSavedVariables.modifiedSuggestedPriceVoucher then averagePrice = averagePrice * 1.25 end
 
   if averagePrice then
@@ -137,8 +175,8 @@ function MasterMerchant:GetPriceToChatTipline(statsInfo, priceStats)
   local ttcPTC
   local voucherStringPriceToChat
 
-  local includeTTCPricing = TamrielTradeCentre and (MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.includeTTCDataPriceToChat)
-  local includeVoucherCost = MasterMerchant.systemSavedVariables.includeVoucherAverage
+  local includeTTCPricing = TamrielTradeCentre and MasterMerchant.systemSavedVariables.includeTTCDataPriceToChat
+  local includeVoucherCost = MasterMerchant.systemSavedVariables.includeVoucherAveragePTC
   if includeVoucherCost and statsInfo.numVouchers > 0 then
     voucherStringPriceToChat = MasterMerchant:VoucherAveragePriceTip(statsInfo, priceStats, true)
   end
@@ -165,7 +203,7 @@ function MasterMerchant:GetPriceToChatTipline(statsInfo, priceStats)
 end
 
 function MasterMerchant:GetCondensedPriceToChatTipline(statsInfo, priceStats)
-  local includeVoucherCost = MasterMerchant.systemSavedVariables.includeVoucherAverage
+  local includeVoucherCost = MasterMerchant.systemSavedVariables.includeVoucherAveragePTC
   local voucherStringPriceToChat
   local mmPriceString
   local bonanzaPriceString
@@ -196,8 +234,14 @@ end
 
 function MasterMerchant:GetPriceToChatText(itemLink)
   local statsInfo = MasterMerchant:GetTooltipStats(itemLink, false, false)
+  if statsInfo.bonanzaListings and (statsInfo.bonanzaListings < 6) and MasterMerchant.systemSavedVariables.omitBonanzaPricingChatLessThanSix then
+    statsInfo.bonanzaPrice = nil
+    statsInfo.bonanzaListings = nil
+    statsInfo.bonanzaItemCount = nil
+  end
+
   local priceStats
-  local includeTTCPricing = TamrielTradeCentre and (MasterMerchant.systemSavedVariables.showAltTtcTipline or MasterMerchant.systemSavedVariables.includeTTCDataPriceToChat)
+  local includeTTCPricing = TamrielTradeCentre and MasterMerchant.systemSavedVariables.includeTTCDataPriceToChat
   if includeTTCPricing then
     priceStats = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
   end
