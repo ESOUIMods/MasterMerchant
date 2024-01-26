@@ -1763,6 +1763,7 @@ end
 -- displayed table, sending a message to chat if the scan was initiated
 -- via the 'refresh' or 'reset' buttons.
 
+-- /script MasterMerchant.CenterScreenAnnounce_AddMessage('LibHistoireAlert', CSA_CATEGORY_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName, "LibHistoire Ready |cD5B526100|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from Guild Seller.")
 function MasterMerchant:PostScanParallel(guildName)
   if not MasterMerchant.isInitialized then return end
   -- If the index is blank (first scan after login or after reset),
@@ -1770,7 +1771,8 @@ function MasterMerchant:PostScanParallel(guildName)
   -- self:setScanningParallel(false, guildName)
 
   -- If there's anything in the alert queue, handle it.
-  if #internal.alertQueue[guildName] > 0 then
+  local numAlerts = #((internal.alertQueue or {})[guildName] or {})
+  if numAlerts > 0 then
     -- Play an alert chime once if there are any alerts in the queue
     if MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts then
       PlaySound(MasterMerchant.systemSavedVariables.alertSoundName)
@@ -1778,7 +1780,6 @@ function MasterMerchant:PostScanParallel(guildName)
 
     local numSold = 0
     local totalGold = 0
-    local numAlerts = #internal.alertQueue[guildName]
     local lastEvent = {}
     -- theEvent in the alertQueue is not altered so no lookup is needed
     for i = 1, numAlerts do
@@ -1839,7 +1840,8 @@ function MasterMerchant:PostScanParallel(guildName)
         MasterMerchant:dm("Info", zo_strformat('<<t:1>>', theEvent.itemLink) .. GetString(MM_APP_TEXT_TIMES) .. theEvent.quant .. MM_STRING_SEPARATOR_DASHES .. stringPrice .. MM_COIN_ICON_LEADING_SPACE .. MM_STRING_SEPARATOR_DASHES .. theEvent.guild)
         if i == numAlerts then
           -- Total of offline sales
-          MasterMerchant:dm("Info", string.format(GetString(SK_SALES_ALERT_GROUP), numAlerts, self.LocalizedNumber(totalGold)))
+          local groupAlertString = zo_strformat(GetString(SK_SALES_ALERT_GROUP_CHAT), numAlerts, self.LocalizedNumber(totalGold))
+          MasterMerchant:dm("Info", groupAlertString)
           MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_REPORT_END)))
         end
       else
@@ -1868,12 +1870,14 @@ function MasterMerchant:PostScanParallel(guildName)
               lastEvent[2] = textTime
               lastEvent[3] = 1
             end
-            MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT, SOUNDS.NONE, string.format(GetString(SK_SALES_ALERT_COLOR), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix)
+            local centerScreenAlert = zo_strformat(GetString(SK_SALES_ALERT_CSA), theEvent.itemLink, theEvent.quant, stringPrice, theEvent.guild, textTime) .. alertSuffix
+            MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT, SOUNDS.NONE, centerScreenAlert)
           end -- End of on screen announce
 
           -- Chat alert
           if MasterMerchant.systemSavedVariables.showChatAlerts then
-            MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT)), zo_strformat('<<t:1>>', theEvent.itemLink), theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp)))
+            local chatAlertString = zo_strformat(GetString(SK_SALES_ALERT_CHAT), theEvent.itemLink, theEvent.quant, stringPrice, theEvent.guild, self.TextTimeSince(theEvent.timestamp))
+            MasterMerchant:dm("Info", chatAlertString)
           end -- End of show chat alert
         end -- End of multiple alerts or numAlerts == 1
 
@@ -1883,14 +1887,15 @@ function MasterMerchant:PostScanParallel(guildName)
       if not MasterMerchant.systemSavedVariables.showMultiple and numAlerts > 1 then
         -- Insert thousands separators for the price
         local stringPrice = self.LocalizedNumber(totalGold)
+        local groupAlertString = zo_strformat(GetString(SK_SALES_ALERT_GROUP_CHAT), numSold, stringPrice)
 
         if MasterMerchant.systemSavedVariables.showAnnounceAlerts and (MasterMerchant.systemSavedVariables.showCyroAlerts or GetCurrentMapZoneIndex() ~= 37) then
-          MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName, string.format(GetString(SK_SALES_ALERT_GROUP_COLOR), numSold, stringPrice))
+          MasterMerchant.CenterScreenAnnounce_AddMessage('MasterMerchantAlert', CSA_CATEGORY_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName, groupAlertString)
         end
 
         -- Chat alert
         if MasterMerchant.systemSavedVariables.showChatAlerts then
-          MasterMerchant:dm("Info", string.format(MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), GetString(SK_SALES_ALERT_GROUP)), numSold, stringPrice))
+          MasterMerchant:dm("Info", MasterMerchant.concat(GetString(MM_APP_MESSAGE_NAME), groupAlertString))
         end
       end -- End of once with a summary
 

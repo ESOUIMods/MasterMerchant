@@ -145,12 +145,25 @@ ZO_CreateStringId("SK_RESET_LABEL", "Zurücksetzen")
 ZO_CreateStringId("SK_RESET_CONFIRM_TITLE", "Zurücksetzen bestätigen")
 ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "Bist du sicher, dass du deine Verkaufsdaten zurücksetzen willst?  Alle Daten werden mit frischen Informationen vom Server ersetzt.")
 ZO_CreateStringId("SK_RESET_DONE", "L\195\182scht alle gespeicherten Verkäufe.")
-ZO_CreateStringId("SK_SALES_ALERT", "%s %d mal für %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t wurden über die Gilde %s %s verkauft.")
-ZO_CreateStringId("SK_SALES_ALERT_COLOR", "%s %d mal für |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFwurden über die Gilde %s %s verkauft.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP", "%d Gegenstände wurden verkauft für einen Gesammtwert von %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "%d Gegenstände wurden verkauft für einen Gesammtwert von |cD5B526%s|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t.")
-ZO_CreateStringId("SK_SALES_REPORT", "Umsatzbericht:")
-ZO_CreateStringId("SK_SALES_REPORT_END", "Ende des Berichts.")
+
+-- Center Screen Announce
+--[[
+<<t:1>>: Item Name
+<<2>>: Quantity sold
+<<3>>: Price
+<<4>>: Guild Name
+<<5>>: How long ago it was sold
+]]--
+ZO_CreateStringId("SK_SALES_ALERT_CHAT", "Du hast <<t:1>> x<<2>> verkauft, für <<3>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t, in <<4>> <<5>>.")
+ZO_CreateStringId("SK_SALES_ALERT_CSA", "<<t:1>> x<<2>> verkauft, für |cD5B526<<3>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t, in <<4>> <<5>>.")
+--[[
+<<1>>: Total quantity sold
+<<2>>: Total Value of items sold
+]]--
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CHAT", "Du hast <<1>> Gegenstände in Gildenläden verkauft für insgesamt <<2>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CSA", "<<1>> Gegenstände verkauft, für insgesamt |cD5B526<<2>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t, in Gildenläden.")
+ZO_CreateStringId("SK_SALES_REPORT", "Verkäufe-Auswertung:")
+ZO_CreateStringId("SK_SALES_REPORT_END", "Ende der Verkäufe-Auswertung")
 
 -- Stats Window
 ZO_CreateStringId("SK_STATS_TITLE", "Verkaufsstatistik")

@@ -146,10 +146,23 @@ ZO_CreateStringId("SK_RESET_LABEL", "Cancella")
 ZO_CreateStringId("SK_RESET_CONFIRM_TITLE", "Conferma Cancellazione")
 ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "Sei sicuro di voler cancellare la cronologia delle vendite? Tutti i dati saranno sostituiti da nuovi dati del server")
 ZO_CreateStringId("SK_RESET_DONE", "Cronologia delle vendite Cancellata")
-ZO_CreateStringId("SK_SALES_ALERT", "Hai venduto %s x%d per %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t da %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_COLOR", "Hai venduto %s x%d per |cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFda %s %s.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP", "Hai venduto %d oggetti per un totale di %s |t16:16:EsoUI/Art/currency/currency_gold.dds|t dai negozi della gilda.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "Hai venduto %d oggetti per un totale di |cD5B526%s|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFdai negozi della gilda.|r")
+
+-- Center Screen Announce
+--[[
+<<t:1>>: Item Name
+<<2>>: Quantity sold
+<<3>>: Price
+<<4>>: Guild Name
+<<5>>: How long ago it was sold
+]]--
+ZO_CreateStringId("SK_SALES_ALERT_CHAT", "You have sold <<t:1>> x<<2>> for <<3>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t from <<4>> <<5>>.")
+ZO_CreateStringId("SK_SALES_ALERT_CSA", "You have sold <<t:1>> x<<2>> for |cD5B526<<3>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from <<4>> <<5>>.")
+--[[
+<<2>>: Total quantity sold
+<<3>>: Total Value of items sold
+]]--
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CHAT", "You have sold <<1>> items totaling <<2>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t from guild stores.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CSA", "You have sold <<1>> items totaling |cD5B526<<2>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from guild stores.")
 ZO_CreateStringId("SK_SALES_REPORT", "Rapporto delle Vendite:")
 ZO_CreateStringId("SK_SALES_REPORT_END", "Fine Rapporto.")
 

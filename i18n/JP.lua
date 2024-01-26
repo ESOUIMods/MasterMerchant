@@ -145,10 +145,23 @@ ZO_CreateStringId("SK_RESET_LABEL", "リセット")
 ZO_CreateStringId("SK_RESET_CONFIRM_TITLE", "リセットを確認")
 ZO_CreateStringId("SK_RESET_CONFIRM_MAIN", "本当にセールス履歴をリセットしてもよろしいですか？全てのデータは最新のサーバーデータに置換されます。")
 ZO_CreateStringId("SK_RESET_DONE", "セールスヒストリーのリセットが完了しました。")
-ZO_CreateStringId("SK_SALES_ALERT", "%sを%d個、%s |t16:16:EsoUI/Art/currency/currency_gold.dds|tで販売しました：%s %s")
-ZO_CreateStringId("SK_SALES_ALERT_COLOR", "%sを%dこ|cD5B526%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFで販売しました： %s %s")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP", "%d個のアイテムをトータルで%s |t16:16:EsoUI/Art/currency/currency_gold.dds|t ギルドストアから販売しました。")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_COLOR", "%d個のアイテムをトータルで |cD5B526%s|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t |cFFFFFFギルドストアから販売しました。|r")
+
+-- Center Screen Announce
+--[[
+<<t:1>>: Item Name
+<<2>>: Quantity sold
+<<3>>: Price
+<<4>>: Guild Name
+<<5>>: How long ago it was sold
+]]--
+ZO_CreateStringId("SK_SALES_ALERT_CHAT", "You have sold <<t:1>> x<<2>> for <<3>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t from <<4>> <<5>>.")
+ZO_CreateStringId("SK_SALES_ALERT_CSA", "You have sold <<t:1>> x<<2>> for |cD5B526<<3>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from <<4>> <<5>>.")
+--[[
+<<2>>: Total quantity sold
+<<3>>: Total Value of items sold
+]]--
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CHAT", "You have sold <<1>> items totaling <<2>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t from guild stores.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CSA", "You have sold <<1>> items totaling |cD5B526<<2>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from guild stores.")
 ZO_CreateStringId("SK_SALES_REPORT", "セールスレポート:")
 ZO_CreateStringId("SK_SALES_REPORT_END", "レポート終わり。")
 

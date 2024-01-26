@@ -121,8 +121,8 @@ end
 
 internal.client_lang = GetCVar("Language.2")
 internal.effective_lang = nil
-internal.supported_lang = { "en", }
-if internal:is_in(internal.client_lang, internal.supported_lang) then
+local supported_languages = { "de", "en", "fr", "it", "ru", "tr", }
+if internal:is_in(internal.client_lang, supported_languages) then
   internal.effective_lang = internal.client_lang
 else
   internal.effective_lang = "en"

@@ -65,7 +65,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.85'
+MasterMerchant.version = '3.7.86'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
@@ -291,9 +291,8 @@ end
 
 MasterMerchant.client_lang = GetCVar("Language.2")
 MasterMerchant.effective_lang = nil
-MasterMerchant.supported_lang = true
-local supported_lang = { "br", "de", "en", "fr", "jp", "ru", "pl", }
-if MasterMerchant:is_in(MasterMerchant.client_lang, supported_lang) then
+local supported_languages = { "br", "de", "en", "fr", "it", "jp", "ru", "pl", "tr", }
+if MasterMerchant:is_in(MasterMerchant.client_lang, supported_languages) then
   MasterMerchant.effective_lang = MasterMerchant.client_lang
 else
   MasterMerchant.effective_lang = "en"
