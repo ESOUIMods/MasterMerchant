@@ -7,6 +7,14 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.87
+
+- Reorganized Tooltip Menu
+
+## ChangeLog 3.7.86
+
+- Added Turkish translation
+
 ## ChangeLog 3.7.85
 
 - Added TTC Sales Average to Deal Calculator, Inventory replacement, Price To Chat, and Graph
@@ -34,7 +42,7 @@ Repository for personal changes as I am not trying to take over Master Merchant.
 - Update saved variables and remove old unused MM 2.x variables
 - Fix Alert Queue
 
-NOTE: MM will use the greatest value from the old MM saved variables for days of retention for sales, and min and max values. This was intended previously for updating from MM 3.5.x to 3.6.x and only needs to run once with the current version rather then every time there is a full reset of data.
+NOTE: MM will use the greatest value from the old MM saved variables for days of retention for sales, and min and max values. This was intended previously for updating from MM 3.5.x to 3.6.x and only needs to run once with the current version rather than every time there is a full reset of data.
 
 ## ChangeLog 3.7.77, 3.7.78, 3.7.79
 
@@ -43,7 +51,7 @@ NOTE: MM will use the greatest value from the old MM saved variables for days of
 
 ## ChangeLog 3.7.76
 
-- Fix for Guild Roster using purchases rather then sales for the tax column
+- Fix for Guild Roster using purchases rather than sales for the tax column
 - Added additional outlier options
 - Updated Craft Cost recipes
 - Updated Data routines to add new sales, listings, purchases, and canceled or posted items

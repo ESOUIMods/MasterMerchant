@@ -383,7 +383,8 @@ ZO_CreateStringId("MM_DEBUG_LOGGER_TIP", "Talep edildiğinde LibDebugLogger ile 
 
 ZO_CreateStringId("MM_DATA_MANAGEMENT_NAME", "Veri Yönetimi Seçenekleri")
 ZO_CreateStringId("MASTER_MERCHANT_WINDOW_NAME", "Master Merchant Pencere Seçenekleri")
-ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Diğer Eşya Açıklama Seçenekleri")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIPS", "Tooltips")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Tooltip Options")
 ZO_CreateStringId("GUILD_STORE_OPTIONS", "Lonca Mağazası Seçenekleri")
 ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Hata Ayıklama Seçenekleri")
 ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Lonca Kurucusu Seçenekleri")

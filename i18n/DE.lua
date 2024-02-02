@@ -381,7 +381,8 @@ ZO_CreateStringId("MM_DEBUG_LOGGER_TIP", "Aktiviere das optionale Debugging und 
 
 ZO_CreateStringId("MM_DATA_MANAGEMENT_NAME", "Daten-Verwaltungs Optionen")
 ZO_CreateStringId("MASTER_MERCHANT_WINDOW_NAME", "Master Merchant Fenster Optionen")
-ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Andere Tooltip Optionen")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIPS", "Tooltips")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Tooltip Options")
 ZO_CreateStringId("GUILD_STORE_OPTIONS", "Gildenladen Optionen")
 ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Debug Optionen")
 ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Gilden Meister Optionen")

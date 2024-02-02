@@ -382,7 +382,8 @@ ZO_CreateStringId("MM_DEBUG_LOGGER_TIP", "Activez la journalisation de débogage
 
 ZO_CreateStringId("MM_DATA_MANAGEMENT_NAME", "Options de gestion des données")
 ZO_CreateStringId("MASTER_MERCHANT_WINDOW_NAME", "Fenêtre d'options de Master Merchant")
-ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Autres options d'info-bulle")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIPS", "Tooltips")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Tooltip Options")
 ZO_CreateStringId("GUILD_STORE_OPTIONS", "Options de la boutique de guilde")
 ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Options de débogage")
 ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Options de maître de guilde")

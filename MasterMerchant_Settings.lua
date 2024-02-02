@@ -607,12 +607,12 @@ function MasterMerchant:LibAddonInit()
       },
     },
   }
-  -- 10 Other Tooltips -----------------------------------
+  -- Tooltips -----------------------------------
   optionsData[#optionsData + 1] = {
     type = "header",
-    name = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
+    name = GetString(MASTER_MERCHANT_TOOLTIPS),
     width = "full",
-    helpUrl = "https://esouimods.github.io/3-master_merchant.html#OtherTooltipOptions",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#Tooltips",
   }
   -- Whether or not to show the pricing graph in tooltips
   optionsData[#optionsData + 1] = {
@@ -623,7 +623,7 @@ function MasterMerchant:LibAddonInit()
     setFunc = function(value) MasterMerchant.systemSavedVariables.showGraph = value end,
     default = MasterMerchant.systemDefault.showGraph,
   }
-  -- Whether or not to show the pricing data in tooltips
+    -- Whether or not to show the pricing data in tooltips
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
     name = GetString(SK_SHOW_PRICING_NAME),
@@ -632,7 +632,7 @@ function MasterMerchant:LibAddonInit()
     setFunc = function(value) MasterMerchant.systemSavedVariables.showPricing = value end,
     default = MasterMerchant.systemDefault.showPricing,
   }
-  -- Whether or not to show the alternate TTC price in tooltips
+  -- Whether or not to show TTC Average and Suggested price in tooltips
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
     name = GetString(SK_SHOW_TTC_PRICE_NAME),
@@ -641,7 +641,7 @@ function MasterMerchant:LibAddonInit()
     setFunc = function(value) MasterMerchant.systemSavedVariables.showTTCTipline = value end,
     default = MasterMerchant.systemDefault.showTTCTipline,
   }
-  -- Whether or not to show TTC sales average in tooltips, rather then suggested and average
+  -- Whether or not to show TTC sales average in tooltips
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
     name = GetString(SK_SHOW_TTC_SALES_AVERAGE_NAME),
@@ -659,6 +659,31 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.showBonanzaPricing end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.showBonanzaPricing = value end,
     default = MasterMerchant.systemDefault.showBonanzaPricing,
+  }
+  -- Whether or not to show the crafting costs data in tooltips
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(SK_SHOW_CRAFT_COST_NAME),
+    tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.showCraftCost end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showCraftCost = value end,
+    default = MasterMerchant.systemDefault.showCraftCost,
+  }
+  -- Whether or not to show the material cost data in tooltips
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(SK_SHOW_MATERIAL_COST_NAME),
+    tooltip = GetString(SK_SHOW_MATERIAL_COST_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.showMaterialCost end,
+    setFunc = function(value) MasterMerchant.systemSavedVariables.showMaterialCost = value end,
+    default = MasterMerchant.systemDefault.showMaterialCost,
+  }
+-- Tooltip Options -----------------------------------
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#TooltipOptions",
   }
   -- Whether or not to show the bonanza price if less then 6 listings
   optionsData[#optionsData + 1] = {
@@ -679,24 +704,6 @@ function MasterMerchant:LibAddonInit()
       MasterMerchant.systemSavedVariables.displaySalesDetails = value
     end,
     default = MasterMerchant.systemDefault.displaySalesDetails,
-  }
-  -- Whether or not to show the crafting costs data in tooltips
-  optionsData[#optionsData + 1] = {
-    type = 'checkbox',
-    name = GetString(SK_SHOW_CRAFT_COST_NAME),
-    tooltip = GetString(SK_SHOW_CRAFT_COST_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.showCraftCost end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.showCraftCost = value end,
-    default = MasterMerchant.systemDefault.showCraftCost,
-  }
-  -- Whether or not to show the material cost data in tooltips
-  optionsData[#optionsData + 1] = {
-    type = 'checkbox',
-    name = GetString(SK_SHOW_MATERIAL_COST_NAME),
-    tooltip = GetString(SK_SHOW_MATERIAL_COST_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.showMaterialCost end,
-    setFunc = function(value) MasterMerchant.systemSavedVariables.showMaterialCost = value end,
-    default = MasterMerchant.systemDefault.showMaterialCost,
   }
   -- Whether or not to show the quality/level adjustment buttons
   optionsData[#optionsData + 1] = {

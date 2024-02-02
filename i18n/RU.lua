@@ -382,7 +382,8 @@ ZO_CreateStringId("MM_DEBUG_LOGGER_TIP", "Включить вывод отлад
 
 ZO_CreateStringId("MM_DATA_MANAGEMENT_NAME", "Настройки хранения данных")
 ZO_CreateStringId("MASTER_MERCHANT_WINDOW_NAME", "Настройки окна Master Merchant")
-ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Прочие настройки подсказок")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIPS", "Tooltips")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Tooltip Options")
 ZO_CreateStringId("GUILD_STORE_OPTIONS", "Настройки магазинов гильдий")
 ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Параметры отладки")
 ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Настройки гильдмастера")
