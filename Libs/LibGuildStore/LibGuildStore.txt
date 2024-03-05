@@ -1,4 +1,4 @@
-## APIVersion: 101039 101040
+## APIVersion: 101040 101041
 ## Title: LibGuildStore
 ## Description: Addon to store all Guild Store related data accress multiple mods
 ## Version 1.03

@@ -254,6 +254,27 @@ function MasterMerchant:SortByName(ordering, scrollList)
   end
 end
 
+function MasterMerchant:SortByListingsAccountName(ordering, scrollList)
+  local listData = ZO_ScrollList_GetDataList(scrollList.list)
+  if not ordering then
+    MasterMerchant.shellSort(listData, function(sortA, sortB)
+      local actualItemA = listings_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]
+      local actualItemB = listings_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]
+      local nameA = internal:GetAccountNameByIndex(actualItemA['seller'])
+      local nameB = internal:GetAccountNameByIndex(actualItemB['seller'])
+      return (nameA or 0) > (nameB or 0)
+    end)
+  else
+    MasterMerchant.shellSort(listData, function(sortA, sortB)
+      local actualItemA = listings_data[sortA.data[1]][sortA.data[2]]['sales'][sortA.data[3]]
+      local actualItemB = listings_data[sortB.data[1]][sortB.data[2]]['sales'][sortB.data[3]]
+      local nameA = internal:GetAccountNameByIndex(actualItemA['seller'])
+      local nameB = internal:GetAccountNameByIndex(actualItemB['seller'])
+      return (nameA or 0) < (nameB or 0)
+    end)
+  end
+end
+
 function MasterMerchant:SortByPurchaseAccountName(ordering, scrollList)
   local listData = ZO_ScrollList_GetDataList(scrollList.list)
   if not ordering then
@@ -1709,6 +1730,8 @@ function MMScrollList:SortScrollList()
   elseif self.currentSortKey == 'name' then
     if MasterMerchant.systemSavedVariables.viewSize == GUILDS then
       MasterMerchant:SortByName(self.currentSortOrder, self)
+    elseif MasterMerchant.systemSavedVariables.viewSize == LISTINGS then
+      MasterMerchant:SortByListingsAccountName(self.currentSortOrder, self)
     elseif MasterMerchant.systemSavedVariables.viewSize == PURCHASES then
       MasterMerchant:SortByPurchaseAccountName(self.currentSortOrder, self)
     end
@@ -1895,7 +1918,6 @@ end
 -- Handle the changing of window font settings
 function MasterMerchant:UpdateFonts()
   MasterMerchant:dm("Debug", "UpdateFonts")
-  MasterMerchant:RegisterFonts()
   local font = LMP:Fetch('font', MasterMerchant.systemSavedVariables.windowFont)
   local fontString = font .. '|%d'
   local windowTitle = 26
@@ -3847,6 +3869,9 @@ function MasterMerchant:SetupMasterMerchantWindow()
   -- We're all set, so make sure we're using the right font to finish up
   --[[TODO Will register new fonts and then update font usage prior
   to Restoring the MM window position
+  
+  Change: RegisterFonts is moved to FirstInitialize for EVENT_ADD_ON_LOADED
+  so that fonts are registered prior to EVENT_PLAYER_ACTIVATED
   ]]--
   self:UpdateFonts()
 end

@@ -26,21 +26,6 @@ local REPORTS = 'reports_vs'
 ------------------------------
 --- MM Stuff               ---
 ------------------------------
-function MasterMerchant:SetFontListChoices()
-  if MasterMerchant.effective_lang == "pl" then
-    MasterMerchant.fontListChoices = { "Arial Narrow", "Consolas",
-                                       "Futura Condensed", "Futura Condensed Bold",
-                                       "Futura Condensed Light", "Trajan Pro", "Univers 55",
-                                       "Univers 57", "Univers 67", }
-    if not MasterMerchant:is_in(MasterMerchant.systemSavedVariables.windowFont, MasterMerchant.fontListChoices) then
-      MasterMerchant.systemSavedVariables.windowFont = "Univers 57"
-    end
-  else
-    MasterMerchant.fontListChoices = LMP:List(LMP.MediaType.FONT)
-    -- /script d(LibMediaProvider:List(LibMediaProvider.MediaType.FONT))
-  end
-end
-
 function MasterMerchant.CenterScreenAnnounce_AddMessage(eventId, category, ...)
   local messageParams = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(category)
   messageParams:ConvertOldParams(...)
@@ -1955,7 +1940,8 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
     anchorControl:SetAnchor(point, relTo, relPoint, offsX, offsY - 10)
 
     sellingAdvice:SetAnchor(TOPLEFT, anchorControl, BOTTOMLEFT, 0, 0)
-    sellingAdvice:SetFont('/esoui/common/fonts/univers67.otf|14|soft-shadow-thin')
+    local fontString = LMP:Fetch('font', "Univers 67")
+    sellingAdvice:SetFont(fontString .. '|14|soft-shadow-thin')
   end
 
   --[[TODO make sure that the itemLink is not an empty string by mistake]]--
@@ -2043,7 +2029,8 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
     anchorControl:ClearAnchors()
     anchorControl:SetAnchor(point, relTo, relPoint, offsX, offsY - 10)
     buyingAdvice:SetAnchor(TOPLEFT, anchorControl, BOTTOMLEFT, 0, 0)
-    buyingAdvice:SetFont('/esoui/common/fonts/univers67.otf|14|soft-shadow-thin')
+    local fontString = LMP:Fetch('font', "Univers 67")
+    buyingAdvice:SetFont(fontString .. '|14|soft-shadow-thin')
   end
 
   local index = result.slotIndex
@@ -2379,8 +2366,8 @@ local function SetupBackupWarning()
       RequestOpenUnsafeURL(text)
       return true
     elseif linkType == DISABLE_LINK_TYPE then
-      if not MasterMerchant.systemSavedVariables.disableBackupWarning then
-        MasterMerchant.systemSavedVariables.disableBackupWarning = true
+      if not MasterMerchant.systemSavedVariables.disableBackupWarning2 then
+        MasterMerchant.systemSavedVariables.disableBackupWarning2 = true
         CHAT_ROUTER:AddSystemMessage("[MasterMerchant] Warning disabled.")
       end
       return true
@@ -2394,9 +2381,9 @@ local function SetupBackupWarning()
     zo_callLater(function()
       local urlLink = ZO_LinkHandler_CreateLinkWithoutBrackets("https://esouimods.github.io/3-master_merchant.html#MajorChangeswithUpdate41", nil, URL_LINK_TYPE)
       if GetAPIVersion() < 101041 then
-        if not MasterMerchant.systemSavedVariables.disableBackupWarning then
+        if not MasterMerchant.systemSavedVariables.disableBackupWarning2 then
           local disableLink = ZO_LinkHandler_CreateLink("Click here to disable this warning", nil, DISABLE_LINK_TYPE)
-          CHAT_ROUTER:AddSystemMessage("|cff6a00[MasterMerchant Warning] Major changes involving guild sales history will occur with Update 41. All sales information from your LibHistoire data cache will be deleted! It is important to read the Master Merchant documentation for information on how to back up your sales data in case of any future data corruption: |c0094ff" .. urlLink .. "|r " .. disableLink)
+          CHAT_ROUTER:AddSystemMessage("|cff6a00[MasterMerchant Warning] Major changes involving guild sales history will occur with Update 41. Please read the updated information and how it affects Master Merchant users: |c0094ff" .. urlLink .. "|r " .. disableLink)
         end
       else
         CHAT_ROUTER:AddSystemMessage("|cff6a00[Warning] This version of Master Merchant is not compatible with the current game version. Make sure to update to the latest version, but be aware that all previously cached data from LibHistoire will be deleted!")
@@ -2531,7 +2518,7 @@ function MasterMerchant:FirstInitialize()
     --[[ Whether or not the old MM variables were imported so they don't
     keep overriding users saved values.]]--
     masterMerchantVariablesImported = false,
-    disableBackupWarning = false,
+    disableBackupWarning2 = false,
   }
 
   -- Finished setting up defaults, assign to global
@@ -2578,6 +2565,7 @@ function MasterMerchant:FirstInitialize()
     end
   end
 
+  MasterMerchant:RegisterFonts()
   SetupBackupWarning()
   MasterMerchant:BuildDateRangeTable()
   MasterMerchant:BuildFilterDateRangeTable()
@@ -2627,7 +2615,12 @@ function MasterMerchant:FirstInitialize()
   self:setupGuildColors()
 
   -- Setup the options menu and main windows
-  self:LibAddonInit()
+  --[[ TODO MasterMerchant:LibAddonInit()
+
+  The Lam Menu was setup here but the fonts may not be set up
+  properly however, now the scroll lists are not set up properly so
+  there is an error when changing fonts before MM if initialized
+  ]]--
   self:SetupMasterMerchantWindow()
   self:RestoreWindowPosition()
   self:SetWindowLockIcon()
@@ -3107,18 +3100,24 @@ function MasterMerchant:RegisterFonts()
   LMP:Register("font", "Fontin SmallCaps", "$(MM_FONTIN_SMALLCAPS)")
 end
 
+function MasterMerchant:SetFontListChoices()
+  MasterMerchant.fontListChoices = LMP:List(LMP.MediaType.FONT)
+end
+
 local function CheckLibGuildStoreReady()
   MasterMerchant:dm("Debug", "CheckLibGuildStoreReady")
   local LGS = LibGuildStore
   if LGS.guildStoreReady then
     MasterMerchant:SecondInitialize()
   else
-    zo_callLater(function() CheckLibGuildStoreReady() end, 10000)
+    zo_callLater(function() CheckLibGuildStoreReady() end, 12000)
   end
 end
 
-local function OnPlayerActivated(eventCode)
+local function OnPlayerActivated(eventCode, initial)
   MasterMerchant:dm("Debug", "OnPlayerActivated")
+  MasterMerchant:SetFontListChoices()
+  MasterMerchant:LibAddonInit()
   CheckLibGuildStoreReady()
   EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name, EVENT_PLAYER_ACTIVATED)
 end

@@ -67,17 +67,13 @@ local LISTINGS = 'listings_vs'
 local PURCHASES = 'purchases_vs'
 local REPORTS = 'reports_vs'
 
--- LibAddon init code
-function MasterMerchant:LibAddonInit()
-  -- configure font choices
-  MasterMerchant:SetFontListChoices()
-  MasterMerchant:dm("Debug", "LibAddonInit")
+function MasterMerchant:SetupPanelData()
   local panelData = {
     type = 'panel',
     name = 'Master Merchant',
     displayName = GetString(MM_APP_NAME),
     author = GetString(MM_APP_AUTHOR),
-    version = self.version,
+    version = MasterMerchant.version,
     website = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
     feedback = "https://www.esoui.com/downloads/fileinfo.php?id=2753",
     donation = "https://sharlikran.github.io/",
@@ -85,8 +81,11 @@ function MasterMerchant:LibAddonInit()
     registerForDefaults = true,
   }
   LAM:RegisterAddonPanel('MasterMerchantOptions', panelData)
+end
 
+function MasterMerchant:SetupOptionsData()
   local optionsData = {}
+
   optionsData[#optionsData + 1] = {
     type = "header",
     name = GetString(MASTER_MERCHANT_WINDOW_NAME),
@@ -157,10 +156,14 @@ function MasterMerchant:LibAddonInit()
     getFunc = function() return MasterMerchant.systemSavedVariables.windowFont end,
     setFunc = function(value)
       MasterMerchant.systemSavedVariables.windowFont = value
-      self:UpdateFonts()
-      if MasterMerchant.systemSavedVariables.viewSize == ITEMS then self.scrollList:RefreshVisible()
-      elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then self.guildScrollList:RefreshVisible()
-      else self.listingScrollList:RefreshVisible() end
+      MasterMerchant:UpdateFonts()
+      --[[TODO why are we refreshing the scroll lists here. Granted
+      I am changing settings but the Ui should not be open. ]]--
+      if MasterMerchant.isInitialized then
+        if MasterMerchant.systemSavedVariables.viewSize == ITEMS then MasterMerchant.scrollList:RefreshVisible()
+        elseif MasterMerchant.systemSavedVariables.viewSize == GUILDS then MasterMerchant.guildScrollList:RefreshVisible()
+        else MasterMerchant.listingScrollList:RefreshVisible() end
+      end
     end,
     default = MasterMerchant.systemDefault.windowFont,
   }
@@ -206,7 +209,7 @@ function MasterMerchant:LibAddonInit()
     choicesValues = { MM_MONTH_DAY_FORMAT, MM_DAY_MONTH_FORMAT, MM_MONTH_DAY_YEAR_FORMAT, MM_YEAR_MONTH_DAY_FORMAT, MM_DAY_MONTH_YEAR_FORMAT, },
     getFunc = function() return MasterMerchant.systemSavedVariables.dateFormatMonthDay end,
     setFunc = function(value) MasterMerchant.systemSavedVariables.dateFormatMonthDay = value end,
-    default = self:SearchSounds(MasterMerchant.systemDefault.dateFormatMonthDay),
+    default = MasterMerchant.systemDefault.dateFormatMonthDay,
     disabled = function() return not MasterMerchant.systemSavedVariables.useFormatedTime end,
   }
   -- 6 Sound and Alert options
@@ -247,13 +250,13 @@ function MasterMerchant:LibAddonInit()
         type = 'dropdown',
         name = GetString(SK_ALERT_TYPE_NAME),
         tooltip = GetString(SK_ALERT_TYPE_TIP),
-        choices = self:SoundKeys(),
-        getFunc = function() return self:SearchSounds(MasterMerchant.systemSavedVariables.alertSoundName) end,
+        choices = MasterMerchant:SoundKeys(),
+        getFunc = function() return MasterMerchant:SearchSounds(MasterMerchant.systemSavedVariables.alertSoundName) end,
         setFunc = function(value)
-          MasterMerchant.systemSavedVariables.alertSoundName = self:SearchSoundNames(value)
+          MasterMerchant.systemSavedVariables.alertSoundName = MasterMerchant:SearchSoundNames(value)
           PlaySound(MasterMerchant.systemSavedVariables.alertSoundName)
         end,
-        default = self:SearchSounds(MasterMerchant.systemDefault.alertSoundName),
+        default = MasterMerchant:SearchSounds(MasterMerchant.systemDefault.alertSoundName),
       },
       -- Whether or not to show multiple alerts for multiple sales
       [5] = {
@@ -538,20 +541,8 @@ function MasterMerchant:LibAddonInit()
         tooltip = GetString(SK_ROSTER_INFO_TIP),
         getFunc = function() return MasterMerchant.systemSavedVariables.diplayGuildInfo end,
         setFunc = function(value)
-
           MasterMerchant.systemSavedVariables.diplayGuildInfo = value
-          --[[
-          if self.UI_GuildTime then
-            self.UI_GuildTime:SetHidden(not value)
-          end
-
-          for key, column in pairs(self.guild_columns) do
-            column:IsDisabled(not value)
-          end
-          ]]--
-
           ReloadUI()
-
         end,
         default = MasterMerchant.systemDefault.diplayGuildInfo,
         warning = GetString(MM_RELOADUI_WARN),
@@ -1046,6 +1037,11 @@ function MasterMerchant:LibAddonInit()
     default = MasterMerchant.systemDefault.disableAttWarn,
   }
 
-  -- And make the options panel
   LAM:RegisterOptionControls('MasterMerchantOptions', optionsData)
+end
+
+function MasterMerchant:LibAddonInit()
+  MasterMerchant:dm("Debug", "LibAddonInit")
+  MasterMerchant:SetupPanelData()
+  MasterMerchant:SetupOptionsData()
 end

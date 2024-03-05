@@ -1,4 +1,4 @@
-## APIVersion: 101039 101040
+## APIVersion: 101040 101041
 ## Title: LibGuildStore Data File GS04Data
 ## Description: GS04Data Stores Data
 ## Version 1.0.0
