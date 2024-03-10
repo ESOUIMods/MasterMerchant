@@ -3869,7 +3869,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   -- We're all set, so make sure we're using the right font to finish up
   --[[TODO Will register new fonts and then update font usage prior
   to Restoring the MM window position
-  
+
   Change: RegisterFonts is moved to FirstInitialize for EVENT_ADD_ON_LOADED
   so that fonts are registered prior to EVENT_PLAYER_ACTIVATED
   ]]--
