@@ -139,10 +139,6 @@ function internal:SetupListener(guildId)
       end
     end
   end)
-  --[[
-  internal.LibHistoireListener[guildId]:SetStopOnLastEvent(true)
-  internal.LibHistoireListener[guildId]:SetIterationCompletedCallback(function() end)
-  ]]--
   internal.LibHistoireListener[guildId]:Start()
 end
 
