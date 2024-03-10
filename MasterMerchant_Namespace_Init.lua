@@ -197,7 +197,6 @@ MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
 MasterMerchant.fontListChoices = {} -- added 12-16 but always there
 MasterMerchant.isFirstScan = false -- added again 5-14-2021 but used previously
 MasterMerchant.removedItemIdTable = {} -- added 11-21-2022
-MasterMerchant.guildList = {}
 MasterMerchant.blacklistTable = {}
 MasterMerchant.filterDateRanges = nil
 MasterMerchant.dateRanges = nil

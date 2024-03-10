@@ -13,6 +13,8 @@
 Init.lua
 i18n\en.lua
 i18n\$(language).lua
+LGS_LibHistoire.lua
+LGS_Vanilla_History.lua
 Data.lua
 Iterators\Iterators_Cancelled.lua
 Iterators\Iterators_General.lua

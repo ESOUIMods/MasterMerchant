@@ -1,88 +1,11 @@
 local lib = _G["LibGuildStore"]
 local internal = _G["LibGuildStore_Internal"]
 
---[[ can nout use MasterMerchant.itemsViewSize for example
+--[[ cannot use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
 ]]--
-local ITEMS = 'items_vs'
-local GUILDS = 'guild_vs'
 local PURCHASES = 'purchases_vs'
 local REPORTS = 'reports_vs'
-
---/script LibGuildStore_Internal:dm("Info", LibGuildStore_Internal.LibHistoireListener[622389]:GetPendingEventMetrics())
-function internal:CheckStatus()
-  --internal:dm("Debug", "CheckStatus")
-  local maxTime = 0
-  local maxEvents = 0
-
-  for guildNum = 1, GetNumGuilds() do
-    local guildId = GetGuildId(guildNum)
-    local guildName = GetGuildName(guildId)
-    local numEvents = GetNumGuildHistoryEvents(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER)
-    local eventCount, processingSpeed, timeLeft = internal.LibHistoireListener[guildId]:GetPendingEventMetrics()
-
-    timeLeft = zo_floor(timeLeft)
-
-    if (processingSpeed > 0 and timeLeft >= 0) and not internal.timeEstimated[guildId] then
-      internal.timeEstimated[guildId] = true
-    end
-
-    -- Handle the case when numEvents is 0 and eventCount is 1 (inconsistent but no events)
-    -- Handle the case when numEvents is greater then 0, eventCount is 0, and timeLeft is 0
-    -- Example: numEvents: 0 eventCount: 1 processingSpeed: -1 timeLeft: -1
-    -- Example: numEvents: 5 eventCount: 0 processingSpeed: -1 timeLeft: 0
-    if (numEvents == 0 or eventCount == 0) and (processingSpeed == -1 or timeLeft == -1) then
-      internal.timeEstimated[guildId] = true
-      internal.eventsNeedProcessing[guildId] = false
-    end
-
-    -- Handle the case when timeLeft or eventCount is 0 (process finished)
-    if (eventCount == 0 or timeLeft == 0) and internal.timeEstimated[guildId] then
-      internal.eventsNeedProcessing[guildId] = false
-    end
-
-    maxTime = zo_max(maxTime, timeLeft)
-    maxEvents = zo_max(maxEvents, eventCount)
-    if internal.eventsNeedProcessing[guildId] and MasterMerchant.systemSavedVariables.useLibDebugLogger then
-      internal:dm("Debug", string.format("%s, %s: numEvents: %s eventCount: %s processingSpeed: %s timeLeft: %s", guildName, guildId, numEvents, eventCount, processingSpeed, timeLeft))
-    end
-
-  end
-  for guildNum = 1, GetNumGuilds() do
-    local guildId = GetGuildId(guildNum)
-    if internal.eventsNeedProcessing[guildId] then return true, maxTime, maxEvents end
-  end
-  return false, maxTime, maxEvents
-end
-
-function internal:StartQueue()
-  internal:dm("Debug", "StartQueue")
-  internal:DatabaseBusy(true)
-  zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
-end
-
-function internal:QueueCheckStatus()
-  local eventsRemaining, timeRemaining, estimatedEvents = internal:CheckStatus()
-  if eventsRemaining then
-    zo_callLater(function() internal:QueueCheckStatus() end, ZO_ONE_MINUTE_IN_MILLISECONDS)
-    internal:dm("Info", GetString(GS_REFRESH_NOT_FINISHED) .. string.format(GetString(GS_REFRESH_ESTIMATE), estimatedEvents, zo_ceil(timeRemaining / ZO_ONE_MINUTE_IN_SECONDS)))
-  else
-    --[[
-    MasterMerchant.CenterScreenAnnounce_AddMessage(
-      'LibHistoireAlert',
-      CSA_CATEGORY_SMALL_TEXT,
-      LibGuildStore.systemSavedVariables.alertSoundName,
-      "LibHistoire Ready"
-    )
-    ]]--
-    internal:dm("Info", GetString(GS_REFRESH_FINISHED))
-    LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
-    LibGuildStore_SavedVariables.libHistoireScanByTimestamp = false
-    internal:DatabaseBusy(false)
-    MasterMerchant.listIsDirty[ITEMS] = true
-    MasterMerchant.listIsDirty[GUILDS] = true
-  end
-end
 
 local function SetNamespace()
   internal:dm("Debug", "SetNamespace")
@@ -113,18 +36,6 @@ local function SetNamespace()
   end
 end
 
-function internal:SetupListenerLibHistoire()
-  internal:dm("Debug", "SetupListenerLibHistoire")
-  for guildIndex = 1, GetNumGuilds() do
-    local guildId = GetGuildId(guildIndex)
-    internal.LibHistoireListener[guildId] = {}
-    internal:QueueGuildHistoryListener(guildId, guildIndex)
-  end
-  if LibGuildStore_SavedVariables[internal.firstrunNamespace] then
-    internal:StartQueue()
-  end
-end
-
 local function SetupLibGuildStore()
   if not LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     internal:dm("Debug", "SetupLibGuildStore Not First Run")
@@ -138,29 +49,6 @@ local function SetupLibGuildStore()
     LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
     internal.eventsNeedProcessing[guildId] = true
     internal.timeEstimated[guildId] = false
-  end
-end
-
--- DEBUG RefreshLibGuildStore
-function internal:RefreshLibGuildStore()
-  internal:dm("Debug", "RefreshLibGuildStore")
-  internal:dm("Info", GetString(GS_REFRESH_STARTING))
-  internal:DatabaseBusy(true)
-  LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
-  for guildNum = 1, GetNumGuilds() do
-    local guildId = GetGuildId(guildNum)
-    internal.LibHistoireListener[guildId]:Stop()
-    LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
-    internal.eventsNeedProcessing[guildId] = true
-    internal.timeEstimated[guildId] = false
-  end
-end
-
-local function SetupLibHistoireContainers()
-  internal:dm("Debug", "SetupLibHistoireContainers")
-  for i = 1, GetNumGuilds() do
-    local guildId = GetGuildId(i)
-    internal.LibHistoireListener[guildId] = {}
   end
 end
 
@@ -306,13 +194,13 @@ local function SetupDefaults()
     savedVars[lastEventKey][namespace][guildId] = savedVars[lastEventKey][namespace][guildId] or "0"
   end
 
-  MasterMerchant.guildList = internal:GetGuildList()
+  internal.guildList = internal:GetGuildList()
 
   -- set to false on startup in case previous process did not complete
   LibGuildStore_SavedVariables["updateAdditionalText"] = false
 
   internal:SetupGuildContainers()
-  SetupLibHistoireContainers()
+  internal:SetupLibHistoireContainers()
   SetupLibGuildStore()
 end
 
@@ -716,6 +604,57 @@ function internal.Slash(allArgs)
   args = MM_STRING_EMPTY
 end
 
+local function OnGuildMemberAdded(eventCode, guildId, displayName)
+  if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
+  internal.guildMemberInfo[guildId][zo_strlower(displayName)] = true
+end
+EVENT_MANAGER:RegisterForEvent(lib.libName .. "_MemberAdded", EVENT_GUILD_MEMBER_ADDED, OnGuildMemberAdded)
+
+local function OnGuildMemberRemoved(eventCode, guildId, displayName, characterName)
+  if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
+  internal.guildMemberInfo[guildId][zo_strlower(displayName)] = nil
+end
+EVENT_MANAGER:RegisterForEvent(lib.libName .. "_MemberRemoved", EVENT_GUILD_MEMBER_REMOVED, OnGuildMemberRemoved)
+
+-- LibGuildStore_Internal
+local function OnPlayerJoinedGuild(eventCode, guildId, guildName)
+  --MasterMerchant:dm("Debug", "OnPlayerJoinedGuild")
+  internal:SetupGuildContainers()
+  internal.guildList = internal:GetGuildList()
+  internal.LibHistoireListener[guildId] = { }
+  LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
+  internal.eventsNeedProcessing[guildId] = true
+  internal.timeEstimated[guildId] = false
+  internal.currentGuilds[guildId] = guildName
+  internal.alertQueue[guildName] = {}
+  for m = 1, GetNumGuildMembers(guildId) do
+    local name, _, _, _, _ = GetGuildMemberInfo(guildId, m)
+    if internal.guildMemberInfo[guildId] == nil then internal.guildMemberInfo[guildId] = {} end
+    internal.guildMemberInfo[guildId][zo_strlower(name)] = true
+  end
+
+  internal.LibHistoireListenerReady[guildId] = false
+  internal:QueueGuildHistoryListener(guildId, nil)
+end
+EVENT_MANAGER:RegisterForEvent(lib.libName .. "_JoinedGuild", EVENT_GUILD_SELF_JOINED_GUILD, OnPlayerJoinedGuild)
+
+local function OnPlayerLeaveGuild(eventCode, guildId, guildName)
+  --MasterMerchant:dm("Debug", "OnPlayerLeaveGuild")
+  if internal.LibHistoireListener[guildId] ~= nil and internal.LibHistoireListener[guildId].running then
+    MasterMerchant:dm("Debug", "Stopping listener")
+    internal.LibHistoireListener[guildId]:Stop()
+  end
+  internal.guildList = internal:GetGuildList()
+  LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = nil
+  internal.eventsNeedProcessing[guildId] = nil
+  internal.timeEstimated[guildId] = nil
+  internal.LibHistoireListener[guildId] = nil
+  internal.currentGuilds[guildId] = nil
+  internal.alertQueue[guildName] = nil
+  internal.guildMemberInfo[guildId] = nil
+end
+EVENT_MANAGER:RegisterForEvent(lib.libName .. "_LeaveGuild", EVENT_GUILD_SELF_LEFT_GUILD, OnPlayerLeaveGuild)
+
 local function OnAddOnLoaded(eventCode, addonName)
   if addonName == lib.libName then
     SLASH_COMMANDS['/lgs'] = internal.Slash
@@ -723,5 +662,4 @@ local function OnAddOnLoaded(eventCode, addonName)
     LibGuildStoreInitialize()
   end
 end
-
 EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
