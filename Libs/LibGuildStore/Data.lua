@@ -392,7 +392,7 @@ function internal:SetupGuildHistoryListener(guildId)
   if internal.LibHistoireListener == nil then internal.LibHistoireListener = { } end
   if internal.LibHistoireListener[guildId] == nil then internal.LibHistoireListener[guildId] = { } end
 
-  internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
+  internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER)
   if internal.LibHistoireListener[guildId] == nil then
     --internal:dm("Warn", "The Listener was nil")
   elseif internal.LibHistoireListener[guildId] ~= nil then
@@ -467,7 +467,7 @@ function internal:SetupListener(guildId)
       ["seller"] = "@cherrypick",
     },
     ]]--
-    if eventType == GUILD_EVENT_ITEM_SOLD then
+    if eventType == GUILD_HISTORY_TRADER_EVENT_ITEM_SOLD then
       if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
         LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = Id64ToString(eventId)
         lastReceivedEventID = eventId
@@ -504,6 +504,8 @@ function internal:SetupListener(guildId)
       end
     end
   end)
+  internal.LibHistoireListener[guildId]:SetStopOnLastEvent(true)
+  internal.LibHistoireListener[guildId]:SetIterationCompletedCallback(function() end)
   internal.LibHistoireListener[guildId]:Start()
 end
 

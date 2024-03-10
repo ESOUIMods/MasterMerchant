@@ -18,7 +18,7 @@ function internal:CheckStatus()
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     local guildName = GetGuildName(guildId)
-    local numEvents = GetNumGuildEvents(guildId, GUILD_HISTORY_STORE)
+    local numEvents = GetNumGuildHistoryEvents(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER)
     local eventCount, processingSpeed, timeLeft = internal.LibHistoireListener[guildId]:GetPendingEventMetrics()
 
     timeLeft = zo_floor(timeLeft)
