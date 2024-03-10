@@ -247,5 +247,3 @@ function internal:RefreshLibGuildStore()
     internal.timeEstimated[guildId] = false
   end
 end
-
-
