@@ -2369,8 +2369,8 @@ local function SetupBackupWarning()
       RequestOpenUnsafeURL(text)
       return true
     elseif linkType == DISABLE_LINK_TYPE then
-      if not MasterMerchant.systemSavedVariables.disableBackupWarning2 then
-        MasterMerchant.systemSavedVariables.disableBackupWarning2 = true
+      if not MasterMerchant.systemSavedVariables.disableBackupWarning3 then
+        MasterMerchant.systemSavedVariables.disableBackupWarning3 = true
         CHAT_ROUTER:AddSystemMessage("[MasterMerchant] Warning disabled.")
       end
       return true
@@ -2382,7 +2382,7 @@ local function SetupBackupWarning()
   EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_BackupWarn", EVENT_PLAYER_ACTIVATED, function()
     EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name .. "_BackupWarn", EVENT_PLAYER_ACTIVATED)
     zo_callLater(function()
-      if not MasterMerchant.systemSavedVariables.disableBackupWarning2 then
+      if not MasterMerchant.systemSavedVariables.disableBackupWarning3 then
         local urlLink = ZO_LinkHandler_CreateLinkWithoutBrackets("https://esouimods.github.io/3-master_merchant.html#MajorChangeswithUpdate41", nil, URL_LINK_TYPE)
         local disableLink = ZO_LinkHandler_CreateLink(GetString(MM_WARN_DISABLE_TEXT), nil, DISABLE_LINK_TYPE)
         CHAT_ROUTER:AddSystemMessage("|cff6a00[MasterMerchant Warning] " .. GetString(MM_WARN_MESSAGE_TEXT) .. ": |c0094ff" .. urlLink .. "|r " .. disableLink)
@@ -2517,7 +2517,7 @@ function MasterMerchant:FirstInitialize()
     --[[ Whether or not the old MM variables were imported so they don't
     keep overriding users saved values.]]--
     masterMerchantVariablesImported = false,
-    disableBackupWarning2 = false,
+    disableBackupWarning3 = false,
     useID64FormatedSales = false,
   }
 
