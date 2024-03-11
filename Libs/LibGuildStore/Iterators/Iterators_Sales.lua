@@ -136,20 +136,20 @@ function internal:addSalesData(theEvent)
 
   -- this section adds the sales to the lists for the MM window
   local guildSales = MMGuild:CreateGuildDataMap(internal.guildSales, eventGuild)
-  guildSales:addSaleByDate(eventSeller, timestamp, newEvent.price, newEvent.quant, false, nil)
+  guildSales:addSaleByDate(eventSeller, timestamp, newEvent.price, newEvent.quant, false, nil, nil, nil)
 
   local guildPurchases = MMGuild:CreateGuildDataMap(internal.guildPurchases, eventGuild)
-  guildPurchases:addSaleByDate(eventBuyer, timestamp, newEvent.price, newEvent.quant, newEvent.wasKiosk, nil)
+  guildPurchases:addSaleByDate(eventBuyer, timestamp, newEvent.price, newEvent.quant, newEvent.wasKiosk, nil, nil, nil)
 
   local guildItems = MMGuild:CreateGuildDataMap(internal.guildItems, eventGuild)
-  guildItems:addSaleByDate(eventItemLink, timestamp, newEvent.price, newEvent.quant, false, nil, adderDescConcat)
+  guildItems:addSaleByDate(eventItemLink, timestamp, newEvent.price, newEvent.quant, false, nil, adderDescConcat, nil)
 
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(eventSeller)
 
   if isSelfSale then
     local guildMyItems = MMGuild:CreateGuildDataMap(internal.myItems, eventGuild)
-    guildMyItems:addSaleByDate(eventItemLink, timestamp, newEvent.price, newEvent.quant, false, nil, adderDescConcat)
+    guildMyItems:addSaleByDate(eventItemLink, timestamp, newEvent.price, newEvent.quant, false, nil, adderDescConcat, nil)
   end
 
   local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
@@ -557,22 +557,22 @@ function internal:InitSalesHistory()
 
         if extradata.doGuildItems then
           local guildItems = MMGuild:CreateGuildDataMap(internal.guildItems, currentGuild)
-          guildItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
+          guildItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData, saledata.id)
         end
 
         if extradata.doMyItems and isPlayerSale then
           local guildMyItems = MMGuild:CreateGuildDataMap(internal.myItems, currentGuild)
-          guildMyItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
+          guildMyItems:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData, saledata.id)
         end
 
         if extradata.doGuildSales then
           local guildSales = MMGuild:CreateGuildDataMap(internal.guildSales, currentGuild)
-          guildSales:addSaleByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false)
+          guildSales:addSaleByDate(currentSeller, saledata.timestamp, saledata.price, saledata.quant, false, false, nil, saledata.id)
         end
 
         if extradata.doGuildPurchases then
           local guildPurchases = MMGuild:CreateGuildDataMap(internal.guildPurchases, currentGuild)
-          guildPurchases:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
+          guildPurchases:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false, nil, saledata.id)
         end
       end
       return false  -- value false for return

@@ -590,3 +590,12 @@ ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_NAME", "Percentile")
 ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_TIP", "Specify the outer percentiles to remove extreme values only.")
 ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_NAME", "Enable Aggressive Restrictions")
 ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_TIP", "When enabled additional outlier calculations will be performed that are very restrictive.")
+
+-- New Sales Format Options
+ZO_CreateStringId("MM_SALES_FORMAT_HEADER", "Sales Format")
+ZO_CreateStringId("MM_SALES_FORMAT_NAME", "Use historical and recent sales data")
+ZO_CreateStringId("MM_SALES_FORMAT_TIP", "When enabled, the system will utilize both historical and recent sales data for all calculations. Due to the new server database format, this will include older sales entries that could potentially duplicate current sales data.")
+
+-- Warning text
+ZO_CreateStringId("MM_WARN_DISABLE_TEXT", "Click here to disable this warning")
+ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "Major changes involving guild sales history will occur with Update 41. Please read the updated information and how it affects Master Merchant users")

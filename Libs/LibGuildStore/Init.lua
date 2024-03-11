@@ -189,6 +189,7 @@ internal.guildSales = nil
 internal.guildPurchases = nil
 internal.currentGuilds = {}
 internal.guildList = {}
+internal.newestTime = {}
 
 internal.totalSales = 0
 internal.totalPurchases = 0

@@ -177,6 +177,25 @@ function MasterMerchant:SetupOptionsData()
     setFunc = function(value) MasterMerchant.systemSavedVariables.customFilterDateRange = value end,
     default = MasterMerchant.systemDefault.customFilterDateRange,
   }
+  -- Sales Options -----------------------------------
+  optionsData[#optionsData + 1] = {
+    type = "header",
+    name = GetString(MM_SALES_FORMAT_HEADER),
+    width = "full",
+    helpUrl = "https://esouimods.github.io/3-master_merchant.html#TimeFormatOptions",
+  }
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(MM_SALES_FORMAT_NAME),
+    tooltip = GetString(MM_SALES_FORMAT_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.useID64FormatedSales end,
+    setFunc = function(value)
+      MasterMerchant.systemSavedVariables.useID64FormatedSales = value
+      ReloadUI()
+    end,
+    default = MasterMerchant.systemDefault.useID64FormatedSales,
+    warning = GetString(MM_RELOADUI_WARN),
+  }
   -- Timeformat Options -----------------------------------
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -614,7 +633,7 @@ function MasterMerchant:SetupOptionsData()
     setFunc = function(value) MasterMerchant.systemSavedVariables.showGraph = value end,
     default = MasterMerchant.systemDefault.showGraph,
   }
-    -- Whether or not to show the pricing data in tooltips
+  -- Whether or not to show the pricing data in tooltips
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
     name = GetString(SK_SHOW_PRICING_NAME),
@@ -669,7 +688,7 @@ function MasterMerchant:SetupOptionsData()
     setFunc = function(value) MasterMerchant.systemSavedVariables.showMaterialCost = value end,
     default = MasterMerchant.systemDefault.showMaterialCost,
   }
--- Tooltip Options -----------------------------------
+  -- Tooltip Options -----------------------------------
   optionsData[#optionsData + 1] = {
     type = "header",
     name = GetString(MASTER_MERCHANT_TOOLTIP_OPTIONS),

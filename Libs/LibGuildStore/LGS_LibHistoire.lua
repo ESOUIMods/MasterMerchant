@@ -46,7 +46,6 @@ end
 function internal:SetupListener(guildId)
   internal:dm("Debug", "SetupListener: " .. guildId)
   --internal:SetupGuildHistoryListener(guildId)
-  local lastReceivedEventID
   if internal.LibHistoireListener[guildId] == nil then
     internal:dm("Warn", "The Listener was still nil somehow")
     return
@@ -58,7 +57,7 @@ function internal:SetupListener(guildId)
   else
     if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] then
       --internal:dm("Info", string.format("internal Saved Var: %s, guildId: (%s)", LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId], guildId))
-      lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId])
+      local lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId])
       --internal:dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
       internal.LibHistoireListener[guildId]:SetAfterEventId(lastReceivedEventID)
     end
@@ -101,13 +100,9 @@ function internal:SetupListener(guildId)
       ["seller"] = "@cherrypick",
     },
     ]]--
-
     if eventType == GUILD_EVENT_ITEM_SOLD then
-      if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
-        LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = Id64ToString(eventId)
-        lastReceivedEventID = eventId
-      end
       local guildName = GetGuildName(guildId)
+      local convertedId = Id64ToString(eventId)
       local theEvent = {
         buyer = p2,
         guild = guildName,
@@ -117,9 +112,13 @@ function internal:SetupListener(guildId)
         price = p5,
         seller = p1,
         wasKiosk = false,
-        id = Id64ToString(eventId)
+        id = convertedId,
       }
       theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
+      if not internal.newestTime[guildId] or theEvent.timestamp > internal.newestTime[guildId] then
+        internal.newestTime[guildId] = theEvent.timestamp
+        LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = convertedId
+      end
 
       local thePlayer = zo_strlower(GetDisplayName())
       local isSelfSale = zo_strlower(theEvent.seller) == thePlayer

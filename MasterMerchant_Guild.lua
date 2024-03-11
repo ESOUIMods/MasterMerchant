@@ -47,7 +47,8 @@ function MMSeller:addSale(rankIndex, amount, stack, sort, tax)
   end
 
   self.sales[rankIndex] = self.sales[rankIndex] + amount
-  self.tax[rankIndex] = self.tax[rankIndex] + (tax or zo_floor(amount * taxFactor))  -- Guild gets half the Cut with decimals cut off.
+  local newTax = math.floor(amount * GetTradingHouseCutPercentage() / 200 + 0.5)
+  self.tax[rankIndex] = self.tax[rankIndex] + newTax  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = self.count[rankIndex] + 1
   self.stack[rankIndex] = self.stack[rankIndex] + stack
 
@@ -299,8 +300,8 @@ function MMGuild:addSale(sellerName, rankIndex, amount, stack, wasKiosk, sort, s
   end
 
   self.sales[rankIndex] = self.sales[rankIndex] + amount
-  local tax = zo_floor(amount * taxFactor)
-  self.tax[rankIndex] = self.tax[rankIndex] + tax  -- Guild gets half the Cut with decimals cut off.
+  local newTax = math.floor(amount * GetTradingHouseCutPercentage() / 200 + 0.5)
+  self.tax[rankIndex] = self.tax[rankIndex] + newTax  -- Guild gets half the Cut with decimals cut off.
   self.count[rankIndex] = self.count[rankIndex] + 1
   self.stack[rankIndex] = self.stack[rankIndex] + stack
 
@@ -338,11 +339,11 @@ function MMGuild:IsDirty(rankIndex)
   return self.rankIsDirty[rankIndex]
 end
 
-function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)
-
+function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText, salesId)
   if sellerName == nil then return end
   if timestamp == nil then return end
   if type(timestamp) ~= 'number' then return end
+  if salesId ~= nil and not MasterMerchant:ShouldUseSale(salesId) then return end
 
   if (timestamp >= self.oneStart) then
     self:MarkDirty(MM_DATERANGE_TODAY)
