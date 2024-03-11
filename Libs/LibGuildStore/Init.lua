@@ -1,4 +1,4 @@
-local libName, libVersion = "LibGuildStore", 103
+local libName, libVersion = "LibGuildStore", 104
 local lib = {}
 local internal = {}
 local mm_sales_data = {}
