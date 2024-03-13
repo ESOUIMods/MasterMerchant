@@ -47,6 +47,7 @@ local function SetupLibGuildStore()
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
     LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
+    LibGuildStore_SavedVariables["newestTime"][guildId] = 0
     internal.eventsNeedProcessing[guildId] = true
     internal.timeEstimated[guildId] = false
   end
@@ -156,6 +157,7 @@ local function SetupDefaults()
     [internal.GS_NA_FIRST_RUN_NAMESPACE] = true,
     [internal.GS_EU_FIRST_RUN_NAMESPACE] = true,
     lastReceivedEventID = {},
+    newestTime = {},
     historyDepthSL = 180, -- History Depth Shopping List
     historyDepthPI = 180, -- History Depth Posted Items
     historyDepthCI = 180, -- History Depth Canceled Items
@@ -623,6 +625,7 @@ local function OnPlayerJoinedGuild(eventCode, guildId, guildName)
   internal.guildList = internal:GetGuildList()
   internal.LibHistoireListener[guildId] = { }
   LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
+  LibGuildStore_SavedVariables["newestTime"][guildId] = 0
   internal.eventsNeedProcessing[guildId] = true
   internal.timeEstimated[guildId] = false
   internal.currentGuilds[guildId] = guildName
@@ -646,6 +649,7 @@ local function OnPlayerLeaveGuild(eventCode, guildId, guildName)
   end
   internal.guildList = internal:GetGuildList()
   LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = nil
+  LibGuildStore_SavedVariables["newestTime"][guildId] = nil
   internal.eventsNeedProcessing[guildId] = nil
   internal.timeEstimated[guildId] = nil
   internal.LibHistoireListener[guildId] = nil

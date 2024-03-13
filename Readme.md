@@ -7,6 +7,20 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.90
+
+- Updated for LibHistorie 2.0.1
+
+## ChangeLog 3.7.89
+
+- Updated for U41
+- API Bump for dependencies
+
+## ChangeLog 3.7.88
+
+- Pre U41 changes
+- Updated warning for upcoming March 11 update
+
 ## ChangeLog 3.7.87
 
 - Reorganized Tooltip Menu
