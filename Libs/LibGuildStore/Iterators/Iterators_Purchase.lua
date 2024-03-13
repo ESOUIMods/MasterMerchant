@@ -465,7 +465,7 @@ function internal:InitPurchaseHistory()
         local searchDataAdder = versiondata.itemAdderText or internal:AddSearchToItem(firstsaledataItemLink)
         local searchData = searchDataDesc .. ' ' .. searchDataAdder
         local guild = internal.purchasedItems[currentGuild]
-        guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData)
+        guild:addSaleByDate(firstsaledataItemLink, saledata.timestamp, saledata.price, saledata.quant, false, false, searchData, nil)
       end
 
       if (extradata.doPurchasedBuyer) then
@@ -473,7 +473,7 @@ function internal:InitPurchaseHistory()
           internal.purchasedBuyer[currentGuild] = MMGuild:new(currentGuild)
         end
         local guild = internal.purchasedBuyer[currentGuild]
-        guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, saledata.wasKiosk, false)
+        guild:addSaleByDate(currentBuyer, saledata.timestamp, saledata.price, saledata.quant, false, false, nil, nil)
       end
 
     end

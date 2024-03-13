@@ -619,7 +619,10 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       currentBuyer = internal:GetAccountNameByIndex(item.buyer)
       currentSeller = internal:GetAccountNameByIndex(item.seller)
       nameInBlacklist = IsNameInBlacklist()
-      if not nameInBlacklist then
+
+      local shouldUseSale = MasterMerchant:ShouldUseSale(item.id)
+
+      if not nameInBlacklist and shouldUseSale then
         ProcessItemWithTimestamp(item, useDaysRange, true)
       end
     end -- end for loop for non outliers
@@ -2366,8 +2369,8 @@ local function SetupBackupWarning()
       RequestOpenUnsafeURL(text)
       return true
     elseif linkType == DISABLE_LINK_TYPE then
-      if not MasterMerchant.systemSavedVariables.disableBackupWarning2 then
-        MasterMerchant.systemSavedVariables.disableBackupWarning2 = true
+      if not MasterMerchant.systemSavedVariables.disableBackupWarning3 then
+        MasterMerchant.systemSavedVariables.disableBackupWarning3 = true
         CHAT_ROUTER:AddSystemMessage("[MasterMerchant] Warning disabled.")
       end
       return true
@@ -2379,14 +2382,10 @@ local function SetupBackupWarning()
   EVENT_MANAGER:RegisterForEvent(MasterMerchant.name .. "_BackupWarn", EVENT_PLAYER_ACTIVATED, function()
     EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name .. "_BackupWarn", EVENT_PLAYER_ACTIVATED)
     zo_callLater(function()
-      local urlLink = ZO_LinkHandler_CreateLinkWithoutBrackets("https://esouimods.github.io/3-master_merchant.html#MajorChangeswithUpdate41", nil, URL_LINK_TYPE)
-      if GetAPIVersion() < 101041 then
-        if not MasterMerchant.systemSavedVariables.disableBackupWarning2 then
-          local disableLink = ZO_LinkHandler_CreateLink("Click here to disable this warning", nil, DISABLE_LINK_TYPE)
-          CHAT_ROUTER:AddSystemMessage("|cff6a00[MasterMerchant Warning] Major changes involving guild sales history will occur with Update 41. Please read the updated information and how it affects Master Merchant users: |c0094ff" .. urlLink .. "|r " .. disableLink)
-        end
-      else
-        CHAT_ROUTER:AddSystemMessage("|cff6a00[Warning] This version of Master Merchant is not compatible with the current game version. Make sure to update to the latest version, but be aware that all previously cached data from LibHistoire will be deleted!")
+      if not MasterMerchant.systemSavedVariables.disableBackupWarning3 then
+        local urlLink = ZO_LinkHandler_CreateLinkWithoutBrackets("https://esouimods.github.io/3-master_merchant.html#MajorChangeswithUpdate41", nil, URL_LINK_TYPE)
+        local disableLink = ZO_LinkHandler_CreateLink(GetString(MM_WARN_DISABLE_TEXT), nil, DISABLE_LINK_TYPE)
+        CHAT_ROUTER:AddSystemMessage("|cff6a00[MasterMerchant Warning] " .. GetString(MM_WARN_MESSAGE_TEXT) .. ": |c0094ff" .. urlLink .. "|r " .. disableLink)
       end
     end, 1000)
   end)
@@ -2518,7 +2517,8 @@ function MasterMerchant:FirstInitialize()
     --[[ Whether or not the old MM variables were imported so they don't
     keep overriding users saved values.]]--
     masterMerchantVariablesImported = false,
-    disableBackupWarning2 = false,
+    disableBackupWarning3 = false,
+    useID64FormatedSales = false,
   }
 
   -- Finished setting up defaults, assign to global

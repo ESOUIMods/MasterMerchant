@@ -177,24 +177,24 @@ function mmUtils:GetGuildSales(guildName, displayName, dateRange)
   return amountSold
 end
 
+function mmUtils:GetSalesCount(guildName, displayName, dateRange)
+  local countSold = (internal.guildSales and
+    internal.guildSales[guildName] and
+    internal.guildSales[guildName].sellers and
+    internal.guildSales[guildName].sellers[displayName] and
+    internal.guildSales[guildName].sellers[displayName].count) and
+    internal.guildSales[guildName].sellers[displayName].count[dateRange] or 0
+  return countSold
+end
+
 function mmUtils:GetGuildPurchases(guildName, displayName, dateRange)
-  local amountSold = (internal.guildPurchases and
+  local amountPurchased = (internal.guildPurchases and
     internal.guildPurchases[guildName] and
     internal.guildPurchases[guildName].sellers and
     internal.guildPurchases[guildName].sellers[displayName] and
     internal.guildPurchases[guildName].sellers[displayName].sales) and
     internal.guildPurchases[guildName].sellers[displayName].sales[dateRange] or 0
-  return amountSold
-end
-
-function mmUtils:GetSalesCount(guildName, displayName, dateRange)
-  local amountSold = (internal.guildPurchases and
-    internal.guildPurchases[guildName] and
-    internal.guildPurchases[guildName].sellers and
-    internal.guildPurchases[guildName].sellers[displayName] and
-    internal.guildPurchases[guildName].sellers[displayName].count) and
-    internal.guildPurchases[guildName].sellers[displayName].count[dateRange] or 0
-  return amountSold
+  return amountPurchased
 end
 
 local MM_RANGE_CHOICES = {

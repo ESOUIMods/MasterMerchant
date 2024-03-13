@@ -1,4 +1,4 @@
-local libName, libVersion = "LibGuildStore", 103
+local libName, libVersion = "LibGuildStore", 104
 local lib = {}
 local internal = {}
 local mm_sales_data = {}
@@ -73,6 +73,16 @@ end
 local function emit_table(log_type, t, indent, table_history)
   indent = indent or "."
   table_history = table_history or {}
+
+  if not t then
+    emit_message(log_type, indent .. "[Nil Table]")
+    return
+  end
+
+  if next(t) == nil then
+    emit_message(log_type, indent .. "[Empty Table]")
+    return
+  end
 
   for k, v in pairs(t) do
     local vType = type(v)
@@ -178,6 +188,8 @@ internal.myItems = nil
 internal.guildSales = nil
 internal.guildPurchases = nil
 internal.currentGuilds = {}
+internal.guildList = {}
+internal.newestTime = {}
 
 internal.totalSales = 0
 internal.totalPurchases = 0

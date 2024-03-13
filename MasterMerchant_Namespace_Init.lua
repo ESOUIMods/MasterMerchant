@@ -65,7 +65,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.7.88'
+MasterMerchant.version = '3.7.89'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
@@ -197,7 +197,6 @@ MasterMerchant.systemDefault = {} -- added 11-26 placeholder for init routine
 MasterMerchant.fontListChoices = {} -- added 12-16 but always there
 MasterMerchant.isFirstScan = false -- added again 5-14-2021 but used previously
 MasterMerchant.removedItemIdTable = {} -- added 11-21-2022
-MasterMerchant.guildList = {}
 MasterMerchant.blacklistTable = {}
 MasterMerchant.filterDateRanges = nil
 MasterMerchant.dateRanges = nil

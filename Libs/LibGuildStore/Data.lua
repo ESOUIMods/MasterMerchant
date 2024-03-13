@@ -1,5 +1,4 @@
 local internal = _G["LibGuildStore_Internal"]
-local LGH = LibHistoire
 
 --[[ can nout use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
@@ -374,137 +373,11 @@ function internal:AddSalesTableData(key, value)
   end
 end
 
-function internal:QueueGuildHistoryListener(guildId, guildIndex)
-  local multiplier = guildIndex
-  if not guildIndex then multiplier = 1 end
-  internal:SetupGuildHistoryListener(guildId)
-  if not internal.LibHistoireListenerReady[guildId] then
-    internal:dm("Debug", "LibHistoireListener not ready")
-    zo_callLater(function() internal:QueueGuildHistoryListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE * multiplier))
-  else
-    zo_callLater(function() internal:SetupListener(guildId) end, (MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP * multiplier))
-  end
-end
-
--- /script LibGuildStore_Internal:SetupGuildHistoryListener(guildId)
-function internal:SetupGuildHistoryListener(guildId)
-  --internal:dm("Debug", "SetupGuildHistoryListener: " .. guildId)
-  if internal.LibHistoireListener == nil then internal.LibHistoireListener = { } end
-  if internal.LibHistoireListener[guildId] == nil then internal.LibHistoireListener[guildId] = { } end
-
-  internal.LibHistoireListener[guildId] = LGH:CreateGuildHistoryListener(guildId, GUILD_HISTORY_STORE)
-  if internal.LibHistoireListener[guildId] == nil then
-    --internal:dm("Warn", "The Listener was nil")
-  elseif internal.LibHistoireListener[guildId] ~= nil then
-    --internal:dm("Debug", "The Listener was not nil, Listener ready.")
-    internal.LibHistoireListenerReady[guildId] = true
-  end
-end
-
 function internal:UpdateAlertQueue(guildName, theEvent)
   --internal:dm("Debug", "UpdateAlertQueue: " .. guildName)
   local doAlert = MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts
   if not internal.alertQueue[guildName] or not doAlert then return end
   table.insert(internal.alertQueue[guildName], theEvent)
-end
-
--- /script LibGuildStore_Internal.LibHistoireListener[guildId]:SetAfterEventId(StringToId64("0"))
-function internal:SetupListener(guildId)
-  internal:dm("Debug", "SetupListener: " .. guildId)
-  --internal:SetupGuildHistoryListener(guildId)
-  local lastReceivedEventID
-  if internal.LibHistoireListener[guildId] == nil then
-    internal:dm("Warn", "The Listener was still nil somehow")
-    return
-  end
-
-  if LibGuildStore_SavedVariables.libHistoireScanByTimestamp then
-    local setAfterTimestamp = GetTimeStamp() - ((LibGuildStore_SavedVariables.historyDepth + 1) * ZO_ONE_DAY_IN_SECONDS)
-    internal.LibHistoireListener[guildId]:SetAfterEventTime(setAfterTimestamp)
-  else
-    if LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] then
-      --internal:dm("Info", string.format("internal Saved Var: %s, guildId: (%s)", LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId], guildId))
-      lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId])
-      --internal:dm("Info", string.format("lastReceivedEventID set to: %s", lastReceivedEventID))
-      internal.LibHistoireListener[guildId]:SetAfterEventId(lastReceivedEventID)
-    end
-  end
-  internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
-    --internal:dm("Info", "SetEventCallback")
-    --[[
-    local theEvent = {
-      buyer = p2,
-      guild = guildName,
-      itemName = p4,
-      quant = p3,
-      saleTime = eventTime,
-      salePrice = p5,
-      seller = p1,
-      kioskSale = false,
-      id = Id64ToString(eventId)
-    }
-    local newSalesItem =
-      {buyer = theEvent.buyer,
-      guild = theEvent.guild,
-      itemLink = theEvent.itemName,
-      quant = tonumber(theEvent.quant),
-      timestamp = tonumber(theEvent.saleTime),
-      price = tonumber(theEvent.salePrice),
-      seller = theEvent.seller,
-      wasKiosk = theEvent.kioskSale,
-      id = theEvent.id
-    }
-    [1] =
-    {
-      ["price"] = 120,
-      ["itemLink"] = "|H0:item:45057:359:50:26848:359:50:0:0:0:0:0:0:0:0:0:5:0:0:0:0:0|h|h",
-      ["id"] = 1353657539,
-      ["guild"] = "Unstable Unicorns",
-      ["buyer"] = "@Traeky",
-      ["quant"] = 1,
-      ["wasKiosk"] = true,
-      ["timestamp"] = 1597969403,
-      ["seller"] = "@cherrypick",
-    },
-    ]]--
-    if eventType == GUILD_EVENT_ITEM_SOLD then
-      if not lastReceivedEventID or CompareId64s(eventId, lastReceivedEventID) > 0 then
-        LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = Id64ToString(eventId)
-        lastReceivedEventID = eventId
-      end
-      local guildName = GetGuildName(guildId)
-      local theEvent = {
-        buyer = p2,
-        guild = guildName,
-        itemLink = p4,
-        quant = p3,
-        timestamp = eventTime,
-        price = p5,
-        seller = p1,
-        wasKiosk = false,
-        id = Id64ToString(eventId)
-      }
-      theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
-
-      local thePlayer = zo_strlower(GetDisplayName())
-      local isSelfSale = zo_strlower(theEvent.seller) == thePlayer
-      local added = false
-      local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
-      if (theEvent.timestamp > daysOfHistoryToKeep) then
-        local duplicate = internal:CheckForDuplicateSale(theEvent.itemLink, theEvent.id)
-        if not duplicate then
-          added = internal:addSalesData(theEvent)
-        end
-        if added and isSelfSale then
-          internal:UpdateAlertQueue(guildName, theEvent)
-        end
-        if added then
-          MasterMerchant:PostScanParallel(guildName)
-        end
-      end
-    end
-  end)
-  internal.LibHistoireListener[guildId]:Start()
 end
 
 function internal:GenerateSearchText(theEvent, itemDesc, adderText)
