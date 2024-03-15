@@ -2159,8 +2159,9 @@ function MasterMerchant:InitRosterChanges()
       align = TEXT_ALIGN_RIGHT,
       data = function(guildId, data, index)
         local dateRange = MasterMerchant.systemSavedVariables.rankIndexRoster or MM_DATERANGE_TODAY
-        local amountSold = mmUtils:GetGuildSales(GUILD_ROSTER_MANAGER.guildName, data.displayName, dateRange)
-        return zo_floor(amountSold * 0.035)
+        local taxesAmount = mmUtils:GetSalesTaxes(GUILD_ROSTER_MANAGER.guildName, data.displayName, dateRange)
+        return taxesAmount
+
       end,
       format = function(value)
         return MasterMerchant.LocalizedNumber(value) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t"

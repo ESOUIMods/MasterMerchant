@@ -7,6 +7,12 @@ other countries. All rights reserved.
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.91
+
+- Updated Tax Calculations based on GetTradingHousePostPriceInfo() suggested by sirinsidiator
+
+I would like to thank sirinsidiator, the ZOS Developers and the QA Team working with them for their diligence and hard work
+
 ## ChangeLog 3.7.90
 
 - Updated for LibHistorie 2.0.1

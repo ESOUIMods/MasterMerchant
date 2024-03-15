@@ -187,6 +187,16 @@ function mmUtils:GetSalesCount(guildName, displayName, dateRange)
   return countSold
 end
 
+function mmUtils:GetSalesTaxes(guildName, displayName, dateRange)
+  local taxes = (internal.guildSales and
+    internal.guildSales[guildName] and
+    internal.guildSales[guildName].sellers and
+    internal.guildSales[guildName].sellers[displayName] and
+    internal.guildSales[guildName].sellers[displayName].tax) and
+    internal.guildSales[guildName].sellers[displayName].tax[dateRange] or 0
+  return taxes
+end
+
 function mmUtils:GetGuildPurchases(guildName, displayName, dateRange)
   local amountPurchased = (internal.guildPurchases and
     internal.guildPurchases[guildName] and
