@@ -116,7 +116,10 @@ function internal:SetupListener(guildId)
         id = convertedId,
       }
       theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
-      if not LibGuildStore_SavedVariables["newestTime"][guildId] or theEvent.timestamp > LibGuildStore_SavedVariables["newestTime"][guildId] then
+
+      local oneEventRange = GetNumGuildHistoryEventRanges(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER) == 1
+      local timeStampInRange = not LibGuildStore_SavedVariables["newestTime"][guildId] or theEvent.timestamp > LibGuildStore_SavedVariables["newestTime"][guildId]
+      if oneEventRange and timeStampInRange then
         LibGuildStore_SavedVariables["newestTime"][guildId] = theEvent.timestamp
         LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = convertedId
       end

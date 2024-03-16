@@ -9,6 +9,10 @@ I would like to thank the ZOS Developers, Dan and Seth, and the QA Team working 
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.95
+
+- Only update tracking variables when events are linked
+
 ## ChangeLog 3.7.92, 3.7.93, 3.7.94
 
 - API Bump for dependencies
