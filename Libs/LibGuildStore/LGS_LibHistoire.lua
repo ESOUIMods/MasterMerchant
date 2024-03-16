@@ -56,11 +56,11 @@ function internal:SetupListener(guildId)
   end
 
   if newestTimestamp then
-    internal:dm("Debug", string.format("Newest Timestamp: %s, guildId: (%s)", newestTimestamp, guildId))
+    --internal:dm("Debug", string.format("Newest Timestamp: %s, guildId: (%s)", newestTimestamp, guildId))
     internal.LibHistoireListener[guildId]:SetAfterEventTime(newestTimestamp)
   elseif newestEventID then
     local lastReceivedEventID = StringToId64(LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId])
-    internal:dm("Debug", string.format("Last Received EventID: %s, guildId: (%s)", lastReceivedEventID, guildId))
+    --internal:dm("Debug", string.format("Last Received EventID: %s, guildId: (%s)", lastReceivedEventID, guildId))
     internal.LibHistoireListener[guildId]:SetAfterEventId(lastReceivedEventID)
   end
   internal.LibHistoireListener[guildId]:SetEventCallback(function(eventType, eventId, eventTime, p1, p2, p3, p4, p5, p6)
