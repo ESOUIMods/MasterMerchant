@@ -254,7 +254,7 @@ end
 
 LGH:RegisterCallback(LGH.callback.INITIALIZED, function()
   LGH:RegisterCallback(LGH.callback.LINKED_RANGE_FOUND, function(guildId, category)
-    if not LibGuildStore.guildStoreReady then return end
+    if not internal.LibHistoireListenerReady[guildId] then return end
     if not internal.LibHistoireListener[guildId]:IsRunning() then
       internal:dm("Debug", "Linked Range Callback for: " .. tostring(guildId))
       internal:SetupListener(guildId)
