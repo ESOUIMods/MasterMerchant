@@ -44,7 +44,7 @@ end
 
 -- /script LibGuildStore_Internal.LibHistoireListener[guildId]:SetAfterEventId(StringToId64("0"))
 function internal:SetupListener(guildId)
-  internal:dm("Debug", "SetupListener: " .. guildId)
+  internal:dm("Debug", "SetupListener: " .. guildId .. " : " .. GetGuildName(guildId))
   if internal.LibHistoireListener[guildId] == nil then
     internal:dm("Warn", "The Listener was still nil somehow")
     return
@@ -253,10 +253,11 @@ function internal:RefreshLibGuildStore()
 end
 
 LGH:RegisterCallback(LGH.callback.INITIALIZED, function()
-    LGH:RegisterCallback(LGH.callback.LINKED_RANGE_FOUND, function(guildId, category)
-        if not internal.LibHistoireListener[guildId]:IsRunning() then
-            internal:dm("Debug", "Linked Range Callback for: " .. tostring(guildId))
-            internal:SetupListener(guildId)
-        end
-    end)
+  LGH:RegisterCallback(LGH.callback.LINKED_RANGE_FOUND, function(guildId, category)
+    if not LibGuildStore.guildStoreReady then return end
+    if not internal.LibHistoireListener[guildId]:IsRunning() then
+      internal:dm("Debug", "Linked Range Callback for: " .. tostring(guildId))
+      internal:SetupListener(guildId)
+    end
+  end)
 end)
