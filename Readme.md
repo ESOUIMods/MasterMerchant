@@ -9,6 +9,11 @@ I would like to thank the ZOS Developers, Dan and Seth, and the QA Team working 
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.7.97
+
+- API Bump for dependencies
+- Added callback for Reset Linked Range to ensure listeners start properly after use
+
 ## ChangeLog 3.7.96
 
 - API Bump for dependencies
