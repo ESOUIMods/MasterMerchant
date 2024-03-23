@@ -1,7 +1,7 @@
--- Last Updated June 27, 2023
+-- Last Updated March 23, 2024
 -- Translation provided by @mychaelo (EU Server)
 
-ZO_CreateStringId("GS_DEBUG_OPTIONS", "Параметры отладки")
+ZO_CreateStringId("GS_DEBUG_OPTIONS", "Параметры отладки / Debug Options")
 ZO_CreateStringId("GS_REFRESH_BUTTON", "Обновить")
 ZO_CreateStringId("GS_REFRESH_DESC", "Данные LibHistoire не привязаны к учётной записи, так что вам нужно сделать это только единожды для каждого из серверов NA и EU, а не для каждой учётной записи.")
 ZO_CreateStringId("GS_RESET_BUTTON", "Обнулить NA")
@@ -139,7 +139,7 @@ ZO_CreateStringId("GS_RESET_CONFIRM_MAIN", "Уничтожить весь жур
 ZO_CreateStringId("GS_REFRESH_NOT_FINISHED", "LibGuildStore: обновление ещё не окончено")
 ZO_CreateStringId("GS_REFRESH_FINISHED", "LibGuildStore: обновление завершено")
 ZO_CreateStringId("GS_REFRESH_STARTING", "LibGuildStore: обновление начато")
-ZO_CreateStringId("GS_REFRESH_ESTIMATE", ": %s estimated events and %s minutes remaining.")
+ZO_CreateStringId("GS_REFRESH_ESTIMATE", ": осталось примерно %s событ. и %s мин.")
 
 ZO_CreateStringId("GS_ALL_BUTTON", GetString(SI_ITEMTYPEDISPLAYCATEGORY0))
 ZO_CreateStringId("GS_WEAPONS_BUTTON", GetString(SI_ITEMTYPEDISPLAYCATEGORY1))
@@ -184,7 +184,7 @@ ZO_CreateStringId("GS_ATT_PURCHASE_DATA_IMPORTED", "Данные покупок 
 -- dropdown choices
 ZO_CreateStringId("GS_DEAL_CALC_TTC_SUGGESTED", "Рекомендуемая TTC")
 ZO_CreateStringId("GS_DEAL_CALC_TTC_AVERAGE", "Средняя по TTC")
-ZO_CreateStringId("GS_DEAL_CALC_TTC_SALES", "TTC Sales Average")
+ZO_CreateStringId("GS_DEAL_CALC_TTC_SALES", "Ср. продажа по TTC")
 ZO_CreateStringId("GS_DEAL_CALC_MM_AVERAGE", "Средняя по MM")
 ZO_CreateStringId("GS_DEAL_CALC_BONANZA_PRICE", "Bonanza-цена")
 

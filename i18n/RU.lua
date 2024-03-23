@@ -1,5 +1,5 @@
 -- MasterMerchant Russian Localization File
--- Last Updated June 27, 2023
+-- Last Updated March 23, 2024
 -- Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
 -- Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
 -- Released under terms in license accompanying this file.
@@ -42,8 +42,8 @@ ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_NAME", "Скрывать цену о�
 ZO_CreateStringId("MM_BONANZA_PRICEONGRAPH_TIP", "Не указывать цену от Bonanza на графике, если в данных Bonanza меньше 6 размещённых товаров.")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_NAME", "Альтернативная цена от TTC")
 ZO_CreateStringId("SK_SHOW_TTC_PRICE_TIP", "Добавлять данные от TTC в сокращённом виде.")
-ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_NAME", "Use TTC Sales Average")
-ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_TIP", "Replace the alternate TTC pricing in the tooltip with the TTC Sales Average.")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_NAME", "Использовать от TTC сред. продаж")
+ZO_CreateStringId("SK_SHOW_TTC_SALES_AVERAGE_TIP", "Выводить в подсказках среднюю цену продаж по TTC вместо альтернативной цены от TTC.")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_NAME", "Расчётная цена изготовления")
 ZO_CreateStringId("SK_SHOW_CRAFT_COST_TIP", "Добавлять стоимость изготовления, полученную суммированием цен на ингредиенты из подсказки предмета.")
 ZO_CreateStringId("SK_SHOW_MATERIAL_COST_NAME", "Стоимость материалов")
@@ -96,11 +96,11 @@ ZO_CreateStringId("SK_SHOW_TOTAL", "Общая стоимость")
 ZO_CreateStringId("SK_BUYER_COLUMN", "Покупатель")
 ZO_CreateStringId("SK_GUILD_COLUMN", "Гильдия")
 ZO_CreateStringId("SK_ITEM_COLUMN", "Проданный предмет")
-ZO_CreateStringId("SK_TIME_COLUMN", "Время продажи")
+ZO_CreateStringId("SK_TIME_COLUMN", "Продано")
 ZO_CreateStringId("SK_ITEM_LISTING_COLUMN", "Размещённый предмет")
 ZO_CreateStringId("SK_TIME_LISTING_COLUMN", "Был увиден")
 ZO_CreateStringId("SK_ITEM_PURCHASE_COLUMN", "Купленный предмет")
-ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Время покупки")
+ZO_CreateStringId("SK_TIME_PURCHASE_COLUMN", "Куплено")
 ZO_CreateStringId("SK_PRICE_COLUMN", "Цена")
 ZO_CreateStringId("SK_PRICE_EACH_COLUMN", "Цена(шт.)")
 ZO_CreateStringId("SK_FULL_PRICE_BUTTON", "Показать полную цену")
@@ -132,8 +132,8 @@ ZO_CreateStringId("SK_FEEDBACK_MESSAGE", "Я не могу оказывать т
 ZO_CreateStringId("SK_SELLER_TOOLTIP", "Экран рейтинга")
 ZO_CreateStringId("SK_ITEMS_TOOLTIP", "Экран предметов")
 
-ZO_CreateStringId("SK_TIME_DAYS", "<<1[Вчера/1 дня назад/%d дней назад]>>")
-ZO_CreateStringId("SK_TIME_DAYSAGO", "%s дней назад")
+ZO_CreateStringId("SK_TIME_DAYS", "<<1[Вчера/%d день назад/%d дня назад/%d дней назад]>>")
+ZO_CreateStringId("SK_TIME_DAYSAGO", "%s д. назад")
 ZO_CreateStringId("SK_THOUSANDS_SEP", " ")
 
 -- Chat and center screen alerts/messages
@@ -155,14 +155,14 @@ ZO_CreateStringId("SK_RESET_DONE", "Журнал продаж обнулён.")
 <<4>>: Guild Name
 <<5>>: How long ago it was sold
 ]]--
-ZO_CreateStringId("SK_SALES_ALERT_CHAT", "You have sold <<t:1>> x<<2>> for <<3>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t from <<4>> <<5>>.")
-ZO_CreateStringId("SK_SALES_ALERT_CSA", "You have sold <<t:1>> x<<2>> for |cD5B526<<3>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from <<4>> <<5>>.")
+ZO_CreateStringId("SK_SALES_ALERT_CHAT", "Вы продали <<t:1>> ×<<2>> за <<3>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t через <<4>> <<5>>.")
+ZO_CreateStringId("SK_SALES_ALERT_CSA", "Вы продали <<t:1>> ×<<2>> за |cD5B526<<3>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t через <<4>> <<5>>.")
 --[[
 <<2>>: Total quantity sold
 <<3>>: Total Value of items sold
 ]]--
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_CHAT", "You have sold <<1>> items totaling <<2>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t from guild stores.")
-ZO_CreateStringId("SK_SALES_ALERT_GROUP_CSA", "You have sold <<1>> items totaling |cD5B526<<2>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from guild stores.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CHAT", "Вы продали <<1>> <<1[предмет/предмета/предметов]>> на сумму <<2>> |t16:16:EsoUI/Art/currency/currency_gold.dds|t через магазины гильдий.")
+ZO_CreateStringId("SK_SALES_ALERT_GROUP_CSA", "Вы продали <<1>> <<1[предмет/предмета/предметов]>> на сумму |cD5B526<<2>>|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t через магазины гильдий.")
 ZO_CreateStringId("SK_SALES_REPORT", "Отчёт о продажах:")
 ZO_CreateStringId("SK_SALES_REPORT_END", "Конец отчёта.")
 
@@ -208,7 +208,7 @@ ZO_CreateStringId("MM_TIP_TTC_HEADER", "TTC (")
 
 ZO_CreateStringId("MM_NO_DATA_FORMAT", "нет данных о продажах")
 ZO_CreateStringId("MM_NO_DATA_RANGE_FORMAT", "нет данных за последние %s дн.")
-ZO_CreateStringId("MM_DATE_RANGE_NONE", "Date range None is selected")
+ZO_CreateStringId("MM_DATE_RANGE_NONE", "Выбран временной отрезок «Нет»")
 
 ZO_CreateStringId("MM_PTC_PER_VOUCHER", "В среднем за расписку: %s")
 
@@ -244,7 +244,7 @@ ZO_CreateStringId("MM_GRAPHTIP_BONANZA_PRICE", "Bonanza-цена (%s разм./%
 ZO_CreateStringId("MM_GRAPHTIP_TTC_PRICE", "TTC [%s разм.] рек.: %s, ср.: %s")
 ZO_CreateStringId("MM_GRAPHTIP_PER_VOUCHER", "%s за расписку (в среднем)")
 ZO_CreateStringId("MM_NO_TTC_PRICE", "[У TTC нет данных]")
-ZO_CreateStringId("MM_NO_TTC_SALES_PRICE", "[No TTC Sales Pricing]")
+ZO_CreateStringId("MM_NO_TTC_SALES_PRICE", "[У TTC нет продаж]")
 ZO_CreateStringId("MM_BONANZATIP_FORMAT_NONE", "У Bonanza нет данных")
 ZO_CreateStringId("MM_TIP_FOR", "для")
 ZO_CreateStringId("MM_LINK_TO_CHAT", "Ссылку в чат")
@@ -269,7 +269,7 @@ ZO_CreateStringId("MM_INDEX_TODAY", "Сегодня")
 ZO_CreateStringId("MM_INDEX_YESTERDAY", "Вчера")
 ZO_CreateStringId("MM_INDEX_THISWEEK", "Эта неделя")
 ZO_CreateStringId("MM_INDEX_LASTWEEK", "Прошлая неделя")
-ZO_CreateStringId("MM_INDEX_PRIORWEEK", "Неделя до прошлой")
+ZO_CreateStringId("MM_INDEX_PRIORWEEK", "Позапрошлая неделя")
 ZO_CreateStringId("MM_INDEX_7DAY", "7 дней")
 ZO_CreateStringId("MM_INDEX_10DAY", "10 дней")
 ZO_CreateStringId("MM_INDEX_30DAY", "30 дней")
@@ -382,10 +382,10 @@ ZO_CreateStringId("MM_DEBUG_LOGGER_TIP", "Включить вывод отлад
 
 ZO_CreateStringId("MM_DATA_MANAGEMENT_NAME", "Настройки хранения данных")
 ZO_CreateStringId("MASTER_MERCHANT_WINDOW_NAME", "Настройки окна Master Merchant")
-ZO_CreateStringId("MASTER_MERCHANT_TOOLTIPS", "Tooltips")
-ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Tooltip Options")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIPS", "Подсказки")
+ZO_CreateStringId("MASTER_MERCHANT_TOOLTIP_OPTIONS", "Параметры подсказок")
 ZO_CreateStringId("GUILD_STORE_OPTIONS", "Настройки магазинов гильдий")
-ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Параметры отладки")
+ZO_CreateStringId("MASTER_MERCHANT_DEBUG_OPTIONS", "Параметры отладки / Debug Options")
 ZO_CreateStringId("GUILD_MASTER_OPTIONS", "Настройки гильдмастера")
 ZO_CreateStringId("MASTER_MERCHANT_INVENTORY_OPTIONS", "Настройки инвентаря")
 
@@ -428,8 +428,8 @@ ZO_CreateStringId("MM_CLEANING_WRONG_ID", '  сбойных п/н предмет
 ZO_CreateStringId("MM_CLEANING_WRONG_MULE", '  сбойных п/н предметов носителей: %s')
 ZO_CreateStringId("MM_CLEANING_STRINGS_CONVERTED", '  событий с числами в виде строк: %s')
 ZO_CreateStringId("MM_CLEANING_BAD_ITEMLINKS", '  убрано сбойных ссылок на предметы: %s')
-ZO_CreateStringId("MM_LIBHISTOIRE_REFRESH_FINISHED", "LibHistoire Обновление завершено")
-ZO_CreateStringId("MM_LIBHISTOIRE_ACTIVATED", 'LibHistoire Запущено, ждём поступления новых продаж...')
+ZO_CreateStringId("MM_LIBHISTOIRE_REFRESH_FINISHED", "Обновление LibHistoire завершено")
+ZO_CreateStringId("MM_LIBHISTOIRE_ACTIVATED", 'LibHistoire работает, ждём поступления новых продаж...')
 ZO_CreateStringId("MM_STILL_INITIALIZING", "Master Merchant до сих пор запускается.")
 ZO_CreateStringId("MM_LIBHISTOIRE_REFRESHING", "LibHistoire обновляется...")
 ZO_CreateStringId("MM_LIBHISTOIRE_REFRESH_ONCE", "LibHistoire можно обновлять только раз в сеанс.")
@@ -445,7 +445,7 @@ ZO_CreateStringId("MM_FILTER_TIME", "Время фильтрации: %s")
 ZO_CreateStringId("MM_GUILD_DEAL_TYPE", "Изменён режим отображения цен в магазинах.")
 ZO_CreateStringId("MM_RESET_POSITION", "Положения окон MM были сброшены на стандартные.")
 ZO_CreateStringId("MM_CLEAR_SAVED_PRICES", "Ваши журналы цен были уничтожены.")
-ZO_CreateStringId("MM_CLEAR_SAVED_PRICES_GUILD", "Your prices have been cleared for the selected guild.")
+ZO_CreateStringId("MM_CLEAR_SAVED_PRICES_GUILD", "Ваши цены для выбранной гильдии были уничтожены.")
 ZO_CreateStringId("MM_CLEAN_UPDATE_DESC", "MM Clean обновляет текстовые индексы для поиска.")
 ZO_CreateStringId("MM_CLEAN_START", "Очищение от сбойных записей.")
 ZO_CreateStringId("MM_CLEAN_START_DELAY", "Очищение от сбойных записей начнётся по окончании сканирования.")
@@ -577,25 +577,25 @@ ZO_CreateStringId("MM_WINDOW_TIME_RANGE_LABEL_CUSTOM", "По выбору")
 ZO_CreateStringId("MM_WINDOW_CUSTOM_TIMEFRAME_NAME", "Период по выбору")
 ZO_CreateStringId("MM_WINDOW_CUSTOM_TIMEFRAME_TIP", "Количество дней для периода по выбору.")
 
-ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_TITLE", "Duplicate LibGuildStore Data Detected")
-ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_MAIN", "Duplicate Account Name, Guild Name, or Item Link indexes detected. Sales discrepancies will occur. You can cancel and restore a backup prior to August 14 2023 otherwise a full reset of all data is required.")
+ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_TITLE", "Обнаружены дублирующиеся записи в LibGuildStore")
+ZO_CreateStringId("MM_DUPE_LIBGUILDSTORE_CONFIRM_MAIN", "Обнаружены дублирующиеся имена учётной записи, имена гильдии, или же индексы Item Link. Будут нестыковки в статистике продаж. Вы можете отменить и восстановить резервную копию ранее 14 августа 2023 года, иначе потребуется полное обнуление всех данных.")
 
 -- New Outlier Options
 ZO_CreateStringId("SK_TRIM_OUTLIERS_NAME", "Исключать выпадающие значения цен")
 ZO_CreateStringId("SK_TRIM_OUTLIERS_TIP", "Скрывать продажи по ценам, сильно отклоняющимся от средней.")
-ZO_CreateStringId("MM_OUTLIER_OPTIONS_HEADER", "Outlier Options")
-ZO_CreateStringId("MM_OUTLIER_PERCENTILE_NAME", "Trim by percentile only")
-ZO_CreateStringId("MM_OUTLIER_PERCENTILE_TIP", "Enable trimming only the outer percentile of sales data.")
-ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_NAME", "Percentile")
-ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_TIP", "Specify the outer percentiles to remove extreme values only.")
-ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_NAME", "Enable Aggressive Restrictions")
-ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_TIP", "When enabled additional outlier calculations will be performed that are very restrictive.")
+ZO_CreateStringId("MM_OUTLIER_OPTIONS_HEADER", "Параметры отклонений")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_NAME", "Отсекать только персентиль")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_TIP", "Включить отсечение только указанного персентиля продаж.")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_NAME", "Персентиль")
+ZO_CreateStringId("MM_OUTLIER_PERCENTILE_VALUE_TIP", "Укажите крайние персентили для отсечения только сильно выпадающих значений.")
+ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_NAME", "Включить агрессивное сужение")
+ZO_CreateStringId("MM_AGRESSIVE_TRIM_OUTLIERS_TIP", "Если включено, при расчётах будут вычисляться дополнительные жёсткие ограничения с узким коридором отклонения.")
 
 -- New Sales Format Options
-ZO_CreateStringId("MM_SALES_FORMAT_HEADER", "Sales Format")
-ZO_CreateStringId("MM_SALES_FORMAT_NAME", "Use historical and recent sales data")
-ZO_CreateStringId("MM_SALES_FORMAT_TIP", "When enabled, the system will utilize both historical and recent sales data for all calculations. Due to the new server database format, this will include older sales entries that could potentially duplicate current sales data.")
+ZO_CreateStringId("MM_SALES_FORMAT_HEADER", "Формат продаж")
+ZO_CreateStringId("MM_SALES_FORMAT_NAME", "Использовать архивные данные")
+ZO_CreateStringId("MM_SALES_FORMAT_TIP", "Если включено, во всех расчётах будут использоваться как данные из новой системы журнала, так и архивные данные из старой версии. Из-за нового формата базы данных на сервере это может потенциально привести к задвоению некоторых продаж, попавших и в старый и в новый журнал.")
 
 -- Warning text
-ZO_CreateStringId("MM_WARN_DISABLE_TEXT", "Click here to disable this warning")
-ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "Please read about Update 41, LibHistoire, and how the ZOS server reset affects detecting Duplicate sales")
+ZO_CreateStringId("MM_WARN_DISABLE_TEXT", "Нажмите здесь, чтобы убрать это предупреждение")
+ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "Пожалуйста, прочтите статью об Update 41, LibHistoire и влиянии сброса в сервере ZOS на дублирующиеся продажи (англ.)")
