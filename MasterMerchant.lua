@@ -1751,6 +1751,18 @@ end
 -- displayed table, sending a message to chat if the scan was initiated
 -- via the 'refresh' or 'reset' buttons.
 
+local function PlaySoundDelayed()
+  local currentTimeStamp = GetTimeStamp()
+  local lastSoundTimeStamp = LibGuildStore_SavedVariables["lastSoundPlayed"] or 0
+  local timeDifference = currentTimeStamp - lastSoundTimeStamp
+
+  if timeDifference >= 3 * ZO_ONE_SECOND_IN_MILLISECONDS then
+    PlaySound(MasterMerchant.systemSavedVariables.alertSoundName)
+    LibGuildStore_SavedVariables["lastSoundPlayed"] = currentTimeStamp
+  end
+end
+
+
 -- /script MasterMerchant.CenterScreenAnnounce_AddMessage('LibHistoireAlert', CSA_CATEGORY_SMALL_TEXT, MasterMerchant.systemSavedVariables.alertSoundName, "LibHistoire Ready |cD5B526100|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t from Guild Seller.")
 function MasterMerchant:PostScanParallel(guildName)
   if not MasterMerchant.isInitialized then return end
@@ -1763,7 +1775,7 @@ function MasterMerchant:PostScanParallel(guildName)
   if numAlerts > 0 then
     -- Play an alert chime once if there are any alerts in the queue
     if MasterMerchant.systemSavedVariables.showChatAlerts or MasterMerchant.systemSavedVariables.showAnnounceAlerts then
-      PlaySound(MasterMerchant.systemSavedVariables.alertSoundName)
+      PlaySoundDelayed()
     end
 
     local numSold = 0
