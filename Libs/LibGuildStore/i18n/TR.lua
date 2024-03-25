@@ -196,3 +196,4 @@ ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE_DATA", "LibHistoire Veritabanını Yen
 ZO_CreateStringId("GS_IMPORT_SHOPPINGLIST", "Alışveriş Listesini İçe Aktar")
 ZO_CreateStringId("GS_RESET_LIBGUILDSTORE", "LibGuildStore Sıfırla")
 ZO_CreateStringId("GS_RESET_EU_LIBGUILDSTORE", "EU LibGuildStore Sıfırla")
+ZO_CreateStringId("GS_EVENTS_NOT_LINKED", "Events not linked, aborting refresh.")

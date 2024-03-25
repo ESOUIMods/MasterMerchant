@@ -196,3 +196,4 @@ ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE_DATA", "Обновить базу да
 ZO_CreateStringId("GS_IMPORT_SHOPPINGLIST", "Импорт из ShoppingList")
 ZO_CreateStringId("GS_RESET_LIBGUILDSTORE", "Обнулить NA LibGuildStore")
 ZO_CreateStringId("GS_RESET_EU_LIBGUILDSTORE", "Обнулить EU LibGuildStore")
+ZO_CreateStringId("GS_EVENTS_NOT_LINKED", "Events not linked, aborting refresh.")

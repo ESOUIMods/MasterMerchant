@@ -196,3 +196,4 @@ ZO_CreateStringId("GS_REFRESH_LIBHISTOIRE", "Rafraîchir la base de données Lib
 ZO_CreateStringId("GS_IMPORT_SHOPPINGLIST", "Importer ShoppingList")
 ZO_CreateStringId("GS_RESET_LIBGUILDSTORE", "Réinitialiser NA LibGuildStore")
 ZO_CreateStringId("GS_RESET_EU_LIBGUILDSTORE", "Réinitialiser EU LibGuildStore")
+ZO_CreateStringId("GS_EVENTS_NOT_LINKED", "Events not linked, aborting refresh.")
