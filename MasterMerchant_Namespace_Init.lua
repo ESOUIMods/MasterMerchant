@@ -65,7 +65,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.8.01'
+MasterMerchant.version = '3.8.02'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
@@ -207,12 +207,13 @@ MasterMerchant.duplicateAccountNames = {}
 MasterMerchant.duplicateGuildNames = {}
 MasterMerchant.duplicateItemLinks = {}
 
-MasterMerchant.a_test = {}
-MasterMerchant.aa_test = {}
-MasterMerchant.aaa_test = {}
-MasterMerchant.aaaa_test = {}
-MasterMerchant.aaaaa_test = {}
-MasterMerchant.aaaaaa_test = {}
+MasterMerchant.a1_test = {}
+MasterMerchant.a2_test = {}
+MasterMerchant.a3_test = {}
+MasterMerchant.a4_test = {}
+MasterMerchant.a5_test = {}
+MasterMerchant.a6_test = {}
+MasterMerchant.a7_test = {}
 
 if AwesomeGuildStore then
   MasterMerchant.AwesomeGuildStoreDetected = true -- added 12-2

@@ -256,11 +256,10 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_REFRESH_LIBHISTOIRE_TIP),
     func = function()
       LibGuildStore_SavedVariables[internal.firstrunNamespace] = false
-      LibGuildStore_SavedVariables.libHistoireScanByTimestamp = true
-      internal:RefreshLibGuildStore()
-      internal:SetupListenerLibHistoire()
-      internal:StartQueue()
+      LibGuildStore_SavedVariables.libHistoireScanByTimestamp = false
+      internal:TestRefresh()
     end,
+    warning = GetString(MM_RESET_LISTINGS_WARN_FORCE),
   }
   -- Import ShoppingList
   if ShoppingList then

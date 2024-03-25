@@ -1,5 +1,7 @@
 local LGH = LibHistoire
+local ASYNC = LibAsync
 local internal = _G["LibGuildStore_Internal"]
+local sales_data = _G["LibGuildStore_SalesData"]
 
 --[[ cannot use MasterMerchant.itemsViewSize for example
 because that will not be available this early.
@@ -250,6 +252,122 @@ function internal:RefreshLibGuildStore()
     internal.eventsNeedProcessing[guildId] = true
     internal.timeEstimated[guildId] = false
   end
+end
+
+local function AddAtIfNeeded(str)
+  if string.sub(str, 1, 1) ~= "@" then
+    str = "@" .. str
+  end
+  return str
+end
+
+local function ConvertEventIdLibHistoireId(eventId)
+  local idString = tostring(eventId)
+  assert(#idString < 10, "eventId is too large to convert")
+  while #idString < 9 do
+    idString = "0" .. idString
+  end
+  return "3" .. idString
+end
+
+-- /script LibGuildStore_Internal:TestRefresh()
+function internal:TestRefresh()
+  local function CheckForDuplicateSale(itemLink, eventID)
+    --[[ we need to be able to calculate theIID and itemIndex
+    when not used with addToHistoryTables() event though
+    the function will calculate them.
+    ]]--
+    local theIID = GetItemLinkItemId(itemLink)
+    if theIID == nil or theIID == 0 then return end
+    local itemIndex = internal.GetOrCreateIndexFromLink(itemLink)
+
+    if sales_data[theIID] and sales_data[theIID][itemIndex] then
+      for _, v in pairs(sales_data[theIID][itemIndex]['sales']) do
+        if v.id == eventID then
+          return true
+        end
+      end
+    end
+    return false
+  end
+
+  local numEventsTrader = {}
+  local hasEventsTrader = {}
+  local eventRangesTrader = {}
+  local eventsLinkedTrader = {}
+  local eventsLinked = true
+  local numGuilds = GetNumGuilds()
+  for guildNum = 1, numGuilds do
+    local guildId = GetGuildId(guildNum)
+    numEventsTrader[guildId] = GetNumGuildHistoryEvents(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER)
+    hasEventsTrader[guildId] = numEventsTrader[guildId] >= 1
+    eventRangesTrader[guildId] = GetNumGuildHistoryEventRanges(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER)
+    eventsLinkedTrader[guildId] = hasEventsTrader[guildId] and eventRangesTrader[guildId] == 1
+    if not eventRangesTrader[guildId] == 1 then eventsLinked = false end
+  end
+  if not eventsLinked then
+    internal:dm("Info", GetString(GS_EVENTS_NOT_LINKED))
+    return
+  end
+  local task = ASYNC:Create("TestRefresh")
+  task:Call(function(task) internal:dm("Info", GetString(GS_REFRESH_STARTING)) end)
+  task:Call(function(task) internal:DatabaseBusy(true) end)
+  task:For(1, numGuilds):Do(function(guildNum)
+    local guildId = GetGuildId(guildNum)
+    local guildName = GetGuildName(guildId)
+    if eventsLinkedTrader[guildId] then
+      --internal:dm("Debug", "Could Process Roster: " .. tostring(guildId) .. " : " .. GetGuildName(guildId))
+      --internal:dm("Debug", "Num Events Roster: " .. tostring(numEventsTrader[guildId]) .. " : " .. GetGuildName(guildId))
+      local endIndex = numEventsTrader[guildId]
+      task:For(1, endIndex):Do(function(eventIndex)
+        local eventId, timestampS, isRedacted, eventType, sellerDisplayName, buyerDisplayName, itemLink, quantity, price, tax = GetGuildHistoryTraderEventInfo(guildId, eventIndex)
+        if eventType == GUILD_HISTORY_TRADER_EVENT_ITEM_SOLD then
+          local convertedId = ConvertEventIdLibHistoireId(eventId)
+          sellerDisplayName = AddAtIfNeeded(sellerDisplayName)
+          buyerDisplayName = AddAtIfNeeded(buyerDisplayName)
+          local theEvent = {
+            buyer = buyerDisplayName,
+            guild = guildName,
+            itemLink = itemLink,
+            quant = quantity,
+            timestamp = timestampS,
+            price = price,
+            seller = sellerDisplayName,
+            wasKiosk = false,
+            id = convertedId,
+          }
+          theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
+
+          local oneEventRange = GetNumGuildHistoryEventRanges(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER) == 1
+          local timeStampInRange = not LibGuildStore_SavedVariables["newestTime"][guildId] or theEvent.timestamp > LibGuildStore_SavedVariables["newestTime"][guildId]
+          if oneEventRange and timeStampInRange then
+            LibGuildStore_SavedVariables["newestTime"][guildId] = theEvent.timestamp
+            LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = convertedId
+          end
+
+          local thePlayer = zo_strlower(GetDisplayName())
+          local isSelfSale = zo_strlower(theEvent.seller) == thePlayer
+          local added = false
+          local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
+          if (theEvent.timestamp > daysOfHistoryToKeep) then
+            local duplicate = CheckForDuplicateSale(theEvent.itemLink, theEvent.id)
+            if not duplicate then
+              task:Call(function(task) added = internal:addSalesData(theEvent) end)
+            end
+            if added and isSelfSale then
+              task:Call(function(task) internal:UpdateAlertQueue(guildName, theEvent) end)
+            end
+            if added then
+              task:Call(function(task) MasterMerchant:PostScanParallel(guildName) end)
+            end
+          end
+        end
+      end)
+    end
+  end)
+  task:Call(function(task) internal:dm("Info", GetString(GS_REFRESH_FINISHED)) end)
+  task:Call(function(task) internal:DatabaseBusy(false) end)
+  task:Call(function(task) ReloadUI() end)
 end
 
 LGH:RegisterCallback(LGH.callback.INITIALIZED, function()

@@ -9,9 +9,20 @@ I would like to thank the ZOS Developers, Dan and Seth, and the QA Team working 
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
-## ChangeLog 3.7.98
+## ChangeLog 3.8.02
+
+- Updated Refresh Routine for U41
+
+NOTE: It will reload the UI after it completes
+
+## ChangeLog 3.8.00, 3.8.01
+
+- API Bump for dependencies
+
+## ChangeLog 3.7.98, 3.7.99
 
 - Fix for LGS_LibHistoire.lua:257: function expected instead of nil
+- Fix for LGS_LibHistoire.lua:258: function expected instead of nil
 
 ## ChangeLog 3.7.97
 

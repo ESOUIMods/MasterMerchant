@@ -839,7 +839,7 @@ function internal:PurgeDups()
 
   if not internal.isDatabaseBusy then
     --task:Then(function(task) internal:dm("Debug", "Database ready") end)
-    task:Then(function(task) internal:DatabaseBusy(true) end)
+    task:Call(function(task) internal:DatabaseBusy(true) end)
 
     local start = GetTimeStamp()
     local eventArray = { }
@@ -892,9 +892,9 @@ function internal:PurgeDups()
     --task:Then(function(task) internal:dm("Verbose", internal:NonContiguousNonNilCount(eventArray)) end)
     eventArray = {} -- clear array
     GS16DataSavedVariables["deletedSales"] = deletedSales
-    task:Then(function(task) internal:dm("Info", string.format(GetString(GS_DUP_PURGE), GetTimeStamp() - start, count)) end)
-    task:Then(function(task) internal:dm("Info", GetString(GS_REINDEXING_EVERYTHING)) end)
-    task:Finally(function(task) FinalizePurge(count) end)
+    task:Call(function(task) internal:dm("Info", string.format(GetString(GS_DUP_PURGE), GetTimeStamp() - start, count)) end)
+    task:Call(function(task) internal:dm("Info", GetString(GS_REINDEXING_EVERYTHING)) end)
+    task:Call(function(task) FinalizePurge(count) end)
   end
 end
 
