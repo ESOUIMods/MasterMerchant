@@ -7,40 +7,7 @@
       Distribution without license is prohibited!
 -->
 <GuiXml>
-  <Font name="MM_FontGameLargeBold" font="$(BOLD_FONT)|$(KB_19)|soft-shadow-thick"/>
   <Controls>
-    <!-- Attempt to make a control for headers that you can't sort and have it look like the sort header -->
-    <Control name="MM_NonSortHeaderCenter" virtual="true">
-      <Controls>
-        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-          <AnchorFill/>
-        </Label>
-      </Controls>
-    </Control>
-    <Control name="MM_NonSortHeaderLeft" virtual="true">
-      <Controls>
-        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-          <AnchorFill/>
-        </Label>
-      </Controls>
-    </Control>
-    <Control name="MM_SortHeaderCenterAppearance" virtual="true">
-      <Controls>
-        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-          <AnchorFill/>
-        </Label>
-      </Controls>
-    </Control>
-    <Control name="MM_SortHeaderLeftAppearance" virtual="true">
-      <Controls>
-        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
-          <AnchorFill/>
-        </Label>
-      </Controls>
-    </Control>
-
-    <Control name="MM_SortHeaderCenter" inherits="ZO_SortHeaderBehavior MM_SortHeaderCenterAppearance" virtual="true"/>
-    <Control name="MM_SortHeaderLeft" inherits="ZO_SortHeaderBehavior MM_SortHeaderLeftAppearance" virtual="true"/>
     <!-- Sales Main Window listings_vs -->
     <!-- /script MasterMerchantItemsWindow:SetHidden(false) -->
     <TopLevelControl movable="true" mouseEnabled="true" name="MasterMerchantListingWindow" hidden="true" tier="MEDIUM">
@@ -324,15 +291,15 @@
           <Anchor point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0"/>
           <Dimensions x="35" y="26"/>
         </Label>
-        <Label name="$(parent)Seller" inheritAlpha="true" color="FFFFFF" text="Seller" mouseEnabled="true">
+        <Label name="$(parent)Seller" inheritAlpha="true" text="Seller" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="110" y="26"/>
         </Label>
-        <Label name="$(parent)Location" inheritAlpha="true" color="FFFFFF" text="" mouseEnabled="true">
+        <Label name="$(parent)Location" inheritAlpha="true" text="" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)Seller" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="120" y="26"/>
         </Label>
-        <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" text="Guild">
+        <Label name="$(parent)Guild" inheritAlpha="true" text="Guild">
           <Anchor point="LEFT" relativeTo="$(parent)Location" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="160" y="26"/>
         </Label>
@@ -341,7 +308,7 @@
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <TextureCoords left="0" right="1" top="0" bottom="1"/>
         </Texture>
-        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" color="FFFFFF" text="1">
+        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" text="1">
           <Dimensions x="32" y="32"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
         </Label>
@@ -349,11 +316,11 @@
           <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
           <Dimensions x="260" y="26"/>
         </Label>
-        <Label name="$(parent)ListingTime" inheritAlpha="true" color="FFFFFF" text="Time">
+        <Label name="$(parent)ListingTime" inheritAlpha="true" text="Time">
           <Dimensions x="120" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
+        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" text="Price">
           <Dimensions x="90" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ListingTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>

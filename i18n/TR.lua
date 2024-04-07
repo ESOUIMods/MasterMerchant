@@ -77,6 +77,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "MM penceresinde seçili tarih aralığ�
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Fiyatlandırma Geçmişi Grafiğini Göster")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Eşya açıklamalarına satış geçmişinin bir grafiğini ekleyin.")
 
+ZO_CreateStringId("SK_COLOR_GUILDNAME_NAME", "Lonca Adlarına Renk Katın")
+ZO_CreateStringId("SK_COLOR_GUILDNAME_TIP", "Toggle to add add color to Guild names.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Lonca Satışlarını Göster")

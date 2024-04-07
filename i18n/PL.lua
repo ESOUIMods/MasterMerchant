@@ -75,6 +75,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Pokaż sumy zakupów i sprzedaży na li
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Pokaż wykres historii cen")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Dołącz wykres historii sprzedaży w oknie przedmiotu.")
 
+ZO_CreateStringId("SK_COLOR_GUILDNAME_NAME", "Dodaj kolor do nazw gildii")
+ZO_CreateStringId("SK_COLOR_GUILDNAME_TIP", "Toggle to add add color to Guild names.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Pokaż sprzedaż gildii")

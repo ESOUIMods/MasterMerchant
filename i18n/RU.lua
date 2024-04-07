@@ -76,6 +76,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Добавлять на экран со
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "График с ценами")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Добавлять в подсказки предметов интервальный график продаж.")
 
+ZO_CreateStringId("SK_COLOR_GUILDNAME_NAME", "Добавьте цвет к названиям гильдий")
+ZO_CreateStringId("SK_COLOR_GUILDNAME_TIP", "Toggle to add add color to Guild names.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Показать продажи гильдий")

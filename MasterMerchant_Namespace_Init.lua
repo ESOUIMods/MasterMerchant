@@ -65,7 +65,7 @@ MMScrollList.SORT_KEYS = {
 
 MasterMerchant = { }
 MasterMerchant.name = 'MasterMerchant'
-MasterMerchant.version = '3.8.03'
+MasterMerchant.version = '3.8.04'
 MM_STRING_EMPTY = ""
 MM_STRING_SEPARATOR_SPACE = " "
 MM_STRING_SEPARATOR_DASHES = " -- "
@@ -161,7 +161,7 @@ MM_GDATA_COUNT = 5
 MM_GDATA_STACK = 6
 MM_GDATA_PERCENT = 7
 MM_GDATA_TAX = 8
-MM_GDATA_KIOSK = 9
+MM_GDATA_WASKIOSK = 9
 
 -------------------------------------------------
 ----- MasterMerchant Assignments            -----
@@ -242,7 +242,8 @@ MasterMerchant.nameFilterScrollList = nil
 
 MasterMerchant.guildSales = nil
 MasterMerchant.guildPurchases = nil
-MasterMerchant.guildColor = { }
+MasterMerchant.dealValueColorDefs = { }
+MasterMerchant.guildColorDefs = { }
 
 MasterMerchant.curSort = { 'time', 'desc' }
 MasterMerchant.curGuildSort = { 'rank', 'asc' }

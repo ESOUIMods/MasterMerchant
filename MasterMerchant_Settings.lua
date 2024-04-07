@@ -167,6 +167,17 @@ function MasterMerchant:SetupOptionsData()
     end,
     default = MasterMerchant.systemDefault.windowFont,
   }
+  -- Color Guild Names
+  optionsData[#optionsData + 1] = {
+    type = 'checkbox',
+    name = GetString(SK_COLOR_GUILDNAME_NAME),
+    tooltip = GetString(SK_COLOR_GUILDNAME_TIP),
+    getFunc = function() return MasterMerchant.systemSavedVariables.addColorToGuildNames end,
+    setFunc = function(value)
+      MasterMerchant.systemSavedVariables.addColorToGuildNames = value
+    end,
+    default = MasterMerchant.systemDefault.addColorToGuildNames,
+  }
   optionsData[#optionsData + 1] = {
     type = 'slider',
     name = GetString(MM_WINDOW_CUSTOM_TIMEFRAME_NAME),

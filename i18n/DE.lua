@@ -75,6 +75,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Zeigt die Summe der Käufe und Verkäuf
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Preisverlauf Diagramm anzeigen")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Zeigt ein Diagramm über den Verlauf des Gegenstandpreises im Tooltip an.")
 
+ZO_CreateStringId("SK_COLOR_GUILDNAME_NAME", "Farbe zu Gildennamen hinzufügen")
+ZO_CreateStringId("SK_COLOR_GUILDNAME_TIP", "Toggle to add add color to Guild names.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Zeige Gilden Verkäufe")

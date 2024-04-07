@@ -76,6 +76,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "Mostra il totale degli acquisti e delle
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "Mostra il Grafico della Cronologia dei Prezzi")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "Includi un grafico della cronologia delle vendite nei suggerimenti degli articoli")
 
+ZO_CreateStringId("SK_COLOR_GUILDNAME_NAME", "Aggiungere colore ai nomi delle gilde")
+ZO_CreateStringId("SK_COLOR_GUILDNAME_TIP", "Toggle to add add color to Guild names.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Mostra Vendite della Gilda")

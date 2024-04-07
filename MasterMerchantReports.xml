@@ -257,7 +257,7 @@
     </TopLevelControl>
 
     <!-- Full-size Data Row (virtual) -->
-    <Control name="MasterMerchantReportsDataRow" color="CFDCBD" virtual="true">
+    <Control name="MasterMerchantReportsDataRow" virtual="true">
       <Dimensions x="940" y="36"/>
       <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
       <Controls>
@@ -271,7 +271,7 @@
           <Dimensions x="140" y="26"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
-        <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" text="Guild">
+        <Label name="$(parent)Guild" inheritAlpha="true" text="Guild">
           <Anchor point="LEFT" relativeTo="$(parent)Seller" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="200" y="26"/>
         </Label>
@@ -280,7 +280,7 @@
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <TextureCoords left="0" right="1" top="0" bottom="1"/>
         </Texture>
-        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" color="FFFFFF" text="1">
+        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" text="1">
           <Dimensions x="32" y="32"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
         </Label>
@@ -291,15 +291,15 @@
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
-        <Label name="$(parent)SellTime" inheritAlpha="true" color="FFFFFF" text="Time">
+        <Label name="$(parent)SellTime" inheritAlpha="true" text="Time">
           <Dimensions x="105" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
+        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" text="Price">
           <Dimensions x="78" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)SellTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)ListingFee" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
+        <Label name="$(parent)ListingFee" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" text="Price">
           <Dimensions x="60" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)Price" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>

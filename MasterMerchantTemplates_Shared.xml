@@ -1,0 +1,56 @@
+<!--
+      MasterMerchant UI Layout File
+      Last Updated September 15, 2014
+      Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
+      Extended February 2015 by Chris Lasswell (@Philgo68) - Philgo68@gmail.com
+      Released under terms in license accompanying this file.
+      Distribution without license is prohibited!
+-->
+<GuiXml>
+  <Font name="MM_FontGameLargeBold" font="$(BOLD_FONT)|$(KB_19)|soft-shadow-thick"/>
+  <Controls>
+    <!-- Controls for headers that you can't sort and have it look like the sort header -->
+    <Control name="MM_NonSortHeaderCenter" virtual="true">
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
+    </Control>
+    <Control name="MM_NonSortHeaderLeft" virtual="true">
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Custom controls for headers -->
+    <Control name="MM_SortHeaderCenterAppearance" virtual="true">
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
+    </Control>
+    <Control name="MM_SortHeaderLeftAppearance" virtual="true">
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+          <AnchorFill/>
+        </Label>
+      </Controls>
+    </Control>
+    <Control name="MM_SortHeaderAppearanceYellow" virtual="true">
+        <Controls>
+            <Label name="$(parent)Name" font="ZoFontGame" color="D6B526"  modifyTextType="NONE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                <AnchorFill />
+            </Label>
+        </Controls>
+    </Control>
+
+    <Control name="MM_SortHeaderCenter" inherits="ZO_SortHeaderBehavior MM_SortHeaderCenterAppearance" virtual="true"/>
+    <Control name="MM_SortHeaderLeft" inherits="ZO_SortHeaderBehavior MM_SortHeaderLeftAppearance" virtual="true"/>
+    <Control name="MM_SortHeaderYellow" inherits="ZO_SortHeaderBehavior MM_SortHeaderAppearanceYellow" virtual="true"/>
+  </Controls>
+</GuiXml>
+    

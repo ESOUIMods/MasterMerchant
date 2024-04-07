@@ -210,7 +210,7 @@
               </OnClicked>
             </Button>
             <!-- Button size is different then the data row for alignment only -->
-            <Control name="$(parent)Seller" inherits="ZO_SortHeader">
+            <Control name="$(parent)Seller" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="270" y="32"/>
               <OnMouseEnter>
@@ -220,37 +220,29 @@
                 ClearTooltip(InformationTooltip)
               </OnMouseExit>
             </Control>
-            <Control name="$(parent)Guild" inherits="ZO_SortHeader">
+            <Control name="$(parent)Guild" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="270" offsetY="0"/>
               <Dimensions x="190" y="32"/>
             </Control>
-            <Control name="$(parent)Rank" inherits="ZO_SortHeader">
+            <Control name="$(parent)Rank" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="40" y="32"/>
             </Control>
-            <Control name="$(parent)Sales" inherits="ZO_SortHeader" horizontalAlignment="TEXT_ALIGN_CENTER">
+            <Control name="$(parent)Sales" inherits="MM_SortHeaderYellow">
               <Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="115" y="32"/>
             </Control>
-            <Control name="$(parent)Tax" inherits="ZO_SortHeader">
+            <Control name="$(parent)Tax" inherits="MM_SortHeaderYellow">
               <Anchor point="LEFT" relativeTo="$(parent)Sales" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="110" y="32"/>
             </Control>
-            <Control name="$(parent)Count" inherits="ZO_SortHeader">
+            <Control name="$(parent)Count" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="100" y="32"/>
             </Control>
-            <Control name="$(parent)Percent" mouseEnabled="true">
+            <Control name="$(parent)Percent" inherits="MM_NonSortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="75" y="32"/>
-              <Controls>
-                <Label name="$(parent)Name" font="ZoFontGame"
-                       color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="NONE"
-                       horizontalAlignment="RIGHT" verticalAlignment="CENTER">
-                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
-                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
-                </Label>
-              </Controls>
             </Control>
           </Controls>
         </Control>
@@ -279,7 +271,7 @@
     </TopLevelControl>
 
     <!-- Full-size Data Row (virtual) -->
-    <Control name="MasterMerchantGuildDataRow" color="CFDCBD" virtual="true">
+    <Control name="MasterMerchantGuildDataRow" virtual="true">
       <Dimensions x="940" y="36"/>
       <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
       <Controls>
@@ -300,27 +292,27 @@
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
-        <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild">
+        <Label name="$(parent)Guild" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="270" offsetY="0"/>
           <Dimensions x="190" y="26"/>
         </Label>
-        <Label name="$(parent)Rank" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="15">
+        <Label name="$(parent)Rank" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="15">
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="40" y="26"/>
         </Label>
-        <Label name="$(parent)Sales" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Sales">
+        <Label name="$(parent)Sales" inheritAlpha="true" color="D6B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Sales">
           <Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="115" y="26"/>
         </Label>
-        <Label name="$(parent)Tax" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Tax">
+        <Label name="$(parent)Tax" inheritAlpha="true" color="D6B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Tax">
           <Anchor point="LEFT" relativeTo="$(parent)Sales" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="110" y="26"/>
         </Label>
-        <Label name="$(parent)Count" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Count">
+        <Label name="$(parent)Count" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Count">
           <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="100" y="26"/>
         </Label>
-        <Label name="$(parent)Percent" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="10%">
+        <Label name="$(parent)Percent" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="10%">
           <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="70" y="26"/>
         </Label>

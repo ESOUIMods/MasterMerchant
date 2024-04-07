@@ -120,7 +120,7 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
   self.x_averagePriceValue = originalAveragePriceValue
 
   self.x_averagePriceLabel:SetText(x_averagePriceText)
-  self.x_averagePriceLabel:SetColor(1, 0.996, 0, 1)
+  self.x_averagePriceLabel:SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
 
   local left = zo_max(self.x_averagePriceLabel:GetTextWidth(), self.y_lowestPriceLabelMarker:GetTextWidth(),
     self.y_highestPriceLabelMarker:GetTextWidth()) + self.paddingX + 5
@@ -179,7 +179,7 @@ function MM_Graph:Initialize(x_startTimeFrame, x_endTimeFrame, y_highestPriceTex
     if self.x_bonanzaPriceValue < 0.01 then self.x_bonanzaPriceValue = 0.01 end
 
     self.x_bonanzaPriceLabel:SetText(x_bonanzaPriceText)
-    self.x_bonanzaPriceLabel:SetColor(0.21, 0.54, 0.94, 1)
+    self.x_bonanzaPriceLabel:SetColor(MM_COLOR_BONANZA_BLUE:UnpackRGBA())
     self.x_bonanzaPriceLabel:SetAnchor(RIGHT, self.grid, BOTTOMLEFT, -5, -self.x_bonanzaPriceValue)
     self.x_bonanzaPriceMarker:SetAnchor(BOTTOMLEFT, self.grid, BOTTOMLEFT, 0, -(self.x_bonanzaPriceValue - 1))
     self.x_bonanzaPriceMarker:SetAnchor(TOPRIGHT, self.grid, BOTTOMRIGHT, 0, -self.x_bonanzaPriceValue)
@@ -229,28 +229,29 @@ function MM_Graph:MyGraphPointClickHandler(self, button, upInside, sellerName)
   end
 end
 
-function MM_Graph:AddPoint(x, y, color, tipText, sellerName)
+function MM_Graph:AddPoint(xTimestamp, yValue, tipText, guildName, sellerName)
   local point = self.pointPool:AcquireObject()
 
   point:SetText('.')
-  if color then
-    point:SetColor(color[1], color[2], color[3], 1)
+
+  local color = MasterMerchant.guildColorDefs[guildName]
+  if color and guildName then
+    point:SetColor(MasterMerchant.guildColorDefs[guildName]:UnpackRGBA())
   end
+
   point:ClearAnchors()
 
-  x = ((x - self.x_oldestTimestamp) / (self.x_currentTimestamp - self.x_oldestTimestamp)) * self.xSize
-  y = (((y - self.y_lowestPriceValue) / (self.y_highestPriceValue - self.y_lowestPriceValue)) * self.ySize) - self.textAdjustmentY
+  local xNormalized = ((xTimestamp - self.x_oldestTimestamp) / (self.x_currentTimestamp - self.x_oldestTimestamp)) * self.xSize
+  local yNormalized = (((yValue - self.y_lowestPriceValue) / (self.y_highestPriceValue - self.y_lowestPriceValue)) * self.ySize) - self.textAdjustmentY
 
-  point:SetAnchor(BOTTOM, self.grid, BOTTOMLEFT, x, -y)
+  point:SetAnchor(BOTTOM, self.grid, BOTTOMLEFT, xNormalized, -yNormalized)
+
   point:SetHidden(false)
 
   if tipText then
-    point.data = {
-      tooltipText = tipText
-    }
+    point.data = { tooltipText = tipText }
     point.sellerName = sellerName
   end
-
 end
 
 function MM_Graph:Clear()

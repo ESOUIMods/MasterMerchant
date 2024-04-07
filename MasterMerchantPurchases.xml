@@ -280,7 +280,7 @@
           <Dimensions x="140" y="26"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
-        <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" text="Guild">
+        <Label name="$(parent)Guild" inheritAlpha="true" text="Guild">
           <Anchor point="LEFT" relativeTo="$(parent)Seller" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <Dimensions x="200" y="26"/>
         </Label>
@@ -289,7 +289,7 @@
           <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
           <TextureCoords left="0" right="1" top="0" bottom="1"/>
         </Texture>
-        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" color="FFFFFF" text="1">
+        <Label name="$(parent)Quantity" verticalAlignment="BOTTOM" horizontalAlignment="RIGHT" inheritAlpha="true" text="1">
           <Dimensions x="32" y="32"/>
           <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
         </Label>
@@ -300,11 +300,11 @@
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
-        <Label name="$(parent)PurchaseTime" inheritAlpha="true" color="FFFFFF" text="Time">
+        <Label name="$(parent)PurchaseTime" inheritAlpha="true" text="Time">
           <Dimensions x="125" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
+        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" text="Price">
           <Dimensions x="85" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)PurchaseTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>

@@ -75,6 +75,9 @@ ZO_CreateStringId("SK_ROSTER_INFO_TIP", "MMウィンドウで選択した概算�
 ZO_CreateStringId("SK_SHOW_GRAPH_NAME", "価格履歴グラフを表示")
 ZO_CreateStringId("SK_SHOW_GRAPH_TIP", "価格履歴グラフをアイテムツールチップに含めます。")
 
+ZO_CreateStringId("SK_COLOR_GUILDNAME_NAME", "ギルド名に色をつける")
+ZO_CreateStringId("SK_COLOR_GUILDNAME_TIP", "Toggle to add add color to Guild names.")
+
 -- Main window
 -- buttons to toggle personal and guild sales
 ZO_CreateStringId("SK_VIEW_ALL_SALES", "Show Guild Sales")

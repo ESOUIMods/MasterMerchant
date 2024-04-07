@@ -22,8 +22,8 @@ if AwesomeGuildStore then
       index = b.itemUniqueId
       local itemLink_b = GetTradingHouseSearchResultItemLink(index)
 
-      local x, margin_a, x = MasterMerchant.GetDealInformation(itemLink_a, a.purchasePrice, a.stackCount)
-      local x, margin_b, x = MasterMerchant.GetDealInformation(itemLink_b, b.purchasePrice, b.stackCount)
+      local deal_a, margin_a, profit_a = MasterMerchant.GetDealInformation(itemLink_a, a.purchasePrice, a.stackCount)
+      local deal_b, margin_b, profit_b = MasterMerchant.GetDealInformation(itemLink_b, b.purchasePrice, b.stackCount)
 
       margin_a = margin_a or 0.0001
       margin_b = margin_b or 0.0001

@@ -277,3 +277,35 @@ function MasterMerchant:ShouldUseSale(salesId)
   local shouldUseSale = (isNewSale and not MasterMerchant.systemSavedVariables.useID64FormatedSales) or MasterMerchant.systemSavedVariables.useID64FormatedSales
   return shouldUseSale
 end
+
+function MasterMerchant:GetIndexedData(dataTable, itemId, itemIndex, salesId)
+  return dataTable[itemId][itemIndex]['sales'][salesId]
+end
+
+function MasterMerchant:IsSalesDataValid(dataTable, itemId, itemIndex, salesId)
+  if not dataTable[itemId] then
+    return false
+  end
+  if not dataTable[itemId][itemIndex] then
+    return false
+  end
+  if not dataTable[itemId][itemIndex]['sales'] then
+    return false
+  end
+  if not dataTable[itemId][itemIndex]['sales'][salesId] then
+    return false
+  end
+  return true
+end
+
+-- /script d({ZO_ColorDef.FloatsToHex(0.84, 0.71, 0.15, 1)})
+function MasterMerchant:DecimalToRGB(rDecimal, gDecimal, bDecimal, aDecimal)
+  -- Treat nil values as 0.0
+  rDecimal = rDecimal or 0.0
+  gDecimal = gDecimal or 0.0
+  bDecimal = bDecimal or 0.0
+  aDecimal = aDecimal or 0.0
+
+  local r, g, b, a = ZO_ColorDef.FloatsToRGBA(rDecimal, gDecimal, bDecimal, aDecimal)
+  return r, g, b, a
+end

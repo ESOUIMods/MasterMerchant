@@ -386,47 +386,9 @@ function MMScrollList:SetupSalesRow(control, data)
   control.sellTime = GetControl(control, 'SellTime')
   control.price = GetControl(control, 'Price')
 
-  if (sales_data[data[1]] == nil) then
-    -- just starting up so just bail out
-    return
-  end
+  if not MasterMerchant:IsSalesDataValid(sales_data, data[1], data[2], data[3]) then return end
 
-  if (sales_data[data[1]][data[2]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('--------')
-    return
-  end
-
-  if (sales_data[data[1]][data[2]]['sales'] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('No Sales')
-    --d('--------')
-    return
-  end
-
-  if (sales_data[data[1]][data[2]]['sales'][data[3]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d(data[3])
-    --d('--------')
-    return
-  end
-
-  --[[
-  local controlName = control:GetName()
-  if not zo_strfind(controlName, SALES_WINDOW_CONTROL_NAME_REGEX) then
-    MasterMerchant:dm("Warn", controlName)
-    return
-  else
-    MasterMerchant:dm("Debug", controlName)
-  end
-  ]]--
-  local actualItem = sales_data[data[1]][data[2]]['sales'][data[3]]
+  local actualItem = MasterMerchant:GetIndexedData(sales_data, data[1], data[2], data[3])
   local currentItemLink = internal:GetItemLinkByIndex(actualItem['itemLink'])
   local currentGuild = internal:GetGuildNameByIndex(actualItem['guild'])
   local currentBuyer = internal:GetAccountNameByIndex(actualItem['buyer'])
@@ -475,10 +437,14 @@ function MMScrollList:SetupSalesRow(control, data)
   end)
 
   -- Guild cell
-  local guildString = currentGuild
-  if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end
+  local guildString
+  if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. currentGuild else guildString = '     ' .. currentGuild end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
+  if MasterMerchant.systemSavedVariables.addColorToGuildNames then
+    local color = MasterMerchant.guildColorDefs[currentGuild]
+    control.guild:SetColor(color:UnpackRGBA())
+  end
 
   -- Item Icon
   control.icon:SetHidden(false)
@@ -517,6 +483,8 @@ end
 
 function MMScrollList:SetupGuildSalesRow(control, data)
 
+  if MasterMerchant.systemSavedVariables.viewSize ~= GUILDS then return end
+
   control.rowId = GetControl(control, 'RowId')
   control.seller = GetControl(control, 'Seller')
   control.itemName = GetControl(control, 'ItemName')
@@ -531,6 +499,19 @@ function MMScrollList:SetupGuildSalesRow(control, data)
     -- just starting up so just bail out
     return
   end
+
+  local currentGuild = data[1]
+  local sellerString = data[2]
+  local salesValue = data[3] or 0
+  local rankValue = data[4]
+  local countValue = data[5]
+  local stackValue = data[6]
+  local salesAmount = data[7] -- entire guild
+  local taxAmount = data[8]
+  local wasKiosk = data[9]
+
+  local entireGuild = sellerString == GetString(MM_ENTIRE_GUILD)
+  local accountName = string.sub(sellerString, 1, 1) == '@'
 
   --[[
   local controlName = control:GetName()
@@ -557,11 +538,9 @@ function MMScrollList:SetupGuildSalesRow(control, data)
 
   -- Some extra stuff for the Seller cell to handle double-click and color changes
 
-  local sellerString = data[2]
-
-  if (string.sub(sellerString, 1, 1) == '@' or sellerString == GetString(MM_ENTIRE_GUILD)) then
-    control.itemName:SetHidden(true);
-    control.seller:SetHidden(false);
+  if (accountName or entireGuild) then
+    control.itemName:SetHidden(true)
+    control.seller:SetHidden(false)
     control.seller:GetLabelControl():SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     control.seller:SetText(sellerString)
     -- If the seller is the player, color the buyer green.  Otherwise, blue.
@@ -580,42 +559,41 @@ function MMScrollList:SetupGuildSalesRow(control, data)
     end)
   else
     -- Item name cell
-    control.seller:SetHidden(true);
-    control.itemName:SetHidden(false);
+    control.seller:SetHidden(true)
+    control.itemName:SetHidden(false)
     control.itemName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
     control.itemName:SetText(zo_strformat('<<t:1>>', sellerString))
-    control.itemName:SetHandler('OnMouseEnter',
-      function() MasterMerchant.ShowToolTip(sellerString, control.itemName) end)
+    control.itemName:SetHandler('OnMouseEnter', function() MasterMerchant.ShowToolTip(sellerString, control.itemName) end)
     control.itemName:SetHandler('OnMouseExit', function() ClearTooltip(ItemTooltip) end)
   end
 
   -- Guild cell
-  local guildString = ""
-  if data[9] then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. data[1] else guildString = '     ' .. data[1] end
+  local guildString
+  if wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. currentGuild else guildString = '     ' .. currentGuild end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
-
+  if MasterMerchant.systemSavedVariables.addColorToGuildNames then
+    local color = MasterMerchant.guildColorDefs[currentGuild]
+    control.guild:SetColor(color:UnpackRGBA())
+  end
   -- Rank Cell
-  control.rank:SetText(data[4])
+  control.rank:SetText(rankValue)
 
   -- Sales Cell
-  local sales = data[3] or 0
-  local stringSales = MasterMerchant.LocalizedNumber(sales)
+  local stringSales = MasterMerchant.LocalizedNumber(salesValue)
   control.sales:SetText(stringSales .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   -- Tax Cell
-  --local taxAmount = zo_floor((sales * GetTradingHouseCutPercentage() / 200))
-  local taxAmount = data[8]
   local stringTax = MasterMerchant.LocalizedNumber(taxAmount)
   control.tax:SetText(stringTax .. ' |t16:16:EsoUI/Art/currency/currency_gold.dds|t')
 
   -- Count Cell
 
-  control.count:SetText((data[5] or '-') .. '/' .. (data[6] or '-'))
+  control.count:SetText((countValue or '-') .. '/' .. (stackValue or '-'))
 
   -- Percent Cell
-  if data[7] and data[7] ~= 0 then
-    local percent = zo_floor((1000 * sales / data[7]) + 0.5) / 10
+  if salesAmount and salesAmount ~= 0 then
+    local percent = zo_floor((((salesValue / salesAmount) * 100) * 10) + 0.5) / 10
     control.percent:SetText(percent .. GetString(MM_PERCENT_CHAR))
   else
     control.percent:SetText('--' .. GetString(MM_PERCENT_CHAR))
@@ -636,37 +614,8 @@ function MMScrollList:SetupListingsRow(control, data)
   control.listTime = GetControl(control, 'ListingTime')
   control.price = GetControl(control, 'Price')
 
-  if (listings_data[data[1]] == nil) then
-    -- just starting up so just bail out
-    return
-  end
-
-  if (listings_data[data[1]][data[2]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('--------')
-    return
-  end
-
-  if (listings_data[data[1]][data[2]]['sales'] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('No Sales')
-    --d('--------')
-    return
-  end
-
-  if (listings_data[data[1]][data[2]]['sales'][data[3]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d(data[3])
-    --d('--------')
-    return
-  end
-  local actualItem = listings_data[data[1]][data[2]]['sales'][data[3]]
+  if not MasterMerchant:IsSalesDataValid(listings_data, data[1], data[2], data[3]) then return end
+  local actualItem = MasterMerchant:GetIndexedData(listings_data, data[1], data[2], data[3])
   if not actualItem.timestamp then
     MasterMerchant:dm("Warn", actualItem)
   end
@@ -772,37 +721,8 @@ function MMScrollList:SetupPurchasesRow(control, data)
   control.purchaseTime = GetControl(control, 'PurchaseTime')
   control.price = GetControl(control, 'Price')
 
-  if (purchases_data[data[1]] == nil) then
-    -- just starting up so just bail out
-    return
-  end
-
-  if (purchases_data[data[1]][data[2]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('--------')
-    return
-  end
-
-  if (purchases_data[data[1]][data[2]]['sales'] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('No Sales')
-    --d('--------')
-    return
-  end
-
-  if (purchases_data[data[1]][data[2]]['sales'][data[3]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d(data[3])
-    --d('--------')
-    return
-  end
-  local actualItem = purchases_data[data[1]][data[2]]['sales'][data[3]]
+  if not MasterMerchant:IsSalesDataValid(purchases_data, data[1], data[2], data[3]) then return end
+  local actualItem = MasterMerchant:GetIndexedData(purchases_data, data[1], data[2], data[3])
   if not actualItem.timestamp then
     MasterMerchant:dm("Warn", actualItem)
   end
@@ -828,7 +748,7 @@ function MMScrollList:SetupPurchasesRow(control, data)
   -- Plus add a marker if buyer is not in-guild (kiosk sale)
 
   local buyerString
-  --[[TODO determine whether or not to allos both
+  --[[TODO determine whether or not to allow both
   if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
     buyerString = currentBuyer
   else
@@ -839,7 +759,7 @@ function MMScrollList:SetupPurchasesRow(control, data)
 
   control.seller:GetLabelControl():SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.seller:SetText(buyerString)
-  --[[TODO determine whether or not to allos both
+  --[[TODO determine whether or not to allow both
   If the seller is the player, color the seller green.  Otherwise, blue.
   local acctName = GetDisplayName()
   if zo_strlower(buyerString) == zo_strlower(acctName) then
@@ -928,39 +848,9 @@ function MMScrollList:SetupReportsRow(control, data)
   elseif MasterMerchant.reportsViewMode == MasterMerchant.reportsCanceledViewMode then
     dataTable = cancelled_items_data
   end
+  if not MasterMerchant:IsSalesDataValid(dataTable, data[1], data[2], data[3]) then return end
 
-  if (dataTable[data[1]] == nil) then
-    -- just starting up so just bail out
-    return
-  end
-
-  if (dataTable[data[1]][data[2]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('--------')
-    return
-  end
-
-  if (dataTable[data[1]][data[2]]['sales'] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d('No Sales')
-    --d('--------')
-    return
-  end
-
-  if (dataTable[data[1]][data[2]]['sales'][data[3]] == nil) then
-    --d('MM Data Error:')
-    --d(data[1])
-    --d(data[2])
-    --d(data[3])
-    --d('--------')
-    return
-  end
-
-  local actualItem = dataTable[data[1]][data[2]]['sales'][data[3]]
+  local actualItem = MasterMerchant:GetIndexedData(dataTable, data[1], data[2], data[3])
   local currentItemLink = internal:GetItemLinkByIndex(actualItem['itemLink'])
   local currentGuild = internal:GetGuildNameByIndex(actualItem['guild'])
   local currentBuyer = internal:GetAccountNameByIndex(actualItem['buyer'])
@@ -987,10 +877,12 @@ function MMScrollList:SetupReportsRow(control, data)
   end)
 
   -- Guild cell
-  local guildString = currentGuild
-  if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. guildString else guildString = '     ' .. guildString end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-  control.guild:SetText(guildString)
+  control.guild:SetText(currentGuild)
+  if MasterMerchant.systemSavedVariables.addColorToGuildNames then
+    local color = MasterMerchant.guildColorDefs[currentGuild]
+    control.guild:SetColor(color:UnpackRGBA())
+  end
 
   -- Item Icon
   control.icon:SetHidden(false)
@@ -1044,8 +936,11 @@ function MMScrollList:ColorRow(control, data, mouseIsOver)
     local child = control:GetChild(i)
     if not child.nonRecolorable then
       if child:GetType() == CT_LABEL then
-        if zo_strfind(child:GetName(), 'Price$') then child:SetColor(0.84, 0.71, 0.15, 1)
-        else child:SetColor(1, 1, 1, 1) end
+        if string.find(child:GetName(), 'Price$') then
+          child:SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
+        elseif not string.find(child:GetName(), 'Guild') then
+          child:SetColor(1, 1, 1, 1) -- Default color
+        end
       end
     end
   end
@@ -2302,7 +2197,7 @@ function MasterMerchant:GenerateStatsAndGraph(tooltip, itemLink, purchasePrice, 
 
     if tooltip.warnText then
       tooltip.warnText:SetText(removedWarningTipline)
-      tooltip.warnText:SetColor(0.87, 0.11, 0.14, 1)
+      tooltip.warnText:SetColor(MM_COLOR_RED_NORMAL:UnpackRGBA())
     end
 
   end
@@ -3580,31 +3475,15 @@ function MasterMerchant:SetupMasterMerchantWindow()
   MasterMerchantFilterByNameWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(MM_ITEMNAME_TEXT))
   MasterMerchantFilterByNameWindowMenuFooterClearFilterButton:SetText(GetString(MM_CLEAR_FILTER_BUTTON))
 
-  if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
-    MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
-  else
-    MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-  end
-
-  if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
-    MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_BUYER_COLUMN))
-  elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
-    MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-  else
-    -- this makes it such that the first column is the items link
-    MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_ITEM_COLUMN))
-  end
-
+  --[[ MasterMerchantListingWindow ]]--
   -- listings Seller: first column
   MasterMerchantListingWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-  ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- listings Location: first column
   MasterMerchantListingWindowHeadersLocation:GetNamedChild('Name'):SetText(GetString(SK_LOCATION_COLUMN))
   -- listings Guild: second column
   MasterMerchantListingWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- listings ItemName: third column
   MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(SK_ITEM_LISTING_COLUMN))
   -- listings SellTime: fourth column
@@ -3612,10 +3491,9 @@ function MasterMerchant:SetupMasterMerchantWindow()
   ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersListingTime, GetString(SK_TIME_LISTING_COLUMN), 'time', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, fontString)
   -- listings Price: fifth column
   MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+  MasterMerchantListingWindowHeadersPrice:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price',
-      ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+    ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   else
     ZO_SortHeader_Initialize(MasterMerchantListingWindowHeadersPrice, GetString(SK_PRICE_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   end
@@ -3626,14 +3504,13 @@ function MasterMerchant:SetupMasterMerchantWindow()
     MasterMerchantListingWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
   end
 
+  --[[ MasterMerchantPurchaseWindow ]]--
   -- Purchase Seller: first column
   MasterMerchantPurchaseWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-  ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- Purchase Guild: second column
   MasterMerchantPurchaseWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- Purchase ItemName: third column
   MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(SK_ITEM_PURCHASE_COLUMN))
   -- Purchase SellTime: fourth column
@@ -3641,10 +3518,9 @@ function MasterMerchant:SetupMasterMerchantWindow()
   ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersPurchaseTime, GetString(SK_TIME_PURCHASE_COLUMN), 'time', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, fontString)
   -- Purchase Price: fifth column
   MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+  MasterMerchantPurchaseWindowHeadersPrice:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   if MasterMerchant.systemSavedVariables.showUnitPrice then
-    ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price',
-      ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+    ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   else
     ZO_SortHeader_Initialize(MasterMerchantPurchaseWindowHeadersPrice, GetString(SK_PRICE_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   end
@@ -3655,10 +3531,10 @@ function MasterMerchant:SetupMasterMerchantWindow()
     MasterMerchantPurchaseWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
   end
 
+  --[[ MasterMerchantReportsWindow ]]--
   -- reports Seller: first column
   MasterMerchantReportsWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(SK_SELLER_COLUMN))
-  ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersSeller, GetString(SK_SELLER_COLUMN), 'name', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   -- reports Guild: second column
   MasterMerchantReportsWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
   ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
@@ -3669,7 +3545,7 @@ function MasterMerchant:SetupMasterMerchantWindow()
   ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersSellTime, GetString(SK_TIME_LISTING_COLUMN), 'time', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, fontString)
   -- reports Price: fifth column
   MasterMerchantReportsWindowHeadersPrice:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  MasterMerchantReportsWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+  MasterMerchantReportsWindowHeadersPrice:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   if MasterMerchant.systemSavedVariables.showUnitPrice then
     ZO_SortHeader_Initialize(MasterMerchantReportsWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   else
@@ -3684,73 +3560,66 @@ function MasterMerchant:SetupMasterMerchantWindow()
     MasterMerchantReportsWindowMenuFooterPriceSwitchButton:SetText(GetString(SK_SHOW_UNIT))
   end
 
-  MasterMerchantWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
-  MasterMerchantWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(SK_ITEM_COLUMN))
-  MasterMerchantWindowHeadersSellTime:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantWindowHeadersSellTime, GetString(SK_TIME_COLUMN), 'time', ZO_SORT_ORDER_UP,
-    TEXT_ALIGN_LEFT, fontString)
-  MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-
-  MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
-  if MasterMerchant.systemSavedVariables.showUnitPrice then
-    ZO_SortHeader_Initialize(MasterMerchantWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price',
-      ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  --[[ MasterMerchantWindow ]]--
+  local buyerHeaderName
+  if MasterMerchant.systemSavedVariables.viewBuyerSeller == 'buyer' then
+    buyerHeaderName = GetString(SK_BUYER_COLUMN)
   else
-    ZO_SortHeader_Initialize(MasterMerchantWindowHeadersPrice, GetString(SK_PRICE_COLUMN), 'price', ZO_SORT_ORDER_DOWN,
-      TEXT_ALIGN_LEFT, fontString)
+    buyerHeaderName = GetString(SK_SELLER_COLUMN)
+  end
+  MasterMerchantWindowHeadersBuyer:GetNamedChild('Name'):SetText(buyerHeaderName)
+
+  ZO_SortHeader_Initialize(MasterMerchantWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'itemGuildName', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+
+  MasterMerchantWindowHeadersItemName:GetNamedChild('Name'):SetText(GetString(SK_ITEM_COLUMN))
+
+  ZO_SortHeader_Initialize(MasterMerchantWindowHeadersSellTime, GetString(SK_TIME_COLUMN), 'time', ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, fontString)
+
+  MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
+  if MasterMerchant.systemSavedVariables.showUnitPrice then
+    ZO_SortHeader_Initialize(MasterMerchantWindowHeadersPrice, GetString(SK_PRICE_EACH_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  else
+    ZO_SortHeader_Initialize(MasterMerchantWindowHeadersPrice, GetString(SK_PRICE_COLUMN), 'price', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
   end
 
-  MasterMerchantGuildWindowHeadersGuild:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'guildName',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
+  --[[ MasterMerchantGuildWindow ]]--
+  local sellerHeaderName
+  if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
+    sellerHeaderName = GetString(SK_BUYER_COLUMN)
+  elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
+    sellerHeaderName = GetString(SK_SELLER_COLUMN)
+  else
+    sellerHeaderName = GetString(SK_ITEM_COLUMN)
+  end
+  MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(sellerHeaderName))
+  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersSeller, sellerHeaderName, 'name', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, guildFontString)
+
+  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersGuild, GetString(SK_GUILD_COLUMN), 'guildName', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, fontString)
 
   MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetText(GetString(SK_RANK_COLUMN))
-  MasterMerchantGuildWindowHeadersRank:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersRank, GetString(SK_RANK_COLUMN), 'rank', ZO_SORT_ORDER_DOWN,
-    TEXT_ALIGN_RIGHT, guildFontString)
+  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersRank, GetString(SK_RANK_COLUMN), 'rank', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
 
-  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersSales, GetString(SK_SALES_COLUMN), 'sales',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
-  local ctrl = GetControl(MasterMerchantGuildWindowHeadersSales, "Name")
-
+  local salesHeaderName
   if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
-    ctrl:SetText(GetString(SK_PURCHASES_COLUMN))
+    salesHeaderName = GetString(SK_PURCHASES_COLUMN)
   elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
-    ctrl:SetText(GetString(SK_SALES_COLUMN))
+    salesHeaderName = GetString(SK_SALES_COLUMN)
   else
-    ctrl:SetText(GetString(SK_SALES_COLUMN))
+    salesHeaderName = GetString(SK_SALES_COLUMN)
   end
-
-  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
-
-  local txt
-  if MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'buyer' then
-    txt = GetString(SK_BUYER_COLUMN)
-  elseif MasterMerchant.systemSavedVariables.viewGuildBuyerSeller == 'seller' then
-    txt = GetString(SK_SELLER_COLUMN)
-  else
-    txt = GetString(SK_ITEM_COLUMN)
-  end
-  MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetText(GetString(txt))
-  MasterMerchantGuildWindowHeadersSeller:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersSeller, txt, 'name', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT,
-    guildFontString)
+  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetText(GetString(salesHeaderName))
+  MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
+  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersSales, salesHeaderName, 'sales', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
 
   MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetText(GetString(SK_TAX_COLUMN))
-  MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersTax, GetString(SK_TAX_COLUMN), 'tax', ZO_SORT_ORDER_DOWN,
-    TEXT_ALIGN_RIGHT, guildFontString)
+  MasterMerchantGuildWindowHeadersTax:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
+  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersTax, GetString(SK_TAX_COLUMN), 'tax', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
 
   MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetText(GetString(SK_COUNT_COLUMN))
-  MasterMerchantGuildWindowHeadersCount:GetNamedChild('Name'):SetModifyTextType(MODIFY_TEXT_TYPE_NONE)
-  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersCount, GetString(SK_COUNT_COLUMN), 'count',
-    ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
+  ZO_SortHeader_Initialize(MasterMerchantGuildWindowHeadersCount, GetString(SK_COUNT_COLUMN), 'count', ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, guildFontString)
 
   MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetText(GetString(SK_PERCENT_COLUMN))
-  MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+  MasterMerchantGuildWindowHeadersPercent:GetNamedChild('Name'):SetColor(MM_TEXT_COLOR_NORMAL:UnpackRGBA())
 
   -- Set second half of window title from translation
   --[[TODO setup master merchant window title
@@ -3878,72 +3747,113 @@ end
 
 function MasterMerchant:SetupScrollLists()
   MasterMerchant:dm("Debug", "SetupScrollLists")
-  -- Scroll list init
+  --[[ MasterMerchantWindow Headers Price ]]--
   self.scrollList = MMScrollList:New(MasterMerchantWindow)
-  --self.scrollList:Initialize()
   ZO_PostHook(self.scrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
-    if header == MasterMerchantWindowHeadersPrice then
-      if header.mouseIsOver then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.95, 0.92, 0.26, 1)
-      else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.81, 0.15, 1) end
-    else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end
+    local priceHeader = MasterMerchantWindowHeadersPrice
+    if header == priceHeader and header.mouseIsOver then
+      priceHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_SELECTED:UnpackRGBA()) -- when you Click Price
+    else
+      priceHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA()) -- when you Click Anything Else
+    end
   end)
-  ZO_PostHookHandler(MasterMerchantWindowHeadersPrice, 'OnMouseExit', function()
-    if MasterMerchantWindowHeadersPrice.selected then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84,
-      0.81, 0.15, 1)
-    else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end
+  ZO_PostHookHandler(MasterMerchantWindowHeadersPrice, 'OnMouseExit', function(control)
+    local priceHeader = MasterMerchantWindowHeadersPrice
+    if priceHeader.selected then
+      priceHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_SELECTED:UnpackRGBA()) -- when you move mouse off of Price, selected
+    else
+      priceHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA()) -- when you move mouse off of Price, not selected
+    end
   end)
   ZO_PostHookHandler(MasterMerchantWindowHeadersPrice, 'OnMouseEnter', function(control)
-    if control == MasterMerchantWindowHeadersPrice then MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84,
-      0.81, 0.15, 1)
-    else MasterMerchantWindowHeadersPrice:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1) end
+    local priceHeader = MasterMerchantWindowHeadersPrice
+    if control == priceHeader then
+      priceHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_MOUSEOVER:UnpackRGBA()) -- when you hover over Price, selected or not
+    end
   end)
 
   self.guildScrollList = MMScrollList:New(MasterMerchantGuildWindow)
-  --self.guildScrollList:Initialize()
-  ZO_PostHook(self.guildScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
-    MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+  --[[ MasterMerchantGuildWindow Headers Sales ]]--
+  ZO_PostHook(self.guildScrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
+    local salesHeader = MasterMerchantGuildWindowHeadersSales
+    if header == salesHeader and header.mouseIsOver then
+      salesHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_SELECTED:UnpackRGBA()) -- when you Click Price
+    else
+      salesHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA()) -- when you Click Anything Else
+    end
   end)
-  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersSales, 'OnMouseExit', function()
-    MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersSales, 'OnMouseExit', function(control)
+    local salesHeader = MasterMerchantGuildWindowHeadersSales
+    if salesHeader.selected then
+      salesHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_SELECTED:UnpackRGBA()) -- when you move mouse off of Price, selected
+    else
+      salesHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA()) -- when you move mouse off of Price, not selected
+    end
   end)
-  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersSales, 'OnMouseEnter', function()
-    MasterMerchantGuildWindowHeadersSales:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersSales, 'OnMouseEnter', function(control)
+    local salesHeader = MasterMerchantGuildWindowHeadersSales
+    if control == salesHeader then
+      salesHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_MOUSEOVER:UnpackRGBA()) -- when you hover over Price, selected or not
+    end
+  end)
+  --[[ MasterMerchantGuildWindow Headers Tax ]]--
+  ZO_PostHook(self.guildScrollList.sortHeaderGroup, 'OnHeaderClicked', function(self, header, suppressCallbacks)
+    local taxHeader = MasterMerchantGuildWindowHeadersTax
+    if header == taxHeader and header.mouseIsOver then
+      taxHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_SELECTED:UnpackRGBA()) -- when you Click Price
+    else
+      taxHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA()) -- when you Click Anything Else
+    end
+  end)
+  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersTax, 'OnMouseExit', function(control)
+    local taxHeader = MasterMerchantGuildWindowHeadersTax
+    if taxHeader.selected then
+      taxHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_SELECTED:UnpackRGBA()) -- when you move mouse off of Price, selected
+    else
+      taxHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA()) -- when you move mouse off of Price, not selected
+    end
+  end)
+  ZO_PostHookHandler(MasterMerchantGuildWindowHeadersTax, 'OnMouseEnter', function(control)
+    local taxHeader = MasterMerchantGuildWindowHeadersTax
+    if control == taxHeader then
+      taxHeader:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_MOUSEOVER:UnpackRGBA()) -- when you hover over Price, selected or not
+    end
   end)
 
   self.listingsScrollList = MMScrollList:New(MasterMerchantListingWindow)
-  --self.listingsScrollList:Initialize()
+  --[[ MasterMerchantListingWindow Headers ItemName ]]--
   ZO_PostHook(self.listingsScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
-    MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
   ZO_PostHookHandler(MasterMerchantListingWindowHeadersItemName, 'OnMouseExit', function()
-    MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
   ZO_PostHookHandler(MasterMerchantListingWindowHeadersItemName, 'OnMouseEnter', function()
-    MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantListingWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
 
   self.purchasesScrollList = MMScrollList:New(MasterMerchantPurchaseWindow)
-  --self.purchasesScrollList:Initialize()
+  --[[ MasterMerchantPurchaseWindow Headers ItemName ]]--
   ZO_PostHook(self.purchasesScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
-    MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
   ZO_PostHookHandler(MasterMerchantPurchaseWindowHeadersItemName, 'OnMouseExit', function()
-    MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
   ZO_PostHookHandler(MasterMerchantPurchaseWindowHeadersItemName, 'OnMouseEnter', function()
-    MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantPurchaseWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
 
   self.reportsScrollList = MMScrollList:New(MasterMerchantReportsWindow)
-  --self.reportsScrollList:Initialize()
+  --[[ MasterMerchantReportsWindow Headers ItemName ]]--
   ZO_PostHook(self.reportsScrollList.sortHeaderGroup, 'OnHeaderClicked', function()
-    MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
   ZO_PostHookHandler(MasterMerchantReportsWindowHeadersItemName, 'OnMouseExit', function()
-    MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
   ZO_PostHookHandler(MasterMerchantReportsWindowHeadersItemName, 'OnMouseEnter', function()
-    MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetColor(0.84, 0.71, 0.15, 1)
+    MasterMerchantReportsWindowHeadersItemName:GetNamedChild('Name'):SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
   end)
 
   -- setup filter window
@@ -3996,11 +3906,11 @@ function MasterMerchant:ToggleWritMarkerBrowseResults(rowControl, slot)
 
   if hasKnowledge and hasMaterials then
     markerControl:SetTexture("mastermerchant/img/does_meet.dds")
-    markerControl:SetColor(0.17, 0.93, 0.17, 1)
+    markerControl:SetColor(MM_COLOR_GREEN_NORMAL:UnpackRGBA())
     markerControl:SetHidden(false)
   elseif hasKnowledge and not hasMaterials then
     markerControl:SetTexture("esoui/art/miscellaneous/help_icon.dds")
-    markerControl:SetColor(1, 0.99, 0, 1)
+    markerControl:SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
     markerControl:SetHidden(false)
   else markerControl:SetHidden(true) end
 end
@@ -4024,11 +3934,11 @@ function MasterMerchant:ToggleWritMarkerInventoryList(rowControl, slot)
 
   if hasKnowledge and hasMaterials and MasterMerchant.tradingHouseOpened then
     markerControl:SetTexture("MasterMerchant/img/does_meet.dds")
-    markerControl:SetColor(0.17, 0.93, 0.17, 1)
+    markerControl:SetColor(MM_COLOR_GREEN_NORMAL:UnpackRGBA())
     markerControl:SetHidden(false)
   elseif hasKnowledge and not hasMaterials and MasterMerchant.tradingHouseOpened then
     markerControl:SetTexture("esoui/art/miscellaneous/help_icon.dds")
-    markerControl:SetColor(1, 0.99, 0, 1)
+    markerControl:SetColor(MM_COLOR_YELLOW_NORMAL:UnpackRGBA())
     markerControl:SetHidden(false)
   else markerControl:SetHidden(true) end
 end
@@ -4067,7 +3977,7 @@ function MasterMerchant:ToggleVendorMarker(rowControl, slot)
 
   if (showVendorWarning) then
     markerControl:SetTexture("/esoui/art/inventory/newitem_icon.dds")
-    markerControl:SetColor(0.9, 0.3, 0.2, 1)
+    markerControl:SetColor(MM_COLOR_RED_NORMAL:UnpackRGBA())
     markerControl:SetHidden(false)
   else
     markerControl:SetHidden(true)

@@ -33,20 +33,38 @@ function MasterMerchant.CenterScreenAnnounce_AddMessage(eventId, category, ...)
   CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(messageParams)
 end
 
-function MasterMerchant:setupGuildColors()
-  MasterMerchant:dm("Debug", "setupGuildColors")
-  local nextGuild = 0
-  while nextGuild < GetNumGuilds() do
-    nextGuild = nextGuild + 1
-    local nextGuildID = GetGuildId(nextGuild)
-    local nextGuildName = GetGuildName(nextGuildID)
-    if nextGuildName ~= MM_STRING_EMPTY or nextGuildName ~= nil then
-      local r, g, b = GetChatCategoryColor(CHAT_CHANNEL_GUILD_1 - 3 + nextGuild)
-      self.guildColor[nextGuildName] = { r, g, b };
-    else
-      self.guildColor[nextGuildName] = { 255, 255, 255 };
-    end
+function MasterMerchant:SetupColorDefs()
+  MasterMerchant:dm("Debug", "SetupColorDefs")
+  local guildChatCategories = {}
+  guildChatCategories[1] = CHAT_CATEGORY_GUILD_1
+  guildChatCategories[2] = CHAT_CATEGORY_GUILD_2
+  guildChatCategories[3] = CHAT_CATEGORY_GUILD_3
+  guildChatCategories[4] = CHAT_CATEGORY_GUILD_4
+  guildChatCategories[5] = CHAT_CATEGORY_GUILD_5
+  for index = 1, GetNumGuilds() do
+    local guildId = GetGuildId(index)
+    local guildName = GetGuildName(guildId)
+    self.guildColorDefs[guildName] = ZO_ColorDef:New("FFFFFFFF")
+    self.guildColorDefs[guildName]:SetRGB(GetChatCategoryColor(guildChatCategories[index]))
   end
+  for index = MM_DEAL_VALUE_OKAY, MM_DEAL_VALUE_BUYIT do
+    self.dealValueColorDefs[index] = ZO_ColorDef.FromInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, index)
+  end
+  self.dealValueColorDefs[MM_DEAL_VALUE_OVERPRICED] = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.98, 0.01, 0.01, 1))
+  MM_COLOR_BONANZA_BLUE = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.21, 0.54, 0.94, 1))
+  MM_COLOR_RED_NORMAL = self.dealValueColorDefs[MM_DEAL_VALUE_OVERPRICED]
+  MM_COLOR_YELLOW_NORMAL = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.84, 0.71, 0.15, 1))
+  MM_COLOR_YELLOW_SELECTED = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.84, 0.81, 0.15, 1))
+  MM_COLOR_YELLOW_MOUSEOVER = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(1, 0.996, 0, 1))
+  MM_COLOR_GREEN_NORMAL = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.18, 0.77, 0.05, 1))
+  MM_COLOR_GREEN_MOUSEOVER = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.32, 0.90, 0.18, 1))
+  MM_COLOR_BLUE_NORMAL = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.21, 0.54, 0.94, 1))
+  MM_COLOR_BLUE_MOUSEOVER = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.34, 0.67, 1, 1))
+  MM_TEXT_COLOR_NORMAL = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.77254901960784, 0.76078431372549, 0.61960784313725, 1))
+  MM_TEXT_COLOR_MOUSEOVER = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.93725490196078, 0.92156862745098, 0.74509803921569, 1))
+  MM_TEXT_COLOR_PINK = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(1, 0.047058823529412, 0.67843137254902, 1))
+  MM_TEXT_COLOR_ORANGE = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(1, 0.38039215686275, 0.12156862745098, 1))
+  MM_TEXT_COLOR_GREY = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.30196078431373, 0.30196078431373, 0.30196078431373, 1))
 end
 
 function MasterMerchant:CheckTimeframe()
@@ -454,7 +472,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       -- not detailed
       tooltip = stringPrice .. MM_COIN_ICON_NO_SPACE
     end
-    salesPoints[#salesPoints + 1] = { item.timestamp, individualSale, MasterMerchant.guildColor[currentGuild], tooltip, currentSeller }
+    salesPoints[#salesPoints + 1] = { item.timestamp, individualSale, tooltip, currentGuild, currentSeller }
     updateGraphinfoCache = true
   end
 
@@ -1970,17 +1988,7 @@ function MasterMerchant.AddSellingAdvice(rowControl, result)
         else
           sellingAdvice:SetText(string.format('%.2f', margin) .. '%')
         end
-        -- TODO I think this colors the number in the guild store
-        --[[
-        ZO_Currency_FormatPlatform(CURT_MONEY, tonumber(stringPrice), ZO_CURRENCY_FORMAT_AMOUNT_ICON, {color: someColorDef})
-        ]]--
-        local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
-        if dealValue == MM_DEAL_VALUE_OVERPRICED then
-          r = 0.98;
-          g = 0.01;
-          b = 0.01;
-        end
-        sellingAdvice:SetColor(r, g, b, 1)
+        sellingAdvice:SetColor(MasterMerchant.dealValueColorDefs[dealValue]:UnpackRGBA())
         sellingAdvice:SetHidden(false)
       else
         sellingAdvice:SetHidden(true)
@@ -2059,14 +2067,7 @@ function MasterMerchant.AddBuyingAdvice(rowControl, result)
       else
         buyingAdvice:SetText(string.format('%.2f', margin) .. '%')
       end
-      -- TODO I think this colors the number in the guild store
-      local r, g, b = GetInterfaceColor(INTERFACE_COLOR_TYPE_ITEM_QUALITY_COLORS, dealValue)
-      if dealValue == MM_DEAL_VALUE_OVERPRICED then
-        r = 0.98;
-        g = 0.01;
-        b = 0.01;
-      end
-      buyingAdvice:SetColor(r, g, b, 1)
+      buyingAdvice:SetColor(MasterMerchant.dealValueColorDefs[dealValue]:UnpackRGBA())
       buyingAdvice:SetHidden(false)
     else
       buyingAdvice:SetHidden(true)
@@ -2532,6 +2533,7 @@ function MasterMerchant:FirstInitialize()
     masterMerchantVariablesImported = false,
     disableBackupWarning3 = false,
     useID64FormatedSales = false,
+    addColorToGuildNames = false,
   }
 
   -- Finished setting up defaults, assign to global
@@ -2625,7 +2627,7 @@ function MasterMerchant:FirstInitialize()
   -- New, added 9/26
   self:InitRosterChanges()
 
-  self:setupGuildColors()
+  self:SetupColorDefs()
 
   -- Setup the options menu and main windows
   --[[ TODO MasterMerchant:LibAddonInit()

@@ -227,7 +227,7 @@
                 ClearTooltip(InformationTooltip)
               </OnMouseExit>
             </Button>
-            <Control name="$(parent)Guild" inherits="ZO_SortHeader">
+            <Control name="$(parent)Guild" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)Buyer" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="200" y="32"/>
             </Control>
@@ -235,7 +235,7 @@
               <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="37" offsetY="0"/>
               <Dimensions x="320" y="32"/>
               <Controls>
-                <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="LEFT" verticalAlignment="CENTER" modifyTextType="NONE">
+                <Label name="$(parent)Name" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" modifyTextType="NONE">
                   <Anchor point="TOPLEFT" relativeTo="$(parent)Buyer" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
                   <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Buyer" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
                 </Label>
@@ -251,7 +251,7 @@
               <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="115" y="32"/>
             </Control>
-            <Control name="$(parent)Price" inherits="MM_SortHeaderCenter">
+            <Control name="$(parent)Price" inherits="MM_SortHeaderYellow">
               <Anchor point="LEFT" relativeTo="$(parent)SellTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
               <Dimensions x="80" y="32"/>
             </Control>
@@ -296,7 +296,7 @@
     </TopLevelControl>
 
     <!-- Full-size Data Row (virtual) -->
-    <Control name="MasterMerchantDataRow" color="CFDCBD" virtual="true">
+    <Control name="MasterMerchantDataRow" virtual="true">
       <Dimensions x="940" y="36"/>
       <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
       <Controls>
@@ -310,9 +310,9 @@
           <Dimensions x="145" y="26"/>
           <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF"/>
         </Button>
-        <Label name="$(parent)Guild" inheritAlpha="true" color="FFFFFF" text="Guild">
+        <Label name="$(parent)Guild" inheritAlpha="true" text="Guild">
           <Anchor point="LEFT" relativeTo="$(parent)Buyer" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="200" y="26"/>
+          <Dimensions x="195" y="26"/>
         </Label>
         <Texture name="$(parent)ItemIcon" alpha="1">
           <Dimensions x="32" y="32"/>
@@ -325,17 +325,17 @@
         </Label>
         <Label name="$(parent)ItemName" verticalAlignment="CENTER" inheritAlpha="true" text="Item Name" linkEnabled="true" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
-          <Dimensions x="320" y="26"/>
+          <Dimensions x="315" y="26"/>
           <OnLinkMouseUp>
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>
         </Label>
-        <Label name="$(parent)SellTime" verticalAlignment="CENTER" horizontalAlignment="CENTER" inheritAlpha="true" color="FFFFFF" text="Time">
+        <Label name="$(parent)SellTime" verticalAlignment="CENTER" horizontalAlignment="CENTER" inheritAlpha="true" text="Time">
           <Dimensions x="115" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
-        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" color="D5B526" text="Price">
-          <Dimensions x="80" y="26"/>
+        <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" text="Price">
+          <Dimensions x="90" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)SellTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
       </Controls>

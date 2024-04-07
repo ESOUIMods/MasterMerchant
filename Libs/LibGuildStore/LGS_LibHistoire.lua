@@ -297,6 +297,7 @@ function internal:TestRefresh()
   local eventsLinkedTrader = {}
   local eventsLinked = true
   local numGuilds = GetNumGuilds()
+  local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
   for guildNum = 1, numGuilds do
     local guildId = GetGuildId(guildNum)
     numEventsTrader[guildId] = GetNumGuildHistoryEvents(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER)
@@ -319,6 +320,7 @@ function internal:TestRefresh()
       --internal:dm("Debug", "Could Process Roster: " .. tostring(guildId) .. " : " .. GetGuildName(guildId))
       --internal:dm("Debug", "Num Events Roster: " .. tostring(numEventsTrader[guildId]) .. " : " .. GetGuildName(guildId))
       local endIndex = numEventsTrader[guildId]
+      local oneEventRange = GetNumGuildHistoryEventRanges(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER) == 1
       task:For(1, endIndex):Do(function(eventIndex)
         local eventId, timestampS, isRedacted, eventType, sellerDisplayName, buyerDisplayName, itemLink, quantity, price, tax = GetGuildHistoryTraderEventInfo(guildId, eventIndex)
         if eventType == GUILD_HISTORY_TRADER_EVENT_ITEM_SOLD then
@@ -338,7 +340,6 @@ function internal:TestRefresh()
           }
           theEvent.wasKiosk = (internal.guildMemberInfo[guildId][zo_strlower(theEvent.buyer)] == nil)
 
-          local oneEventRange = GetNumGuildHistoryEventRanges(guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER) == 1
           local timeStampInRange = not LibGuildStore_SavedVariables["newestTime"][guildId] or theEvent.timestamp > LibGuildStore_SavedVariables["newestTime"][guildId]
           if oneEventRange and timeStampInRange then
             LibGuildStore_SavedVariables["newestTime"][guildId] = theEvent.timestamp
@@ -348,7 +349,7 @@ function internal:TestRefresh()
           local thePlayer = zo_strlower(GetDisplayName())
           local isSelfSale = zo_strlower(theEvent.seller) == thePlayer
           local added = false
-          local daysOfHistoryToKeep = GetTimeStamp() - (ZO_ONE_DAY_IN_SECONDS * LibGuildStore_SavedVariables["historyDepth"])
+          
           if (theEvent.timestamp > daysOfHistoryToKeep) then
             local duplicate = CheckForDuplicateSale(theEvent.itemLink, theEvent.id)
             if not duplicate then
@@ -370,8 +371,9 @@ function internal:TestRefresh()
   task:Call(function(task) ReloadUI() end)
 end
 
+-- LibGuildStore_Internal.LibHistoireListener[57409]:IsRunning()
 LGH:RegisterCallback(LGH.callback.INITIALIZED, function()
-  LGH:RegisterCallback(LGH.callback.LINKED_RANGE_FOUND, function(guildId, category)
+  LGH:RegisterCallback(LGH.callback.MANAGED_RANGE_FOUND, function(guildId, category)
     if not internal.LibHistoireListenerReady[guildId] then return end
     if not internal.LibHistoireListener[guildId]:IsRunning() then
       internal:dm("Debug", "Linked Range Callback for: " .. tostring(guildId))
