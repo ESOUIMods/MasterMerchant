@@ -65,6 +65,7 @@ function MasterMerchant:SetupColorDefs()
   MM_TEXT_COLOR_PINK = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(1, 0.047058823529412, 0.67843137254902, 1))
   MM_TEXT_COLOR_ORANGE = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(1, 0.38039215686275, 0.12156862745098, 1))
   MM_TEXT_COLOR_GREY = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(0.30196078431373, 0.30196078431373, 0.30196078431373, 1))
+  MM_TEXT_COLOR_WHITE = ZO_ColorDef:New(ZO_ColorDef.FloatsToHex(1, 1, 1, 1))
 end
 
 function MasterMerchant:CheckTimeframe()
@@ -2580,8 +2581,9 @@ function MasterMerchant:FirstInitialize()
     end
   end
 
-  MasterMerchant:RegisterFonts()
   SetupBackupWarning()
+  MasterMerchant:RegisterFonts()
+  MasterMerchant:SetupColorDefs()
   MasterMerchant:BuildDateRangeTable()
   MasterMerchant:BuildFilterDateRangeTable()
   MasterMerchant.blacklistTable = MasterMerchant:BuildTableFromString(MasterMerchant.systemSavedVariables.blacklist)
@@ -2626,8 +2628,6 @@ function MasterMerchant:FirstInitialize()
   -- ReferenceSalesAllContainers() STEP Removed
   -- New, added 9/26
   self:InitRosterChanges()
-
-  self:SetupColorDefs()
 
   -- Setup the options menu and main windows
   --[[ TODO MasterMerchant:LibAddonInit()

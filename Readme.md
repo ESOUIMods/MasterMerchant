@@ -9,7 +9,7 @@ I would like to thank the ZOS Developers, Dan and Seth, and the QA Team working 
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
-## ChangeLog 3.8.04
+## ChangeLog 3.8.04, 3.8.05
 
 - Updated header and row colors
 

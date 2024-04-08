@@ -375,6 +375,20 @@ function MasterMerchant:SortByReportItemGuildName(ordering, scrollList)
   end
 end
 
+local function GetColorForGuild(currentGuild)
+    if not MasterMerchant.systemSavedVariables.addColorToGuildNames then
+        return MM_TEXT_COLOR_WHITE
+    end
+
+    if currentGuild ~= nil and currentGuild ~= "" and type(currentGuild) == 'string' then
+        if MasterMerchant.guildColorDefs[currentGuild] ~= nil then
+            return MasterMerchant.guildColorDefs[currentGuild]
+        end
+    end
+
+    return MM_TEXT_COLOR_WHITE
+end
+
 function MMScrollList:SetupSalesRow(control, data)
 
   control.rowId = GetControl(control, 'RowId')
@@ -441,8 +455,8 @@ function MMScrollList:SetupSalesRow(control, data)
   if actualItem.wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. currentGuild else guildString = '     ' .. currentGuild end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
-  if MasterMerchant.systemSavedVariables.addColorToGuildNames then
-    local color = MasterMerchant.guildColorDefs[currentGuild]
+  local color = GetColorForGuild(currentGuild)
+  if color then
     control.guild:SetColor(color:UnpackRGBA())
   end
 
@@ -572,10 +586,11 @@ function MMScrollList:SetupGuildSalesRow(control, data)
   if wasKiosk then guildString = '|t16:16:/EsoUI/Art/icons/item_generic_coinbag.dds|t ' .. currentGuild else guildString = '     ' .. currentGuild end
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(guildString)
-  if MasterMerchant.systemSavedVariables.addColorToGuildNames then
-    local color = MasterMerchant.guildColorDefs[currentGuild]
+  local color = GetColorForGuild(currentGuild)
+  if color then
     control.guild:SetColor(color:UnpackRGBA())
   end
+
   -- Rank Cell
   control.rank:SetText(rankValue)
 
@@ -879,8 +894,8 @@ function MMScrollList:SetupReportsRow(control, data)
   -- Guild cell
   control.guild:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
   control.guild:SetText(currentGuild)
-  if MasterMerchant.systemSavedVariables.addColorToGuildNames then
-    local color = MasterMerchant.guildColorDefs[currentGuild]
+  local color = GetColorForGuild(currentGuild)
+  if color then
     control.guild:SetColor(color:UnpackRGBA())
   end
 
