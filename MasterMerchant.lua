@@ -915,7 +915,7 @@ function MasterMerchant:itemCraftPrice(itemLink)
       local cost = MasterMerchant.GetItemLinePrice(solventItemLink)
       local bestIngredients = LibAlchemy:getBestCombination({ LibAlchemy.effectsByWritID[effect1], LibAlchemy.effectsByWritID[effect2], LibAlchemy.effectsByWritID[effect3], LibAlchemy.effectsByWritID[effect4] }) or {}
       for _, itemId in pairs(bestIngredients) do
-        local ingredientItemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', itemId)
+        local ingredientItemLink = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h', itemId) -- TODO LINK
         cost = cost + MasterMerchant.GetItemLinePrice(ingredientItemLink)
       end
       return cost, (cost / multiplier)
@@ -924,19 +924,14 @@ function MasterMerchant:itemCraftPrice(itemLink)
     end
   end
 
-  local numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
-  if ((numIngredients or 0) == 0) then
-    -- Try to clean up item link by moving it to level 1
-    itemLink = itemLink:gsub(":0", ":1", 1)
-    numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(itemLink)
-  end
+  local numIngredients = LibRecipe:GetNumIngredients(itemLink)
 
   if ((numIngredients or 0) > 0) then
     local cost = 0
     for i = 1, numIngredients do
-      local ingredientItemLink, numRequired = MasterMerchant.GetItemLinkRecipeIngredientInfo(itemLink, i)
-      if ingredientItemLink then
-        cost = cost + (MasterMerchant.GetItemLinePrice(ingredientItemLink) * numRequired)
+      local ingredientLink, ingredientName, displayQuality, amountRequired = LibRecipe:GetIngredientInfoByIndex(itemLink, i)
+      if ingredientLink then
+        cost = cost + (MasterMerchant.GetItemLinePrice(ingredientLink) * amountRequired)
       end
     end
 
@@ -1126,8 +1121,7 @@ function MasterMerchant.BuildEnchantingRecipes(potency, essence, aspect)
     --d(glyph)
     --d(potencyNum .. '.' .. essenceNum .. '.' .. aspectNum)
     if (glyph ~= '') then
-      local mmGlyph = zo_strmatch(glyph,
-        '|H.-:item:(.-):') .. ':' .. internal.GetOrCreateIndexFromLink(glyph)
+      local mmGlyph = zo_strmatch(glyph, '|H.-:item:(.-):') .. ':' .. internal.GetOrCreateIndexFromLink(glyph)
 
       MasterMerchant.virtualRecipe[mmGlyph] = {
         [1] = { ['item'] = string.format('|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h',
@@ -1235,7 +1229,7 @@ function MasterMerchant.myOnTooltipMouseUp(control, button, upInside, linkFuncti
 
     local link = linkFunction()
 
-    if (link ~= MM_STRING_EMPTY and zo_strmatch(link, '|H.-:item:(.-):')) then
+    if (link ~= MM_STRING_EMPTY and zo_strmatch(link, '|H.-:item:(.-):')) then -- TODO LINK
       ClearMenu()
 
       AddMenuItem(GetString(MM_CRAFT_COST_TO_CHAT), function() MasterMerchant:onItemActionLinkCCLink(link) end)
@@ -1428,7 +1422,7 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
   if slotType == SLOT_TYPE_TRADING_HOUSE_ITEM_LISTING then
     itemLink = GetTradingHouseListingItemLink(ZO_Inventory_GetSlotIndex(inventorySlot), linkStyle)
   end
-  if (itemLink and zo_strmatch(itemLink, '|H.-:item:(.-):')) then
+  if (itemLink and zo_strmatch(itemLink, '|H.-:item:(.-):')) then -- TODO LINK
     zo_callLater(function()
       if MasterMerchant.systemSavedVariables.showSearchBonanza then AddMenuItem(GetString(MM_SEARCH_BONANZA), function() self:OnSearchBonanzaPopupInfoLink(itemLink) end, MENU_ADD_OPTION_LABEL) end
       if MasterMerchant:itemCraftPrice(itemLink) then

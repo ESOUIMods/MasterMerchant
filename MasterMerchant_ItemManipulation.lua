@@ -1,7 +1,7 @@
 local ItemChangeData
 
 function MasterMerchant.NewLink(itemLink, movement)
-  local subType, level = zo_strmatch(itemLink, '|H.-:item:.-:(%d-):(%d-):')
+  local subType, level = zo_strmatch(itemLink, '|H.-:item:.-:(%d-):(%d-):') -- TODO LINK
   subType = tonumber(subType)
   level = tonumber(level)
 
@@ -13,8 +13,7 @@ function MasterMerchant.NewLink(itemLink, movement)
   if newValue.NewSubtype == nil then
     return nil
   else
-    return zo_strgsub(zo_strgsub(itemLink, '(|H.-:item:.-:)(%d-)(:.-)', '%1' .. newValue.NewSubtype .. '%3', 1),
-      '(|H.-:item:.-:.-:)(%d-)(:.-)', '%1' .. newValue.NewLevel .. '%3', 1)
+    return zo_strgsub(zo_strgsub(itemLink, '(|H.-:item:.-:)(%d-)(:.-)', '%1' .. newValue.NewSubtype .. '%3', 1), '(|H.-:item:.-:.-:)(%d-)(:.-)', '%1' .. newValue.NewLevel .. '%3', 1) -- TODO LINK
   end
 end
 

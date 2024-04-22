@@ -15,7 +15,7 @@
 ## LastUpdated: Jan 2024
 ## SavedVariables: ShopkeeperSavedVars
 ## DependsOn: LibExecutionQueue>=200 LibAddonMenu-2.0>=36 LibMediaProvider-1.0>=28 LibGuildRoster>=103
-## DependsOn: LibGuildStore>=105 LibDebugLogger>=263 LibAlchemy LibPrice>=70430
+## DependsOn: LibGuildStore>=105 LibDebugLogger>=263 LibAlchemy LibPrice>=70430 LibRecipe>=100
 ## OptionalDependsOn: MM00Data MM01Data MM02Data MM03Data MM04Data MM05Data MM06Data MM07Data MM08Data MM09Data
 ## OptionalDependsOn: MM10Data MM11Data MM12Data MM13Data MM14Data MM15Data MM16Data AwesomeGuildStore>=3079
 ## OptionalDependsOn: DebugLogViewer>=558 EsoPL ArkadiusTradeTools ShoppingList BeamMeUp>=300 uespLog TamrielTradeCentre

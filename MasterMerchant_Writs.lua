@@ -146,7 +146,6 @@ function mmUtils:MaterialCostPrice(itemLink)
   end
 
   local cost = 0
-  local numIngredients = 0
   local winterWritsRequiredQty = nil
   local flavorText = GetItemLinkFlavorText(itemLink)
   --[[Use GetMasterWritRequiredItemLink() for now to cover food or Furnature
@@ -156,18 +155,13 @@ function mmUtils:MaterialCostPrice(itemLink)
     return nil
   end
 
-  numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(newLifeFestivalItemLink)
-  if ((numIngredients or 0) == 0) then
-    -- Try to clean up item link by moving it to level 1
-    newLifeFestivalItemLink = newLifeFestivalItemLink:gsub(":0", ":1", 1)
-    numIngredients = MasterMerchant.GetItemLinkRecipeNumIngredients(newLifeFestivalItemLink)
-  end
+  local numIngredients = LibRecipe:GetNumIngredients(newLifeFestivalItemLink)
 
   if ((numIngredients or 0) > 0) then
     for i = 1, numIngredients do
-      local ingredientItemLink, numRequired = MasterMerchant.GetItemLinkRecipeIngredientInfo(newLifeFestivalItemLink, i)
-      if ingredientItemLink then
-        cost = cost + (MasterMerchant.GetItemLinePrice(ingredientItemLink) * numRequired)
+      local ingredientLink, ingredientName, displayQuality, amountRequired = LibRecipe:GetIngredientInfoByIndex(newLifeFestivalItemLink, i)
+      if ingredientLink then
+        cost = cost + (MasterMerchant.GetItemLinePrice(ingredientLink) * amountRequired)
       end
     end
 

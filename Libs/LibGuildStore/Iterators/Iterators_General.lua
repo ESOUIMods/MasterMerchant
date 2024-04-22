@@ -73,6 +73,7 @@ function internal:IsValidItemLink(itemLink)
   local validLink = true
   local itemCodeText = MasterMerchant.ItemCodeText(itemLink)
   local theIID = GetItemLinkItemId(itemLink)
+   -- leave teh zo_strmatch because it's part of how the verification works
   local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
   local itemlinkName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
   local _, count = zo_strgsub(itemLink, ':', ':')
