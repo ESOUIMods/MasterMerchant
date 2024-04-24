@@ -602,4 +602,4 @@ ZO_CreateStringId("MM_SALES_FORMAT_TIP", "When enabled, the system will utilize 
 
 -- Warning text
 ZO_CreateStringId("MM_WARN_DISABLE_TEXT", "Click here to disable this warning")
-ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "Please read about Update 41, LibHistoire, and how the ZOS server reset affects detecting Duplicate sales")
+ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "9.3.8 itibariyle Lonca Geçmişi kararlı görünüyor. Veri talep etme veya LibHistoire'ı Yenile işlevini kullanma hakkında bilgi için belgeleri inceleyin.")

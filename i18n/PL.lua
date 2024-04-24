@@ -600,4 +600,4 @@ ZO_CreateStringId("MM_SALES_FORMAT_TIP", "When enabled, the system will utilize 
 
 -- Warning text
 ZO_CreateStringId("MM_WARN_DISABLE_TEXT", "Click here to disable this warning")
-ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "Please read about Update 41, LibHistoire, and how the ZOS server reset affects detecting Duplicate sales")
+ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "Od wersji 9.3.8 Historia Gildii wydaje się być stabilna. Zapoznaj się z dokumentacją, aby uzyskać informacje na temat żądania danych lub korzystania z funkcji Odśwież LibHistoire.")

@@ -601,4 +601,4 @@ ZO_CreateStringId("MM_SALES_FORMAT_TIP", "Если включено, во все
 
 -- Warning text
 ZO_CreateStringId("MM_WARN_DISABLE_TEXT", "Нажмите здесь, чтобы убрать это предупреждение")
-ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "Пожалуйста, прочтите статью об Update 41, LibHistoire и влиянии сброса в сервере ZOS на дублирующиеся продажи (англ.)")
+ZO_CreateStringId("MM_WARN_MESSAGE_TEXT", "По состоянию на 9.3.8 история гильдий кажется стабильной. Просмотрите документацию для получения информации о запросе данных или использовании функции Refresh LibHistoire.")
