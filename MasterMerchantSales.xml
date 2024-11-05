@@ -331,11 +331,11 @@
           </OnLinkMouseUp>
         </Label>
         <Label name="$(parent)SellTime" verticalAlignment="CENTER" horizontalAlignment="CENTER" inheritAlpha="true" text="Time">
-          <Dimensions x="115" y="26"/>
+          <Dimensions x="110" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)ItemName" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
         <Label name="$(parent)Price" verticalAlignment="CENTER" horizontalAlignment="RIGHT" inheritAlpha="true" text="Price">
-          <Dimensions x="90" y="26"/>
+          <Dimensions x="95" y="26"/>
           <Anchor point="LEFT" relativeTo="$(parent)SellTime" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
         </Label>
       </Controls>

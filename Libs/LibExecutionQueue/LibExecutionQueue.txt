@@ -6,7 +6,7 @@
 
 
 ## Title: LibExecutionQueue
-## APIVersion: 101040 101041
+## APIVersion: 101041 101042
 ## Description: Allows you to queue up functions for execution and breakup long running operations fairly easily (See MasterMerchant for examples)
 ## Author: Philgo
 ## IsLibrary: true

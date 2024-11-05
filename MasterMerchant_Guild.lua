@@ -6,9 +6,9 @@
 local internal = _G["LibGuildStore_Internal"]
 
 function MasterMerchant:CalculateCut(amount)
-    local listingFee, tradingHouseCut, expectedProfit = GetTradingHousePostPriceInfo(amount)
-    local cutAmount = zo_floor(tradingHouseCut / 2)
-    return cutAmount
+  local listingFee, tradingHouseCut, expectedProfit = GetTradingHousePostPriceInfo(amount)
+  local cutAmount = zo_floor(tradingHouseCut / 2)
+  return cutAmount
 end
 
 local MMSeller = {
@@ -315,7 +315,7 @@ function MMGuild:removeSale(sellerName, rankIndex, amount, stack)
   if (self.sellers[sellerName]) then self.sellers[sellerName]:removeSale(rankIndex, amount, stack) end
 
   self.sales[rankIndex] = (self.sales[rankIndex] or 0) - amount
-  self.tax[rankIndex] = (self.tax[rankIndex] or 0) -  MasterMerchant:CalculateCut(amount)
+  self.tax[rankIndex] = (self.tax[rankIndex] or 0) - MasterMerchant:CalculateCut(amount)
   self.count[rankIndex] = (self.count[rankIndex] or 0) - 1
   self.stack[rankIndex] = (self.stack[rankIndex] or 0) - stack
 end

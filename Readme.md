@@ -9,9 +9,14 @@ I would like to thank the ZOS Developers, Dan and Seth, and the QA Team working 
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.8.07
+
+- Updated recipes for Craft Cost for Gold Road
+
 ## ChangeLog 3.8.06
 
 - Updated notification on Guild history status
+- Updated recipes for Craft Cost
 
 ## ChangeLog 3.8.04, 3.8.05
 
