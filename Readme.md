@@ -9,6 +9,10 @@ I would like to thank the ZOS Developers, Dan and Seth, and the QA Team working 
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.8.10
+
+- Updated recipes for Update 44
+
 ## ChangeLog 3.8.09
 
 - Quick Fix for Update 43 ZOS changes (Still reviewing U43 changes)
