@@ -81,6 +81,7 @@ end
 function MasterMerchant:SetInventorySellPriceText(rowControl, slot)
   if not MasterMerchant.isInitialized then return end
   local sellPriceControl = rowControl:GetNamedChild("SellPrice")
+  local sellPriceLabel = sellPriceControl:GetNamedChild("Text")
   if not sellPriceControl then return end
   slot = AddAlteredInventorySellPrice(slot)
 
@@ -88,12 +89,12 @@ function MasterMerchant:SetInventorySellPriceText(rowControl, slot)
     slot.sellPrice = slot.alteredSellPrice
     slot.stackSellPrice = slot.alteredStackSellPrice
     local newSellPrice = GetInventoryPriceText(slot.sellPrice, slot.stackSellPrice)
-    sellPriceControl:SetText(newSellPrice)
+    sellPriceLabel:SetText(newSellPrice)
   elseif slot.hasAlteredPrice and not MasterMerchant.systemSavedVariables.replaceInventoryValues then
     slot.sellPrice = slot.originalSellPrice
     slot.stackSellPrice = slot.originalStackSellPrice
     local newSellPrice = slot.stackSellPrice .. MM_COIN_ICON_NO_SPACE
-    sellPriceControl:SetText(newSellPrice)
+    sellPriceLabel:SetText(newSellPrice)
   end
 end
 

@@ -376,17 +376,17 @@ function MasterMerchant:SortByReportItemGuildName(ordering, scrollList)
 end
 
 local function GetColorForGuild(currentGuild)
-    if not MasterMerchant.systemSavedVariables.addColorToGuildNames then
-        return MM_TEXT_COLOR_WHITE
-    end
-
-    if currentGuild ~= nil and currentGuild ~= "" and type(currentGuild) == 'string' then
-        if MasterMerchant.guildColorDefs[currentGuild] ~= nil then
-            return MasterMerchant.guildColorDefs[currentGuild]
-        end
-    end
-
+  if not MasterMerchant.systemSavedVariables.addColorToGuildNames then
     return MM_TEXT_COLOR_WHITE
+  end
+
+  if currentGuild ~= nil and currentGuild ~= "" and type(currentGuild) == 'string' then
+    if MasterMerchant.guildColorDefs[currentGuild] ~= nil then
+      return MasterMerchant.guildColorDefs[currentGuild]
+    end
+  end
+
+  return MM_TEXT_COLOR_WHITE
 end
 
 function MMScrollList:SetupSalesRow(control, data)
@@ -3960,7 +3960,7 @@ end
 
 function MasterMerchant:ToggleVendorMarker(rowControl, slot)
   local markerControl = rowControl:GetNamedChild(MasterMerchant.name .. "Warn")
-  local relativeToPoint = rowControl:GetNamedChild("SellPrice")
+  local sellPriceControl = rowControl:GetNamedChild("SellPrice")
   local showVendorWarning = false
   local vendorWarningPricing = nil
   local rData = rowControl.dataEntry and rowControl.dataEntry.data or nil
@@ -3986,7 +3986,7 @@ function MasterMerchant:ToggleVendorMarker(rowControl, slot)
     markerControl = WINDOW_MANAGER:CreateControl(rowControl:GetName() .. MasterMerchant.name .. "Warn", rowControl, CT_TEXTURE)
     markerControl:SetDimensions(22, 22)
     markerControl:SetInheritScale(false)
-    markerControl:SetAnchor(LEFT, relativeToPoint, LEFT)
+    markerControl:SetAnchor(LEFT, sellPriceControl, LEFT)
     markerControl:SetDrawTier(DT_HIGH)
   end
 

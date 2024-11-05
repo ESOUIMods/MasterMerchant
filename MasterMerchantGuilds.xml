@@ -221,7 +221,7 @@
               </OnMouseExit>
             </Control>
             <Control name="$(parent)Guild" inherits="MM_SortHeaderCenter">
-              <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="270" offsetY="0"/>
+              <Anchor point="LEFT" relativeTo="$(parent)NameSwitch" relativePoint="RIGHT" offsetX="265" offsetY="0"/>
               <Dimensions x="190" y="32"/>
             </Control>
             <Control name="$(parent)Rank" inherits="MM_SortHeaderCenter">
@@ -238,11 +238,11 @@
             </Control>
             <Control name="$(parent)Count" inherits="MM_SortHeaderCenter">
               <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="100" y="32"/>
+              <Dimensions x="105" y="32"/>
             </Control>
             <Control name="$(parent)Percent" inherits="MM_NonSortHeaderCenter">
-              <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-              <Dimensions x="75" y="32"/>
+              <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="7" offsetY="0"/>
+              <Dimensions x="70" y="32"/>
             </Control>
           </Controls>
         </Control>
@@ -293,7 +293,7 @@
           </OnLinkMouseUp>
         </Label>
         <Label name="$(parent)Guild" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild">
-          <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="270" offsetY="0"/>
+          <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="265" offsetY="0"/>
           <Dimensions x="190" y="26"/>
         </Label>
         <Label name="$(parent)Rank" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="15">
@@ -310,11 +310,11 @@
         </Label>
         <Label name="$(parent)Count" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Count">
           <Anchor point="LEFT" relativeTo="$(parent)Tax" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="100" y="26"/>
+          <Dimensions x="105" y="26"/>
         </Label>
         <Label name="$(parent)Percent" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="10%">
           <Anchor point="LEFT" relativeTo="$(parent)Count" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
-          <Dimensions x="70" y="26"/>
+          <Dimensions x="68" y="26"/>
         </Label>
       </Controls>
     </Control>
