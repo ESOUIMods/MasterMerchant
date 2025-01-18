@@ -56,67 +56,6 @@ purchasesNamespace = "purchasena"
 postedNamespace = "posteditemsna"
 sales_data = {}
 
-
-GS03DataSavedVariables =
-{
-  ["datana"] =
-  {
-    [114690] =
-    {
-      ["50:16:2:18:0"] =
-      {
-        ["itemDesc"] = "Guards of Syvarra's Scales",
-        ["newestTime"] = 1682194027,
-        ["itemIcon"] = "/esoui/art/icons/gear_thievesguildv2_medium_legs_a.dds",
-        ["sales"] =
-        {
-          [1] =
-          {
-            ["price"] = 100000,
-            ["itemLink"] = 1,
-            ["wasKiosk"] = true,
-            ["guild"] = 2,
-            ["buyer"] = 17153,
-            ["quant"] = 1,
-            ["timestamp"] = 1738056564,
-            ["id"] = "1978217035",
-            ["seller"] = 25934,
-          },
-        },
-        ["itemAdderText"] = "cp160 purple epic medium apparel set syvarra's scales legs divines",
-        ["totalCount"] = 1,
-        ["wasAltered"] = false,
-        ["oldestTime"] = 1620353437,
-      },
-      ["50:16:4:18:0"] =
-      {
-        ["itemDesc"] = "Guards of Syvarra's Scales",
-        ["newestTime"] = 1659287708,
-        ["itemIcon"] = "/esoui/art/icons/gear_thievesguildv2_medium_legs_a.dds",
-        ["sales"] =
-        {
-          [1] =
-          {
-            ["price"] = 200000,
-            ["itemLink"] = 2,
-            ["wasKiosk"] = true,
-            ["guild"] = 1,
-            ["buyer"] = 79652,
-            ["quant"] = 1,
-            ["timestamp"] = 1737646299,
-            ["id"] = "2187175832",
-            ["seller"] = 259,
-          },
-        },
-        ["itemAdderText"] = "cp160 green fine medium apparel set syvarra's scales legs divines",
-        ["totalCount"] = 1,
-        ["wasAltered"] = false,
-        ["oldestTime"] = 1659287708,
-      },
-    },
-  },
-}
-
 GS08DataSavedVariables =
 {
   ["datana"] =
@@ -132,13 +71,13 @@ GS08DataSavedVariables =
         {
           [1] =
           {
-            ["price"] = 300000,
-            ["itemLink"] = 3,
+            ["price"] = 2000,
+            ["itemLink"] = 50147,
             ["wasKiosk"] = true,
             ["guild"] = 1,
             ["buyer"] = 79652,
             ["quant"] = 1,
-            ["timestamp"] = 1736713708,
+            ["timestamp"] = 1659287708,
             ["id"] = "2187175832",
             ["seller"] = 259,
           },
@@ -176,7 +115,7 @@ GS17DataSavedVariables =
             ["seller"] = 26506,
             ["quant"] = 1,
             ["buyer"] = 2439,
-            ["timestamp"] = 1737646299,
+            ["timestamp"] = 1688289861,
             ["price"] = 6300,
             ["guild"] = 12,
           },
@@ -204,7 +143,7 @@ GS17DataSavedVariables =
             ["price"] = 950,
             ["quant"] = 1,
             ["itemLink"] = 7347,
-            ["timestamp"] = 1736713708,
+            ["timestamp"] = 1680478501,
             ["seller"] = 2439,
             ["guild"] = 5,
           },
@@ -229,13 +168,13 @@ GS05DataSavedVariables =
         {
           [1] =
           {
-            ["price"] = 400000,
-            ["itemLink"] = 4,
+            ["price"] = 72000,
+            ["itemLink"] = 23120,
             ["wasKiosk"] = true,
             ["guild"] = 2,
             ["buyer"] = 17153,
             ["quant"] = 1,
-            ["timestamp"] = 1738494726,
+            ["timestamp"] = 1669140811,
             ["id"] = "1978217035",
             ["seller"] = 25934,
           },
@@ -264,13 +203,13 @@ GS15DataSavedVariables =
         {
           [1] =
           {
-            ["price"] = 500000,
-            ["itemLink"] = 5,
+            ["price"] = 29995,
+            ["itemLink"] = 50147,
             ["wasKiosk"] = true,
             ["guild"] = 5,
             ["buyer"] = 15368,
             ["quant"] = 1,
-            ["timestamp"] = 1738377138,
+            ["timestamp"] = 1664831594,
             ["id"] = "1945472617",
             ["seller"] = 4857,
           },
@@ -295,44 +234,95 @@ end
 function ReferenceSales(otherData)
   local savedVars = otherData[dataNamespace]
 
-  for itemId, versionList in pairs(savedVars) do
-    if not sales_data[itemId] and next(versionList) then
-      sales_data[itemId] = versionList
+  for itemid, versionlist in pairs(savedVars) do
+    if not sales_data[itemid] and next(versionlist) then
+      sales_data[itemid] = versionlist
     else
-      for versionId, versionData in pairs(versionList) do
-        local hasSales = versionData and versionData['sales']
-        if hasSales then
-          -- Initialize inside this loop
-          local oldestTime, newestTime = nil, nil
+      for versionid, versiondata in pairs(versionlist) do
+        if not sales_data[itemid][versionid] then
+          sales_data[itemid][versionid] = {}
+        end
 
-          for saleId, saleData in pairs(versionData['sales']) do
-            if type(saleId) == 'number' and type(saleData) == 'table' and type(saleData["timestamp"]) == 'number' then
-              sales_data[itemId][versionId] = sales_data[itemId][versionId] or {}
-              sales_data[itemId][versionId]['sales'] = sales_data[itemId][versionId]['sales'] or {}
-              table.insert(sales_data[itemId][versionId]['sales'], saleData)
-            end
+        local sales = versiondata['sales'] or {}
+
+        for saleid, saledata in pairs(versiondata['sales']) do
+          if (type(saleid) == 'number' and type(saledata) == 'table' and type(saledata["timestamp"]) == 'number') then
+            table.insert(sales, saledata)
           end
+        end
 
-          for _, saleData in ipairs(sales_data[itemId][versionId]['sales']) do
-            if oldestTime == nil or oldestTime > saleData.timestamp then oldestTime = saleData.timestamp end
-            if newestTime == nil or newestTime < saleData.timestamp then newestTime = saleData.timestamp end
-          end
+        local firstSale = next(versiondata['sales'], nil)
+        if firstSale then
+          local itemLink = firstSale.itemLink
+          sales_data[itemid][versionid].itemIcon = versiondata.itemIcon or "/esoui/art/filename.dds"
+          sales_data[itemid][versionid].itemAdderText = versiondata.itemAdderText or "Adder Text"
+          sales_data[itemid][versionid].itemDesc = versiondata.itemDesc or "Item Desc"
+        end
 
-          Debug(string.format("oldestTime: %s", oldestTime))
-          Debug(string.format("newestTime: %s", newestTime))
-
-          sales_data[itemId][versionId].totalCount = NonContiguousCount(sales_data[itemId][versionId]['sales'])
-          sales_data[itemId][versionId].wasAltered = true
-          sales_data[itemId][versionId].oldestTime = oldestTime
-          sales_data[itemId][versionId].newestTime = newestTime
-
-          savedVars[itemId][versionId] = nil
+        if not sales_data[itemid][versionid]['sales'] then
+          sales_data[itemid][versionid]['sales'] = {}
+        end
+        for _, saledata in ipairs(sales) do
+          table.insert(sales_data[itemid][versionid]['sales'], saledata)
         end
       end
-      Debug(itemId)
-      Debug(versionId)
-      local hasVersionId = savedVars and savedVars[itemId] and next(savedVars[itemId])
-      if not hasVersionId then savedVars[itemId] = nil end
+      savedVars[itemid] = nil
+    end
+  end
+end
+
+function RenewExtraSalesData(otherData)
+  local savedVars = otherData[dataNamespace]
+
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      if versiondata["wasAltered"] then
+        local sales = versiondata['sales'] or {}
+        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
+
+        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        for _, saleData in pairs(sales) do
+          table.insert(timestamps, saleData["timestamp"])
+        end
+
+        -- Find oldest and newest time from timestamps
+        local oldestTime = math.min(unpack(timestamps))
+        local newestTime = math.max(unpack(timestamps))
+
+        -- Update versiondata with calculated values
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].wasAltered = false
+      end
+    end
+  end
+end
+
+function RenewExtraPostedData()
+  local savedVars = GS17DataSavedVariables[postedNamespace]
+
+  for itemID, versionlist in pairs(savedVars) do
+    for versionid, versiondata in pairs(versionlist) do
+      if versiondata["wasAltered"] then
+        local sales = versiondata['sales'] or {}
+        local totalCount = NonContiguousCount(sales)  -- Count the sales entries
+
+        local oldestTime = math.huge  -- Initialize to a large value
+        local newestTime = 0  -- Initialize to 0
+
+        for _, saleData in pairs(sales) do
+          local timestamp = saleData["timestamp"]
+          oldestTime = math.min(oldestTime, timestamp)
+          newestTime = math.max(newestTime, timestamp)
+        end
+
+        -- Update versiondata with calculated values
+        savedVars[itemID][versionid].totalCount = totalCount
+        savedVars[itemID][versionid].newestTime = newestTime
+        savedVars[itemID][versionid].oldestTime = oldestTime
+        savedVars[itemID][versionid].wasAltered = false
+      end
     end
   end
 end
@@ -341,16 +331,7 @@ function ProcessAndPrintSalesData()
   ReferenceSales(GS08DataSavedVariables)
   ReferenceSales(GS05DataSavedVariables)
   ReferenceSales(GS15DataSavedVariables)
-  ReferenceSales(GS03DataSavedVariables)
   Debug(sales_data)
-  Debug("GS08DataSavedVariables")
-  Debug(GS08DataSavedVariables)
-  Debug("GS05DataSavedVariables")
-  Debug(GS05DataSavedVariables)
-  Debug("GS15DataSavedVariables")
-  Debug(GS15DataSavedVariables)
-  Debug("GS03DataSavedVariables")
-  Debug(GS03DataSavedVariables)
 end
 
 ProcessAndPrintSalesData()

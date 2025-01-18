@@ -1,0 +1,48 @@
+local vSync = false
+local framerate = 51.0
+local minFrameTime = 0.00000000
+local backgroundFpsLimit = 30
+local useBackgroundFpsLimit = false
+
+
+
+local frameTimeTarget = vSync and 0.0140 or (math.max(0.0125, tonumber(minFrameTime)))
+
+local spendTimeDef = frameTimeTarget * 0.75
+local spendTimeDefNoHUD = frameTimeTarget * 0.5
+local spendTime = spendTimeDef
+
+print(frameTimeTarget, spendTimeDef, spendTimeDefNoHUD, spendTime)
+
+local hudUiSceneIsShowing = false
+local hudSceneIsShowing = false
+local function GetThreshold()
+  return (hudSceneIsShowing or hudUiSceneIsShowing) and spendTimeDef or spendTimeDefNoHUD
+end
+
+local LIBASYNC_NOT_RUNNING = 1
+local LIBASYNC_MIN_VALUE = 2
+local LIBASYNC_MAX_VALUE = 3
+
+local function GetSpendTimeValue(value)
+  if value == LIBASYNC_NOT_RUNNING then
+    return math.max(GetThreshold(), spendTime - spendTime * 0.005)
+  elseif value == LIBASYNC_MIN_VALUE then
+    return math.min(GetThreshold() * 2, spendTime + spendTime * 0.02)
+  elseif value == LIBASYNC_MAX_VALUE then
+    return math.max(GetThreshold(), spendTime * 0.5)
+  end
+end
+
+spendTime = GetSpendTimeValue(LIBASYNC_NOT_RUNNING)
+
+print(spendTime)
+
+spendTime = GetSpendTimeValue(LIBASYNC_MIN_VALUE)
+
+--print(spendTime + spendTime * 0.02)
+print(spendTime)
+
+spendTime = GetSpendTimeValue(LIBASYNC_MAX_VALUE)
+
+print(spendTime)

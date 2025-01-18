@@ -1001,6 +1001,17 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
         --debug
         --d(MasterMerchant.recipeCount .. ') ' .. itemLink .. ' --> ' .. resultLink  .. ' ('  .. recNumber .. ')')
       end
+      local resultingItemType = GetItemLinkItemType(resultLink)
+      if resultingItemType == ITEMTYPE_FURNISHING then
+        local furnitureDataId = GetItemLinkFurnitureDataId(resultLink)
+        local categoryId, subcategoryId = GetFurnitureDataCategoryInfo(furnitureDataId)
+        local furnitureCategoryText = GetFurnitureCategoryName(categoryId)
+        local furnitureSubcategoryText = GetFurnitureCategoryName(subcategoryId)
+        MasterMerchant.furnitureCategory = MasterMerchant.furnitureCategory or {}
+        MasterMerchant.furnitureCategory[furnitureCategoryText] = MasterMerchant.furnitureCategory[furnitureCategoryText] or {}
+        MasterMerchant.furnitureCategory[furnitureCategoryText].categoryId = categoryId
+        MasterMerchant.furnitureCategory[furnitureCategoryText][furnitureSubcategoryText] = subcategoryId
+      end
     end
 
     if (recNumber >= endNumber) then
@@ -1015,6 +1026,7 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
       MasterMerchant.systemSavedVariables.reagentItemLinks = MasterMerchant.reagentItemLinks
       MasterMerchant.systemSavedVariables.potionSolventsItemLinks = MasterMerchant.potionSolventsItemLinks
       MasterMerchant.systemSavedVariables.poisonSolventsItemLinks = MasterMerchant.poisonSolventsItemLinks
+      MasterMerchant.systemSavedVariables.furnitureCategory = MasterMerchant.furnitureCategory
       break
     end
 
@@ -1082,6 +1094,7 @@ function MasterMerchant.setupRecipeInfo()
 
     MasterMerchant.traits = {}
     MasterMerchant.reagents = {}
+    MasterMerchant.furnitureCategory = {}
     MasterMerchant.potionSolvents = {}
     MasterMerchant.poisonSolvents = {}
     MasterMerchant.reagentItemLinks = {}
@@ -1441,7 +1454,7 @@ function MasterMerchant:myZO_InventorySlot_ShowContextMenu(inventorySlot)
       AddMenuItem(GetString(MM_POPUP_ITEM_DATA), function() self:onItemActionPopupInfoLink(itemLink) end, MENU_ADD_OPTION_LABEL)
       AddMenuItem(GetString(MM_STATS_TO_CHAT), function() self:OnItemLinkAction(itemLink) end, MENU_ADD_OPTION_LABEL)
       ShowMenu(self)
-    end, 50)
+    end, 0)
   end
 end
 
