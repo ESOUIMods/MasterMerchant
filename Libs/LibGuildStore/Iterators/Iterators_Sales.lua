@@ -203,7 +203,7 @@ that word.
 ----- iterateOverSalesData         -----
 ----------------------------------------
 
-function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
+function internal:iterateOverSalesData(itemId, versionId, saleId, prefunc, loopfunc, postfunc, extraData)
   extraData.versionCount = (extraData.versionCount or 0)
   extraData.idCount = (extraData.idCount or 0)
   extraData.checkMilliseconds = (extraData.checkMilliseconds or MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT)
@@ -213,56 +213,56 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
   end
 
   local checkTime = GetGameTimeMilliseconds()
-  local versionlist
+  local versionList
   local itemLink
-  if itemid == nil then
-    itemid, versionlist = next(sales_data, itemid)
+  if itemId == nil then
+    itemId, versionList = next(sales_data, itemId)
     extraData.versionRemoved = false
-    versionid = nil
+    versionId = nil
   else
-    versionlist = sales_data[itemid]
+    versionList = sales_data[itemId]
   end
-  while (itemid ~= nil) do
-    local versiondata
-    if versionid == nil then
-      versionid, versiondata = next(versionlist, versionid)
+  while (itemId ~= nil) do
+    local versionData
+    if versionId == nil then
+      versionId, versionData = next(versionList, versionId)
       extraData.saleRemoved = false
-      saleid = nil
+      saleId = nil
     else
-      versiondata = versionlist[versionid]
+      versionData = versionList[versionId]
     end
     itemLink = nil
     --[[ begin loop over ['x:x:x:x:x'] ]]--
-    while (versionid ~= nil) do
-      if versiondata['sales'] then
-        local saledata
-        if saleid == nil then
-          saleid, saledata = next(versiondata['sales'], saleid)
+    while (versionId ~= nil) do
+      if versionData['sales'] then
+        local saleData
+        if saleId == nil then
+          saleId, saleData = next(versionData['sales'], saleId)
         else
-          saledata = versiondata['sales'][saleid]
+          saleData = versionData['sales'][saleId]
         end
-        if not itemLink and saledata and saledata["itemLink"] then itemLink = internal:GetItemLinkByIndex(saledata["itemLink"]) end
+        if not itemLink and saleData and saleData["itemLink"] then itemLink = internal:GetItemLinkByIndex(saleData["itemLink"]) end
         --[[ begin loop over ['sales'] ]]--
-        while (saleid ~= nil) do
+        while (saleId ~= nil) do
           --[[skipTheRest is true here from Truncate Sales because in that function
           you are looping over all the sales. Normally you are not and only processing
           a single sale. Therefore when skipTheRest is false you use:
 
-          saleid, saledata = next(versiondata['sales'], saleid)
+          saleId, saleData = next(versionData['sales'], saleId)
 
           to get the next sale and process it
           ]]--
-          local skipTheRest = loopfunc(itemid, versionid, versiondata, saleid, saledata, extraData)
-          extraData.saleRemoved = extraData.saleRemoved or (versiondata['sales'][saleid] == nil)
+          local skipTheRest = loopfunc(itemId, versionId, versionData, saleId, saleData, extraData)
+          extraData.saleRemoved = extraData.saleRemoved or (versionData['sales'][saleId] == nil)
           if skipTheRest then
-            saleid = nil
+            saleId = nil
           else
-            saleid, saledata = next(versiondata['sales'], saleid)
+            saleId, saleData = next(versionData['sales'], saleId)
           end
           -- We've run out of time, wait and continue with next sale
-          if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
+          if saleId and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
             local LEQ = LibExecutionQueue:new()
-            LEQ:continueWith(function() internal:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+            LEQ:continueWith(function() internal:iterateOverSalesData(itemId, versionId, saleId, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
@@ -272,50 +272,50 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
           local sales = {}
           local salesCount = 0
           extraData.newSalesCount = nil
-          for _, sd in pairs(versiondata['sales']) do
+          for _, sd in pairs(versionData['sales']) do
             if (sd ~= nil) and (type(sd) == 'table') then
               table.insert(sales, sd)
               salesCount = salesCount + 1
             end
           end
-          versiondata['sales'] = sales
-          versiondata["totalCount"] = salesCount
+          versionData['sales'] = sales
+          versionData["totalCount"] = salesCount
         end
 
         if extraData.newSalesCount then
-          versiondata["totalCount"] = extraData.newSalesCount
+          versionData["totalCount"] = extraData.newSalesCount
         end
       end
 
       -- If we just deleted all the sales, clear the bucket out
-      if (versionlist[versionid] ~= nil and ((versiondata['sales'] == nil) or (versiondata["totalCount"] < 1) or (not zo_strmatch(tostring(versionid), "^%d+:%d+:%d+:%d+:%d+")))) then
+      if (versionList[versionId] ~= nil and ((versionData['sales'] == nil) or (versionData["totalCount"] < 1) or (not zo_strmatch(tostring(versionId), "^%d+:%d+:%d+:%d+:%d+")))) then
         extraData.versionCount = (extraData.versionCount or 0) + 1
-        versionlist[versionid] = nil
+        versionList[versionId] = nil
         extraData.versionRemoved = true
       end
 
       -- Sharlikran
       if LibGuildStore_SavedVariables["updateAdditionalText"] and not extraData.saleRemoved then
         if itemLink then
-          versiondata['itemAdderText'] = internal:AddSearchToItem(itemLink)
-          versiondata['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+          versionData['itemAdderText'] = internal:AddSearchToItem(itemLink)
+          versionData['itemDesc'] = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
         end
       end
 
       -- Sharlikran
       if extraData.wasAltered and not extraData.saleRemoved then
-        versiondata["wasAltered"] = true
+        versionData["wasAltered"] = true
         extraData.wasAltered = false
       end
 
       -- Go onto the next Version
-      versionid, versiondata = next(versionlist, versionid)
+      versionId, versionData = next(versionList, versionId)
       extraData.saleRemoved = false
       extraData.newSalesCount = nil
-      saleid = nil
-      if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
+      saleId = nil
+      if versionId and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
         local LEQ = LibExecutionQueue:new()
-        LEQ:continueWith(function() internal:iterateOverSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+        LEQ:continueWith(function() internal:iterateOverSalesData(itemId, versionId, saleId, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -323,24 +323,24 @@ function internal:iterateOverSalesData(itemid, versionid, saleid, prefunc, loopf
 
     if extraData.versionRemoved then
       local versions = {}
-      for vid, vd in pairs(sales_data[itemid]) do
+      for vid, vd in pairs(sales_data[itemId]) do
         if (vd ~= nil) and (type(vd) == 'table') then
           versions[vid] = vd
         end
       end
-      sales_data[itemid] = versions
+      sales_data[itemId] = versions
     end
 
     -- If we just deleted everything, clear the bucket out
-    if (sales_data[itemid] ~= nil and ((internal:NonContiguousNonNilCount(versionlist) < 1) or (type(itemid) ~= 'number'))) then
+    if (sales_data[itemId] ~= nil and ((internal:NonContiguousNonNilCount(versionList) < 1) or (type(itemId) ~= 'number'))) then
       extraData.idCount = (extraData.idCount or 0) + 1
-      sales_data[itemid] = nil
+      sales_data[itemId] = nil
     end
 
     -- Go on to the next Item
-    itemid, versionlist = next(sales_data, itemid)
+    itemId, versionList = next(sales_data, itemId)
     extraData.versionRemoved = false
-    versionid = nil
+    versionId = nil
   end
 
   if postfunc then
