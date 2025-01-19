@@ -32,39 +32,35 @@ function lib:GetLowerThreshold()
 end
 local spendTime = lib:GetUpperThreshold()
 
-function lib:GetSpendTime()
-  return spendTime
-end
-
-function lib:GetSpendTimeInMilliseconds()
-  return math.floor(spendTime * 1000)
-end
-
 function lib:new()
   self.processing = false
-  -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [New Task] processing is false, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
+  LibGuildStore_Internal:dm("Debug", string.format("[%d] [New Task] processing is false, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
   return lib
 end
 
 function lib:addTask(func, name)
-  -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [addTask] Adding Main Task: %s, spendTime = %.5f", GetGameTimeMilliseconds(), name or "Unnamed", spendTime))
+  LibGuildStore_Internal:dm("Debug", string.format("[%d] [addTask] Adding Main Task: %s, spendTime = %.5f", GetGameTimeMilliseconds(), name or "Unnamed", spendTime))
   table.insert(self.queue, 1, { func = func, name = name, isMainTask = true })
 end
 
 function lib:continueWith(func, name)
-  -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [continueWith] Adding Sub Task: %s, spendTime = %.5f", GetGameTimeMilliseconds(), name or "Unnamed", spendTime))
+  LibGuildStore_Internal:dm("Debug", string.format("[%d] [continueWith] Adding Sub Task: %s, spendTime = %.5f", GetGameTimeMilliseconds(), name or "Unnamed", spendTime))
   table.insert(self.queue, { func = func, name = name })
   self:start()
 end
 
 function lib:start()
-  -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [start] Starting, processing is true, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
+  LibGuildStore_Internal:dm("Debug", string.format("[%d] [start] Starting, processing is true, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
   self.processing = true
 end
 
-local start, now, cpuLoad
+local start, now
 function lib:GetCpuLoad()
   return (now - start)
+end
+
+function lib:getCpuLoadThreshold()
+  return self:GetLowerThreshold() * 3
 end
 
 function lib:processTasks()
@@ -76,10 +72,9 @@ function lib:processTasks()
 
   start, now = GetFrameTimeSeconds(), GetGameTimeSeconds()
 
-  cpuLoad = (now - start)
-  if cpuLoad > spendTime then
+  if (now - start) > spendTime then
     spendTime = math.min(self:GetLowerThreshold(), spendTime + spendTime * 0.05)
-    -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [processTasks] processing is suspended, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
+    LibGuildStore_Internal:dm("Debug", string.format("[%d] [processTasks] processing is suspended, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
     return
   end
 
@@ -88,17 +83,17 @@ function lib:processTasks()
     local job = (self.queue and #self.queue > 0) and self.queue[#self.queue] or nil
     if not job then
       self.processing = next(self.queue) ~= nil
-      -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [MainTask] No job to process, spendTime = %.5f", GetGameTimeMilliseconds(), spendTime))
+      LibGuildStore_Internal:dm("Debug", string.format("[%d] [MainTask] No job to process, spendTime = %.5f", GetGameTimeMilliseconds(), spendTime))
       break
     end
 
     if job.isMainTask then
       job = table.remove(self.queue)
-      -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [MainTask] processing task %s, spendTime = %.5f", GetGameTimeMilliseconds(), job.name or "Unnamed", spendTime))
+      LibGuildStore_Internal:dm("Debug", string.format("[%d] [MainTask] processing task %s, spendTime = %.5f", GetGameTimeMilliseconds(), job.name or "Unnamed", spendTime))
       job.func()  -- Execute the main task
       now = GetGameTimeSeconds()
     else
-      -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [MainTask] SubTask is encountered, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
+      LibGuildStore_Internal:dm("Debug", string.format("[%d] [MainTask] SubTask is encountered, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
       break  -- Stop when a subtask is encountered
     end
   end
@@ -108,28 +103,18 @@ function lib:processTasks()
     local job = (self.queue and #self.queue > 0) and self.queue[#self.queue] or nil
     if not job then
       self.processing = next(self.queue) ~= nil
-      -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [SubTask] No job to process, spendTime = %.5f", GetGameTimeMilliseconds(), spendTime))
+      LibGuildStore_Internal:dm("Debug", string.format("[%d] [SubTask] No job to process, spendTime = %.5f", GetGameTimeMilliseconds(), spendTime))
       break
     end
 
     if not job.isMainTask then
       job = table.remove(self.queue)
-      -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [SubTask] processing task %s, spendTime = %.5f", GetGameTimeMilliseconds(), job.name or "Unnamed", spendTime))
+      LibGuildStore_Internal:dm("Debug", string.format("[%d] [SubTask] processing task %s, spendTime = %.5f", GetGameTimeMilliseconds(), job.name or "Unnamed", spendTime))
       job.func()  -- Execute the subtask
       now = GetGameTimeSeconds()
     else
-      -- LibGuildStore_Internal:dm("Debug", string.format("[%d] [SubTask] MainTask is encountered, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
+      LibGuildStore_Internal:dm("Debug", string.format("[%d] [SubTask] MainTask is encountered, spendTime = %.5f.", GetGameTimeMilliseconds(), spendTime))
       break  -- Stop when a main task is encountered
-    end
-  end
-end
-
-local function stateChange(oldState, newState)
-  if newState == SCENE_SHOWN or newState == SCENE_HIDING then
-    if cpuLoad > spendTime then
-      spendTime = lib:GetLowerThreshold()
-    else
-      spendTime = lib:GetUpperThreshold()
     end
   end
 end
@@ -158,9 +143,6 @@ do
     end
   )
   EVENT_MANAGER:RegisterForUpdate(id2, 0, function() lib:processTasks() end)
-
-  HUD_SCENE:RegisterCallback("StateChange", function() stateChange() end)
-  HUD_UI_SCENE:RegisterCallback("StateChange", function() stateChange() end)
 end
 
 LibExecutionQueue = lib

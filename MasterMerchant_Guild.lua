@@ -329,6 +329,18 @@ function MMGuild:removeRankIndex(rankIndex)
   if (self.rank[rankIndex]) then self.rank[rankIndex] = nil end
 end
 
+function MMGuild:MarkAllRanksDirty()
+  local rankIndexes = {
+    MM_DATERANGE_TODAY, MM_DATERANGE_YESTERDAY, MM_DATERANGE_THISWEEK,
+    MM_DATERANGE_LASTWEEK, MM_DATERANGE_PRIORWEEK, MM_DATERANGE_7DAY,
+    MM_DATERANGE_10DAY, MM_DATERANGE_30DAY, MM_DATERANGE_CUSTOM
+  }
+
+  for i = 1, #rankIndexes do
+    self:MarkDirty(rankIndexes[i])
+  end
+end
+
 function MMGuild:MarkDirty(rankIndex)
   self.rankIsDirty[rankIndex] = true
 end

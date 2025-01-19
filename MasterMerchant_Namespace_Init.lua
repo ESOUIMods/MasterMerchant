@@ -122,9 +122,9 @@ MM_DEAL_VALUE_BUYIT = 5
 
 -- LibExecutionQueue wait times
 MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT = 20
-MM_WAIT_TIME_IN_MILLISECONDS_SHORT = 50 -- longer then 50 seems to increase load times
-MM_WAIT_TIME_IN_MILLISECONDS_MEDIUM = 60
-MM_WAIT_TIME_IN_MILLISECONDS_LONG = 120
+MM_WAIT_TIME_IN_MILLISECONDS_SHORT = 40
+MM_WAIT_TIME_IN_MILLISECONDS_MEDIUM = 50 -- longer then 50 seems to increase load times
+MM_WAIT_TIME_IN_MILLISECONDS_LONG = 60
 MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE = 1000
 MM_WAIT_TIME_IN_MILLISECONDS_LIBHISTOIRE_SETUP = 500
 
@@ -300,42 +300,65 @@ else
 end
 MasterMerchant.supported_lang = MasterMerchant.client_lang == MasterMerchant.effective_lang
 
+------------------------------
+--- Debugging              ---
+------------------------------
+
+local task = LibAsync:Create("MasterMerchant_Debug")
+
+MasterMerchant.show_log = true
+MasterMerchant.loggerName = 'MasterMerchant'
 if LibDebugLogger then
-  local logger = LibDebugLogger.Create(MasterMerchant.name)
-  MasterMerchant.logger = logger
+  MasterMerchant.logger = LibDebugLogger.Create(MasterMerchant.loggerName)
 end
-local SDLV = DebugLogViewer
-if SDLV then MasterMerchant.viewer = true else MasterMerchant.viewer = false end
+
+local logger
+local viewer
+if DebugLogViewer then viewer = true else viewer = false end
+if LibDebugLogger then logger = true else logger = false end
 
 local function create_log(log_type, log_content)
-  if not MasterMerchant.viewer and log_type == "Info" then
+  if not viewer and log_type == "Info" then
     CHAT_ROUTER:AddSystemMessage(log_content)
     return
   end
-  if log_type == "Debug" then
-    MasterMerchant.logger:Debug(log_content)
-  end
-  if log_type == "Info" then
+  if logger and log_type == "Info" then
     MasterMerchant.logger:Info(log_content)
   end
-  if log_type == "Verbose" then
+  if not MasterMerchant.show_log then return end
+  if logger and log_type == "Debug" then
+    MasterMerchant.logger:Debug(log_content)
+  end
+  if logger and log_type == "Verbose" then
     MasterMerchant.logger:Verbose(log_content)
   end
-  if log_type == "Warn" then
+  if logger and log_type == "Warn" then
     MasterMerchant.logger:Warn(log_content)
   end
 end
 
 local function emit_message(log_type, text)
-  if (text == MM_STRING_EMPTY) then
-    text = "[Empty String]"
-  end
-  create_log(log_type, text)
+    if text == "" then
+        text = "[Empty String]"
+    end
+  -- task:Call(function()
+        create_log(log_type, text)
+  -- end)
 end
 
 local function emit_table(log_type, t, indent, table_history)
   indent = indent or "."
   table_history = table_history or {}
+
+  if not t then
+    emit_message(log_type, indent .. "[Nil Table]")
+    return
+  end
+
+  if next(t) == nil then
+    emit_message(log_type, indent .. "[Empty Table]")
+    return
+  end
 
   for k, v in pairs(t) do
     local vType = type(v)
@@ -353,13 +376,79 @@ local function emit_table(log_type, t, indent, table_history)
   end
 end
 
+local function emit_userdata(log_type, udata)
+  local function_limit = 5  -- Limit the number of functions displayed
+  local total_limit = 10   -- Total number of entries to display (functions + non-functions)
+  local function_count = 0  -- Counter for functions
+  local entry_count = 0     -- Counter for total entries displayed
+
+  emit_message(log_type, "Userdata: " .. tostring(udata))
+
+  local meta = getmetatable(udata)
+  if meta and meta.__index then
+    for k, v in pairs(meta.__index) do
+      -- Show function name for functions
+      if type(v) == "function" then
+        if function_count < function_limit then
+          emit_message(log_type, "  Function: " .. tostring(k))  -- Function name
+          function_count = function_count + 1
+          entry_count = entry_count + 1
+        end
+      elseif type(v) ~= "function" then
+        -- For non-function entries (like tables or variables), show them
+        emit_message(log_type, "  " .. tostring(k) .. ": " .. tostring(v))
+        entry_count = entry_count + 1
+      end
+
+      -- Stop when we've reached the total limit
+      if entry_count >= total_limit then
+        emit_message(log_type, "  ... (output truncated due to limit)")
+        break
+      end
+    end
+  else
+    emit_message(log_type, "  (No detailed metadata available)")
+  end
+end
+
+local function contains_placeholders(str)
+  return type(str) == "string" and str:find("<<%d+>>")
+end
+
 function MasterMerchant:dm(log_type, ...)
-  for i = 1, select("#", ...) do
-    local value = select(i, ...)
-    if (type(value) == "table") then
-      emit_table(log_type, value)
+if not MasterMerchant.show_log then
+    if log_type == "Info" then
+      -- Continue if log_type is "Info" even when show_log is false
     else
-      emit_message(log_type, tostring(value))
+      -- Exit early if show_log is false and log_type is not "Info"
+      return
+    end
+  end
+
+  local num_args = select("#", ...)
+  local first_arg = select(1, ...)  -- The first argument is always the message string
+
+  -- Check if the first argument is a string with placeholders
+  if type(first_arg) == "string" and contains_placeholders(first_arg) then
+    -- Extract any remaining arguments for zo_strformat (after the message string)
+    local remaining_args = { select(2, ...) }
+
+    -- Format the string with the remaining arguments
+    local formatted_value = ZO_CachedStrFormat(first_arg, unpack(remaining_args))
+
+    -- Emit the formatted message
+    emit_message(log_type, formatted_value)
+  else
+    -- Process other argument types (userdata, tables, etc.)
+    for i = 1, num_args do
+      local value = select(i, ...)
+      if type(value) == "userdata" then
+        emit_userdata(log_type, value)
+      elseif type(value) == "table" then
+        emit_table(log_type, value)
+      else
+        emit_message(log_type, tostring(value))
+      end
     end
   end
 end

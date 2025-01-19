@@ -116,7 +116,7 @@ function mmUtils:IsItemLinkNewLifeFestivalWrit(itemLink)
     requiredItemLink = mmUtils:GetMasterWritRequiredItemLink(itemLink)
     if mmUtils:IsItemLinkFurnitureItem(itemLink) or mmUtils:IsItemLinkProvisioningItem(itemLink) then
       requiredItemLinkId = GetItemLinkItemId(requiredItemLink)
-      if mmUtils.winterWritsRequiredQty[requiredItemLinkId] then
+      if mmUtils.holidayWritsRequiredQty[requiredItemLinkId] then
         return true
       end
     end
@@ -147,7 +147,7 @@ function mmUtils:MaterialCostPrice(itemLink)
 
   local cost = 0
   local numIngredients = 0
-  local winterWritsRequiredQty = nil
+  local holidayWritsRequiredQty = nil
   local flavorText = GetItemLinkFlavorText(itemLink)
   --[[Use GetMasterWritRequiredItemLink() for now to cover food or Furnature
   instead of GetMasterWritFurnatureItemLink() ]]--
@@ -189,11 +189,11 @@ end
 
 -- /script d(MasterMerchant_Internal:GetWinterWritRequiredQty("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
 -- /script d(MasterMerchant_Internal:GetWritFields("|H1:item:156731:4:1:0:0:0:117940:0:0:0:0:0:0:0:0:0:0:0:0:0:10000|h|h"))
--- /script d(MasterMerchant_Internal.winterWritsRequiredQty[118034])
+-- /script d(MasterMerchant_Internal.holidayWritsRequiredQty[118034])
 function mmUtils:GetWinterWritRequiredQty(itemLink)
   local itemId = mmUtils:GetWritFields(itemLink)
-  if mmUtils.winterWritsRequiredQty[itemId] ~= nil and mmUtils.winterWritsRequiredQty[itemId] > 0 then
-    return mmUtils.winterWritsRequiredQty[itemId]
+  if mmUtils.holidayWritsRequiredQty[itemId] ~= nil and mmUtils.holidayWritsRequiredQty[itemId] > 0 then
+    return mmUtils.holidayWritsRequiredQty[itemId]
   end
   return nil
 end
@@ -202,31 +202,71 @@ end
 DWC - Deep Winter Charity Writs
 NLC - New Life Charity Writs
 ICW - Imperial Charity Writs
+WFW - Witches Festival Writ
 ]]--
-
 -- Deep Winter Charity Writs
-mmUtils.winterWritsRequiredQty = {
-  [117954] = 12, -- Rough Crate, Bolted - DWC (x12),
-  [117926] = 12, -- Rough Stretcher, Military - DWC (x12),
-  [117956] = 12, -- Rough Box, Boarded - DWC (x12),
-  [117942] = 12, -- Rough Knife, Butcher - DWC (x12),
-  [115153] = 1, -- Breton Bed, Bunk - DWC, NLC (x1)
-  [118036] = 1, -- Common Candle, Set - DWC, NLC (x1)
-  [118012] = 1, -- Common Washtub, Empty - DWC, NLC (x1)
-  [118048] = 1, -- Common Table, Slanted - DWC (x1), NLC (x1), ICW (x1) -- Ver
-  [117991] = 1, -- Stool, Carved - DWC, NLC (x1)
-  [118007] = 1, -- Common Basket, Tall - DWC, NLC (x1)
-  [118034] = 1, -- Common Platter, Serving - DWC, NLC (x1)
-  [120410] = 3, -- Rough Cup, Empty - DWC (x3), NLC (x12), ICW (x3) -- Ver
-  [117943] = 3, -- Rough Bowl, Common - DWC (x3), NLC (x12), ICW (x3) -- Ver
-  [117929] = 12, -- Rough Crate, Reinforced - DWC (x12),
-  [117960] = 12, -- Rough Container, Cargo - DWC (x12),
-  [117940] = 12, -- Rough Hatchet, Practical - DWC (x12),
-  [117963] = 12, -- Rough Bedroll, Basic - NLC (x12), ICW (x3)
-  [33819] = 12, -- Chicken Breast ICW (x12)
-  [33813] = 12, -- Roast Corn ICW (x12) -- Ver
-  [33825] = 12, -- Grape Preserves ICW (x12)
+mmUtils.holidayWritsRequiredQty = {
+[33813] = 12, -- Roast Corn ICW (x12) -- Ver
+[33819] = 12, -- Chicken Breast ICW (x12)
+[33825] = 12, -- Grape Preserves ICW (x12)
+[87685] = 4, -- Sweet Sanguine Apples - WFW
+[87686] = 4, -- Crisp and Crunchy Pumpkin Snack Skewer - WFW
+[87687] = 4, -- Bowl of "Peeled Eyeballs" - WFW
+[87690] = 4, -- Witchmother's Party Punch - WFW
+[87691] = 4, -- Crunchy Spider Skewer - WFW
+[87695] = 4, -- Ghastly Eye Bowl - WFW
+[87696] = 4, -- Frosted Brains - WFW
+[87697] = 4, -- Witchmother's Potent Brew - WFW
+[87699] = 4, -- Purifying Bloody Mara - WFW
+[115153] = 1, -- Breton Bed, Bunk - DWC, NLC (x1)
+[117926] = 12, -- Rough Stretcher, Military - DWC (x12),
+[117929] = 12, -- Rough Crate, Reinforced - DWC (x12),
+[117940] = 12, -- Rough Hatchet, Practical - DWC (x12),
+[117942] = 12, -- Rough Knife, Butcher - DWC (x12),
+[117943] = 3, -- Rough Bowl, Common - DWC (x3), NLC (x12), ICW (x3) -- Ver
+[117954] = 12, -- Rough Crate, Bolted - DWC (x12),
+[117956] = 12, -- Rough Box, Boarded - DWC (x12),
+[117960] = 12, -- Rough Container, Cargo - DWC (x12),
+[117963] = 12, -- Rough Bedroll, Basic - NLC (x12), ICW (x3)
+[117991] = 1, -- Stool, Carved - DWC, NLC (x1)
+[118007] = 1, -- Common Basket, Tall - DWC, NLC (x1)
+[118012] = 1, -- Common Washtub, Empty - DWC, NLC (x1)
+[118034] = 1, -- Common Platter, Serving - DWC, NLC (x1)
+[118036] = 1, -- Common Candle, Set - DWC, NLC (x1)
+[118048] = 1, -- Common Table, Slanted - DWC (x1), NLC (x1), ICW (x1) -- Ver
+[120410] = 3, -- Rough Cup, Empty - DWC (x3), NLC (x12), ICW (x3) -- Ver
+[153625] = 4, -- Corrupting Bloody Mara - WFW
+[153627] = 4, -- Pack Leader's Bone Broth - WFW
+[153629] = 4, -- Bewitched Sugar Skulls - WFW
 }
+--[[
+/script d(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName("|H0:item:153629:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h")))
+
+|H0:item:87685:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Sweet Sanguine Apples
+|H0:item:87686:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Crisp and Crunchy Pumpkin Snack Skewer
+|H0:item:87687:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Bowl of "Peeled Eyeballs"
+|H0:item:87690:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Witchmother's Party Punch
+|H0:item:87691:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Crunchy Spider Skewer
+|H0:item:87695:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Ghastly Eye Bowl
+|H0:item:87696:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Frosted Brains
+|H0:item:87697:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Witchmother's Potent Brew
+|H0:item:87699:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Purifying Bloody Mara
+|H0:item:153625:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Corrupting Bloody Mara
+|H0:item:153627:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Pack Leader's Bone Broth
+|H0:item:153629:2:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h Bewitched Sugar Skulls
+[87685] = true,
+[87686] = true,
+[87687] = true,
+[87690] = true,
+[87691] = true,
+[87695] = true,
+[87696] = true,
+[87697] = true,
+[87699] = true,
+[153625] = true,
+[153627] = true,
+[153629] = true,
+]]--
 mmUtils.blacksmithClothierWoodworkingItemType = {
   [17] = true, -- Helmet
   [18] = true, -- Neck

@@ -268,13 +268,10 @@ function MasterMerchant:SearchSoundNames(name)
   end
 end
 
-local function IsNewSale(str)
-  return str:sub(1, 1) == '3'
-end
-
-function MasterMerchant:ShouldUseSale(salesId)
-  local isNewSale = IsNewSale(salesId)
-  local shouldUseSale = (isNewSale and not MasterMerchant.systemSavedVariables.useID64FormatedSales) or MasterMerchant.systemSavedVariables.useID64FormatedSales
+function MasterMerchant:ShouldUseSale(timestamp)
+  local thresholdTimestamp = 1710115200
+  local isNewEvent = timestamp > thresholdTimestamp
+  local shouldUseSale = (isNewEvent and not MasterMerchant.systemSavedVariables.useID64FormatedSales) or MasterMerchant.systemSavedVariables.useID64FormatedSales
   return shouldUseSale
 end
 

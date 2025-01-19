@@ -303,7 +303,7 @@
         <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
         <Label name="$(parent)RowId" inheritAlpha="true" color="FFFFFF" text="1">
           <Anchor point="LEFT" relativePoint="LEFT" offsetX="0" offsetY="0"/>
-          <Dimensions x="35" y="26"/>
+          <Dimensions x="45" y="26"/>
         </Label>
         <Button name="$(parent)Buyer" inheritAlpha="true" text="Buyer" horizontalAlignment="LEFT">
           <Anchor point="LEFT" relativeTo="$(parent)RowId" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
@@ -325,7 +325,7 @@
         </Label>
         <Label name="$(parent)ItemName" verticalAlignment="CENTER" inheritAlpha="true" text="Item Name" linkEnabled="true" mouseEnabled="true">
           <Anchor point="LEFT" relativeTo="$(parent)ItemIcon" relativePoint="RIGHT" offsetX="5" offsetY="0"/>
-          <Dimensions x="315" y="26"/>
+          <Dimensions x="305" y="26"/>
           <OnLinkMouseUp>
             ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
           </OnLinkMouseUp>

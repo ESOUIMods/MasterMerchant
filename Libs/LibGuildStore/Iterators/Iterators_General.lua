@@ -41,23 +41,20 @@ function internal:CleanTimestamp(salesRecord)
 end
 
 function internal:spairs(t, order)
-  -- all the indexes
   local indexes = {}
   for k in pairs(t) do indexes[#indexes + 1] = k end
 
-  -- if order function given, sort by it by passing the table's a, b values
-  -- otherwise just sort by the index values
   if order then
     table.sort(indexes, function(a, b) return order(t[a], t[b]) end)
   else
     table.sort(indexes)
   end
 
-  -- return the iterator function
   local i = 0
+  local n = #indexes
   return function()
     i = i + 1
-    if indexes[i] then
+    if i <= n then
       return indexes[i], t[indexes[i]]
     end
   end
@@ -74,7 +71,7 @@ function internal:IsValidItemLink(itemLink)
   local itemCodeText = MasterMerchant.ItemCodeText(itemLink)
   local theIID = GetItemLinkItemId(itemLink)
   local itemIdMatch = tonumber(zo_strmatch(itemLink, '|H.-:item:(.-):'))
-  local itemlinkName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+  local itemlinkName = internal:GetFormattedItemLinkName(itemLink)
   local _, count = zo_strgsub(itemLink, ':', ':')
 
   if count ~= 22 then
@@ -294,7 +291,7 @@ function internal:AddExtraSalesData(otherData)
         savedVars[itemID][versionid].oldestTime = oldestTime
         savedVars[itemID][versionid].newestTime = newestTime
         savedVars[itemID][versionid].wasAltered = false
-      -- If there is no sales data but the savedVars still exist.
+        -- If there is no sales data but the savedVars still exist.
       elseif not hasSalesData and savedVars[itemID] then
         -- Create dataInfo for erroneous records.
         local dataInfo = {
@@ -353,7 +350,7 @@ function internal:AddExtraListingsData(otherData)
         savedVars[itemID][versionid].oldestTime = oldestTime
         savedVars[itemID][versionid].newestTime = newestTime
         savedVars[itemID][versionid].wasAltered = false
-      -- If there is no sales data but the savedVars still exist.
+        -- If there is no sales data but the savedVars still exist.
       elseif not hasSalesData and savedVars[itemID] then
         -- Create dataInfo for erroneous records.
         local dataInfo = {

@@ -37,37 +37,50 @@ internal.cr_index_count = 0
 lib.libName = libName
 lib.libVersion = libVersion
 
+------------------------------
+--- Debugging              ---
+------------------------------
+
+local task = LibAsync:Create("LibGuildStore_Debug")
+
+internal.show_log = true
+internal.loggerName = 'LibGuildStore'
 if LibDebugLogger then
-  local logger = LibDebugLogger.Create(libName)
-  internal.logger = logger
+  internal.logger = LibDebugLogger.Create(internal.loggerName)
 end
-local SDLV = DebugLogViewer
-if SDLV then internal.viewer = true else internal.viewer = false end
+
+local logger
+local viewer
+if DebugLogViewer then viewer = true else viewer = false end
+if LibDebugLogger then logger = true else logger = false end
 
 local function create_log(log_type, log_content)
-  if not internal.viewer and log_type == "Info" then
+  if not viewer and log_type == "Info" then
     CHAT_ROUTER:AddSystemMessage(log_content)
     return
   end
-  if log_type == "Debug" then
-    internal.logger:Debug(log_content)
-  end
-  if log_type == "Info" then
+  if logger and log_type == "Info" then
     internal.logger:Info(log_content)
   end
-  if log_type == "Verbose" then
+  if not internal.show_log then return end
+  if logger and log_type == "Debug" then
+    internal.logger:Debug(log_content)
+  end
+  if logger and log_type == "Verbose" then
     internal.logger:Verbose(log_content)
   end
-  if log_type == "Warn" then
+  if logger and log_type == "Warn" then
     internal.logger:Warn(log_content)
   end
 end
 
 local function emit_message(log_type, text)
-  if (text == MM_STRING_EMPTY) then
+  if text == "" then
     text = "[Empty String]"
   end
-  create_log(log_type, text)
+  -- task:Call(function()
+    create_log(log_type, text)
+  -- end)
 end
 
 local function emit_table(log_type, t, indent, table_history)
@@ -100,26 +113,150 @@ local function emit_table(log_type, t, indent, table_history)
   end
 end
 
+local function emit_userdata(log_type, udata)
+  local function_limit = 5  -- Limit the number of functions displayed
+  local total_limit = 10   -- Total number of entries to display (functions + non-functions)
+  local function_count = 0  -- Counter for functions
+  local entry_count = 0     -- Counter for total entries displayed
+
+  emit_message(log_type, "Userdata: " .. tostring(udata))
+
+  local meta = getmetatable(udata)
+  if meta and meta.__index then
+    for k, v in pairs(meta.__index) do
+      -- Show function name for functions
+      if type(v) == "function" then
+        if function_count < function_limit then
+          emit_message(log_type, "  Function: " .. tostring(k))  -- Function name
+          function_count = function_count + 1
+          entry_count = entry_count + 1
+        end
+      elseif type(v) ~= "function" then
+        -- For non-function entries (like tables or variables), show them
+        emit_message(log_type, "  " .. tostring(k) .. ": " .. tostring(v))
+        entry_count = entry_count + 1
+      end
+
+      -- Stop when we've reached the total limit
+      if entry_count >= total_limit then
+        emit_message(log_type, "  ... (output truncated due to limit)")
+        break
+      end
+    end
+  else
+    emit_message(log_type, "  (No detailed metadata available)")
+  end
+end
+
+local function contains_placeholders(str)
+  return type(str) == "string" and str:find("<<%d+>>")
+end
+
 function internal:dm(log_type, ...)
-  for i = 1, select("#", ...) do
-    local value = select(i, ...)
-    if (type(value) == "table") then
-      emit_table(log_type, value)
+if not internal.show_log then
+    if log_type == "Info" then
     else
-      emit_message(log_type, tostring(value))
+      -- Exit early if show_log is false and log_type is not "Info"
+      return
     end
   end
+
+  local num_args = select("#", ...)
+  local first_arg = select(1, ...)  -- The first argument is always the message string
+
+  -- Check if the first argument is a string with placeholders
+  if type(first_arg) == "string" and contains_placeholders(first_arg) then
+    -- Extract any remaining arguments for zo_strformat (after the message string)
+    local remaining_args = { select(2, ...) }
+
+    -- Format the string with the remaining arguments
+    local formatted_value = ZO_CachedStrFormat(first_arg, unpack(remaining_args))
+
+    -- Emit the formatted message
+    emit_message(log_type, formatted_value)
+  else
+    -- Process other argument types (userdata, tables, etc.)
+    for i = 1, num_args do
+      local value = select(i, ...)
+      if type(value) == "userdata" then
+        emit_userdata(log_type, value)
+      elseif type(value) == "table" then
+        emit_table(log_type, value)
+      else
+        emit_message(log_type, tostring(value))
+      end
+    end
+  end
+end
+
+-- callbackType
+internal.callbackType = {}
+internal.callbackType = {
+  PROCESS_LIBGUILDSTORE_DATA = "ProcessLibGuildStoreData",
+  LIBGUILDSTORE_READY = "LibGuildStoreReady",
+  REFERENCE_SALES_DATA_CONTAINER = "ReferenceSalesDataContainer",
+  REFERENCE_LISTINGS_DATA_CONTAINER = "ReferenceListingsDataContainer",
+  REFERENCE_PURCHASE_DATA_CONTAINER = "ReferencePurchaseDataContainer",
+  REFERENCE_POSTED_ITEMS_DATA_CONTAINER = "ReferencePostedItemsDataContainer",
+  REFERENCE_CANCELLED_ITEM_DATA_CONTAINER = "ReferenceCancelledItemDataContainer",
+  ADD_EXTRA_SALES_DATA = "AddExtraSalesData",
+  ADD_EXTRA_LISTINGS_DATA = "AddExtraListingsData",
+  ADD_EXTRA_PURCHASE_DATA = "AddExtraPurchaseData",
+  ADD_EXTRA_POSTED_DATA = "AddExtraPostedData",
+  ADD_EXTRA_CANCELLED_DATA = "AddExtraCancelledData",
+  TRUNCATE_SALES_HISTORY = "TruncateSalesHistory",
+  TRUNCATE_LISTINGS_HISTORY = "TruncateListingsHistory",
+  TRUNCATE_PURCHASE_HISTORY = "TruncatePurchaseHistory",
+  TRUNCATE_POSTED_ITEMS_HISTORY = "TruncatePostedItemsHistory",
+  TRUNCATE_CANCELLED_ITEM_HISTORY = "TruncateCancelledItemHistory",
+  RENEW_EXTRA_SALES_DATA = "RenewExtraSalesData",
+  RENEW_EXTRA_LISTINGS_DATA = "RenewExtraListingsData",
+  RENEW_EXTRA_PURCHASE_DATA = "RenewExtraPurchaseData",
+  RENEW_EXTRA_POSTED_DATA = "RenewExtraPostedData",
+  RENEW_EXTRA_CANCELLED_DATA = "RenewExtraCancelledData",
+  INIT_SALES_HISTORY = "InitSalesHistory",
+  INIT_LISTING_HISTORY = "InitListingHistory",
+  INIT_PURCHASE_HISTORY = "InitPurchaseHistory",
+  INIT_POSTED_ITEMS_HISTORY = "InitPostedItemsHistory",
+  INIT_CANCELLED_ITEMS_HISTORY = "InitCancelledItemsHistory",
+  INDEX_SALES_DATA = "IndexSalesData",
+  INDEX_LISTINGS_DATA = "IndexListingsData",
+  INDEX_PURCHASE_DATA = "IndexPurchaseData",
+  INDEX_POSTED_ITEMS_DATA = "IndexPostedItemsData",
+  INDEX_CANCELLED_ITEM_DATA = "IndexCancelledItemData"
+}
+
+local callbackObject = ZO_CallbackObject:New()
+internal.callbackObject = {}
+internal.callbackObject = callbackObject
+
+function internal:RegisterCallback(...)
+  return internal.callbackObject:RegisterCallback(...)
+end
+
+function internal:UnregisterCallback(...)
+  return internal.callbackObject:UnregisterCallback(...)
+end
+
+function internal:FireCallbacks(...)
+  return callbackObject:FireCallbacks(...)
 end
 
 -------------------------------------------------
 ----- early helper                          -----
 -------------------------------------------------
 
+function internal:is_empty_or_nil(t)
+  if t == nil or t == "" then return true end
+  return type(t) == "table" and ZO_IsTableEmpty(t) or false
+end
+
 function internal:is_in(search_value, search_table)
-  for _, v in pairs(search_table) do
+  if internal:is_empty_or_nil(search_value) then return false end
+  for k, v in pairs(search_table) do
     if search_value == v then return true end
     if type(search_value) == "string" then
-      if zo_strfind(zo_strlower(v), zo_strlower(search_value)) then return true end
+      if string.find(string.lower(v), string.lower(search_value)) then return true end
     end
   end
   return false
@@ -139,17 +276,11 @@ else
 end
 internal.supported_lang = internal.client_lang == internal.effective_lang
 
-function internal:is_empty_or_nil(t)
-  if t == nil or t == MM_STRING_EMPTY then return true end
-  return type(t) == "table" and ZO_IsTableEmpty(t) or false
-end
-
--- for main LGS saved vars
-internal.saveVarsDefaults = {
-  lastReceivedEventID = {},
-}
+-------------------------------------------------
+----- LAM Menu Defaults                     -----
+-------------------------------------------------
 -- These defaults are used with the Lam menu not the startup routine
-internal.defaults = {
+internal.libAddonMenuDefaults = {
   -- ["firstRun"] = true not needed when reset
   updateAdditionalText = false,
   historyDepth = 90,
@@ -161,13 +292,15 @@ internal.defaults = {
   minimalIndexing = false,
   useSalesHistory = false,
   overrideMMImport = false,
-  historyDepthSL = 60, -- History Depth Shopping List
-  historyDepthPI = 180, -- History Depth Posted Items
-  historyDepthCI = 180, -- History Depth Canceled Items
+  historyDepthShoppingList = 60, -- History Depth Shopping List
+  historyDepthPostedItems = 180, -- History Depth Posted Items
+  historyDepthCanceledItems = 180, -- History Depth Canceled Items
   libHistoireScanByTimestamp = false,
 }
 
-if not LibGuildStore_SavedVariables then LibGuildStore_SavedVariables = internal.saveVarsDefaults end
+-------------------------------------------------
+----- Internal Global variables             -----
+-------------------------------------------------
 internal.LibHistoireListener = { } -- added for debug on 10-31
 internal.LibHistoireListenerReady = { } -- added 6-19-22
 internal.alertQueue = { }
@@ -189,7 +322,6 @@ internal.guildSales = nil
 internal.guildPurchases = nil
 internal.currentGuilds = {}
 internal.guildList = {}
-internal.newestTime = {}
 
 internal.totalSales = 0
 internal.totalPurchases = 0

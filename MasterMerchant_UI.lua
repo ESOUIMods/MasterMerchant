@@ -236,7 +236,7 @@ view. Which doesn't really work. When it is the buyer or seller name
 then it's @Something. When it's the item view then it's by item link
 which doesn't really sort.
 
-zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+internal:GetFormattedItemLinkName(itemLink)
 
 If I use zo_strformat with the Item Link name it pretty much freezes the
 game
