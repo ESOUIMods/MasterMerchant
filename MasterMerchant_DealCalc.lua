@@ -11,7 +11,7 @@ function MasterMerchant.CustomDealCalc(setPrice, salesCount, purchasePrice, stac
   local profit = -1
   if (setPrice) then
     local unitPrice = purchasePrice / stackCount
-    profit = (setPrice - unitPrice) * stackCount
+    profit = ((setPrice - unitPrice) - setPrice * 0.08) * stackCount
     margin = tonumber(string.format('%.2f', ((setPrice - unitPrice) / setPrice) * 100))
 
     if (margin >= MasterMerchant.systemSavedVariables.customDealBuyIt) then
