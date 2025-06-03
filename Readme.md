@@ -9,6 +9,11 @@ I would like to thank the ZOS Developers, Dan and Seth, and the QA Team working 
 
 Repository for personal changes as I am not trying to take over Master Merchant. If at such time @Philgo68 and @khaibit return to ESO then they are welcome to use my changes.
 
+## ChangeLog 3.8.12, 3.8.13
+
+- Updated Craft Cost for U46
+- Updated inventory management for U46
+
 ## ChangeLog 3.8.11
 
 - Minor update for compatibility with LibScrollableMenu
