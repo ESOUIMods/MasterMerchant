@@ -31,6 +31,10 @@ function internal:concatHash(a, ...)
   end
 end
 
+function internal:GetFormattedItemLinkName(itemLink)
+  return ZO_CachedStrFormat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+end
+
 function internal:GetAccountNameByIndex(index)
   if not index or not internal.accountNameByIdLookup[index] then return nil end
   return internal.accountNameByIdLookup[index]
@@ -48,7 +52,7 @@ end
 
 -- uses mod to determine which save files to use
 function internal:MakeHashStringByItemLink(itemLink)
-  local name = zo_strlower(zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink)))
+  local name = zo_strlower(internal:GetFormattedItemLinkName(itemLink))
   local hash = 0
   for c in zo_strgmatch(name, '.') do
     if c then hash = hash + string.byte(c) end
@@ -381,45 +385,36 @@ function internal:UpdateAlertQueue(guildName, theEvent)
 end
 
 function internal:GenerateSearchText(theEvent, itemDesc, adderText)
-  local temp = { '', ' ', '', ' ', '', ' ', '', ' ', '', ' ', '', }
-  local searchText = ""
+  local searchElements = {}
   local playerName = zo_strlower(GetDisplayName())
   local isSelfSale = playerName == zo_strlower(theEvent.seller)
   local minimalIndexing = LibGuildStore_SavedVariables["minimalIndexing"]
 
   if minimalIndexing then
     if isSelfSale then
-      searchText = internal.PlayerSpecialText or ""
+      return zo_strlower(internal.PlayerSpecialText or "")
     end
   else
-    temp[1] = theEvent.buyer and ('b' .. theEvent.buyer) or ''
-    temp[3] = theEvent.seller and ('s' .. theEvent.seller) or ''
-    temp[5] = theEvent.guild or ''
-    temp[7] = itemDesc or ''
-    temp[9] = adderText or ''
-
-    if selfSale and addPlayer then
-      temp[11] = internal.PlayerSpecialText or ""
-    end
-
-    searchText = zo_strlower(table.concat(temp, ''))
+    if theEvent.buyer then table.insert(searchElements, 'b' .. theEvent.buyer) end
+    if theEvent.seller then table.insert(searchElements, 's' .. theEvent.seller) end
+    if theEvent.guild then table.insert(searchElements, theEvent.guild) end
+    if itemDesc then table.insert(searchElements, itemDesc) end
+    if adderText then table.insert(searchElements, adderText) end
+    if isSelfSale then table.insert(searchElements, internal.PlayerSpecialText or "") end
   end
 
-  return searchText
+  return zo_strlower(table.concat(searchElements, ' '))
 end
 
+
 function internal:GenerateBasicSearchText(theEvent, itemDesc, adderText)
-  local temp = { '', ' ', '', ' ', '', ' ', '', } -- fewer tokens for Basic version
-  local searchText = ""
+  local searchElements = {}
+  if theEvent.seller then table.insert(searchElements, 's' .. theEvent.seller) end
+  if theEvent.guild then table.insert(searchElements, theEvent.guild) end
+  if itemDesc then table.insert(searchElements, itemDesc) end
+  if adderText then table.insert(searchElements, adderText) end
 
-  temp[1] = theEvent.seller and ('s' .. theEvent.seller) or ''
-  temp[3] = theEvent.guild or ''
-  temp[5] = itemDesc or ''
-  temp[7] = adderText or ''
-
-  searchText = zo_strlower(table.concat(temp, ''))
-
-  return searchText
+  return zo_strlower(table.concat(searchElements, ' '))
 end
 
 ----------------------------------------

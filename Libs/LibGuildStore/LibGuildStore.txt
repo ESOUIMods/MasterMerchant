@@ -10,10 +10,10 @@
 ## OptionalDependsOn: AwesomeGuildStore>=2751 DebugLogViewer>=558
 ## IsLibrary: true
 
-Init.lua
 i18n\en.lua
 i18n\$(language).lua
-LGS_LibHistoire.lua
+Init.lua
+LibGuildStore_LibHistoire.lua
 Data.lua
 Iterators\Iterators_Cancelled.lua
 Iterators\Iterators_General.lua

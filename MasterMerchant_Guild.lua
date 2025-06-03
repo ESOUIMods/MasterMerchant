@@ -329,6 +329,18 @@ function MMGuild:removeRankIndex(rankIndex)
   if (self.rank[rankIndex]) then self.rank[rankIndex] = nil end
 end
 
+function MMGuild:MarkAllRanksDirty()
+  local rankIndexes = {
+    MM_DATERANGE_TODAY, MM_DATERANGE_YESTERDAY, MM_DATERANGE_THISWEEK,
+    MM_DATERANGE_LASTWEEK, MM_DATERANGE_PRIORWEEK, MM_DATERANGE_7DAY,
+    MM_DATERANGE_10DAY, MM_DATERANGE_30DAY, MM_DATERANGE_CUSTOM
+  }
+
+  for i = 1, #rankIndexes do
+    self:MarkDirty(rankIndexes[i])
+  end
+end
+
 function MMGuild:MarkDirty(rankIndex)
   self.rankIsDirty[rankIndex] = true
 end
@@ -341,11 +353,12 @@ function MMGuild:IsDirty(rankIndex)
   return self.rankIsDirty[rankIndex]
 end
 
-function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText, salesId)
+--[[ TODO revise addSaleByDate because I don't need the event ID or salesId anymore for legacy events. ]]--
+function MMGuild:addSaleByDate(sellerName, timestamp, amount, stack, wasKiosk, sort, searchText)
   if sellerName == nil then return end
   if timestamp == nil then return end
   if type(timestamp) ~= 'number' then return end
-  if salesId ~= nil and not MasterMerchant:ShouldUseSale(salesId) then return end
+  if timestamp ~= nil and not MasterMerchant:ShouldUseSale(timestamp) then return end
 
   if (timestamp >= self.oneStart) then
     self:MarkDirty(MM_DATERANGE_TODAY)

@@ -639,7 +639,7 @@ function MasterMerchant:GetTooltipStats(itemLink, averageOnly, generateGraph)
       currentSeller = internal:GetAccountNameByIndex(item.seller)
       nameInBlacklist = IsNameInBlacklist()
 
-      local shouldUseSale = MasterMerchant:ShouldUseSale(item.id)
+      local shouldUseSale = MasterMerchant:ShouldUseSale(item.timestamp)
 
       if not nameInBlacklist and shouldUseSale then
         ProcessItemWithTimestamp(item, useDaysRange, true)
@@ -996,22 +996,33 @@ function MasterMerchant.loadRecipesFrom(startNumber, endNumber)
       resultLink = GetItemLinkRecipeResultItemLink(itemLink)
 
       if (resultLink ~= MM_STRING_EMPTY) then
-        MasterMerchant.recipeData[resultLink] = itemLink
+        -- MasterMerchant.recipeData[resultLink] = itemLink
         MasterMerchant.recipeCount = MasterMerchant.recipeCount + 1
+        local itemId = GetItemLinkItemId(itemLink)
+        local resultItemId = GetItemLinkItemId(resultLink)
+        MasterMerchant.recipeData[resultItemId] = itemId - resultItemId
+        --[[
+        d(itemId, resultItemId)
+        d(resultItemId, itemId) -- keep, is key ---- itemId - resultItemId
+        d(itemLink, resultLink)
+        d(resultLink, itemLink)
+        ]]--
         --debug
         --d(MasterMerchant.recipeCount .. ') ' .. itemLink .. ' --> ' .. resultLink  .. ' ('  .. recNumber .. ')')
       end
-      local resultingItemType = GetItemLinkItemType(resultLink)
-      if resultingItemType == ITEMTYPE_FURNISHING then
-        local furnitureDataId = GetItemLinkFurnitureDataId(resultLink)
-        local categoryId, subcategoryId = GetFurnitureDataCategoryInfo(furnitureDataId)
-        local furnitureCategoryText = GetFurnitureCategoryName(categoryId)
-        local furnitureSubcategoryText = GetFurnitureCategoryName(subcategoryId)
-        MasterMerchant.furnitureCategory = MasterMerchant.furnitureCategory or {}
-        MasterMerchant.furnitureCategory[furnitureCategoryText] = MasterMerchant.furnitureCategory[furnitureCategoryText] or {}
-        MasterMerchant.furnitureCategory[furnitureCategoryText].categoryId = categoryId
-        MasterMerchant.furnitureCategory[furnitureCategoryText][furnitureSubcategoryText] = subcategoryId
-      end
+      --[[
+    local resultingItemType = GetItemLinkItemType(resultLink)
+    if resultingItemType == ITEMTYPE_FURNISHING then
+      local furnitureDataId = GetItemLinkFurnitureDataId(resultLink)
+      local categoryId, subcategoryId = GetFurnitureDataCategoryInfo(furnitureDataId)
+      local furnitureCategoryText = GetFurnitureCategoryName(categoryId)
+      local furnitureSubcategoryText = GetFurnitureCategoryName(subcategoryId)
+      MasterMerchant.furnitureCategory = MasterMerchant.furnitureCategory or {}
+      MasterMerchant.furnitureCategory[furnitureCategoryText] = MasterMerchant.furnitureCategory[furnitureCategoryText] or {}
+      MasterMerchant.furnitureCategory[furnitureCategoryText].categoryId = categoryId
+      MasterMerchant.furnitureCategory[furnitureCategoryText][furnitureSubcategoryText] = subcategoryId
+    end
+      ]]--
     end
 
     if (recNumber >= endNumber) then
@@ -1081,6 +1092,7 @@ end
 
 
 function MasterMerchant.setupRecipeInfo()
+  local MM_MAX_ITEM_LINK = 220000
   if not MasterMerchant.recipeData then
     MasterMerchant.recipeData = {}
     MasterMerchant.recipeCount = 0
@@ -1103,7 +1115,7 @@ function MasterMerchant.setupRecipeInfo()
 
     MasterMerchant:dm("Info", '|cFFFF00Searching Items|r')
     local LEQ = LibExecutionQueue:new()
-    LEQ:addTask(function() MasterMerchant.loadRecipesFrom(1, 450000) end, 'Search Items')
+    LEQ:addTask(function() MasterMerchant.loadRecipesFrom(1, MM_MAX_ITEM_LINK) end, 'Search Items')
     LEQ:addTask(function() MasterMerchant.BuildEnchantingRecipes(1, 1, 0) end, 'Enchanting Recipes')
     LEQ:start()
   end
@@ -1205,7 +1217,7 @@ end
 
 function MasterMerchant:OnSearchBonanzaPopupInfoLink(itemLink)
   if not itemLink then MasterMerchant:dm("Warn", "OnSearchBonanzaPopupInfoLink has no itemLink") end
-  local searchText = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+  local searchText = internal:GetFormattedItemLinkName(itemLink)
   if not searchText or searchText == MM_STRING_EMPTY then return end
   MasterMerchant.bonanzaSearchText = searchText
   MasterMerchant:SwitchToMasterMerchantListingsView()
@@ -1827,7 +1839,7 @@ function MasterMerchant:PostScanParallel(guildName)
         salePrice = p5,
         seller = p1,
         kioskSale = false,
-        id = Id64ToString(eventId)
+        id = Id64ToString(eventId) -- don't convert
       }
       local newSalesItem =
         {buyer = theEvent.buyer,
@@ -2546,7 +2558,7 @@ function MasterMerchant:FirstInitialize()
     keep overriding users saved values.]]--
     masterMerchantVariablesImported = false,
     disableBackupWarning4 = false,
-    useID64FormatedSales = false,
+    useLegacySalesData = false,
     addColorToGuildNames = false,
   }
 
@@ -2943,33 +2955,33 @@ function MasterMerchant:SecondInitialize()
   -- Right, we're all set up, so wait for the player activated event
   -- and then do an initial (deep) scan in case it's been a while since the player
   -- logged on, then use RegisterForUpdate to set up a timed scan.
-  zo_callLater(function()
-    local LEQ = LibExecutionQueue:new()
-    LEQ:addTask(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
-    LEQ:addTask(function() MasterMerchant:BuildRemovedItemIdTable() end, 'BuildRemovedItemIdTable')
-    LEQ:addTask(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
-    LEQ:addTask(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
-    LEQ:addTask(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
-    LEQ:addTask(function() DisplayDupeWarning() end, 'DisplayDupeWarning')
-    LEQ:addTask(function()
-      if internal:MasterMerchantDataActive() then
-        MasterMerchant:dm("Info", GetString(MM_MMXXDATA_OBSOLETE))
+  local LEQ = LibExecutionQueue:new()
+  LEQ:addTask(function() MasterMerchant:dm("Info", GetString(MM_INITIALIZING)) end, 'MMInitializing')
+  LEQ:addTask(function() MasterMerchant:BuildRemovedItemIdTable() end, 'BuildRemovedItemIdTable')
+  LEQ:addTask(function() MasterMerchant:InitScrollLists() end, 'InitScrollLists')
+  LEQ:addTask(function() internal:SetupNewestOldestTimestampAndEvent() end, 'SetupNewestOldestTimestampAndEvent')
+  LEQ:addTask(function() internal:SetupListenerLibHistoire() end, 'SetupListenerLibHistoire')
+  LEQ:addTask(function() internal:SetupListeners() end, 'SetupListenerLibHistoire')
+  LEQ:addTask(function() CompleteMasterMerchantSetup() end, 'CompleteMasterMerchantSetup')
+  LEQ:addTask(function() DisplayDupeWarning() end, 'DisplayDupeWarning')
+  LEQ:addTask(function()
+    if internal:MasterMerchantDataActive() then
+      MasterMerchant:dm("Info", GetString(MM_MMXXDATA_OBSOLETE))
+    end
+  end, 'MasterMerchantDataActive')
+  LEQ:addTask(function()
+    if internal:ArkadiusDataActive() then
+      if not MasterMerchant.systemSavedVariables.disableAttWarn then
+        MasterMerchant:dm("Info", GetString(MM_ATT_DATA_ENABLED))
       end
-    end, 'MasterMerchantDataActive')
-    LEQ:addTask(function()
-      if internal:ArkadiusDataActive() then
-        if not MasterMerchant.systemSavedVariables.disableAttWarn then
-          MasterMerchant:dm("Info", GetString(MM_ATT_DATA_ENABLED))
-        end
-      end
-    end, 'ArkadiusDataActive')
-    LEQ:addTask(function()
-      if ShoppingList then
-        MasterMerchant:dm("Info", GetString(MM_SHOPPINGLIST_OBSOLETE))
-      end
-    end, 'ShoppingListActive')
-    LEQ:start()
-  end, 10)
+    end
+  end, 'ArkadiusDataActive')
+  LEQ:addTask(function()
+    if ShoppingList then
+      MasterMerchant:dm("Info", GetString(MM_SHOPPINGLIST_OBSOLETE))
+    end
+  end, 'ShoppingListActive')
+  LEQ:start()
 end
 
 function MasterMerchant:InitScrollLists()
@@ -3132,21 +3144,14 @@ function MasterMerchant:SetFontListChoices()
   MasterMerchant.fontListChoices = LMP:List(LMP.MediaType.FONT)
 end
 
-local function CheckLibGuildStoreReady()
-  MasterMerchant:dm("Debug", "CheckLibGuildStoreReady")
-  local LGS = LibGuildStore
-  if LGS.guildStoreReady then
-    MasterMerchant:SecondInitialize()
-  else
-    zo_callLater(function() CheckLibGuildStoreReady() end, 12000)
-  end
-end
-
 local function OnPlayerActivated(eventCode, initial)
   MasterMerchant:dm("Debug", "OnPlayerActivated")
   MasterMerchant:SetFontListChoices()
   MasterMerchant:LibAddonInit()
-  CheckLibGuildStoreReady()
+  internal:RegisterCallback(internal.callbackType.LIBGUILDSTORE_READY,
+    function()
+      MasterMerchant:SecondInitialize()
+    end)
   EVENT_MANAGER:UnregisterForEvent(MasterMerchant.name, EVENT_PLAYER_ACTIVATED)
 end
 EVENT_MANAGER:RegisterForEvent(MasterMerchant.name, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)

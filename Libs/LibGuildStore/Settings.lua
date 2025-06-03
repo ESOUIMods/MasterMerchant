@@ -34,7 +34,7 @@ function internal:LibAddonInit()
       LibGuildStore_SavedVariables.useSalesHistory = value
       if LibGuildStore_SavedVariables.useSalesHistory then LibGuildStore_SavedVariables.useSalesHistory = 0 end
     end,
-    default = internal.defaults.useSalesHistory,
+    default = internal.systemDefault.useSalesHistory,
     disabled = function() return LibGuildStore_SavedVariables.minSalesInterval > 0 end,
   }
   -- Skip Indexing?
@@ -44,7 +44,7 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_SKIP_INDEX_TIP),
     getFunc = function() return LibGuildStore_SavedVariables.minimalIndexing end,
     setFunc = function(value) LibGuildStore_SavedVariables.minimalIndexing = value end,
-    default = internal.defaults.minimalIndexing,
+    default = internal.systemDefault.minimalIndexing,
   }
   -- Size of sales history
   optionsData[#optionsData + 1] = {
@@ -55,7 +55,7 @@ function internal:LibAddonInit()
     max = 365,
     getFunc = function() return LibGuildStore_SavedVariables.historyDepth end,
     setFunc = function(value) LibGuildStore_SavedVariables.historyDepth = value end,
-    default = internal.defaults.historyDepth,
+    default = internal.systemDefault.historyDepth,
   }
   -- Min Number of Items before Purge
   optionsData[#optionsData + 1] = {
@@ -67,7 +67,7 @@ function internal:LibAddonInit()
     getFunc = function() return LibGuildStore_SavedVariables.minItemCount end,
     setFunc = function(value) LibGuildStore_SavedVariables.minItemCount = value end,
     disabled = function() return LibGuildStore_SavedVariables.useSalesHistory end,
-    default = internal.defaults.minItemCount,
+    default = internal.systemDefault.minItemCount,
   }
   -- Max number of Items
   optionsData[#optionsData + 1] = {
@@ -79,7 +79,7 @@ function internal:LibAddonInit()
     getFunc = function() return LibGuildStore_SavedVariables.maxItemCount end,
     setFunc = function(value) LibGuildStore_SavedVariables.maxItemCount = value end,
     disabled = function() return LibGuildStore_SavedVariables.useSalesHistory end,
-    default = internal.defaults.maxItemCount,
+    default = internal.systemDefault.maxItemCount,
   }
   -- Min Day Interval
   optionsData[#optionsData + 1] = {
@@ -94,7 +94,7 @@ function internal:LibAddonInit()
       if LibGuildStore_SavedVariables.minSalesInterval > 0 then LibGuildStore_SavedVariables.useSalesHistory = false end
     end,
     disabled = function() return LibGuildStore_SavedVariables.useSalesHistory end,
-    default = internal.defaults.minSalesInterval,
+    default = internal.systemDefault.minSalesInterval,
   }
   optionsData[#optionsData + 1] = {
     type = "description",
@@ -113,9 +113,9 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_SHOPPINGLIST_DEPTH_TIP),
     min = 15,
     max = 180,
-    getFunc = function() return LibGuildStore_SavedVariables.historyDepthSL end,
-    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthSL = value end,
-    default = internal.defaults.historyDepthSL,
+    getFunc = function() return LibGuildStore_SavedVariables.historyDepthShoppingList end,
+    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthShoppingList = value end,
+    default = internal.systemDefault.historyDepthShoppingList,
   }
   -- Size posteditems history
   optionsData[#optionsData + 1] = {
@@ -124,9 +124,9 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_POSTEDITEMS_DEPTH_TIP),
     min = 15,
     max = 180,
-    getFunc = function() return LibGuildStore_SavedVariables.historyDepthPI end,
-    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthPI = value end,
-    default = internal.defaults.historyDepthPI,
+    getFunc = function() return LibGuildStore_SavedVariables.historyDepthPostedItems end,
+    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthPostedItems = value end,
+    default = internal.systemDefault.historyDepthPostedItems,
   }
   -- Size canceleditems history
   optionsData[#optionsData + 1] = {
@@ -135,9 +135,9 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_CANCELEDITEMS_DEPTH_TIP),
     min = 15,
     max = 180,
-    getFunc = function() return LibGuildStore_SavedVariables.historyDepthCI end,
-    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthCI = value end,
-    default = internal.defaults.historyDepthCI,
+    getFunc = function() return LibGuildStore_SavedVariables.historyDepthCanceledItems end,
+    setFunc = function(value) LibGuildStore_SavedVariables.historyDepthCanceledItems = value end,
+    default = internal.systemDefault.historyDepthCanceledItems,
   }
   optionsData[#optionsData + 1] = {
     type = "header",
@@ -151,7 +151,7 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_GUILD_ITEM_SUMMARY_TIP),
     getFunc = function() return LibGuildStore_SavedVariables.showGuildInitSummary end,
     setFunc = function(value) LibGuildStore_SavedVariables.showGuildInitSummary = value end,
-    default = internal.defaults.showGuildInitSummary,
+    default = internal.systemDefault.showGuildInitSummary,
   }
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
@@ -159,7 +159,7 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_TRUNCATE_TIP),
     getFunc = function() return LibGuildStore_SavedVariables.showTruncateSummary end,
     setFunc = function(value) LibGuildStore_SavedVariables.showTruncateSummary = value end,
-    default = internal.defaults.showTruncateSummary,
+    default = internal.systemDefault.showTruncateSummary,
   }
   optionsData[#optionsData + 1] = {
     type = 'checkbox',
@@ -167,7 +167,7 @@ function internal:LibAddonInit()
     tooltip = GetString(GS_INDEXING_TIP),
     getFunc = function() return LibGuildStore_SavedVariables.showIndexingSummary end,
     setFunc = function(value) LibGuildStore_SavedVariables.showIndexingSummary = value end,
-    default = internal.defaults.showIndexingSummary,
+    default = internal.systemDefault.showIndexingSummary,
   }
   -- Import MM Data
   if internal:MasterMerchantDataActive() then
@@ -196,7 +196,7 @@ function internal:LibAddonInit()
       tooltip = GetString(GS_IMPORT_MM_OVERRIDE_TIP),
       getFunc = function() return LibGuildStore_SavedVariables.overrideMMImport end,
       setFunc = function(value) LibGuildStore_SavedVariables.overrideMMImport = value end,
-      default = internal.defaults.overrideMMImport,
+      default = internal.systemDefault.overrideMMImport,
     }
   end
   -- import ATT

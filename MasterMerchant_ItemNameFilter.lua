@@ -114,7 +114,7 @@ function IFScrollList:New(control)
 end
 
 function MasterMerchant:AddToFilterTable(itemLink)
-  local itemName = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
+  local itemName = internal:GetFormattedItemLinkName(itemLink)
   local linkHash = internal:AddSalesTableData("itemLink", itemLink)
 
   if not GS17DataSavedVariables[internal.nameFilterNamespace][itemName] then

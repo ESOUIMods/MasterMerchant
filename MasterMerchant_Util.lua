@@ -138,17 +138,13 @@ end
 -- ||u0:6%:currency:||u
 -- ||t80%:80%:/esoui/art/currency/gold_mipmap.dds||t
 -- '|r |t16:16:EsoUI/Art/currency/currency_gold.dds|t'
-local function IsValueInteger(value)
-  return value % 2 == 0
-end
-
 function MasterMerchant.LocalizedNumber(amount)
   local function IsValueInteger(value)
     return value % 2 == 0
   end
 
-  local function comma_value(amount)
-    local formatted = tostring(amount)
+  local function comma_value(number)
+    local formatted = tostring(number)
     local k
 
     repeat
@@ -268,31 +264,28 @@ function MasterMerchant:SearchSoundNames(name)
   end
 end
 
-local function IsNewSale(str)
-  return str:sub(1, 1) == '3'
-end
-
-function MasterMerchant:ShouldUseSale(salesId)
-  local isNewSale = IsNewSale(salesId)
-  local shouldUseSale = (isNewSale and not MasterMerchant.systemSavedVariables.useID64FormatedSales) or MasterMerchant.systemSavedVariables.useID64FormatedSales
+function MasterMerchant:ShouldUseSale(timestamp)
+  local thresholdTimestamp = 1710115200
+  local isNewEvent = timestamp > thresholdTimestamp
+  local shouldUseSale = (isNewEvent and not MasterMerchant.systemSavedVariables.useLegacySalesData) or MasterMerchant.systemSavedVariables.useLegacySalesData
   return shouldUseSale
 end
 
-function MasterMerchant:GetIndexedData(dataTable, itemId, itemIndex, salesId)
-  return dataTable[itemId][itemIndex]['sales'][salesId]
+function MasterMerchant:GetIndexedData(dataTable, itemId, versionId, salesId)
+  return dataTable[itemId][versionId]["sales"][salesId]
 end
 
-function MasterMerchant:IsSalesDataValid(dataTable, itemId, itemIndex, salesId)
+function MasterMerchant:IsSalesDataValid(dataTable, itemId, versionId, salesId)
   if not dataTable[itemId] then
     return false
   end
-  if not dataTable[itemId][itemIndex] then
+  if not dataTable[itemId][versionId] then
     return false
   end
-  if not dataTable[itemId][itemIndex]['sales'] then
+  if not dataTable[itemId][versionId]["sales"] then
     return false
   end
-  if not dataTable[itemId][itemIndex]['sales'][salesId] then
+  if not dataTable[itemId][versionId]["sales"][salesId] then
     return false
   end
   return true

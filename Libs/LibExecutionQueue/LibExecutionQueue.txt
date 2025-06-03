@@ -12,6 +12,7 @@
 ## IsLibrary: true
 ## Version: 2.0.1
 ## AddOnVersion: 201
+## SavedVariables: LEQSavedVars
 ## License: Do whatever you want with this code.
 ## LastUpdated: Mar 2021
 

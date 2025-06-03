@@ -199,12 +199,12 @@ function MasterMerchant:SetupOptionsData()
     type = 'checkbox',
     name = GetString(MM_SALES_FORMAT_NAME),
     tooltip = GetString(MM_SALES_FORMAT_TIP),
-    getFunc = function() return MasterMerchant.systemSavedVariables.useID64FormatedSales end,
+    getFunc = function() return MasterMerchant.systemSavedVariables.useLegacySalesData end,
     setFunc = function(value)
-      MasterMerchant.systemSavedVariables.useID64FormatedSales = value
+      MasterMerchant.systemSavedVariables.useLegacySalesData = value
       ReloadUI()
     end,
-    default = MasterMerchant.systemDefault.useID64FormatedSales,
+    default = MasterMerchant.systemDefault.useLegacySalesData,
     warning = GetString(MM_RELOADUI_WARN),
   }
   -- Timeformat Options -----------------------------------

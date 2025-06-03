@@ -92,10 +92,6 @@ function internal:ImportMasterMerchantSales()
       _G["LibGuildStore_SalesIndex"] = sr_index
       internal.sr_index_count = 0
 
-      internal.guildPurchases = {}
-      internal.guildSales = {}
-      internal.guildItems = {}
-      internal.myItems = {}
       LEQ:addTask(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
       LEQ:addTask(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:addTask(function() internal:IndexSalesData() end, 'indexHistoryTables')
@@ -149,10 +145,6 @@ function internal:ImportATTSales()
       _G["LibGuildStore_SalesIndex"] = sr_index
       internal.sr_index_count = 0
 
-      internal.guildPurchases = {}
-      internal.guildSales = {}
-      internal.guildItems = {}
-      internal.myItems = {}
       LEQ:addTask(function() internal:RenewExtraSalesDataAllContainers() end, 'RenewExtraSalesDataAllContainers')
       LEQ:addTask(function() internal:InitSalesHistory() end, 'InitSalesHistory')
       LEQ:addTask(function() internal:IndexSalesData() end, 'indexHistoryTables')
@@ -178,13 +170,11 @@ end
 function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
   extraData.versionCount = (extraData.versionCount or 0)
   extraData.idCount = (extraData.idCount or 0)
-  extraData.checkMilliseconds = (extraData.checkMilliseconds or MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT)
 
   if prefunc then
     prefunc(extraData)
   end
 
-  local checkTime = GetGameTimeMilliseconds()
   local versionlist
   if itemid == nil then
     itemid, versionlist = next(mm_sales_data, itemid)
@@ -219,9 +209,8 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
             saleid, saledata = next(versiondata['sales'], saleid)
           end
           -- We've run out of time, wait and continue with next sale
-          if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
-            local LEQ = LibExecutionQueue:new()
-            LEQ:continueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+          if saleid then
+            LibExecutionQueue:continueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
             return
           end
         end
@@ -253,9 +242,8 @@ function internal:IterateoverMMSalesData(itemid, versionid, saleid, prefunc, loo
       versionid, versiondata = next(versionlist, versionid)
       extraData.saleRemoved = false
       saleid = nil
-      if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
-        local LEQ = LibExecutionQueue:new()
-        LEQ:continueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
+      if versionid then
+        LibExecutionQueue:continueWith(function() internal:IterateoverMMSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc, extraData) end, nil)
         return
       end
     end
@@ -293,13 +281,11 @@ end
 function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, loopfunc, postfunc, extraData)
   extraData.versionCount = (extraData.versionCount or 0)
   extraData.idCount = (extraData.idCount or 0)
-  extraData.checkMilliseconds = (extraData.checkMilliseconds or MM_WAIT_TIME_IN_MILLISECONDS_DEFAULT)
 
   if prefunc then
     prefunc(extraData)
   end
 
-  local checkTime = GetGameTimeMilliseconds()
   local versionlist
   if itemid == nil then
     itemid, versionlist = next(att_sales_data, itemid)
@@ -334,9 +320,8 @@ function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, lo
             saleid, saledata = next(versiondata['sales'], saleid)
           end
           -- We've run out of time, wait and continue with next sale
-          if saleid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
-            local LEQ = LibExecutionQueue:new()
-            LEQ:continueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc,
+          if saleid then
+            LibExecutionQueue:continueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc,
               postfunc,
               extraData) end, nil)
             return
@@ -370,9 +355,8 @@ function internal:IterateoverATTSalesData(itemid, versionid, saleid, prefunc, lo
       versionid, versiondata = next(versionlist, versionid)
       extraData.saleRemoved = false
       saleid = nil
-      if versionid and (GetGameTimeMilliseconds() - checkTime) > extraData.checkMilliseconds then
-        local LEQ = LibExecutionQueue:new()
-        LEQ:continueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc,
+      if versionid then
+        LibExecutionQueue:continueWith(function() internal:IterateoverATTSalesData(itemid, versionid, saleid, nil, loopfunc, postfunc,
           extraData) end, nil)
         return
       end

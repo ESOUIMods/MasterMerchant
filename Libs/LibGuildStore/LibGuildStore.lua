@@ -36,6 +36,172 @@ local function SetNamespace()
   end
 end
 
+--[[
+internal.GS_NA_NAMESPACE          = "datana"
+internal.GS_EU_NAMESPACE          = "dataeu"
+internal.GS_NA_LIBHISTOIRE_NAMESPACE = "libhistoirena"
+internal.GS_EU_LIBHISTOIRE_NAMESPACE = "libhistoireeu"
+internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
+internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
+internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
+internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
+internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
+internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
+internal.GS_NA_FIRST_RUN_NAMESPACE = "firstRunNa"
+internal.GS_EU_FIRST_RUN_NAMESPACE = "firstRunEu"
+
+internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
+internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
+internal.GS_NA_CANCELLED_NAMESPACE = "cancelleditemsna"
+internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
+
+internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
+internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
+
+internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
+internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
+
+internal.GS_NA_GUILD_LIST_NAMESPACE = "currentNAGuilds"
+internal.GS_EU_GUILD_LIST_NAMESPACE = "currentEUGuilds"
+]]--
+local function SetupDefaults()
+  internal:dm("Debug", "SetupDefaults")
+  local systemDefault = {
+    version = 2,
+    [internal.GS_NA_FIRST_RUN_NAMESPACE] = true,
+    [internal.GS_EU_FIRST_RUN_NAMESPACE] = true,
+    historyDepthShoppingList = 180,
+    historyDepthPostedItems = 180,
+    historyDepthCanceledItems = 180,
+    minimalIndexing = false,
+    historyDepth = 90,
+    minItemCount = 20,
+    maxItemCount = 5000,
+    minSalesInterval = 0,
+    showIndexingSummary = false,
+    showTruncateSummary = false,
+    showGuildInitSummary = false,
+    useSalesHistory = true,
+    overrideMMImport = false,
+    libHistoireScanByTimestamp = false,
+    convertLegacyId64Completed = false,
+
+    -- Simple tracking variables for testing
+    newestTrackedTimestamp = {},
+    oldestTrackedTimestamp = {},
+    newestTrackedEventID = {},
+    oldestTrackedEventID = {},
+    trackedMidnightEventID = {},
+  }
+
+  internal.systemDefault = systemDefault
+end
+
+local function InitializeSavedVariables()
+  -- Initialize savedVars
+  local savedVars = LibGuildStore_SavedVariables
+
+  -- Ensure LibGuildStore_SavedVariables is initialized
+  if not savedVars or not savedVars.version then
+    -- New user setup: Initialize with default values
+    savedVars = {}
+    savedVars.version = internal.systemDefault.version
+    savedVars.convertLegacyId64Completed = true -- New user, skip conversion
+  else
+    -- Existing user: Check and initialize missing fields
+    if savedVars.convertLegacyId64Completed == nil then
+      savedVars.convertLegacyId64Completed = false -- Conversion required
+    end
+  end
+
+  -- Clean up savedVars by removing keys not in systemDefault
+  for key, _ in pairs(savedVars) do
+    if key ~= "version" and internal.systemDefault[key] == nil then
+      savedVars[key] = nil
+    end
+  end
+
+  -- Populate missing default values from systemDefault
+  for key, val in pairs(internal.systemDefault) do
+    if savedVars[key] == nil then
+      savedVars[key] = val
+    end
+  end
+
+  -- Save back to global variable
+  LibGuildStore_SavedVariables = savedVars
+end
+
+local function SetupTradingHouseCallbacks()
+  if AwesomeGuildStore then
+    -- Register callback for item purchased
+    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_PURCHASED, function(itemData)
+      local theEvent = {
+        guild = itemData.guildName,
+        itemLink = itemData.itemLink,
+        quant = itemData.stackCount,
+        timestamp = GetTimeStamp(),
+        price = itemData.purchasePrice,
+        seller = itemData.sellerName,
+        id = Id64ToString(itemData.itemUniqueId),
+        buyer = GetDisplayName(),
+      }
+      internal:addPurchaseData(theEvent)
+      MasterMerchant.listIsDirty[PURCHASES] = true
+    end)
+
+    -- Register callback for item posted
+    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED, function(guildId, itemLink, price, stackCount)
+      local theEvent = {
+        guild = GetGuildName(guildId),
+        itemLink = itemLink,
+        quant = stackCount,
+        timestamp = GetTimeStamp(),
+        price = price,
+        seller = GetDisplayName(),
+      }
+      internal:addPostedItem(theEvent)
+      MasterMerchant.listIsDirty[REPORTS] = true
+    end)
+
+    -- Register callback for item cancelled
+    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_CANCELLED, function(guildId, itemLink, price, stackCount)
+      local theEvent = {
+        guild = GetGuildName(guildId),
+        itemLink = itemLink,
+        quant = stackCount,
+        timestamp = GetTimeStamp(),
+        price = price,
+        seller = GetDisplayName(),
+      }
+      internal:addCancelledItem(theEvent)
+      MasterMerchant.listIsDirty[REPORTS] = true
+    end)
+
+    -- Register callback for database update
+    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_DATABASE_UPDATE, function(itemDatabase, guildId, hasAnyResultAlreadyStored)
+      internal.guildStoreSearchResults = itemDatabase
+      local allData = itemDatabase.data
+      internal:processAwesomeGuildStore(allData, guildId)
+    end)
+
+    -- Register callback for guild selection changed
+    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.GUILD_SELECTION_CHANGED, function(guildData)
+      if MasterMerchant.systemSavedVariables.priceCalcAll then
+        MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
+      else
+        local selectedGuildId = GetSelectedTradingHouseGuildId()
+        MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
+      end
+    end)
+  else
+    -- Fallback for vanilla without AwesomeGuildStore
+    EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE, function(...)
+      internal:onTradingHouseEvent(...)
+    end)
+  end
+end
+
 local function SetupLibGuildStore()
   if not LibGuildStore_SavedVariables[internal.firstrunNamespace] then
     internal:dm("Debug", "SetupLibGuildStore Not First Run")
@@ -46,8 +212,6 @@ local function SetupLibGuildStore()
   internal.isDatabaseBusy = true
   for guildNum = 1, GetNumGuilds() do
     local guildId = GetGuildId(guildNum)
-    LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
-    LibGuildStore_SavedVariables["newestTime"][guildId] = 0
     internal.eventsNeedProcessing[guildId] = true
     internal.timeEstimated[guildId] = false
   end
@@ -99,7 +263,7 @@ function internal:SetupGuildContainers()
 end
 
 function internal:GetGuildListAll()
-  --internal:dm("Debug", "GetGuildList")
+  internal:dm("Debug", "GetGuildListAll")
   if GS17DataSavedVariables[internal.guildListNamespace]["count"] == 0 then return { } end
   local guildList = ''
   for guildNum, data in pairs(GS17DataSavedVariables[internal.guildListNamespace]["guilds"]) do
@@ -121,91 +285,6 @@ function internal:GetGuildList()
   return guildList
 end
 
-local function SetupDefaults()
-  --[[
-  internal.GS_NA_NAMESPACE          = "datana"
-  internal.GS_EU_NAMESPACE          = "dataeu"
-  internal.GS_NA_LIBHISTOIRE_NAMESPACE = "libhistoirena"
-  internal.GS_EU_LIBHISTOIRE_NAMESPACE = "libhistoireeu"
-  internal.GS_NA_LISTING_NAMESPACE  = "listingsna"
-  internal.GS_EU_LISTING_NAMESPACE  = "listingseu"
-  internal.GS_NA_PURCHASE_NAMESPACE = "purchasena"
-  internal.GS_EU_PURCHASE_NAMESPACE = "purchaseeu"
-  internal.GS_NA_NAME_FILTER_NAMESPACE = "namefilterna"
-  internal.GS_EU_NAME_FILTER_NAMESPACE = "namefiltereu"
-  internal.GS_NA_FIRST_RUN_NAMESPACE = "firstRunNa"
-  internal.GS_EU_FIRST_RUN_NAMESPACE = "firstRunEu"
-
-  internal.GS_NA_POSTED_NAMESPACE  = "posteditemsna"
-  internal.GS_EU_POSTED_NAMESPACE  = "posteditemseu"
-  internal.GS_NA_CANCELLED_NAMESPACE = "cancelleditemsna"
-  internal.GS_EU_CANCELLED_NAMESPACE = "cancelleditemseu"
-
-  internal.GS_NA_VISIT_TRADERS_NAMESPACE = "visitedNATraders"
-  internal.GS_EU_VISIT_TRADERS_NAMESPACE = "visitedEUTraders"
-
-  internal.GS_NA_PRICING_NAMESPACE = "pricingdatana"
-  internal.GS_EU_PRICING_NAMESPACE = "pricingdataeu"
-
-  internal.GS_NA_GUILD_LIST_NAMESPACE = "currentNAGuilds"
-  internal.GS_EU_GUILD_LIST_NAMESPACE = "currentEUGuilds"
-  ]]--
-  internal:dm("Debug", "SetupDefaults")
-  SetNamespace()
-  local systemDefault = {
-    version = 2,
-    [internal.GS_NA_FIRST_RUN_NAMESPACE] = true,
-    [internal.GS_EU_FIRST_RUN_NAMESPACE] = true,
-    lastReceivedEventID = {},
-    newestTime = {},
-    historyDepthSL = 180, -- History Depth Shopping List
-    historyDepthPI = 180, -- History Depth Posted Items
-    historyDepthCI = 180, -- History Depth Canceled Items
-    minimalIndexing = false,
-    historyDepth = 90,
-    minItemCount = 20,
-    maxItemCount = 5000,
-    minSalesInterval = 0,
-    showIndexingSummary = false,
-    showTruncateSummary = false,
-    showGuildInitSummary = false,
-    useSalesHistory = true,
-    overrideMMImport = false,
-    updateAdditionalText = false,
-    libHistoireScanByTimestamp = false,
-  }
-  internal.systemDefault = systemDefault
-  local savedVars = LibGuildStore_SavedVariables
-  local lastEventKey = "lastReceivedEventID"
-  local namespace = internal.libHistoireNamespace
-  for key, _ in pairs(savedVars) do
-    -- Delete key-value pair if the key can't also be found in the default settings (except for version)
-    if (key ~= lastEventKey and key ~= "version") and systemDefault[key] == nil then
-      savedVars[key] = nil
-    end
-  end
-
-  for key, val in pairs(systemDefault) do
-    if savedVars[key] == nil then savedVars[key] = val end
-  end
-
-  for guildNum = 1, GetNumGuilds() do
-    local guildId = GetGuildId(guildNum)
-    savedVars[lastEventKey] = savedVars[lastEventKey] or {}
-    savedVars[lastEventKey][namespace] = savedVars[lastEventKey][namespace] or {}
-    savedVars[lastEventKey][namespace][guildId] = savedVars[lastEventKey][namespace][guildId] or "0"
-  end
-
-  internal.guildList = internal:GetGuildList()
-
-  -- set to false on startup in case previous process did not complete
-  LibGuildStore_SavedVariables["updateAdditionalText"] = false
-
-  internal:SetupGuildContainers()
-  internal:SetupLibHistoireContainers()
-  SetupLibGuildStore()
-end
-
 local function BuildLookupTables()
   -- Build lookup tables
   internal:BuildAccountNameLookup()
@@ -217,8 +296,7 @@ end
 local function SetupData()
   internal:dm("Debug", "SetupData")
   local LEQ = LibExecutionQueue:new()
-  LEQ:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INITIALIZING)) end, "LibGuildStoreInitializing")
-  LEQ:addTask(function() BuildLookupTables() end, 'BuildLookupTables')
+  LibExecutionQueue:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_INITIALIZING)) end, "LibGuildStoreInitializing")
   LEQ:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_REFERENCE_DATA)) end, "LibGuildStoreReferenceDataContainers")
   -- Place data into containers
   LEQ:addTask(function() internal:ReferenceSalesDataContainer() end, 'ReferenceSalesDataContainer')
@@ -247,7 +325,7 @@ local function SetupData()
   LEQ:addTask(function() internal:RenewExtraPurchaseData() end, 'RenewExtraPurchaseData')
   LEQ:addTask(function() internal:RenewExtraPostedData() end, 'RenewExtraPostedData')
   LEQ:addTask(function() internal:RenewExtraCancelledData() end, 'RenewExtraCancelledData')
-  -- and...
+
   if not LibGuildStore_SavedVariables["showGuildInitSummary"] then
     LEQ:addTask(function() internal:dm("Info", GetString(GS_LIBGUILDSTORE_HISTORY_INIT)) end, "LibGuildStoreReferenceTables")
   end
@@ -269,12 +347,38 @@ local function SetupData()
   LEQ:addTask(function() internal:IndexCancelledItemData() end, 'IndexCancelledItemData')
 
   LEQ:addTask(function() lib.guildStoreReady = true end, "LibGuildStoreIndexData")
+  LEQ:addTask(function() internal:FireCallbackLibGuildStoreReady() end, "LibGuildStoreIndexData")
   -- and...
   LEQ:start()
 end
 
+function internal:ProcessLibGuildStoreData()
+  SetupData()
+end
+
+function internal:FireCallbackProcessLibGuildstoreData()
+  internal:dm("Debug", "Fire LMD Callback PROCESS_LIBGUILDSTORE_DATA")
+  internal.callbackObject:FireCallbacks(internal.callbackType.PROCESS_LIBGUILDSTORE_DATA)
+end
+
+function internal:FireCallbackLibGuildStoreReady()
+  internal:dm("Debug", "Fire LMD Callback LIBGUILDSTORE_READY")
+  internal.callbackObject:FireCallbacks(internal.callbackType.LIBGUILDSTORE_READY)
+end
+
 local function LibGuildStoreInitialize()
-  SetupDefaults()
+  internal.guildList = internal:GetGuildList()
+  internal:SetupGuildContainers()
+  internal:SetupLibHistoireContainers()
+  SetupLibGuildStore()
+  internal:LibAddonInit()
+  SetupTradingHouseCallbacks()
+  internal:RegisterCallback(internal.callbackType.PROCESS_LIBGUILDSTORE_DATA,
+    function()
+      internal:ProcessLibGuildStoreData()
+    end)
+  BuildLookupTables()
+
   for i = 1, GetNumGuilds() do
     local guildId = GetGuildId(i)
     local guildName = GetGuildName(guildId)
@@ -286,106 +390,7 @@ local function LibGuildStoreInitialize()
       internal.guildMemberInfo[guildId][zo_strlower(name)] = true
     end
   end
-  internal:LibAddonInit()
-
-  if AwesomeGuildStore then
-    -- register for purchace
-    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_PURCHASED, function(itemData)
-      local theEvent = {
-        guild = itemData.guildName,
-        itemLink = itemData.itemLink,
-        quant = itemData.stackCount,
-        timestamp = GetTimeStamp(),
-        price = itemData.purchasePrice,
-        seller = itemData.sellerName,
-        id = Id64ToString(itemData.itemUniqueId),
-        buyer = GetDisplayName()
-      }
-      internal:addPurchaseData(theEvent)
-      MasterMerchant.listIsDirty[PURCHASES] = true
-    end)
-
-    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_DATABASE_UPDATE,
-      function(itemDatabase, guildId, hasAnyResultAlreadyStored)
-        internal.guildStoreSearchResults = itemDatabase
-        local allData = itemDatabase.data
-        internal:processAwesomeGuildStore(allData, guildId)
-      end)
-
-    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_POSTED,
-      function(guildId, itemLink, price, stackCount)
-        local theEvent = {
-          guild = GetGuildName(guildId),
-          itemLink = itemLink,
-          quant = stackCount,
-          timestamp = GetTimeStamp(),
-          price = price,
-          seller = GetDisplayName(),
-        }
-        internal:addPostedItem(theEvent)
-        MasterMerchant.listIsDirty[REPORTS] = true
-      end)
-
-    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.ITEM_CANCELLED,
-      function(guildId, itemLink, price, stackCount)
-        -- opps needs the names since addCanceledItem handles the hasing
-        local theEvent = {
-          guild = GetGuildName(guildId),
-          itemLink = itemLink,
-          quant = stackCount,
-          timestamp = GetTimeStamp(),
-          price = price,
-          seller = GetDisplayName(),
-        }
-        internal:addCancelledItem(theEvent)
-        MasterMerchant.listIsDirty[REPORTS] = true
-      end)
-    AwesomeGuildStore:RegisterCallback(AwesomeGuildStore.callback.GUILD_SELECTION_CHANGED,
-      function(guildData)
-        if MasterMerchant.systemSavedVariables.priceCalcAll then
-          MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace]["pricingdataall"] or {}
-        else
-          local selectedGuildId = GetSelectedTradingHouseGuildId()
-          MasterMerchant.systemSavedVariables.pricingData = GS17DataSavedVariables[internal.pricingNamespace][selectedGuildId] or {}
-        end
-      end)
-  else
-    -- for vanilla without AwesomeGuildStore to add purchace data
-    EVENT_MANAGER:RegisterForEvent(lib.libName, EVENT_TRADING_HOUSE_CONFIRM_ITEM_PURCHASE, function(...) internal:onTradingHouseEvent(...) end)
-  end
-  --[[
-    AGS.callback.BEFORE_INITIAL_SETUP = "BeforeInitialSetup"
-    AGS.callback.AFTER_INITIAL_SETUP = "AfterInitialSetup"
-    AGS.callback.AFTER_FILTER_SETUP = "AfterFilterSetup"
-
-    AGS.callback.STORE_TAB_CHANGED = "StoreTabChanged"
-    AGS.callback.GUILD_SELECTION_CHANGED = "SelectedGuildChanged"
-    AGS.callback.AVAILABLE_GUILDS_CHANGED = "AvailableGuildsChanged"
-    AGS.callback.SELECTED_SEARCH_CHANGED = "SelectedSearchChanged"
-    AGS.callback.SEARCH_LIST_CHANGED = "SearchChangedChanged"
-    AGS.callback.SEARCH_LOCK_STATE_CHANGED = "SearchLockStateChanged"
-    AGS.callback.ITEM_DATABASE_UPDATE = "ItemDatabaseUpdated"
-    AGS.callback.CURRENT_ACTIVITY_CHANGED = "CurrentActivityChanged"
-    AGS.callback.SEARCH_RESULT_UPDATE = "SearchResultUpdate"
-    AGS.callback.SEARCH_RESULTS_RECEIVED = "SearchResultsReceived"
-
-    -- fires when a filter value has changed
-    -- filterId, ... (filter values)
-    AGS.callback.FILTER_VALUE_CHANGED = "FilterValueChanged"
-    -- fires when a filter is attached or detached
-    -- filter
-    AGS.callback.FILTER_ACTIVE_CHANGED = "FilterActiveChanged"
-    -- fires on the next frame after any filter has changed. In other words after all FILTER_VALUE_CHANGED and FILTER_ACTIVE_CHANGED callbacks have fired
-    -- activeFilters
-    AGS.callback.FILTER_UPDATE = "FilterUpdate"
-    AGS.callback.FILTER_PREPARED = "FilterPrepared"
-
-    AGS.callback.ITEM_PURCHASED = "ItemPurchased"
-    AGS.callback.ITEM_PURCHASE_FAILED = "ItemPurchaseFailed"
-    AGS.callback.ITEM_CANCELLED = "ItemCancelled"
-    AGS.callback.ITEM_POSTED = "ItemPosted"
-  ]]--
-  SetupData()
+  internal:ConvertLegacyEventIds()
 end
 
 local function CheckImportStatus()
@@ -589,11 +594,6 @@ function internal.Slash(allArgs)
     internal:CleanOutBad()
     return
   end
-  if args == 'redesc' then
-    LibGuildStore_SavedVariables["updateAdditionalText"] = true
-    internal:dm("Info", GetString(GS_CLEAN_UPDATE_DESC))
-    return
-  end
   if args == 'mmimport' then
     internal:SlashImportMMSales()
     return
@@ -624,8 +624,6 @@ local function OnPlayerJoinedGuild(eventCode, guildId, guildName)
   internal:SetupGuildContainers()
   internal.guildList = internal:GetGuildList()
   internal.LibHistoireListener[guildId] = { }
-  LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = "0"
-  LibGuildStore_SavedVariables["newestTime"][guildId] = 0
   internal.eventsNeedProcessing[guildId] = true
   internal.timeEstimated[guildId] = false
   internal.currentGuilds[guildId] = guildName
@@ -648,8 +646,6 @@ local function OnPlayerLeaveGuild(eventCode, guildId, guildName)
     internal.LibHistoireListener[guildId]:Stop()
   end
   internal.guildList = internal:GetGuildList()
-  LibGuildStore_SavedVariables["lastReceivedEventID"][internal.libHistoireNamespace][guildId] = nil
-  LibGuildStore_SavedVariables["newestTime"][guildId] = nil
   internal.eventsNeedProcessing[guildId] = nil
   internal.timeEstimated[guildId] = nil
   internal.LibHistoireListener[guildId] = nil
@@ -663,6 +659,10 @@ local function OnAddOnLoaded(eventCode, addonName)
   if addonName == lib.libName then
     SLASH_COMMANDS['/lgs'] = internal.Slash
     internal:dm("Debug", "LibGuildStore Loaded")
+    SetNamespace()
+    SetupDefaults()
+    InitializeSavedVariables()
+
     LibGuildStoreInitialize()
   end
 end
