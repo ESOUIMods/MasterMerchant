@@ -108,21 +108,24 @@ function internal:RenewExtraSalesData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
-        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        local totalCount = NonContiguousCount(versiondata['sales'])
+        local timestamps = {}
         for saleid, saledata in pairs(versiondata['sales']) do
-          table.insert(timestamps, saledata["timestamp"])
+          if saledata and saledata.timestamp then
+            table.insert(timestamps, saledata.timestamp)
+          end
         end
 
-        -- Find oldest and newest time from timestamps
-        local oldestTime = zo_min(unpack(timestamps))
-        local newestTime = zo_max(unpack(timestamps))
-
-        -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
-        savedVars[itemID][versionid].newestTime = newestTime
-        savedVars[itemID][versionid].oldestTime = oldestTime
         savedVars[itemID][versionid].wasAltered = false
+
+        if #timestamps > 0 then
+          savedVars[itemID][versionid].oldestTime = zo_min(unpack(timestamps))
+          savedVars[itemID][versionid].newestTime = zo_max(unpack(timestamps))
+        else
+          savedVars[itemID][versionid].oldestTime = nil
+          savedVars[itemID][versionid].newestTime = nil
+        end
       end
     end
   end
@@ -134,21 +137,24 @@ function internal:RenewExtraListingsData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
-        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        local totalCount = NonContiguousCount(versiondata['sales'])
+        local timestamps = {}
         for saleid, saledata in pairs(versiondata['sales']) do
-          table.insert(timestamps, saledata["timestamp"])
+          if saledata and saledata.timestamp then
+            table.insert(timestamps, saledata.timestamp)
+          end
         end
 
-        -- Find oldest and newest time from timestamps
-        local oldestTime = zo_min(unpack(timestamps))
-        local newestTime = zo_max(unpack(timestamps))
-
-        -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
-        savedVars[itemID][versionid].newestTime = newestTime
-        savedVars[itemID][versionid].oldestTime = oldestTime
         savedVars[itemID][versionid].wasAltered = false
+
+        if #timestamps > 0 then
+          savedVars[itemID][versionid].oldestTime = zo_min(unpack(timestamps))
+          savedVars[itemID][versionid].newestTime = zo_max(unpack(timestamps))
+        else
+          savedVars[itemID][versionid].oldestTime = nil
+          savedVars[itemID][versionid].newestTime = nil
+        end
       end
     end
   end
@@ -161,21 +167,24 @@ function internal:RenewExtraPurchaseData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
-        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        local totalCount = NonContiguousCount(versiondata['sales'])
+        local timestamps = {}
         for saleid, saledata in pairs(versiondata['sales']) do
-          table.insert(timestamps, saledata["timestamp"])
+          if saledata and saledata.timestamp then
+            table.insert(timestamps, saledata.timestamp)
+          end
         end
 
-        -- Find oldest and newest time from timestamps
-        local oldestTime = zo_min(unpack(timestamps))
-        local newestTime = zo_max(unpack(timestamps))
-
-        -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
-        savedVars[itemID][versionid].newestTime = newestTime
-        savedVars[itemID][versionid].oldestTime = oldestTime
         savedVars[itemID][versionid].wasAltered = false
+
+        if #timestamps > 0 then
+          savedVars[itemID][versionid].oldestTime = zo_min(unpack(timestamps))
+          savedVars[itemID][versionid].newestTime = zo_max(unpack(timestamps))
+        else
+          savedVars[itemID][versionid].oldestTime = nil
+          savedVars[itemID][versionid].newestTime = nil
+        end
       end
     end
   end
@@ -188,21 +197,24 @@ function internal:RenewExtraPostedData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
-        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        local totalCount = NonContiguousCount(versiondata['sales'])
+        local timestamps = {}
         for saleid, saledata in pairs(versiondata['sales']) do
-          table.insert(timestamps, saledata["timestamp"])
+          if saledata and saledata.timestamp then
+            table.insert(timestamps, saledata.timestamp)
+          end
         end
 
-        -- Find oldest and newest time from timestamps
-        local oldestTime = zo_min(unpack(timestamps))
-        local newestTime = zo_max(unpack(timestamps))
-
-        -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
-        savedVars[itemID][versionid].newestTime = newestTime
-        savedVars[itemID][versionid].oldestTime = oldestTime
         savedVars[itemID][versionid].wasAltered = false
+
+        if #timestamps > 0 then
+          savedVars[itemID][versionid].oldestTime = zo_min(unpack(timestamps))
+          savedVars[itemID][versionid].newestTime = zo_max(unpack(timestamps))
+        else
+          savedVars[itemID][versionid].oldestTime = nil
+          savedVars[itemID][versionid].newestTime = nil
+        end
       end
     end
   end
@@ -215,21 +227,24 @@ function internal:RenewExtraCancelledData(otherData)
   for itemID, versionlist in pairs(savedVars) do
     for versionid, versiondata in pairs(versionlist) do
       if versiondata["wasAltered"] then
-        local totalCount = NonContiguousCount(versiondata['sales'])  -- Count the sales entries
-        local timestamps = {}  -- Gather timestamps for oldest and newest time
+        local totalCount = NonContiguousCount(versiondata['sales'])
+        local timestamps = {}
         for saleid, saledata in pairs(versiondata['sales']) do
-          table.insert(timestamps, saledata["timestamp"])
+          if saledata and saledata.timestamp then
+            table.insert(timestamps, saledata.timestamp)
+          end
         end
 
-        -- Find oldest and newest time from timestamps
-        local oldestTime = zo_min(unpack(timestamps))
-        local newestTime = zo_max(unpack(timestamps))
-
-        -- Update versiondata with calculated values
         savedVars[itemID][versionid].totalCount = totalCount
-        savedVars[itemID][versionid].newestTime = newestTime
-        savedVars[itemID][versionid].oldestTime = oldestTime
         savedVars[itemID][versionid].wasAltered = false
+
+        if #timestamps > 0 then
+          savedVars[itemID][versionid].oldestTime = zo_min(unpack(timestamps))
+          savedVars[itemID][versionid].newestTime = zo_max(unpack(timestamps))
+        else
+          savedVars[itemID][versionid].oldestTime = nil
+          savedVars[itemID][versionid].newestTime = nil
+        end
       end
     end
   end
