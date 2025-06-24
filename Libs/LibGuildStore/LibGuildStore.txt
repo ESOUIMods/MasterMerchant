@@ -5,8 +5,8 @@
 ## AddOnVersion: 105
 ## SavedVariables: LibGuildStore_SavedVariables
 ## DependsOn: GS00Data GS01Data GS02Data GS03Data GS04Data GS05Data GS06Data GS07Data GS08Data GS09Data GS10Data
-## DependsOn: GS11Data GS12Data GS13Data GS14Data GS15Data GS16Data GS17Data LibHistoire>=1062 LibDebugLogger>=268
-## DependsOn: LibExecutionQueue>=200 LibAsync>=20304 LibAddonMenu-2.0>=40 LibAlchemy>=16 LibPrice>=70450
+## DependsOn: GS11Data GS12Data GS13Data GS14Data GS15Data GS16Data GS17Data LibHistoire>=1071 LibDebugLogger>=268
+## DependsOn: LibExecutionQueue>=200 LibAsync>=30002 LibAddonMenu-2.0>=40 LibAlchemy>=17 LibPrice>=70450
 ## OptionalDependsOn: AwesomeGuildStore>=2751 DebugLogViewer>=558
 ## IsLibrary: true
 
